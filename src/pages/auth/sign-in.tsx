@@ -17,7 +17,7 @@ const SignIn: React.FC = () => {
     console.log("Intentando iniciar sesión con:", email, password);
 
     try {
-      const response = await fetch(getApiUrl(config.endpoints.auth.login), {
+      const response = await fetch("https://apitami.tami-peru.com/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -40,6 +40,7 @@ const SignIn: React.FC = () => {
       alert("Error de conexión con el servidor.");
     }
   };
+
 
   return (
       <div

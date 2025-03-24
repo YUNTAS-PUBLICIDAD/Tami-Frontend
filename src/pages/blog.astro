@@ -1,32 +1,10 @@
 ---
 import Layout from "src/layouts/Layout.astro";
-import CardBlog from "../components/blog/CardBlog";
 import bgBlog from "@images/blog/bg_blog.webp";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 
-import { getApiUrl, config } from "config";
-import type Blog from "src/models/Blog";
-
-let blogs: Blog[] = [];
-let error = null;
-
-try {
-  const response = await fetch(getApiUrl(config.endpoints.blogs.list));
-  if (!response.ok) throw new Error("Error al obtener los blogs");
-
-  const data = await response.json();
-  if (data.success) {
-    blogs = data.data;
-  } else {
-    error = "No se pudieron obtener los blogs";
-  }
-} catch (err) {
-  error =
-    "Error al obtener los blogs: " +
-    (err instanceof Error ? err.message : "Error desconocido");
-}
-
+import BlogList from "../components/blog/BlogList";
 ---
 <Layout title="Blog">
   <section
@@ -85,15 +63,6 @@ try {
       </div>
     </div>
 
-    {
-      error ? (
-        <p class="text-center text-red-600">{error}</p>
-      ) : blogs.length > 0 ? (
-        blogs.map((blog) => <CardBlog blog={blog} />)
-      ) : (
-        <p class="text-center text-teal-800">No hay blogs disponibles.</p>
-      )
-    }
-
+    <BlogList client:load/>
   </section>
 </Layout>
