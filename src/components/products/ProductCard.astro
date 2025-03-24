@@ -8,7 +8,7 @@ const { producto } = Astro.props;
 ---
 
 <a
-  href={`/products/${producto.id}`}
+  href={`/products/details?id=${producto.id}`}
   class="my-10 flex flex-col items-center group hover:cursor-pointer"
 >
   <div
@@ -23,7 +23,7 @@ const { producto } = Astro.props;
   </div>
   <div class="text-center">
     <h3 class="text-lg font-bold text-teal-700">{producto.nombreProducto}</h3>
-    <p class="text-gray-500">S/ {producto.precioProducto.toFixed(2)}</p>
+    <p class="text-gray-500">S/ {producto.seccion}</p>
   </div>
   <div class="flex justify-between text-teal-700 mt-3">
     <svg

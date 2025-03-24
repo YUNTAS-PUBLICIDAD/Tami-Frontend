@@ -1,7 +1,3 @@
-/**
- * Función para mostrar una animacion loader en la página
- * Genera una imagen de carga
- **/
 export function showLoader() {
     const loader = document.createElement("div");
     loader.id = "page-loader";

@@ -4,15 +4,11 @@ import type Blog from "src/models/Blog";
 interface CardBlogProps {
   blog: Blog;
 }
-
-{
-  /* añadirle un hover al componente */
-}
 const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
   return (
     <a
-      href={`blog/${blog.id}`}
-      className="my-5 flex flex-col lg:flex-row items-center transition-transform transform hover:scale-110 bg-teal-800 text-white shadow-md overflow-hidden"
+      href={`/blog/details?id=${blog.id}`}
+      className="my-5 flex flex-col lg:flex-row items-center transition-transform duration-300 ease-in-out hover:scale-105 bg-teal-800 text-white shadow-md overflow-hidden"
     >
       <div className="lg:w-1/3 w-full">
         <img
