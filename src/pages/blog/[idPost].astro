@@ -4,7 +4,6 @@ import type Blog from "src/models/Blog";
 import Layout from "src/layouts/Layout.astro";
 
 // Obtener todos los blogs para generar las rutas estáticas
-// Obtener todos los blogs para generar las rutas estáticas
 export async function getStaticPaths() {
   const res = await fetch(getApiUrl(config.endpoints.blogs.list));
   if (!res.ok) throw new Error("Error al obtener la lista de blogs");
