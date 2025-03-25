@@ -5,8 +5,30 @@ import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
 const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
 const blogsUrl = config.endpoints.blogs;
+interface Blog {
+  titulo: string;
+  subTituloBlog: string;
+  imagenPrincipal: string;
+  fechaPublicacion: string;
+  tituloBlog: string;
+  imagenesBlog: string[];
+  parrafoImagenesBlog: string[];
+  tituloVideoBlog: string;
+  videoBlog: string;
+}
 
-let blog = {}; // Aquí se almacenará el blog
+let blog: Blog = {
+  titulo: "",
+  subTituloBlog: "",
+  imagenPrincipal: "",
+  fechaPublicacion: "",
+  tituloBlog: "",
+  imagenesBlog: [],
+  parrafoImagenesBlog: [],
+  tituloVideoBlog: "",
+  videoBlog: "",
+}; // Aquí se almacenará el blog
+
 ---
 
 {/* Details de blog */}

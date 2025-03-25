@@ -2,6 +2,7 @@
 import HeroProducts from "src/components/products/HeroProducts";
 import ProductCard from "src/components/products/ProductCard.astro";
 import Layout from "src/layouts/Layout.astro";
+
 import { getApiUrl, config } from "config";
 import type Producto from "src/models/Product"; // Importamos el modelo Producto
 import ComponenteDePrueba from "src/components/products/FetchData.jsx";
@@ -55,16 +56,19 @@ try {
 } catch (error) {
   console.error("Error cargando productos:", error);
 }
+
 ---
 
 <Layout title="Productos">
   <HeroProducts client:load />
+
   <section class="w-full grid grid-rows-auto">
     {
       seccionesArray.map((seccion) => (
         <div class="relative py-10" id={seccion.nombreSeccion}>
           <div class="relative w-4/5 place-self-center">
             <h2 class="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
+
               {seccion.nombreSeccion}
             </h2>
             <div class="flex flex-wrap justify-between">
