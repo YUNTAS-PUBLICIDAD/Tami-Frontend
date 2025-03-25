@@ -6,25 +6,50 @@ import { showLoaderString, removeLoaderString } from "src/utils/loader";
 const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
 const blogsUrl = config.endpoints.blogs;
 
-let blog = {}; // Aquí se almacenará el blog
+interface Blog {
+  titulo: string;
+  subTituloBlog: string;
+  imagenPrincipal: string;
+  fechaPublicacion: string;
+  tituloBlog: string;
+  imagenesBlog: string[];
+  parrafoImagenesBlog: string[];
+  tituloVideoBlog: string;
+  videoBlog: string;
+}
+
+let blog: Blog = {
+  titulo: "",
+  subTituloBlog: "",
+  imagenPrincipal: "",
+  fechaPublicacion: "",
+  tituloBlog: "",
+  imagenesBlog: [],
+  parrafoImagenesBlog: [],
+  tituloVideoBlog: "",
+  videoBlog: "",
+}; // Aquí se almacenará el blog
 ---
 
 {/* Details de blog */}
 <Layout title={blog.titulo}>
   <div class="bg-teal-500 flex flex-col min-h-screen">
     {/* SECCIÓN HERO */}
-    <header class="relative w-full h-[30rem]">
+    <header class="relative w-full h-[38rem]">
       <img
-        id="blog-img"
+        id="blog-imgPrincipal"
         src={blog.imagenPrincipal}
         alt={blog.titulo}
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover filter brightness-50"
       />
       <div
-        class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-40 flex flex-col items-start justify-center"
+        class="absolute top-0 left-0 w-full h-full flex flex-col items-start justify-center"
       >
         <div class="max-w-6xl mx-auto px-4">
-          <h1 id="blog-title" class="text-white text-4xl md:text-6xl font-bold mb-4">
+          <h1
+            id="blog-title"
+            class="text-white text-4xl md:text-6xl font-bold mb-4"
+          >
             {blog.titulo}
           </h1>
           <p id="blog-subtitle" class="text-white text-xl md:text-2xl">
@@ -37,7 +62,7 @@ let blog = {}; // Aquí se almacenará el blog
     {/* CONTENIDO */}
     <main
       id="blog-content"
-      class="relative z-10 -mt-24 flex-grow max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10"
+      class="relative z-10 -mt-36 flex-grow max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10"
     >
       {/* FECHA */}
       <div
@@ -48,7 +73,10 @@ let blog = {}; // Aquí se almacenará el blog
       </div>
 
       <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 id="blog-content-title" class="text-3xl md:text-4xl font-bold text-teal-600 mb-2 md:mb-0">
+        <h2
+          id="blog-content-title"
+          class="text-3xl md:text-4xl font-bold text-teal-600 mb-2 md:mb-0"
+        >
           {blog.tituloBlog}
         </h2>
         <p id="blog-content-subtitle" class="text-xl md:text-2xl text-gray-700">
@@ -58,50 +86,35 @@ let blog = {}; // Aquí se almacenará el blog
 
       {/* CONTENIDO DEL BLOG */}
       <div id="blog-sections">
-        {
-          blog.imagenesBlog?.map((imagen, index) => (
-            <section class="mb-10">
-              <div
-                class={`flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}`}
-              >
-                <img
-                  src={imagen}
-                  alt="Imagen del blog"
-                  class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6"
-                />
-                <div class="md:w-1/2">
-                  <p class="text-gray-700 text-lg md:text-xl mb-4">
-                    {blog.parrafoImagenesBlog[index] || "Texto no disponible"}
-                  </p>
-                </div>
-              </div>
-            </section>
-          ))
-        }
       </div>
 
       {/* VIDEO DEL BLOG */}
       <div id="blog-video-section">
         <section class="bg-teal-700 p-6 rounded-lg -36">
-          <h1 id="blog-video-title" class="text-white md:text-xl font-bold mb-4">
-        {blog.tituloVideoBlog}
+          <h1
+            id="blog-video-title"
+            class="text-white md:text-xl font-bold mb-4"
+          >
+            {blog.tituloVideoBlog}
           </h1>
           <div class="relative w-full h-[30rem]">
-        <video id="blog-video" controls class="w-full h-full rounded-lg">
-          <source src={blog.videoBlog} type="video/mp4" />
-          Tu navegador no soporta videos.
-        </video>
+            <video id="blog-video" controls class="w-full h-full rounded-lg">
+              <source src={blog.videoBlog} type="video/mp4" />
+              Tu navegador no soporta videos.
+            </video>
           </div>
         </section>
-      </div>
       </div>
     </main>
   </div>
 </Layout>
 
-<script define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}>
-  eval(showLoaderString)
-  eval(removeLoaderString)
+
+<script
+  define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
+>
+  eval(showLoaderString);
+  eval(removeLoaderString);
   document.addEventListener("DOMContentLoaded", async () => {
     showLoader();
     const params = new URLSearchParams(window.location.search);
@@ -120,23 +133,40 @@ let blog = {}; // Aquí se almacenará el blog
 
       const blogTitleElement = document.getElementById("blog-title");
       const blogSubtitleElement = document.getElementById("blog-subtitle");
-      const blogImgElement = document.getElementById("blog-img");
       const blogDateElement = document.getElementById("blog-date");
-      const blogContentTitleElement = document.getElementById("blog-content-title");
-      const blogContentSubtitleElement = document.getElementById("blog-content-subtitle");
+      const blogContentTitleElement =
+        document.getElementById("blog-content-title");
+      const blogContentSubtitleElement = document.getElementById(
+        "blog-content-subtitle"
+      );
       const blogSectionsElement = document.getElementById("blog-sections");
       const blogVideoTitleElement = document.getElementById("blog-video-title");
       const blogVideoElement = document.getElementById("blog-video");
+      const blogImgElement = document.getElementById("blog-imgPrincipal"); // Mueve esta declaración aquí
 
       if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo;
-      if (blogSubtitleElement) blogSubtitleElement.innerHTML = blog.subTituloBlog;
+      if (blogSubtitleElement)
+        blogSubtitleElement.innerHTML = blog.subTituloBlog;
       if (blogImgElement) {
-        blogImgElement.src = blog.imagenPrincipal;
+        blogImgElement.src = `${blog.imagenPrincipal}?cache-buster=${new Date().getTime()}`;
         blogImgElement.alt = blog.titulo;
+
+        // Fallback en caso de error
+        blogImgElement.onerror = () => {
+          console.error(
+            "Error al cargar la imagen principal. Mostrando imagen predeterminada."
+          );
+          blogImgElement.src = "/path/to/default-image.jpg";
+          blogImgElement.alt = "Imagen no disponible";
+        };
       }
-      if (blogDateElement) blogDateElement.innerHTML = blog.fechaPublicacion || "Fecha de publicación no disponible";
-      if (blogContentTitleElement) blogContentTitleElement.innerHTML = blog.tituloBlog;
-      if (blogContentSubtitleElement) blogContentSubtitleElement.innerHTML = blog.subTituloBlog;
+      if (blogDateElement)
+        blogDateElement.innerHTML =
+          blog.fechaPublicacion || "Fecha de publicación no disponible";
+      if (blogContentTitleElement)
+        blogContentTitleElement.innerHTML = blog.tituloBlog;
+      if (blogContentSubtitleElement)
+        blogContentSubtitleElement.innerHTML = blog.subTituloBlog;
 
       if (blogSectionsElement) {
         blogSectionsElement.innerHTML = "";
@@ -145,9 +175,9 @@ let blog = {}; // Aquí se almacenará el blog
           section.className = "mb-10";
           section.innerHTML = `
             <div class="flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
-              <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6" />
+              <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-8 md:mb-0 px-8" />
               <div class="md:w-1/2">
-                <p class="text-gray-700 text-lg md:text-xl mb-4">${blog.parrafoImagenesBlog[index] || "Texto no disponible"}</p>
+              <p class="text-gray-700 text-lg md:text-xl mb-6 px-8">${blog.parrafoImagenesBlog[index] || "Texto no disponible"}</p>
               </div>
             </div>
           `;
