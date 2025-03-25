@@ -13,8 +13,6 @@ interface Props {
 export default function ListadoDeProductos() {
     const [mostrar, setMostrar] = useState<JSX.Element[]>([]);
 
-
-
     const obtenerDatos = async () => {
 
         try {
@@ -79,7 +77,7 @@ export default function ListadoDeProductos() {
 
 function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
     return (
-        <div className="relative py-10" id={nombreSeccion}>
+        <div className="flex justify-center relative py-10" id={nombreSeccion}>
             <div className="relative w-4/5 place-self-center">
                 <h2 className="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
                     {nombreSeccion}
