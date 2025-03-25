@@ -1,10 +1,7 @@
 ---
-// Importación de los componentes React en Astro
-import MainTable from "./admin-pages/MainTable";
 import LayoutAdmin from "../layouts/LayoutAdmin.astro";
+import AdminDashboard from "../components/AdminDashboard/Admin";
 ---
-
-<LayoutAdmin title="Dashboard">
-  <!-- Contenedor principal con Sidebar y DataTable -->
-  <MainTable client:only />
+<LayoutAdmin title="admin">
+    <AdminDashboard client:only="react" />
 </LayoutAdmin>
