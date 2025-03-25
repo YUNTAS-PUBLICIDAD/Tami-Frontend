@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import MainTable from "./MainTable.tsx";
 
 const Admin: React.FC = () => {
     const [usuarioAutenticado, setUsuarioAutenticado] = useState(false);

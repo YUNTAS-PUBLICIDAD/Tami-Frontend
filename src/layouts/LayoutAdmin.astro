@@ -18,7 +18,7 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body class="font-montserrat h-screen grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
-  <Header client:load />
+  <Header title={title} client:load />
   <Sidebar client:load />
   <slot class="h-full" />
   </body>
