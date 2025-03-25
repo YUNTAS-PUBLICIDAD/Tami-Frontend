@@ -1,7 +1,22 @@
 ---
 import LayoutAdmin from "../layouts/LayoutAdmin.astro";
-import AdminDashboard from "../components/AdminDashboard/Admin";
+import AdminDashboard from "../components/admin/Admin";
+import MainTable from "../components/admin/MainTable";
+import React from "react";
 ---
 <LayoutAdmin title="admin">
     <AdminDashboard client:only="react" />
+    <div class="flex-1 p-4">
+        <div class="p-4 w-full">
+            {/* Botones de acciones generales */}
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button class="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">PUBLICAR</button>
+                <button class="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">EXPORTAR A CVS</button>
+                <button class="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">EXPORTAR A EXCEL</button>
+                <button class="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">EXPORTAR A PDF</button>
+                <button class="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">IMPRIMIR</button>
+            </div>
+            <MainTable />
+        </div>
+    </div>
 </LayoutAdmin>

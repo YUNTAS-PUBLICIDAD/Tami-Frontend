@@ -1,6 +1,6 @@
 ---
-import Sidebar from "../components/AdminDashboard/Sidebar";
-import Header from "../components/AdminDashboard/Header";
+import Sidebar from "../components/admin/Sidebar";
+import Header from "../components/admin/Header";
 import "../styles/global.css";
 interface Props {
   title: string;
@@ -17,9 +17,9 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body class="font-montserrat grid grid-cols-[auto_1fr] grid-rows-[auto_auto]">
-    <Header client:load />
-    <Sidebar client:load />
-    <slot />
+  <body class="font-montserrat h-screen grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
+  <Header client:load />
+  <Sidebar client:load />
+  <slot class="h-full" />
   </body>
 </html>
