@@ -11,5 +11,3 @@ export default interface Blog {
   videoBlog: string;
   tituloVideoBlog: string;
 }
-
-
