@@ -1,39 +1,14 @@
 ---
 import Layout from "src/layouts/Layout.astro";
-import CardBlog from "../components/blog/CardBlog";
 import bgBlog from "@images/blog/bg_blog.webp";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 
-import { getApiUrl, config } from "config";
-import type Blog from "src/models/Blog";
-
-let blogs: Blog[] = [];
-let error = null;
-
-try {
-  const response = await fetch(getApiUrl(config.endpoints.blogs.list));
-  if (!response.ok) throw new Error("Error al obtener los blogs");
-
-  const data = await response.json();
-  if (data.success) {
-    blogs = data.data;
-  } else {
-    error = "No se pudieron obtener los blogs";
-  }
-} catch (err) {
-  error =
-    "Error al obtener los blogs: " +
-    (err instanceof Error ? err.message : "Error desconocido");
-}
-
+import BlogList from "../components/blog/BlogList";
 ---
-
-{/* Arreglar el responsive de la barra de busqueda */}
-
 <Layout title="Blog">
   <section
-    class="relative bg-cover bg-center h-96 lg:h-dvh 2xl:h-[100dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
+    class="relative p-4 bg-cover bg-center h-96 lg:h-dvh 2xl:h-[100dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
 
     style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
   >
@@ -82,21 +57,10 @@ try {
           <option value="Tecnología">Tecnología</option>
           <option value="Restauración">Restauración</option>
         </select>
-        <IoIosArrowDown
-          className="absolute right-3 text-teal-800 pointer-events-none"
-        />
+        <IoIosArrowDown className="absolute right-3 text-teal-800 pointer-events-none" />
       </div>
     </div>
 
-    {
-      error ? (
-        <p class="text-center text-red-600">{error}</p>
-      ) : blogs.length > 0 ? (
-        blogs.map((blog) => <CardBlog blog={blog} />)
-      ) : (
-        <p class="text-center text-teal-800">No hay blogs disponibles.</p>
-      )
-    }
-
+    <BlogList client:load/>
   </section>
 </Layout>
