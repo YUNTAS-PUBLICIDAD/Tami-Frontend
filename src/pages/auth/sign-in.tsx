@@ -11,22 +11,19 @@ const SignIn: React.FC = () => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const email = String(formData.get("email") || "");
+    const password = String(formData.get("password") || "");
 
     console.log("Intentando iniciar sesión con:", email, password);
 
     try {
-      const response = await fetch("https://apitami.tami-peru.com/api/v1/auth/login", {
+      const response = await fetch(getApiUrl(config.endpoints.auth.login), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("Respuesta recibida:", response);
-
       const data = await response.json();
-      console.log("Datos del servidor:", data);
 
       if (response.ok) {
         localStorage.setItem("token", data.token); // Guardar token
@@ -36,7 +33,6 @@ const SignIn: React.FC = () => {
         alert(data.message || "Error al iniciar sesión");
       }
     } catch (error) {
-      console.error("Error de conexión con el servidor:", error);
       alert("Error de conexión con el servidor.");
     }
   };

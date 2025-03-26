@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {config, getApiUrl} from "../../../config.js";
 
 export default function useProductos() {
     const [productos, setProductos] = useState([]);
@@ -6,7 +7,7 @@ export default function useProductos() {
     useEffect(() => {
         const obtenerProductos = async () => {
             try {
-                const response = await fetch("https://apitami.tami-peru.com/api/v1/productos");
+                const response = await fetch(getApiUrl(config.endpoints.productos.list));
                 const data = await response.json();
                 setProductos(data.data);
             } catch (error) {
