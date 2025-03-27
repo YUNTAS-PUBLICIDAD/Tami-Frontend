@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import MainTable from "../../pages/admin-pages/MainTable.tsx";
 
 const Admin: React.FC = () => {
     const [usuarioAutenticado, setUsuarioAutenticado] = useState(false);
@@ -17,6 +18,12 @@ const Admin: React.FC = () => {
     if (!usuarioAutenticado) {
         return <p>Cargando...</p>;
     }
+
+    return (
+        <div className="flex-1 p-4">
+            <MainTable />
+        </div>
+    );
 };
 
 export default Admin;
