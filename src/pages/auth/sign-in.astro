@@ -1,9 +1,8 @@
 ---
 import Layout2 from "src/layouts/Layout2.astro";
-import SignIns from "./sign-in";
+import SignIns from "./sign-in.tsx";
 ---
 
 <Layout2 title="Iniciar Sesión">
-  <SignIns />
-
+    <SignIns client:load/>
 </Layout2>
