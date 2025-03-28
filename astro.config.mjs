@@ -4,7 +4,6 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import path from 'path';
 
-// https://astro.build/config
 export default defineConfig({
     vite: {
         plugins: [tailwindcss()],
@@ -12,8 +11,8 @@ export default defineConfig({
             alias: {
                 '@images': path.resolve('./src/assets/images'),
                 '@components': path.resolve('./src/components'),
-                '@layouts': path.resolve('./src/layouts')
-                // Añade más alias según sea necesario para tu proyecto
+                '@layouts': path.resolve('./src/layouts'),
+                '@styles': path.resolve('./src/styles')
             }
         }
     },
