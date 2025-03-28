@@ -115,9 +115,22 @@ const blogsUrl = config.endpoints.blogs;
         blogImgElement.src = blog.imagenPrincipal;
         blogImgElement.alt = blog.titulo;
       }
-      if (blogDateElement)
-        blogDateElement.innerHTML =
-          blog.fechaPublicacion || "Fecha de publicación no disponible";
+      if (blogDateElement) {
+        const createdAt = blog.created_at;
+        if (createdAt) {
+          const formattedDate = new Date(createdAt).toLocaleDateString(
+            "es-ES",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }
+          );
+          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+        } else {
+          blogDateElement.innerHTML = "Fecha de publicación no disponible";
+        }
+      }
       if (blogContentTitleElement)
         blogContentTitleElement.innerHTML = blog.tituloBlog;
       if (blogContentSubtitleElement)
