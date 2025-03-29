@@ -9,7 +9,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
+    <aside className="flex-1 fixed top-24 left-0 row-start-2 bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
       <nav>
         <ul className="space-y-1">
           <li className="font-bold text-lg">★ Administracion</li>

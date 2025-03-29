@@ -20,7 +20,7 @@ const Admin: React.FC = () => {
     }
 
     return (
-        <div className="flex-1 p-4">
+        <div className="w-full p-4">
             <MainTable />
         </div>
     );
