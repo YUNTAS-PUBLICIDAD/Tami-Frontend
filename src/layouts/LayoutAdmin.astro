@@ -1,6 +1,6 @@
 ---
-import Sidebar from "../components/AdminDashboard/Sidebar";
-import Header from "../components/AdminDashboard/Header";
+import Sidebar from "../components/admin/Sidebar";
+import Header from "../components/admin/Header";
 import "../styles/global.css";
 interface Props {
   title: string;
@@ -19,7 +19,7 @@ const { title } = Astro.props;
   </head>
   <body class="font-montserrat grid grid-cols-[auto_1fr] grid-rows-[auto_auto]">
     <!-- HEADER en la parte superior -->
-    <Header client:load />
+    <Header title="PRINCIPAL" client:load />
 
     <div class="flex flex-1 h-full w-[100vw]">
       <Sidebar client:load />
