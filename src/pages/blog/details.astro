@@ -52,7 +52,7 @@ const blogsUrl = config.endpoints.blogs;
       </div>
 
       {/* CONTENIDO DEL BLOG */}
-      <div id="blog-sections"></div>
+      <div id="blog-sections" class="prose"></div>
 
       {/* VIDEO DEL BLOG */}
       <div id="blog-video-section">
@@ -140,12 +140,12 @@ const blogsUrl = config.endpoints.blogs;
         blogSectionsElement.innerHTML = "";
         blog.imagenesBlog.forEach((imagen, index) => {
           const section = document.createElement("section");
-          section.className = "mb-10";
+          section.className = "mb-10 prose";
           section.innerHTML = `
             <div class="flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
               <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6" />
               <div class="md:w-1/2">
-              <article class="">
+              <article class="prose">
                 <p class="text-gray-700 text-lg md:text-xl mb-4">${blog.parrafoImagenesBlog[index] || "Texto no disponible"}</p>
               </article>
               </div>
