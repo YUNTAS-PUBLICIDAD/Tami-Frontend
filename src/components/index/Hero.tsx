@@ -60,7 +60,12 @@ const Hero = () => {
         )}
         <button
           onClick={moveToBienvenida}
-          className="cursor-pointer bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 transition-all ease-in-out duration-500 px-5 py-2 text-lg lg:text-2xl lg:px-8 lg:py-3 xl:text-3xl 2xl:text-5xl 2xl:px-14 2xl:py-6"
+          className="cursor-pointer bg-white rounded-3xl border-2 border-slate-300 
+         font-bold text-teal-700 hover:text-white 
+         hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 
+         transition-all ease-in-out duration-500 
+         px-4 py-3 lg:px-6 lg:py-2 2xl:px-10 2xl:py-4 
+         text-lg lg:text-xl xl:text-2xl 2xl:text-3xl"
         >
           Descubre más
         </button>

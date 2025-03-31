@@ -9,7 +9,7 @@ const AddDataModal = () => {
             {/* Botón para abrir el modal */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white text-lg px-10 py-1.5 rounded-full flex items-center gap-2"
+                className="cursor-pointer mt-4 bg-teal-500 hover:bg-teal-600 text-white text-lg px-10 py-1.5 rounded-full flex items-center gap-2"
             >
                 Añadir dato
             </button>
