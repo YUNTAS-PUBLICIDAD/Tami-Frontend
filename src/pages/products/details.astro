@@ -21,7 +21,10 @@ const productosUrl = config.endpoints.productos;
               <path d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h2 class="text-xl uppercase md:text-3xl font-bold" id="product-title">
+          <h2
+            class="text-xl uppercase md:text-3xl font-bold"
+            id="product-title"
+          >
             Título Producto
           </h2>
         </div>
@@ -55,12 +58,14 @@ const productosUrl = config.endpoints.productos;
         {/* Left Column - Gallery */}
         <div class="space-y-4">
           {/* Imagen principal */}
-          <div class="w-full max-w-[300px] sm:max-w-[350px] md:max-w-[440px] aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-          <img
+          <div
+            class="max-w-full md:max-w-[440px] w-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
+          >
+            <img
               id="product-viewer"
               src=""
               alt=""
-              class="w-auto h-auto max-w-full max-h-full object-contain"
+              class="w-auto max-w-full h-auto max-h-[60vh] object-contain"
             />
           </div>
 
@@ -120,9 +125,16 @@ const productosUrl = config.endpoints.productos;
   </div>
 </Layout>
 
-<script define:vars={{ getApiUrl, productosUrl, showLoaderString, removeLoaderString }}>
-  eval(showLoaderString)
-  eval(removeLoaderString)
+<script
+  define:vars={{
+    getApiUrl,
+    productosUrl,
+    showLoaderString,
+    removeLoaderString,
+  }}
+>
+  eval(showLoaderString);
+  eval(removeLoaderString);
   document.addEventListener("DOMContentLoaded", async () => {
     showLoader();
     const params = new URLSearchParams(window.location.search);
