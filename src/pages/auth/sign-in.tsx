@@ -55,7 +55,7 @@ const SignIn: React.FC = () => {
         </a>
 
         <div className="text-center mb-8 relative z-10">
-          <img src={logoAnimado as string} alt="TAMI Logo" className="w-26 mx-auto mb-6" />
+          <img loading="lazy" src={logoAnimado as string} alt="TAMI Logo" className="w-26 mx-auto mb-6" />
           <h1 className="text-white text-4xl md:text-5xl font-black">¡BIENVENIDO!</h1>
         </div>
 

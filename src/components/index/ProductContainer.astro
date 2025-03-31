@@ -3,7 +3,9 @@ import type Producto from "src/models/Product";
 /* 
 const response = await fetch("https://tu-dominio.com/api/products");
 const products: Producto[] = await response.json();
-const firstThree = products.slice(0, 3); // Tomar solo los 3 primeros */
+  * Tomar solo los 3 primeros
+  const firstThree = products.slice(0, 3); 
+*/
 
 const arrayDePrueba: Producto[] = [
   {
@@ -30,22 +32,22 @@ const arrayDePrueba: Producto[] = [
 ];
 ---
 
-<ul class="w-full flex gap-8 overflow-x-scroll lg:overflow-x-none">
+<ul class="pd-container">
   {
     arrayDePrueba.map((item) => {
       return (
-        <li class="bg-gradient-to-b to-white text-center justify-items-center text-teal-700 h-full group group-hover:cursor-pointer">
-          <a
+        <li class="pd-container__content group">
+          <a 
             href={`/products/${item.id}`}
-            class="w-full h-full font-extrabold text-xl"
+            class="pd-container__link"
           >
             <img
               src={item.image}
               alt={item.nombreProducto}
-              class="w-4/5 place-self-center group-hover:scale-110 ease-in-out transition-transform duration-300 mb-10"
+              class="pd-container__img"
             />
             {item.nombreProducto}
-            <div class="my-8 place-self-center border border-teal-700 rounded-full px-5 py-2 w-fit group-hover:cursor-pointer group-hover:bg-teal-700 group-hover:text-white transition-colors duration-300">
+            <div class="pd-container__btn-info">
               Información
             </div>
           </a>
@@ -54,3 +56,27 @@ const arrayDePrueba: Producto[] = [
     })
   }
 </ul>
+
+<style>
+  @import "tailwindcss";
+
+  .pd-container__btn-info {
+    @apply my-8 place-self-center border border-teal-700 rounded-full px-5 py-2 w-fit group-hover:cursor-pointer group-hover:bg-teal-700 group-hover:text-white transition-colors duration-300
+  }
+
+  .pd-container {
+    @apply w-full flex gap-8 overflow-x-auto lg:overflow-visible scroll-smooth px-4;
+  }
+
+  .pd-container__content {
+    @apply bg-gradient-to-b to-white text-center justify-items-center text-teal-700 h-full group-hover:cursor-pointer
+  }
+
+  .pd-container__img {
+    @apply w-4/5 place-self-center group-hover:scale-100 ease-in-out transition-transform duration-300 mb-10
+  }
+
+  .pd-container__link {
+    @apply w-full h-full font-extrabold text-xl
+  }
+</style>

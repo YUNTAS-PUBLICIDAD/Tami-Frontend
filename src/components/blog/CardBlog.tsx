@@ -10,13 +10,14 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
       href={`/blog/details?id=${blog.id}`}
       className="my-5 flex flex-col lg:flex-row items-center transition-transform duration-300 ease-in-out hover:scale-105 bg-teal-800 text-white shadow-md overflow-hidden"
     >
-      <div className="lg:w-1/3 w-full">
+      <figure className="lg:w-1/3 w-full">
         <img
           src={blog.imagenPrincipal}
           alt={blog.titulo}
-          className="w-full h-full object-cover"
+          loading="lazy"
+          className="w-full h-48 object-cover"
         />
-      </div>
+      </figure>
       <div className="lg:w-2/3 w-full p-6">
         <div className="flex items-center mb-2">
           <span className="border border-white rounded px-2 py-1 mr-2 ml-3">
