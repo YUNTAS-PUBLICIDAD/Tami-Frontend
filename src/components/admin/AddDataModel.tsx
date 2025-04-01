@@ -16,16 +16,8 @@ const AddDataModal = () => {
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
           <div className="bg-teal-600 text-white px-10 py-8 rounded-4xl w-3/5">
-            {/* Botón de cerrar */}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-50 right-84 text-white"
-            >
-              <FaTimes size={20} />
-            </button>
-
             <h2 className="text-2xl font-bold mb-4">AÑADIR DATOS</h2>
 
             {/* Formulario */}
@@ -71,10 +63,18 @@ const AddDataModal = () => {
               </div>
             </form>
 
-            {/* Botón de enviar */}
-            <button className="mt-8 px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500">
-              Añadir dato
-            </button>
+              {/* Botones */}
+              <div className="flex gap-2 mt-8">
+                  <button className="px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500">
+                      Añadir dato
+                  </button>
+                  <button
+                      onClick={() => setIsOpen(false)}
+                      className="px-10 bg-gray-400 py-1 rounded-full text-lg hover:bg-gray-500"
+                  >
+                      Cancelar
+                  </button>
+              </div>
           </div>
         </div>
       )}
