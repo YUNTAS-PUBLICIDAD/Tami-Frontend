@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import type { FormEvent } from "react";
 import logoAnimado from "@images/logos/logo_animado.gif?url";
 import loginBg from "@images/login_bg.jpg";
-import { getApiUrl, config } from "config";
 
 const SignIn: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
