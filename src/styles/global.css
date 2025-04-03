@@ -6,9 +6,3 @@
     --font-montserrat: "Montserrat", sans-serif;
     --color-sunset: #ffc68a;
 }
-
-@layer utilities {
-    .shadow-t {
-        box-shadow: 0 -12px 24px -4px rgba(0, 0, 0, 0.1), 0 -6px 12px -4px rgba(0, 0, 0, 0.06); /* Ajustar valores para hacer el degradado más largo y difuminado */
-    }
-}
