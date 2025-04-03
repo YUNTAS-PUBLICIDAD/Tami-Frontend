@@ -29,7 +29,7 @@ const SignIn: React.FC = () => {
       console.log("Datos del servidor:", data);
 
       if (response.ok) {
-        localStorage.setItem("token", data.token); // Guardar token
+        localStorage.setItem("token", data.data.token); // Guardar token
         window.location.href = "/admin"; // Redirigir al dashboard
       } else {
         console.error("Error en la respuesta del servidor:", data.message);
