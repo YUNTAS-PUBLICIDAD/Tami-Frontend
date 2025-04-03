@@ -5,30 +5,6 @@ import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
 const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
 const blogsUrl = config.endpoints.blogs;
-
-interface Blog {
-  titulo: string;
-  subTituloBlog: string;
-  imagenPrincipal: string;
-  fechaPublicacion: string;
-  tituloBlog: string;
-  imagenesBlog: string[];
-  parrafoImagenesBlog: string[];
-  tituloVideoBlog: string;
-  videoBlog: string;
-}
-
-let blog: Blog = {
-  titulo: "",
-  subTituloBlog: "",
-  imagenPrincipal: "",
-  fechaPublicacion: "",
-  tituloBlog: "",
-  imagenesBlog: [],
-  parrafoImagenesBlog: [],
-  tituloVideoBlog: "",
-  videoBlog: "",
-}; // Aquí se almacenará el blog
 ---
 
 {/* Details de blog */}
@@ -76,7 +52,7 @@ let blog: Blog = {
       </div>
 
       {/* CONTENIDO DEL BLOG */}
-      <div id="blog-sections"></div>
+      <div id="blog-sections" class="text-justify"></div>
 
       {/* VIDEO DEL BLOG */}
       <div id="blog-video-section">
@@ -140,18 +116,37 @@ let blog: Blog = {
         blogImgElement.alt = blog.titulo;
       }
       if (blogDateElement) {
-      const createdAt = blog.created_at;
-      if (createdAt) {
-        const formattedDate = new Date(createdAt).toLocaleDateString("es-ES", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
-        blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-      } else {
-        blogDateElement.innerHTML = "Fecha de publicación no disponible";
+        const createdAt = blog.created_at;
+        if (createdAt) {
+          const formattedDate = new Date(createdAt).toLocaleDateString(
+            "es-ES",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }
+          );
+          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+        } else {
+          blogDateElement.innerHTML = "Fecha de publicación no disponible";
+        }
       }
-    }
+      if (blogDateElement) {
+        const createdAt = blog.created_at;
+        if (createdAt) {
+          const formattedDate = new Date(createdAt).toLocaleDateString(
+            "es-ES",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }
+          );
+          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+        } else {
+          blogDateElement.innerHTML = "Fecha de publicación no disponible";
+        }
+      }
       if (blogContentTitleElement)
         blogContentTitleElement.innerHTML = blog.tituloBlog;
       if (blogContentSubtitleElement)
@@ -161,12 +156,14 @@ let blog: Blog = {
         blogSectionsElement.innerHTML = "";
         blog.imagenesBlog.forEach((imagen, index) => {
           const section = document.createElement("section");
-          section.className = "mb-10";
+          section.className = "mb-10 text-justify";
           section.innerHTML = `
             <div class="flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
               <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6" />
               <div class="md:w-1/2">
-                <p class="text-gray-700 text-lg md:text-xl mb-4">${blog.parrafoImagenesBlog[index] || "Texto no disponible"}</p>
+              <article>
+                <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">${blog.parrafoImagenesBlog[index] || "Texto no disponible"}</p>
+              </article>
               </div>
             </div>
           `;
