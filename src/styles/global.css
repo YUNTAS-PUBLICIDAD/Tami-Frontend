@@ -6,7 +6,7 @@
     --font-montserrat: "Montserrat", sans-serif;
     --color-sunset: #ffc68a;
 }
-.admin-btn {
+.pagination-btn {
     @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
 }
 

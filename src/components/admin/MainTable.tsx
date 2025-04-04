@@ -114,7 +114,7 @@ const DataTable = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50"
+          className="pagination-btn"
         >
           Anterior
         </button>
@@ -122,7 +122,7 @@ const DataTable = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="admin-btn"
+          className="pagination-btn"
         >
           Siguiente
         </button>
