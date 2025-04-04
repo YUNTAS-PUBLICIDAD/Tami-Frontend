@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type JSX } from 'react';
 import type Producto from "src/models/Product";
 
 interface SeccionProps {
@@ -82,7 +82,7 @@ function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
                 <h2 className="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
                     {nombreSeccion}
                 </h2>
-                <div className="flex flex-wrap justify-between">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
                     {productosDeLaSeccion.length > 0 ? (
                         productosDeLaSeccion.map((producto) => (
                             <ProductCard key={producto.id} producto={producto} />
@@ -115,7 +115,7 @@ function ProductCard({ producto }: Props) {
                 />
             </div>
             <div className="text-center">
-                <h3 className="text-lg font-bold text-teal-700">{producto.nombreProducto}</h3>
+                <h3 className="text-lg font-bold text-teal-700 w-48 text-center truncate">{producto.nombreProducto}</h3>
                 <p className="text-gray-500">S/ {producto.seccion}</p>
             </div>
             <div className="flex justify-between text-teal-700 mt-3">

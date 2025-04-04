@@ -1,5 +1,5 @@
 export default interface Blog {
-  id: string;
+  id: number;
   titulo: string;
   parrafo: string;
   descripcion: string;
