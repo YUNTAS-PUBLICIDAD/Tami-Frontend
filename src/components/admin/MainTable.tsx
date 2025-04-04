@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { FaTrash, FaCheck } from "react-icons/fa";
-import AddDataModal from "./AddDataModel.tsx";
+import { FaTrash, FaEdit } from "react-icons/fa";
+import AddBlogModal from "./AddBlogModel.tsx";
 
 // Definir el tipo de los datos
 interface Blog {
@@ -57,6 +57,27 @@ const DataTable = () => {
   // Total de páginas
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
+  const handleDelete = async (id: number) => {
+    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este elemento?");
+    if (confirmDelete) {
+      try {
+        const response = await fetch(`https://apitami.tami-peru.com/api/v1/blogs/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setData((prevData) => prevData.filter((item) => item.id !== id));
+          alert("Elemento eliminado con éxito");
+        } else {
+          alert("Error al eliminar el elemento");
+        }
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al conectar con el servidor");
+      }
+    }
+  };
+
   return (
       <>
         {/* Tabla con barra de desplazamiento horizontal */}
@@ -92,11 +113,15 @@ const DataTable = () => {
                       </td>
                       <td className="px-4 rounded-xl">
                         <div className="flex justify-center gap-2">
-                          <button className="p-2 text-red-600 hover:text-red-800 transition" title="Eliminar">
+                          <button
+                              className="p-2 text-red-600 hover:text-red-800 transition"
+                              title="Eliminar"
+                              onClick={() => handleDelete(item.id)}
+                          >
                             <FaTrash size={18} />
                           </button>
-                          <button className="p-2 text-green-600 hover:text-green-800 transition" title="Confirmar">
-                            <FaCheck size={18} />
+                          <button className="p-2 text-yellow-600 hover:text-yellow-800 transition" title="Confirmar">
+                            <FaEdit size={18} />
                           </button>
                         </div>
                       </td>
@@ -132,7 +157,7 @@ const DataTable = () => {
           </button>
         </div>
 
-        <AddDataModal />
+        <AddBlogModal />
       </>
   );
 };
