@@ -103,7 +103,7 @@ const blogsUrl = config.endpoints.blogs;
       const blogContentTitleElement =
         document.getElementById("blog-content-title");
       const blogContentSubtitleElement = document.getElementById(
-        "blog-content-subtitle",
+        "blog-content-subtitle"
       );
       const blogSectionsElement = document.getElementById("blog-sections");
       const blogVideoTitleElement = document.getElementById("blog-video-title");
@@ -125,23 +125,7 @@ const blogsUrl = config.endpoints.blogs;
               year: "numeric",
               month: "long",
               day: "numeric",
-            },
-          );
-          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-        } else {
-          blogDateElement.innerHTML = "Fecha de publicación no disponible";
-        }
-      }
-      if (blogDateElement) {
-        const createdAt = blog.created_at;
-        if (createdAt) {
-          const formattedDate = new Date(createdAt).toLocaleDateString(
-            "es-ES",
-            {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            },
+            }
           );
           blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
         } else {
