@@ -2,14 +2,13 @@
 import sectionCards from "@data/sectionCards.data";
 import SectionCard from "./SectionCard.astro";
 ---
-<!-- box shadow innesario -->
-<section class="h-[calc(100dvh-6.5rem)] w-full pt-[2%] px-5">
+
+<section class="h-auto md:h-[calc(100dvh-6.5rem)] w-full pt-[2%] px-10">
   <h2 class="text-4xl font-extrabold mb-4 text-center text-teal-600">
     OPTIMIZA TU TRABAJO, NEGOCIO Y HOGAR
   </h2>
-  <!-- Agregar texto antes de las cartas -->
-  <div class="lg:group relative flex scroll w-full h-[90%] gap-4">
-    <!-- Agregar clase group -->
+  <div class="flex flex-col md:flex-row w-full h-auto md:h-[90%] gap-4">
+    
     {
       sectionCards.map((item) => (
         <SectionCard
