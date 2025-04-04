@@ -19,7 +19,7 @@ const HeroProducts = () => {
   return (
     <>
       <section
-        className="flex flex-col items-center justify-around relative bg-cover bg-top h-96 lg:h-dvh w-full"
+        className="flex flex-col items-center justify-around relative bg-cover bg-top h-screen lg:h-dvh w-full"
         style={{
           backgroundImage:
             currentSlide === 0

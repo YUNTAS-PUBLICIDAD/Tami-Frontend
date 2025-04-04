@@ -23,7 +23,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative h-[calc(100dvh-10rem)] sm:h-[calc(100dvh-5rem)] lg:h-dvh 2xl:h-[90dvh]">
+    <section className="relative h-screen">
       {heroArray.map((slide, index) => (
         <img
           key={index}

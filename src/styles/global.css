@@ -6,9 +6,14 @@
     --font-montserrat: "Montserrat", sans-serif;
     --color-sunset: #ffc68a;
 }
+.pagination-btn {
+    @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
+}
 
-@layer utilities {
-    .shadow-t {
-        box-shadow: 0 -12px 24px -4px rgba(0, 0, 0, 0.1), 0 -6px 12px -4px rgba(0, 0, 0, 0.06); /* Ajustar valores para hacer el degradado más largo y difuminado */
-    }
+.admin-act-btn{
+    @apply bg-teal-600 hover:bg-teal-800 transition-colors hover:cursor-pointer text-white text-lg px-10 py-1.5 rounded-full
+}
+
+.cancel-btn{
+    @apply bg-red-700 hover:bg-red-900 transition-colors hover:cursor-pointer rounded-full px-8
 }
