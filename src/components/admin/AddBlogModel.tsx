@@ -37,6 +37,24 @@ const AddBlogModal = () => {
     }
   };
 
+  const updateImagen = (index: number, file: File) => {
+    const newImagenes = [...formData.imagenesBlog];
+    newImagenes[index] = {
+      ...(newImagenes[index] || { parrafo: "" }), // si no existe, inicializa
+      url: file,
+    };
+    setFormData({ ...formData, imagenesBlog: newImagenes });
+  };
+
+  const updateParrafo = (index: number, value: string) => {
+    const newImagenes = [...formData.imagenesBlog];
+    newImagenes[index] = {
+      ...(newImagenes[index] || { url: null }), // si no existe, inicializa
+      parrafo: value,
+    };
+    setFormData({ ...formData, imagenesBlog: newImagenes });
+  };
+
   // Enviar los datos a la API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,12 +244,7 @@ const AddBlogModal = () => {
                   type="file"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
-                      const newImagenes = [...formData.imagenesBlog];
-                      newImagenes[0] = {
-                        ...newImagenes[0],
-                        url: e.target.files[0],
-                      };
-                      setFormData({ ...formData, imagenesBlog: newImagenes });
+                      updateImagen(0, e.target.files[0]);
                     }
                   }}
                   required
@@ -239,14 +252,7 @@ const AddBlogModal = () => {
                 />
                 <textarea
                   value={formData.imagenesBlog[0]?.parrafo || ""}
-                  onChange={(e) => {
-                    const newImagenes = [...formData.imagenesBlog];
-                    newImagenes[0] = {
-                      ...newImagenes[0],
-                      parrafo: e.target.value,
-                    };
-                    setFormData({ ...formData, imagenesBlog: newImagenes });
-                  }}
+                  onChange={(e) => updateParrafo(0, e.target.value)}
                   required
                   className="w-full bg-white outline-none p-2 rounded-md text-black mt-2 min-h-36"
                 />
@@ -257,12 +263,7 @@ const AddBlogModal = () => {
                   type="file"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
-                      const newImagenes = [...formData.imagenesBlog];
-                      newImagenes[1] = {
-                        ...newImagenes[1],
-                        url: e.target.files[0],
-                      };
-                      setFormData({ ...formData, imagenesBlog: newImagenes });
+                      updateImagen(1, e.target.files[0]);
                     }
                   }}
                   required
@@ -270,14 +271,7 @@ const AddBlogModal = () => {
                 />
                 <textarea
                   value={formData.imagenesBlog[1]?.parrafo || ""}
-                  onChange={(e) => {
-                    const newImagenes = [...formData.imagenesBlog];
-                    newImagenes[1] = {
-                      ...newImagenes[1],
-                      parrafo: e.target.value,
-                    };
-                    setFormData({ ...formData, imagenesBlog: newImagenes });
-                  }}
+                  onChange={(e) => updateParrafo(1, e.target.value)}
                   required
                   className="w-full bg-white outline-none p-2 rounded-md text-black mt-2 min-h-36"
                 />
