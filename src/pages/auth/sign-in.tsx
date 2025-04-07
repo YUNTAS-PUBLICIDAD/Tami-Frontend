@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { FormEvent } from "react";
 import logoAnimado from "@images/logos/logo_animado.gif?url";
 import loginBg from "@images/login_bg.jpg";
+import { config, getApiUrl } from "config";
 
 const SignIn: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -16,14 +17,11 @@ const SignIn: React.FC = () => {
     console.log("Intentando iniciar sesión con:", email, password);
 
     try {
-      const response = await fetch(
-        "https://apitami.tami-peru.com/api/v1/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(getApiUrl(config.endpoints.auth.login), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       console.log("Respuesta recibida:", response);
 
