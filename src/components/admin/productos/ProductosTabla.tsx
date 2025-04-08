@@ -19,7 +19,7 @@ export default function DataTable() {
             headers: {
                 "Content-Type": "application/json",
             }
-        })
+        });
         const productosData = await respuesta.json();
         setProductos(productosData.data);
     }
@@ -30,7 +30,9 @@ export default function DataTable() {
 
     return (
         <>
-            <BtnAñadirDatos />
+            <div className="flex flex-row gap-4">
+                <BtnAñadirDatos />
+            </div>
             {/* Tabla */}
             <table className="w-full border-separate border-spacing-2">
                 <thead>
@@ -77,7 +79,6 @@ const BtnAñadirDatos = () => {
         try {
             const token = localStorage.getItem("token");
             const data = new FormData(e.target);
-            console.log(data);
             const respuesta = await fetch("https://apitami.tami-peru.com/api/v1/productos", {
                 method: "POST",
                 headers: {
