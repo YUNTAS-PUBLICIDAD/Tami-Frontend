@@ -1,0 +1,44 @@
+// src/pages/api/blogs.ts
+import type { APIRoute } from "astro";
+
+export const POST: APIRoute = async ({ request }) => {
+    try {
+        const response = await fetch("https://apitami.tami-peru.com/api/v1/blogs", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer 6|YxWK8EZ7QPMliRGNht0E6jpxPDtSmUnNMGDI417A412857e8`,
+            },
+            body: request.body,
+        });
+
+        // Verificar si la respuesta es JSON
+        const contentType = response.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            return new Response(JSON.stringify(data), {
+                status: response.status,
+                headers: { "Content-Type": "application/json" },
+            });
+        } else {
+            const text = await response.text(); // Captura respuesta en texto (puede ser HTML de error)
+            console.error("Error en la respuesta de la API:", text);
+            return new Response(
+                JSON.stringify({ error: "Respuesta no es JSON", detalle: text }),
+                {
+                    status: 500,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+        }
+    } catch (error) {
+        console.error("Error en el fetch o en la API externa:", error);
+        return new Response(
+            JSON.stringify({ error: "Hubo un error con la conexión", detalle: error }),
+            {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+    }
+};
