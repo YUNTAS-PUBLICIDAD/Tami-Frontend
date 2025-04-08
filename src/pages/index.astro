@@ -14,7 +14,7 @@ import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
   <Hero client:load />
   <section
     id="bienvenida"
-    class="scroll-mt-16 h-96 md:h-[calc(100dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col justify-between"
+    class="scroll-mt-16 h-96 h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-10rem)] md:h-[calc(90dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col justify-between max-w-screen-2xl mx-auto"
   >
     <div class="grid grid-cols-1 md:grid-cols-2 w-full h-11/12 overflow-hidden">
       <div class="hidden md:block h-full w-full content-center">
@@ -30,7 +30,7 @@ import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
         class="w-full h-full content-center p-3 md:py-0 md:px-6 lg:p-0 xl:px-16 2xl:px-20"
       >
         <h2
-          class="flex items-center gap-2 text-sunset text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl font-extrabold py-2 tracking-widest"
+          class="flex items-center gap-2 text-sunset text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +38,7 @@ import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
             height="24"
             fill="none"
             stroke="currentColor"
-            class="-rotate-90 scale-75 lg:scale-100 xl:scale-125 2xl:scale-175"
+            class="-rotate-90 scale-75 lg:scale-100 xl:scale-125 2xl:scale-150"
             stroke-width="2"
           >
             <path
@@ -47,11 +47,11 @@ import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
           </svg> BIENVENIDO A TAMI
         </h2>
         <h3
-          class="text-teal-700 text-3xl lg:text-5xl xl:text-6xl 2xl:text-8xl font-extrabold py-2 tracking-wider lg:leading-16 2xl:leading-24"
+          class="text-teal-700 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold py-2 tracking-wider lg:leading-16 2xl:leading-24"
         >
           TECNOLOGÍA E INNOVACIÓN PARA TI
         </h3>
-        <p class="text-stone-500 lg:text-xl xl:text-2xl 2xl:text-4xl py-2">
+        <p class="text-stone-500 text-base lg:text-lg xl:text-xl 2xl:text-2xl py-2">
           Ofrecemos calidad y soluciones avanzadas para mejorar y equipar tu
           negocio y hogar de manera eficiente.
         </p>
@@ -61,16 +61,16 @@ import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
   </section>
   <!-- Arreglar ancho y alto para que se vea como en vimeo :like: -->
   <section
-    class="w-full my-8 place-items-center scroll-mt-20"
+    class="w-full my-8 place-items-center scroll-mt-20 max-w-screen-2xl mx-auto"
     id="sectionCards"
   >
     {/* Contenedor de cartas */}
     <SectionCardsContainer />
   </section>
   <section
-    class="flex flex-col justify-between pt-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white"
+    class="flex flex-col justify-between align-center pt-6 px-16  lg:px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white max-w-screen-2xl mx-auto"
   >
-    <h3 class="text-white lg:text-4xl font-extrabold mb-10">
+    <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
     <ProductContainer />

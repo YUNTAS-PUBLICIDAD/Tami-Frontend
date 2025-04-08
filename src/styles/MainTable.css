@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+.main-table {
+    @apply p-4 w-full max-w-screen-xl mx-auto
+}
+
+.main-table__buttons {
+    @apply flex flex-wrap justify-center  gap-2 mb-4
+}
+
+.main-table__buttons button {
+    @apply bg-teal-500 text-white font-bold px-4 py-2 rounded-lg w-full sm:w-auto cursor-pointer hover:bg-teal-600
+}
+
+.table-container {
+    @apply overflow-x-auto
+}
+
+.table-container__header {
+    @apply bg-teal-600 text-white
+}
+
+.table-container__header th {
+    @apply px-2 lg:px-4 py-2
+}

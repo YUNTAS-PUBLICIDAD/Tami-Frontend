@@ -8,19 +8,23 @@ const Sidebar = () => {
     setDarkMode(!darkMode);
   };
 
+  const items = [
+    { name: "Seguimiento", path: "/admin/seguimiento" },
+    { name: "Ventas", path: "/admin/ventas" },
+  ];
+
   return (
-    <aside className="bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
+    <aside className="flex-1 fixed top-24 left-0 row-start-2 bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
       <nav>
         <ul className="space-y-1">
           <li className="font-bold text-lg">★ Administracion</li>
-          {["Seguimiento", "Ventas"].map((item, index) => (
-            <li
-              key={index}
-              className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
-            >
-              <FaRegFolder className="text-gray-500" />
-              {item}
-            </li>
+          {items.map((item, index) => (
+              <li key={index}>
+                <a href={item.path} className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+                  <FaRegFolder className="text-gray-500" />
+                  {item.name}
+                </a>
+              </li>
           ))}
         </ul>
       </nav>

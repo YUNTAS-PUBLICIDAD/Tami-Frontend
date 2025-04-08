@@ -12,27 +12,30 @@ const productosUrl = config.endpoints.productos;
   <div class="w-full">
     {/* Hero Banner */}
     <div
-      class="pt-32 md:pt-40 pb-1 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden"
+      class="pt-16 md:pt-40 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden"
     >
-      <div class="max-w-6xl md:w-1/2 px-4 md:px-6 py-8 md:py-12 relative z-10">
-        <div class="flex items-center gap-2 mb-2">
+      <div class="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
+        <div class="flex items-center gap-2 mb-4">
           <div class="w-5 md:w-6 h-5 md:h-6">
             <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
               <path d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h2 class="text-xl md:text-2xl font-bold" id="product-title">
+          <h2
+            class="text-xl uppercase md:text-3xl font-bold"
+            id="product-title"
+          >
             Título Producto
           </h2>
         </div>
         <h1
-          class="text-2xl md:text-4xl font-bold mb-6 md:mb-8"
+          class="text-2xl md:text-5xl/14 uppercase font-bold mb-6 md:mb-8"
           id="product-subtitle"
         >
           Subtitulo Producto
         </h1>
         <button
-          class="bg-white text-teal-500 px-8 md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-xl hover:bg-opacity-90 transition"
+          class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition"
         >
           ¡COTÍZALO!
         </button>
@@ -50,13 +53,13 @@ const productosUrl = config.endpoints.productos;
     </div>
 
     {/* Main Content */}
-    <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {/* Left Column - Gallery */}
         <div class="space-y-4">
           {/* Imagen principal */}
           <div
-            class="md:max-w-[440px] aspect-square bg-gray-100 rounded-lg overflow-hidden"
+            class="w-[440px] h-[440px] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
           >
             <img
               id="product-viewer"
@@ -77,32 +80,25 @@ const productosUrl = config.endpoints.productos;
         {/* Right Column - Product Info */}
         <div>
           <div class="mb-6">
-            <h3 class="text-xl font-bold mb-2" id="info-title">
+            <h3 class="text-3xl font-black mb-2 text-teal-800" id="info-title">
               {/* Información del producto: */}
             </h3>
+            <h1 class="font-bold mb-2 text-lg">Información del producto:</h1>
             <p class="text-gray-700" id="info-description"></p>
           </div>
 
-          <div class="border rounded-lg mb-6">
-            <div class="flex border-b">
-              <a
-                class={`flex-1 p-4 font-bold text-teal-500 border-b-2 border-teal-500`}
-              >
-                Detalles del producto
-              </a>
-            </div>
-            <div class="p-6">
-              <h3 class="font-bold mb-2">Descripción:</h3>
-              <!-- lista de especificaciones -->
-              <ul class="space-y-2 text-gray-700" id="specs-list"></ul>
-              <h3 class="font-bold mt-4 mb-2">Dimensiones:</h3>
-              <div class="flex items-start gap-8">
-                <div class="w-24">
-                  <img src={boxSize.src} alt="Box Size" class="w-full h-auto" />
-                </div>
-                <!-- dimensiones del producto -->
-                <ul class="space-y-2" id="product-dimensions"></ul>
+          <div class="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
+            <h3 class="font-bold mb-2 text-lg">Detalles del producto</h3>
+            <h3 class="font-bold mb-2">Descripción:</h3>
+            <!-- lista de especificaciones -->
+            <ul class="space-y-2 text-gray-700" id="specs-list"></ul>
+            <h3 class="font-bold mt-4 mb-4">Dimensiones:</h3>
+            <div class="flex items-start gap-4 md:gap-12">
+              <div class="w-24 md:w-32">
+                <img src={boxSize.src} alt="Box Size" class="w-full h-auto" />
               </div>
+              <!-- dimensiones del producto -->
+              <ul class="space-y-2 md:space-y-4" id="product-dimensions"></ul>
             </div>
           </div>
 
@@ -129,9 +125,16 @@ const productosUrl = config.endpoints.productos;
   </div>
 </Layout>
 
-<script define:vars={{ getApiUrl, productosUrl, showLoaderString, removeLoaderString }}>
-  eval(showLoaderString)
-  eval(removeLoaderString)
+<script
+  define:vars={{
+    getApiUrl,
+    productosUrl,
+    showLoaderString,
+    removeLoaderString,
+  }}
+>
+  eval(showLoaderString);
+  eval(removeLoaderString);
   document.addEventListener("DOMContentLoaded", async () => {
     showLoader();
     const params = new URLSearchParams(window.location.search);
@@ -222,7 +225,7 @@ const productosUrl = config.endpoints.productos;
         li.className = "flex items-center gap-2";
         const span = document.createElement("span");
         span.className =
-          "w-5 h-5 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+          "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
         span.textContent = key.charAt(0).toUpperCase();
         const text = document.createTextNode(`${key}: ${value}`);
         li.appendChild(span);
