@@ -1,6 +1,7 @@
 ---
 import Footer from "../components/ui/footer/Footer.astro";
 import NavBar from "../components/ui/navbar/NavBar";
+import ScrollModal from "../components/ui/ScrollModal.tsx";
 import "../styles/global.css";
 interface Props {
   title: string;
@@ -21,5 +22,6 @@ const { title } = Astro.props;
     <NavBar client:load />
     <slot />
     <Footer />
+    <ScrollModal client:load />
   </body>
 </html>
