@@ -20,9 +20,7 @@ const Admin: React.FC = () => {
   }
 
   return (
-    <div className="w-full p-4">
-      <MainTable />
-    </div>
+    <div></div>
   );
 };
 
