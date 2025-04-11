@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaTrash, FaCheck } from "react-icons/fa";
-import AddDataModal from "./AddDataModel.tsx";
 import type Blog from "src/models/Blog.ts";
 import { config, getApiUrl } from "config.ts";
+import AddBlogModel from "./AddBlogModel.tsx";
 
 const DataTable = () => {
   // Estado para almacenar los datos de la API
@@ -128,7 +128,7 @@ const DataTable = () => {
         </button>
       </div>
 
-      <AddDataModal />
+      <AddBlogModel />
     </>
   );
 };

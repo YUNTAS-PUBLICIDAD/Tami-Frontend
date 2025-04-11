@@ -1,10 +1,8 @@
 ---
+// Layout.astro
 import Sidebar from "../components/admin/Sidebar";
 import Header from "../components/admin/Header";
 import "../styles/global.css";
-interface Props {
-  title: string;
-}
 const { title } = Astro.props;
 ---
 
@@ -17,15 +15,19 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body class="font-montserrat grid grid-cols-[auto_1fr] grid-rows-[auto_auto]">
-    <!-- HEADER en la parte superior -->
-    <Header title="PRINCIPAL" client:load />
 
-    <div class="flex flex-1 h-full w-[99vw]">
+  <body class="h-screen w-screen overflow-hidden">
+    <!-- HEADER FIJO -->
+    <Header title="PRINCIPAL" client:load/>
+
+    <div class="pt-16 flex h-full">
+      <!-- SIDEBAR FIJO -->
       <Sidebar client:load />
-      <div class="flex-1 pl-64 pt-24 w-full">
+
+      <!-- CONTENIDO SCROLLABLE -->
+      <main class="ml-64 mt-0 pt-8 w-full h-full overflow-y-auto">
         <slot />
-      </div>
+      </main>
     </div>
   </body>
 </html>

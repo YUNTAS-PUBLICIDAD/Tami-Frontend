@@ -94,7 +94,7 @@ const blogsUrl = config.endpoints.blogs;
       const data = await response.json();
       console.log("Fetched data:", data);
 
-      blog = data.data;
+      const blog = data.data;
 
       const blogTitleElement = document.getElementById("blog-title");
       const blogSubtitleElement = document.getElementById("blog-subtitle");
@@ -137,21 +137,23 @@ const blogsUrl = config.endpoints.blogs;
       if (blogContentSubtitleElement)
         blogContentSubtitleElement.innerHTML = blog.subTituloBlog;
 
-      if (blogSectionsElement) {
+      if (blogSectionsElement && Array.isArray(blog.imagenesBlog)) {
         blogSectionsElement.innerHTML = "";
         blog.imagenesBlog.forEach((imagen, index) => {
           const section = document.createElement("section");
           section.className = "mb-10 text-justify";
           section.innerHTML = `
-            <div class="flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
-              <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6" />
-              <div class="md:w-1/2">
-              <article>
-                <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">${blog.parrafoImagenesBlog[index] || "Texto no disponible"}</p>
-              </article>
-              </div>
-            </div>
-          `;
+        <div class="flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
+          <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6" />
+          <div class="md:w-1/2">
+            <article>
+              <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
+                ${blog.parrafoImagenesBlog?.[index] || "Texto no disponible"}
+              </p>
+            </article>
+          </div>
+        </div>
+      `;
           blogSectionsElement.appendChild(section);
         });
       }
