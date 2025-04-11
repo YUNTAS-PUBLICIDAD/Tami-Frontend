@@ -323,16 +323,13 @@ const AddBlogModal = () => {
 
               {/* Botones */}
               <div className="flex gap-2 mt-8">
-                <button
-                  type="submit"
-                  className="px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500"
-                >
+                <button type="submit" className="admin-act-btn">
                   Añadir Blog
                 </button>
                 <button
                   onClick={closeModal}
                   type="button"
-                  className="px-10 bg-gray-400 py-1 rounded-full text-lg hover:bg-gray-500"
+                  className="cancel-btn"
                 >
                   Cancelar
                 </button>

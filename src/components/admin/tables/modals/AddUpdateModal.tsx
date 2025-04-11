@@ -17,12 +17,16 @@ interface AddDataModalProps {
   onRefetch: () => void; // Función para actualizar la lista después de agregar o editar
 }
 
-const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataModalProps) => {
-  
+const AddUpdateDataModal = ({
+  isOpen,
+  setIsOpen,
+  cliente,
+  onRefetch,
+}: AddDataModalProps) => {
   {
-    /* 
-    * Hook para manejar el formulario de cliente, y la lógica de añadir o editar clientes 
-    */
+    /*
+     * Hook para manejar el formulario de cliente, y la lógica de añadir o editar clientes
+     */
   }
   const { formData, handleChange, handleSubmit } = useClienteForm(
     cliente,
@@ -82,16 +86,13 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataMo
           </div>
 
           <div className="flex gap-2 mt-8 col-span-2">
-            <button
-              type="submit"
-              className="px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500"
-            >
+            <button type="submit" className="admin-act-btn">
               {cliente ? "Guardar cambios" : "Añadir cliente"}
             </button>
             <button
               onClick={() => setIsOpen(false)} // Cerrar el modal
               type="button"
-              className="px-10 bg-gray-400 py-1 rounded-full text-lg hover:bg-gray-500"
+              className="cancel-btn"
             >
               Cancelar
             </button>
