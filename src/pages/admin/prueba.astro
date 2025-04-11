@@ -1,0 +1,79 @@
+---
+import TableLayout from "src/components/admin/TableLayout";
+import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
+import type Cliente from "src/models/clients";
+import type Blog from "src/models/Blog";
+
+const aaa: Blog[] = [
+  {
+    id: 1,
+    titulo: "wqdqwd",
+    parrafo: "qwdqwdasd11",
+    descripcion: "eqw111",
+    imagenPrincipal: "12232",
+    tituloBlog: "3323",
+    subTituloBlog: "wewq",
+    imagenesBlog: ["aaa"],
+    parrafoImagenesBlog: ["aaa"],
+    videoBlog: "dasdsd",
+    tituloVideoBlog: "sadasd",
+  },
+  {
+    id: 2,
+    titulo: "wqdqwd",
+    parrafo: "qwdqwdasd11",
+    descripcion: "eqw111",
+    imagenPrincipal: "12232",
+    tituloBlog: "3323",
+    subTituloBlog: "wewq",
+    imagenesBlog: ["aaa"],
+    parrafoImagenesBlog: ["aaa"],
+    videoBlog: "dasdsd",
+    tituloVideoBlog: "sadasd",
+  },
+  {
+    id: 3,
+    titulo: "wqdqwd",
+    parrafo: "qwdqwdasd11",
+    descripcion: "eqw111",
+    imagenPrincipal: "12232",
+    tituloBlog: "3323",
+    subTituloBlog: "wewq",
+    imagenesBlog: ["aaa"],
+    parrafoImagenesBlog: ["aaa"],
+    videoBlog: "dasdsd",
+    tituloVideoBlog: "sadasd",
+  },
+];
+
+const eee: Cliente[] = [
+  {
+    id: 20,
+    name: "dqwdqwd",
+    email: "dwdqd@correo.com",
+    celular: "dqwdqwd",
+    seccion: "qwdqwd",
+    created_at: "qwdqwd",
+  },
+  {
+    id: 10,
+    name: "dqwdqwd",
+    email: "dwdqd@correo.com",
+    celular: "dqwdqwd",
+    seccion: "qwdqwd",
+    created_at: "qwdqwd",
+  },
+  {
+    id: 0,
+    name: "dqwdqwd",
+    email: "dwdqd@correo.com",
+    celular: "dqwdqwd",
+    seccion: "qwdqwd",
+    created_at: "qwdqwd",
+  },
+];
+---
+
+<LayoutAdmin title="Prueba">
+  <TableLayout data={aaa} client:load />
+</LayoutAdmin>

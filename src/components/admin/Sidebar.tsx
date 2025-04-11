@@ -39,6 +39,8 @@ const Sidebar = () => {
   };
 
   const items = [
+    { name: "Inicio", path: "/admin/" },
+    { name: "Prueba", path: "/admin/prueba" },
     { name: "Seguimiento", path: "/admin/seguimiento" },
     { name: "Ventas", path: "/admin/ventas" },
     { name: "Productos", path: "/admin/productos" },
