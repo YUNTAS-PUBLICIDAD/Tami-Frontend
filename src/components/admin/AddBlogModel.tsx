@@ -1,19 +1,26 @@
 import { config, getApiUrl } from "config";
 import { useState } from "react";
 
+interface ImagenAdicional {
+  url_imagen: File | null; // 👈 aquí permitimos File o null
+  parrafo_imagen: string;
+}
+
+interface BlogPOST {
+  titulo: string;
+  parrafo: string;
+  descripcion: string;
+  imagen_principal: File | null; // 👈 aquí permitimos File o null
+  titulo_blog: string;
+  subtitulo_beneficio: string;
+  url_video: string;
+  titulo_video: string;
+  imagenes: ImagenAdicional[]; // 👈 arreglo con imagen y párrafo
+}
+
 const AddBlogModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState<{
-    titulo: string;
-    parrafo: string;
-    descripcion: string;
-    imagen_principal: File | null; // 👈 aquí permitimos File o null
-    titulo_blog: string;
-    subtitulo_beneficio: string;
-    url_video: string;
-    titulo_video: string;
-    imagenesBlog: { url: File | null; parrafo: string }[]; // 👈 arreglo con imagen y párrafo
-  }>({
+  const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
     parrafo: "",
     descripcion: "",
@@ -22,7 +29,16 @@ const AddBlogModal = () => {
     subtitulo_beneficio: "",
     url_video: "",
     titulo_video: "",
-    imagenesBlog: [], // 👈 inicializamos como un arreglo vacío
+    imagenes: [
+      {
+        url_imagen: null,
+        parrafo_imagen: "",
+      },
+      {
+        url_imagen: null,
+        parrafo_imagen: "",
+      },
+    ], // 👈 inicializamos como un arreglo vacío
   });
 
   // Manejar cambios en los inputs de texto
@@ -37,22 +53,57 @@ const AddBlogModal = () => {
     }
   };
 
-  const updateImagen = (index: number, file: File) => {
-    const newImagenes = [...formData.imagenesBlog];
-    newImagenes[index] = {
-      ...(newImagenes[index] || { parrafo: "" }), // si no existe, inicializa
-      url: file,
-    };
-    setFormData({ ...formData, imagenesBlog: newImagenes });
+  const handleFileChangeAdicional = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      const nuevoArray = [...formData.imagenes];
+
+      // Agregar el archivo y su parrafo
+      nuevoArray[index] = {
+        ...nuevoArray[index],
+        url_imagen: e.target.files[0],
+      };
+
+      setFormData({ ...formData, imagenes: nuevoArray });
+    }
   };
 
-  const updateParrafo = (index: number, value: string) => {
-    const newImagenes = [...formData.imagenesBlog];
-    newImagenes[index] = {
-      ...(newImagenes[index] || { url: null }), // si no existe, inicializa
-      parrafo: value,
+  const handleParrafoChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    index: number
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = {
+      ...nuevoArray[index],
+      parrafo_imagen: e.target.value,
     };
-    setFormData({ ...formData, imagenesBlog: newImagenes });
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setFormData({
+      titulo: "",
+      parrafo: "",
+      descripcion: "",
+      imagen_principal: null,
+      titulo_blog: "",
+      subtitulo_beneficio: "",
+      url_video: "",
+      titulo_video: "",
+      imagenes: [
+        {
+          url_imagen: null,
+          parrafo_imagen: "",
+        },
+        {
+          url_imagen: null,
+          parrafo_imagen: "",
+        },
+      ],
+    });
   };
 
   // Enviar los datos a la API
@@ -69,8 +120,8 @@ const AddBlogModal = () => {
       !formData.titulo_video ||
       !formData.url_video ||
       !formData.imagen_principal ||
-      !formData.imagenesBlog ||
-      formData.imagenesBlog.length <= 1
+      !formData.imagenes ||
+      formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
     ) {
       alert("⚠️ Todos los campos son obligatorios.");
       return;
@@ -90,14 +141,22 @@ const AddBlogModal = () => {
       formDataToSend.append("titulo_blog", formData.titulo_blog);
       formDataToSend.append("titulo_video", formData.titulo_video);
       formDataToSend.append("url_video", formData.url_video);
-      formData.imagenesBlog.forEach((item, index) => {
-        if (item.url) {
-          formDataToSend.append(`imagenesBlog[${index}][url]`, item.url);
+      formData.imagenes.forEach((item, index) => {
+        if (item.url_imagen) {
+          formDataToSend.append(
+            `imagenes[${index}][url_imagen]`,
+            item.url_imagen as File
+          ); // Use 'imagen' key
         }
-        formDataToSend.append(`imagenesBlog[${index}][parrafo]`, item.parrafo);
-        console.log(item);
+        formDataToSend.append(
+          `imagenes[${index}][parrafo_imagen]`,
+          item.parrafo_imagen
+        );
       });
-      formDataToSend.append("imagen_principal", formData.imagen_principal); // Subir imagen como archivo
+      formDataToSend.append(
+        "imagen_principal",
+        formData.imagen_principal as File
+      ); // Subir imagen como archivo
 
       const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
         method: "POST",
@@ -106,14 +165,13 @@ const AddBlogModal = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(formData);
 
       const data = await response.json();
       console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
         alert("✅ Blog añadido exitosamente");
-        setIsOpen(false); // Cerrar modal
+        closeModal(); // Cerrar modal
       } else {
         alert(`❌ Error: ${data.message}`);
       }
@@ -141,6 +199,7 @@ const AddBlogModal = () => {
 
             {/* Formulario */}
             <form
+              encType="multipart/form-data"
               onSubmit={handleSubmit}
               className="grid grid-cols-2 gap-4 gap-x-12"
             >
@@ -232,50 +291,35 @@ const AddBlogModal = () => {
                 <label className="block">Imagen Principal</label>
                 <input
                   type="file"
+                  accept="image/png, image/jpeg, image/jpg"
                   name="imagen_principal"
                   onChange={handleFileChange}
                   required
                   className="w-full bg-white outline-none p-2 rounded-md text-black"
                 />
               </div>
-              <div className="col-span-2">
-                <label className="block">Imagen 1</label>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      updateImagen(0, e.target.files[0]);
-                    }
-                  }}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-                <textarea
-                  value={formData.imagenesBlog[0]?.parrafo || ""}
-                  onChange={(e) => updateParrafo(0, e.target.value)}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black mt-2 min-h-36"
-                />
-              </div>
-              <div className="col-span-2">
-                <label className="block">Imagen 2</label>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      updateImagen(1, e.target.files[0]);
-                    }
-                  }}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-                <textarea
-                  value={formData.imagenesBlog[1]?.parrafo || ""}
-                  onChange={(e) => updateParrafo(1, e.target.value)}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black mt-2 min-h-36"
-                />
-              </div>
+              {formData.imagenes.map((imagen, index) => (
+                <div key={index} className="col-span-2">
+                  <label className="block">Imagen {index + 1}</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      handleFileChangeAdicional(e, index);
+                    }}
+                    required
+                    className="w-full bg-white outline-none p-2 rounded-md text-black"
+                  />
+                  <textarea
+                    onChange={(e) => {
+                      handleParrafoChange(e, index);
+                    }}
+                    required
+                    placeholder="Descripción de la imagen..."
+                    className="w-full bg-white outline-none p-2 rounded-md text-black mt-2 min-h-36"
+                  />
+                </div>
+              ))}
 
               {/* Botones */}
               <div className="flex gap-2 mt-8">
@@ -286,7 +330,7 @@ const AddBlogModal = () => {
                   Añadir Blog
                 </button>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeModal}
                   type="button"
                   className="px-10 bg-gray-400 py-1 rounded-full text-lg hover:bg-gray-500"
                 >
