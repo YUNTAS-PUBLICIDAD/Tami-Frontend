@@ -53,8 +53,7 @@ const blogsUrl = config.endpoints.blogs;
       </div>
 
       {/* CONTENIDO DEL BLOG */}
-      <div id="blog-sections" class="text-justify grid grid-cols-2 grid-rows-2">
-      </div>
+      <div id="blog-sections" class="text-justify"></div>
 
       {/* VIDEO DEL BLOG */}
       <div id="blog-video-section">
@@ -74,79 +73,79 @@ const blogsUrl = config.endpoints.blogs;
       </div>
     </main>
   </div>
-</Layout>
 
-<script
-  define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
->
-  eval(showLoaderString);
-  eval(removeLoaderString);
-  document.addEventListener("DOMContentLoaded", async () => {
-    showLoader();
-    const params = new URLSearchParams(window.location.search);
-    const idBlog = params.get("id")?.trim();
-    if (!idBlog) return;
+  <script
+    define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
+  >
+    eval(showLoaderString);
+    eval(removeLoaderString);
+    document.addEventListener("DOMContentLoaded", async () => {
+      showLoader();
+      const params = new URLSearchParams(window.location.search);
+      const idBlog = params.get("id")?.trim();
+      if (!idBlog) return;
 
-    console.log(`Fetching: ${getApiUrl}${blogsUrl.list}/${idBlog}`);
+      console.log(`Fetching: ${getApiUrl}${blogsUrl.list}/${idBlog}`);
 
-    try {
-      const response = await fetch(`${getApiUrl}${blogsUrl.list}/${idBlog}`);
-      console.log("Response:", response);
-      const data = await response.json();
-      console.log("Fetched data:", data);
+      try {
+        const response = await fetch(`${getApiUrl}${blogsUrl.list}/${idBlog}`);
+        console.log("Response:", response);
+        const data = await response.json();
+        console.log("Fetched data:", data);
 
-      const blog = data.data;
+        const blog = data.data;
 
-      const blogTitleElement = document.getElementById("blog-title");
-      const blogSubtitleElement = document.getElementById("blog-subtitle");
-      const blogImgElement = document.getElementById("blog-img");
-      const blogDateElement = document.getElementById("blog-date");
-      const blogContentTitleElement =
-        document.getElementById("blog-content-title");
-      const blogContentSubtitleElement = document.getElementById(
-        "blog-content-subtitle"
-      );
-      const blogSectionsElement = document.getElementById("blog-sections");
-      const blogVideoTitleElement = document.getElementById("blog-video-title");
-      const blogVideoElement = document.getElementById("blog-video");
+        const blogTitleElement = document.getElementById("blog-title");
+        const blogSubtitleElement = document.getElementById("blog-subtitle");
+        const blogImgElement = document.getElementById("blog-img");
+        const blogDateElement = document.getElementById("blog-date");
+        const blogContentTitleElement =
+          document.getElementById("blog-content-title");
+        const blogContentSubtitleElement = document.getElementById(
+          "blog-content-subtitle"
+        );
+        const blogSectionsElement = document.getElementById("blog-sections");
+        const blogVideoTitleElement =
+          document.getElementById("blog-video-title");
+        const blogVideoElement = document.getElementById("blog-video");
 
-      if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
-      if (blogSubtitleElement)
-        blogSubtitleElement.innerHTML = blog.subTituloBlog;
-      if (blogImgElement) {
-        blogImgElement.src = blog.imagenPrincipal;
-        blogImgElement.alt = blog.titulo;
-      }
-      if (blogDateElement) {
-        const createdAt = blog.created_at;
-        if (createdAt) {
-          const formattedDate = new Date(createdAt).toLocaleDateString(
-            "es-ES",
-            {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }
-          );
-          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-        } else {
-          blogDateElement.innerHTML = "Fecha de publicación no disponible";
+        if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
+        if (blogSubtitleElement)
+          blogSubtitleElement.innerHTML = blog.subTituloBlog;
+        if (blogImgElement) {
+          blogImgElement.src = blog.imagenPrincipal;
+          blogImgElement.alt = blog.titulo;
         }
-      }
-      if (blogContentTitleElement)
-        blogContentTitleElement.innerHTML = blog.tituloBlog;
-      if (blogContentSubtitleElement)
-        blogContentSubtitleElement.innerHTML = blog.subTituloBlog;
+        if (blogDateElement) {
+          const createdAt = blog.created_at;
+          if (createdAt) {
+            const formattedDate = new Date(createdAt).toLocaleDateString(
+              "es-ES",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
+            blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+          } else {
+            blogDateElement.innerHTML = "Fecha de publicación no disponible";
+          }
+        }
+        if (blogContentTitleElement)
+          blogContentTitleElement.innerHTML = blog.tituloBlog;
+        if (blogContentSubtitleElement)
+          blogContentSubtitleElement.innerHTML = blog.subTituloBlog;
 
-      if (blogSectionsElement && Array.isArray(blog.imagenesBlog)) {
-        blogSectionsElement.innerHTML = "";
-        blog.imagenesBlog.forEach((imagen, index) => {
-          const section = document.createElement("section");
-          section.className = "mb-10 text-justify";
-          section.innerHTML = `
-        <div class="flex flex-col md:flex-row items-start ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
-          <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0 md:mr-6" />
-          <div class="md:w-1/2">
+        if (blogSectionsElement && Array.isArray(blog.imagenesBlog)) {
+          blogSectionsElement.innerHTML = "";
+          blog.imagenesBlog.forEach((imagen, index) => {
+            const section = document.createElement("section");
+            section.className = "mb-5 text-justify";
+            section.innerHTML = `
+        <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
+          <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0" />
+          <div class="md:w-1/2 px-4 pt-2">
             <article>
               <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
                 ${blog.parrafoImagenesBlog?.[index] || "Texto no disponible"}
@@ -155,25 +154,26 @@ const blogsUrl = config.endpoints.blogs;
           </div>
         </div>
       `;
-          blogSectionsElement.appendChild(section);
-        });
-      }
-
-      if (blogVideoTitleElement && blogVideoElement) {
-        blogVideoTitleElement.innerHTML = blog.tituloVideoBlog;
-        const sourceElement = blogVideoElement.querySelector("source");
-        if (sourceElement) {
-          sourceElement.src = blog.videoBlog;
-          blogVideoElement.load(); // Asegura que el navegador recargue el video
+            blogSectionsElement.appendChild(section);
+          });
         }
-      }
 
-      removeLoader();
-    } catch (error) {
-      console.error("Error fetching blog:", error);
-      const container = document.getElementById("blog-container");
-      if (!container) return;
-      container.innerHTML = `<p>Error: ${error.message}</p>`;
-    }
-  });
-</script>
+        if (blogVideoTitleElement && blogVideoElement) {
+          blogVideoTitleElement.innerHTML = blog.tituloVideoBlog;
+          const sourceElement = blogVideoElement.querySelector("source");
+          if (sourceElement) {
+            sourceElement.src = blog.videoBlog;
+            blogVideoElement.load(); // Asegura que el navegador recargue el video
+          }
+        }
+
+        removeLoader();
+      } catch (error) {
+        console.error("Error fetching blog:", error);
+        const container = document.getElementById("blog-container");
+        if (!container) return;
+        container.innerHTML = `<p>Error: ${error.message}</p>`;
+      }
+    });
+  </script>
+</Layout>
