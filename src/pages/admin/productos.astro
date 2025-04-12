@@ -3,11 +3,8 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 import AdminDashboard from "../../components/admin/Admin";
 import ProductosTabla from "../../components/admin/productos/ProductosTabla";
 ---
+
 <LayoutAdmin title="VENTAS">
-    <AdminDashboard client:only="react" />
-    <div class="flex-1 p-4">
-        <div class="p-4 w-full">
-            <ProductosTabla client:load />
-        </div>
-    </div>
+  <AdminDashboard client:only="react" />
+  <ProductosTabla client:load />
 </LayoutAdmin>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import MainTable from "./MainTable";
 
 const Admin: React.FC = () => {
   const [usuarioAutenticado, setUsuarioAutenticado] = useState(false);
@@ -19,9 +18,7 @@ const Admin: React.FC = () => {
     return <p>Cargando...</p>;
   }
 
-  return (
-    <div></div>
-  );
+  return <div></div>;
 };
 
 export default Admin;

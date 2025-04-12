@@ -42,18 +42,19 @@ const blogsUrl = config.endpoints.blogs;
         Fecha de publicación no disponible
       </div>
 
-      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-6">
         <h2
           id="blog-content-title"
           class="text-3xl md:text-4xl font-bold text-teal-600 mb-2 md:mb-0"
         >
         </h2>
-        <p id="blog-content-subtitle" class="text-xl md:text-2xl text-gray-700">
+        <p id="blog-content-subtitle" class="text-lg md:text-2xl text-gray-700">
         </p>
       </div>
 
       {/* CONTENIDO DEL BLOG */}
-      <div id="blog-sections" class="text-justify"></div>
+      <div id="blog-sections" class="text-justify grid grid-cols-2 grid-rows-2">
+      </div>
 
       {/* VIDEO DEL BLOG */}
       <div id="blog-video-section">
