@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
-import { FaTrash, FaCheck } from "react-icons/fa";
-import type Blog from "src/models/Blog.ts";
-import TableRow from "./TableLayout.tsx"; // Importa el componente TableRow
-import Paginator from "./Paginator.tsx"; // Importa el paginador
-import { config, getApiUrl } from "config.ts";
-import AddBlogModel from "./AddBlogModel.tsx";
+import { FaTrash, FaEdit } from "react-icons/fa";
+import AddBlogModal from "./AddBlogModel.tsx";
 
-const formatKey = (key: string): string => {
-  return key
-      .replace(/([A-Z])/g, " $1")
-      .replace(/_/g, " ")
-      .toUpperCase();
-};
+// Definir el tipo de los datos
+interface Blog {
+  id: number;
+  titulo: string;
+  parrafo: string;
+  descripcion: string;
+  imagenPrincipal: string;
+  tituloBlog?: string;
+  subTituloBlog?: string;
+  videoBlog?: string;
+  tituloVideoBlog?: string;
+  created_at?: string | null;
+}
 
 const DataTable = () => {
   // Estado para almacenar los datos de la API
@@ -25,7 +28,7 @@ const DataTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(getApiUrl(config.endpoints.blogs.list));
+        const response = await fetch("https://apitami.tami-peru.com/api/v1/blogs");
         const result = await response.json();
 
         // Verifica que la API devuelve los datos correctamente
@@ -46,45 +49,115 @@ const DataTable = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
+  // Cambiar de página
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   // Total de páginas
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
+  const handleDelete = async (id: number) => {
+    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este elemento?");
+    if (confirmDelete) {
+      try {
+        const response = await fetch(`https://apitami.tami-peru.com/api/v1/blogs/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setData((prevData) => prevData.filter((item) => item.id !== id));
+          alert("Elemento eliminado con éxito");
+        } else {
+          alert("Error al eliminar el elemento");
+        }
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al conectar con el servidor");
+      }
+    }
+  };
+
   return (
       <>
-        {/* Modelo para añadir blogs */}
-        <AddBlogModel />
-
-        {/* Tabla con layout modificado */}
-        <div className="overflow-x-auto p-4">
+        {/* Tabla con barra de desplazamiento horizontal */}
+        <div className="overflow-x-auto">
           <table className="w-full border-separate border-spacing-2">
             <thead>
             <tr className="bg-teal-600 text-white">
-              {data.length > 0 &&
-                  Object.keys(data[0]).map((key, index) => (
-                      <th
-                          key={index}
-                          className="px-4 py-2 rounded-xl whitespace-nowrap"
-                      >
-                        {formatKey(key)}
-                      </th>
-                  ))}
-              <th className="px-4 py-2 rounded-xl whitespace-nowrap">ACCIÓN</th>
+              <th className="px-4 py-2 rounded-xl">ID</th>
+              <th className="px-4 py-2 rounded-xl">TÍTULO</th>
+              <th className="px-4 py-2 rounded-xl">PÁRRAFO</th>
+              <th className="px-4 py-2 rounded-xl">DESCRIPCIÓN</th>
+              <th className="px-4 py-2 rounded-xl">IMAGEN</th>
+              <th className="px-4 py-2 rounded-xl">ACCIÓN</th>
             </tr>
             </thead>
             <tbody>
-            {currentItems.map((item, index) => (
-                <TableRow key={item.id} item={item} index={index} />
-            ))}
+            {currentItems.length > 0 ? (
+                currentItems.map((item) => (
+                    <tr
+                        key={item.id}
+                        className={`text-center ${item.id % 2 === 0 ? "bg-gray-100" : "bg-gray-300"}`}
+                    >
+                      <td className="px-4 font-bold rounded-xl">{item.id}</td>
+                      <td className="px-4 font-bold rounded-xl">{item.titulo}</td>
+                      <td className="px-4 rounded-xl">{item.parrafo}</td>
+                      <td className="px-4 rounded-xl">{item.descripcion}</td>
+                      <td className="px-4 rounded-xl">
+                        <img
+                            src={item.imagenPrincipal}
+                            alt={item.titulo}
+                            className="w-16 h-16 rounded-md mx-auto"
+                        />
+                      </td>
+                      <td className="px-4 rounded-xl">
+                        <div className="flex justify-center gap-2">
+                          <button
+                              className="p-2 text-red-600 hover:text-red-800 transition"
+                              title="Eliminar"
+                              onClick={() => handleDelete(item.id)}
+                          >
+                            <FaTrash size={18} />
+                          </button>
+                          <button className="p-2 text-yellow-600 hover:text-yellow-800 transition" title="Confirmar">
+                            <FaEdit size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                ))
+            ) : (
+                <tr>
+                  <td colSpan={6} className="text-center py-4 text-gray-500">
+                    Cargando datos...
+                  </td>
+                </tr>
+            )}
             </tbody>
           </table>
         </div>
 
         {/* Paginación */}
-        <Paginator
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-            totalPages={totalPages}
-        />
+        <div className="flex justify-center mt-4">
+          <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span className="mx-4 self-center">{`Página ${currentPage} de ${totalPages}`}</span>
+          <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+
+        <AddBlogModal />
       </>
   );
 };

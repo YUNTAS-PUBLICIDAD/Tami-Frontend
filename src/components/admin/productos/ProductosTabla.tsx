@@ -13,7 +13,36 @@ interface Producto {
 
 export default function DataTable() {
   const [productos, setProductos] = useState<Producto[]>([]);
+  const eliminarProducto = async (id: number | string) => {
+    const confirmacion = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esto.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    });
 
+    if (confirmacion.isConfirmed) {
+      const token = localStorage.getItem("token");
+      const respuesta = await fetch(`https://apitami.tami-peru.com/api/v1/productos/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (respuesta.ok) {
+        Swal.fire("Eliminado", "El producto fue eliminado correctamente", "success");
+        obtenerDatos(); // Recargar lista de productos
+      } else {
+        Swal.fire("Error", "No se pudo eliminar el producto", "error");
+      }
+    }
+  };
   const obtenerDatos = async () => {
     const respuesta = await fetch(getApiUrl(config.endpoints.productos.list), {
       method: "GET",
@@ -65,6 +94,7 @@ export default function DataTable() {
                   <button
                     className="p-2 text-red-600 hover:text-red-800 transition"
                     title="Eliminar"
+                    onClick={() => eliminarProducto(item.id)}
                   >
                     <FaTrash size={18} />
                   </button>
@@ -123,7 +153,9 @@ const BtnAñadirDatos = () => {
               data.get("imagenes"),
               "https://placehold.co/100x150/blue/white?text=Product_Y",
             ],
-            relacionados: [data.get("productos_relacionados"), 2, 3],
+            relacionados: (data.get("productos_relacionados") as string)
+                .split(",")
+                .map((id) => Number(id.trim()))
           }),
         }
       );
@@ -228,7 +260,7 @@ const BtnAñadirDatos = () => {
                 <label className="block">Descripción</label>
                 <textarea
                   name="descripcion"
-                  rows="1"
+                  rows={1}
                   required
                   className="w-full bg-white p-2 outline-none rounded-md text-black"
                 ></textarea>
