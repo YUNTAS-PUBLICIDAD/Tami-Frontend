@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
 import { FaTrash, FaCheck } from "react-icons/fa";
 import type Blog from "src/models/Blog.ts";
+import TableRow from "./TableLayout.tsx"; // Importa el componente TableRow
+import Paginator from "./Paginator.tsx"; // Importa el paginador
 import { config, getApiUrl } from "config.ts";
 import AddBlogModel from "./AddBlogModel.tsx";
+
+const formatKey = (key: string): string => {
+  return key
+      .replace(/([A-Z])/g, " $1")
+      .replace(/_/g, " ")
+      .toUpperCase();
+};
 
 const DataTable = () => {
   // Estado para almacenar los datos de la API
@@ -37,99 +46,46 @@ const DataTable = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Cambiar de página
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
   // Total de páginas
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
   return (
-    <>
-      {/* Tabla con barra de desplazamiento horizontal */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-separate border-spacing-2">
-          <thead>
+      <>
+        {/* Modelo para añadir blogs */}
+        <AddBlogModel />
+
+        {/* Tabla con layout modificado */}
+        <div className="overflow-x-auto p-4">
+          <table className="w-full border-separate border-spacing-2">
+            <thead>
             <tr className="bg-teal-600 text-white">
-              <th className="px-4 py-2 rounded-xl">ID</th>
-              <th className="px-4 py-2 rounded-xl">TÍTULO</th>
-              <th className="px-4 py-2 rounded-xl">PÁRRAFO</th>
-              <th className="px-4 py-2 rounded-xl">DESCRIPCIÓN</th>
-              <th className="px-4 py-2 rounded-xl">IMAGEN</th>
-              <th className="px-4 py-2 rounded-xl">ACCIÓN</th>
+              {data.length > 0 &&
+                  Object.keys(data[0]).map((key, index) => (
+                      <th
+                          key={index}
+                          className="px-4 py-2 rounded-xl whitespace-nowrap"
+                      >
+                        {formatKey(key)}
+                      </th>
+                  ))}
+              <th className="px-4 py-2 rounded-xl whitespace-nowrap">ACCIÓN</th>
             </tr>
-          </thead>
-          <tbody>
-            {currentItems.length > 0 ? (
-              currentItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className={`text-center ${
-                    item.id % 2 === 0 ? "bg-gray-100" : "bg-gray-300"
-                  }`}
-                >
-                  <td className="px-4 font-bold rounded-xl">{item.id}</td>
-                  <td className="px-4 font-bold rounded-xl">{item.titulo}</td>
-                  <td className="px-4 rounded-xl">{item.parrafo}</td>
-                  <td className="px-4 rounded-xl">{item.descripcion}</td>
-                  <td className="px-4 rounded-xl">
-                    <img
-                      src={item.imagenPrincipal}
-                      alt={item.titulo}
-                      className="w-16 h-16 rounded-md mx-auto"
-                    />
-                  </td>
-                  <td className="px-4 rounded-xl">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        className="p-2 text-red-600 hover:text-red-800 transition"
-                        title="Eliminar"
-                      >
-                        <FaTrash size={18} />
-                      </button>
-                      <button
-                        className="p-2 text-green-600 hover:text-green-800 transition"
-                        title="Confirmar"
-                      >
-                        <FaCheck size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-500">
-                  Cargando datos...
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+            {currentItems.map((item, index) => (
+                <TableRow key={item.id} item={item} index={index} />
+            ))}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Paginación */}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="pagination-btn"
-        >
-          Anterior
-        </button>
-        <span className="mx-4 self-center">{`Página ${currentPage} de ${totalPages}`}</span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="pagination-btn"
-        >
-          Siguiente
-        </button>
-      </div>
-
-      <AddBlogModel />
-    </>
+        {/* Paginación */}
+        <Paginator
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            totalPages={totalPages}
+        />
+      </>
   );
 };
 
