@@ -1,17 +1,9 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import AdminDashboard from "../../components/admin/Admin";
-import MainTable from "../../components/admin/MainTable";
+import VentasTable from "src/components/admin/tables/VentasTable";
 ---
 <LayoutAdmin title="VENTAS">
-    <AdminDashboard client:only="react" />
+    <VentasTable client:only="react"/>
     <div class="flex-1 p-4">
-        <div class="p-4 w-full">
-            {/* Botones de acciones generales */}
-            <div class="flex flex-wrap gap-2 mb-4">
-                <button class="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">VISUALIZAR MENSAJES</button>
-            </div>
-            <MainTable />
-        </div>
     </div>
 </LayoutAdmin>

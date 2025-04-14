@@ -1,5 +1,35 @@
+import { config, getApiUrl } from "config";
 import { useState } from "react";
 import { FaRegFolder } from "react-icons/fa";
+
+async function logout() {
+  try {
+    const response = await fetch(getApiUrl(config.endpoints.auth.logout), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    console.log("Respuesta recibida:", response);
+
+    const data = await response.json();
+    console.log("Datos del servidor:", data);
+
+    if (response.ok) {
+      localStorage.removeItem("token"); // Eliminar token
+      window.location.href = "/"; // Redirigir al inicio
+    } else {
+      console.error("Error en la respuesta del servidor:", data.message);
+      alert(data.message || "Error al cerrar sesión");
+    }
+  } catch (error) {
+    console.error("Error de conexión con el servidor:", error);
+    alert("Error de conexión con el servidor.");
+  }
+}
 
 const Sidebar = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -20,12 +50,15 @@ const Sidebar = () => {
         <ul className="space-y-1">
           <li className="font-bold text-lg">★ Administracion</li>
           {items.map((item, index) => (
-              <li key={index}>
-                <a href={item.path} className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
-                  <FaRegFolder className="text-gray-500" />
-                  {item.name}
-                </a>
-              </li>
+            <li key={index}>
+              <a
+                href={item.path}
+                className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
+              >
+                <FaRegFolder className="text-gray-500" />
+                {item.name}
+              </a>
+            </li>
           ))}
         </ul>
       </nav>
@@ -61,7 +94,10 @@ const Sidebar = () => {
           </div>
           <p className="font-semibold">Bienvenido</p>
           <p className="text-sm text-gray-600">Administrador</p>
-          <button className="mt-2 w-full bg-teal-500 text-white py-2 rounded-full hover:bg-teal-600 transition">
+          <button
+            onClick={logout}
+            className="mt-2 w-full bg-teal-500 text-white py-2 rounded-full hover:bg-teal-600 transition"
+          >
             Cerrar sesión
           </button>
         </div>
