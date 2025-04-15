@@ -125,23 +125,16 @@ const DataTable = () => {
         </tbody>
       </table>
 
-      {
-      /**
+      {/**
        * Botón para agregar un nuevo cliente.
-       */
-      }
-      <button
-        className="mt-4 ml-2 p-2 pl-4 bg-teal-600 text-white rounded-lg"
-        onClick={openModalForCreate}
-      >
+       */}
+      <button className="pagination-btn ml-2 mt-2" onClick={openModalForCreate}>
         Agregar Cliente
       </button>
 
-      {
-      /**
+      {/**
        * Modal para agregar o editar un cliente.
-       */
-      }
+       */}
       <AddDataModal
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
@@ -149,11 +142,9 @@ const DataTable = () => {
         onRefetch={handleClienteFormSuccess}
       />
 
-      {
-      /**
+      {/**
        * Modal para eliminar un cliente.
-       */
-      }
+       */}
       {clienteIdToDelete !== null && (
         <DeleteClienteModal
           isOpen={isDeleteModalOpen}
@@ -163,12 +154,10 @@ const DataTable = () => {
         />
       )}
 
-      {
-      /**
+      {/**
        * Componente de paginación para navegar entre las páginas de clientes.
        * Se muestra solo si hay más de una página.
-       */
-      }
+       */}
       <Paginator
         currentPage={currentPage}
         totalPages={totalPages}
