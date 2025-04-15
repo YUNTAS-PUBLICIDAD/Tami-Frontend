@@ -2,9 +2,10 @@
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 import AdminDashboard from "../../components/admin/Admin";
 import ProductosTabla from "../../components/admin/productos/ProductosTabla";
+const tiempoTranscurrido = Date.now();
+const hoy = new Date(tiempoTranscurrido);
 ---
 
 <LayoutAdmin title="VENTAS">
-  <AdminDashboard client:only="react" />
-  <ProductosTabla client:load />
+  <p>Bienvenido al Dashboard de Administrador. {hoy.toLocaleDateString()}</p>
 </LayoutAdmin>

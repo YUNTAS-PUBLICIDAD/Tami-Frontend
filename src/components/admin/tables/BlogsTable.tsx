@@ -1,10 +1,23 @@
 import { useState, useEffect } from "react";
-import { FaTrash, FaCheck } from "react-icons/fa";
-import type Blog from "src/models/Blog.ts";
-import { config, getApiUrl } from "config.ts";
-import AddBlogModel from "./AddBlogModel.tsx";
+import { FaTrash, FaEdit } from "react-icons/fa";
+import AddBlogModal from "../AddBlogModel";
+import { config, getApiUrl } from "config";
 
-const DataTable = () => {
+// Definir el tipo de los datos
+interface Blog {
+  id: number;
+  titulo: string;
+  parrafo: string;
+  descripcion: string;
+  imagenPrincipal: string;
+  tituloBlog?: string;
+  subTituloBlog?: string;
+  videoBlog?: string;
+  tituloVideoBlog?: string;
+  created_at?: string | null;
+}
+
+const BlogsTable = () => {
   // Estado para almacenar los datos de la API
   const [data, setData] = useState<Blog[]>([]);
   // Estado para la página actual
@@ -16,7 +29,9 @@ const DataTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(getApiUrl(config.endpoints.blogs.list));
+        const response = await fetch(
+          getApiUrl(config.endpoints.blogs.list) // Cambia la URL según tu API
+        );
         const result = await response.json();
 
         // Verifica que la API devuelve los datos correctamente
@@ -44,6 +59,37 @@ const DataTable = () => {
 
   // Total de páginas
   const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const handleDelete = async (id: number) => {
+    const token = localStorage.getItem("token");
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas eliminar este elemento?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await fetch(
+          getApiUrl(config.endpoints.blogs.delete(id)),
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          setData((prevData) => prevData.filter((item) => item.id !== id));
+          alert("Blog eliminado exitosamente");
+        } else {
+          alert("Error al eliminar el Blog");
+        }
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al conectar con el servidor");
+      }
+    }
+  };
 
   return (
     <>
@@ -85,14 +131,15 @@ const DataTable = () => {
                       <button
                         className="p-2 text-red-600 hover:text-red-800 transition"
                         title="Eliminar"
+                        onClick={() => handleDelete(item.id)}
                       >
                         <FaTrash size={18} />
                       </button>
                       <button
-                        className="p-2 text-green-600 hover:text-green-800 transition"
+                        className="p-2 text-yellow-600 hover:text-yellow-800 transition"
                         title="Confirmar"
                       >
-                        <FaCheck size={18} />
+                        <FaEdit size={18} />
                       </button>
                     </div>
                   </td>
@@ -114,7 +161,7 @@ const DataTable = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="pagination-btn"
+          className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50"
         >
           Anterior
         </button>
@@ -122,15 +169,15 @@ const DataTable = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="pagination-btn"
+          className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50"
         >
           Siguiente
         </button>
       </div>
 
-      <AddBlogModel />
+      <AddBlogModal />
     </>
   );
 };
 
-export default DataTable;
+export default BlogsTable;
