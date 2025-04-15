@@ -30,7 +30,7 @@ const BlogsTable = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://apitami.tami-peru.com/api/v1/blogs"
+          getApiUrl(config.endpoints.blogs.list) // Cambia la URL según tu API
         );
         const result = await response.json();
 
