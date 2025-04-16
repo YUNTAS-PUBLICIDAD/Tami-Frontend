@@ -1,8 +1,8 @@
 ---
-import MainTable from "src/components/admin/MainTable";
+import BlogsTable from "src/components/admin/tables/BlogsTable";
 import LayoutAdmin from "../layouts/LayoutAdmin.astro";
 ---
 
 <LayoutAdmin title="admin">
-  <MainTable client:only="react" />
+  <BlogsTable client:only="react" />
 </LayoutAdmin>
