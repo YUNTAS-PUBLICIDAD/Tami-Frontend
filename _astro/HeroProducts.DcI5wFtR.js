@@ -1,4 +1,4 @@
-import{j as t}from"./jsx-runtime.D_zvdyIk.js";import{r as c}from"./index.6otl1p8d.js";const x={src:"/_astro/fondo_productos_slider.VDW1ZeCR.webp"},d={src:"/_astro/hero_productos.sLRkaRe5.webp"},u={src:"/_astro/selladora_vasos.DtENeSEo.webp"},h={src:"/_astro/soldadora_spark.BLFChAHG.webp"},m={src:"/_astro/ventilador_holografico.F5n7MljC.webp"},g={src:"/_astro/selladora_botellas.BxOTG9bJ.webp"},l=[{image:d.src,title:`NUESTROS
+import{j as t}from"./jsx-runtime.D_zvdyIk.js";import{r as c}from"./index.BJfUAbRs.js";const x={src:"/_astro/fondo_productos_slider.VDW1ZeCR.webp"},d={src:"/_astro/hero_productos.sLRkaRe5.webp"},u={src:"/_astro/selladora_vasos.DtENeSEo.webp"},h={src:"/_astro/soldadora_spark.BLFChAHG.webp"},m={src:"/_astro/ventilador_holografico.F5n7MljC.webp"},g={src:"/_astro/selladora_botellas.BxOTG9bJ.webp"},l=[{image:d.src,title:`NUESTROS
 PRODUCTOS`,items:[]},{image:u.src,subTitulo1:"EMPRENDIMIENTO",title:`SELLADORA
 DE VASOS`,subTitulo2:`Los derrames jamás volverán
 a ser un problema`,items:[]},{image:h.src,subTitulo1:"TRABAJO",title:`SOLDADORA
