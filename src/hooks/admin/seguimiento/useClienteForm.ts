@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from "react";
 import useClienteAcciones from "./useClientesActions";
-import type Cliente from "../../../models/clients";
+import type Cliente from "../../../models/Clients";
 
 /**
  * Funcion para manejar el formulario de cliente 

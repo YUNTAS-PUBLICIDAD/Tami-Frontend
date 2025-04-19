@@ -4,7 +4,7 @@
  */
 
 import { getApiUrl, config } from "config"; // importa la configuración de la API
-import type Cliente from "../../../models/clients"; // importa el modelo de cliente
+import type Cliente from "../../../models/Clients"; // importa el modelo de cliente
 
 const useClienteAcciones = () => {
   
