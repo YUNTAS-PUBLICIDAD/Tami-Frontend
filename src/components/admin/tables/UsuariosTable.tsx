@@ -98,7 +98,7 @@ const DataTable = () => {
                 <td className="px-4 rounded-xl">{item.email}</td>
                 <td className="px-4 font-bold rounded-xl">{item.celular}</td>
                 <td className="px-4 font-bold rounded-xl">
-                  {item.Rol || "N/A"}
+                  {item.rol || "N/A"}
                 </td>
                 <td className="px-4 font-bold rounded-xl">{item.created_at}</td>
                 <td className="px-4 rounded-xl">
