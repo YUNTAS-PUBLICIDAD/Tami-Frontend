@@ -1,0 +1,9 @@
+---
+import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
+import UsuariosTable from "src/components/admin/tables/UsuariosTable";
+---
+<LayoutAdmin title="VENTAS">
+    <UsuariosTable client:only="react"/>
+    <div class="flex-1 p-4">
+    </div>
+</LayoutAdmin>
