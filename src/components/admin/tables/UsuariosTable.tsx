@@ -24,7 +24,7 @@ const DataTable = () => {
    * Manejo de errores en la solicitud y carga.
    */
   if (loading)
-    return <p className="text-center text-gray-500">Cargando datos...</p>;
+    return <p className="text-center py-4 text-gray-500">Cargando datos...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   /**
@@ -66,7 +66,7 @@ const DataTable = () => {
 
   return (
     <>
-      <table className="w-full md:w-40 border-separate border-spacing-2">
+      <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr className="bg-teal-600 text-white">
             <th className="px-4 py-2 rounded-xl">ID</th>

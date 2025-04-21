@@ -66,7 +66,7 @@ const DataTable = () => {
 
   return (
     <>
-      <table className="w-full md:w-40 border-separate border-spacing-2">
+      <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr className="bg-teal-600 text-white">
             <th className="px-4 py-2 rounded-xl">ID</th>
