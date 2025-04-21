@@ -563,7 +563,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       ))}
                     </div>
                   ) : (
-                    <p className="col-span-3 text-center text-gray-500">
+                    <p className="col-span-3 text-center py-4 text-gray-500">
                       Cargando productos...
                     </p>
                   )}
