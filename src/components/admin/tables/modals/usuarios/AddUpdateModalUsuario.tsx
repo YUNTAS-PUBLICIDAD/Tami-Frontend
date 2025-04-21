@@ -4,8 +4,8 @@
  * Muestra un formulario con campos para el nombre, teléfono y correo electrónico.
  */
 
-import useClienteForm from "../../../../hooks/admin/seguimiento/useClienteForm";
-import type Cliente from "../../../../models/Clients";
+import useUsuariosForm from "../../../../../hooks/admin/usuarios/useUsuariosForm";
+import type Usuario from "../../../../../models/Users";
 
 {
   /* Interfaz de modals, Typescript */
@@ -13,22 +13,18 @@ import type Cliente from "../../../../models/Clients";
 interface AddDataModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  cliente: Cliente | null; // Cliente a editar o null para añadir uno nuevo
+  cliente: Usuario | null; // Cliente a editar o null para añadir uno nuevo
   onRefetch: () => void; // Función para actualizar la lista después de agregar o editar
 }
 
-const AddUpdateDataModal = ({
-  isOpen,
-  setIsOpen,
-  cliente,
-  onRefetch,
-}: AddDataModalProps) => {
+const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataModalProps) => {
+  
   {
-    /*
-     * Hook para manejar el formulario de cliente, y la lógica de añadir o editar clientes
-     */
+    /* 
+    * Hook para manejar el formulario de cliente, y la lógica de añadir o editar clientes 
+    */
   }
-  const { formData, handleChange, handleSubmit } = useClienteForm(
+  const { formData, handleChange, handleSubmit } = useUsuariosForm(
     cliente,
     () => {
       onRefetch(); // Llamar al callback para actualizar la lista de clientes
@@ -85,14 +81,33 @@ const AddUpdateDataModal = ({
             />
           </div>
 
+          <div className="col-span-2">
+            <label className="block">Rol</label>
+            <select
+              name="rol"
+              value={formData.rol}
+              onChange={handleChange}
+              required
+              className="w-full bg-white outline-none p-2 rounded-md text-black"
+            >
+              <option value="ADMIN">ADMIN</option>
+              <option value="USER">USER</option>
+              <option value="MARK">MARK</option>
+              <option value="VENTAS">VENTAS</option>
+            </select>
+          </div>
+
           <div className="flex gap-2 mt-8 col-span-2">
-            <button type="submit" className="admin-act-btn">
+            <button
+              type="submit"
+              className="px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500"
+            >
               {cliente ? "Guardar cambios" : "Añadir cliente"}
             </button>
             <button
               onClick={() => setIsOpen(false)} // Cerrar el modal
               type="button"
-              className="cancel-btn"
+              className="px-10 bg-gray-400 py-1 rounded-full text-lg hover:bg-gray-500"
             >
               Cancelar
             </button>
