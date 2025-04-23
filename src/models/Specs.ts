@@ -1,5 +1,4 @@
 export default interface Specs {
-  power: string;
-  capacity: string;
+  color: string;
   material: string;
 }

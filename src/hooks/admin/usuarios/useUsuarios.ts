@@ -1,25 +1,25 @@
 /**
- * @file useClientes.ts
- * @description Este archivo contiene el hook para obtener la lista de clientes.
- * @returns {Object} Un objeto que contiene la lista de clientes, un estado de carga y un mensaje de error.
+ * @file useusuarios.ts
+ * @description Este archivo contiene el hook para obtener la lista de usuarios.
+ * @returns {Object} Un objeto que contiene la lista de usuarios, un estado de carga y un mensaje de error.
  */
 
 import { useState, useEffect } from "react";
 import { getApiUrl, config } from "config";
-import type Cliente from "../../../models/Clients";
+import type Usuario from "../../../models/Users";
 
-const useClientes = (trigger: boolean, page: number = 1) => {
-  const [clientes, setClientes] = useState<Cliente[]>([]); // Cambia el tipo a Cliente[] para reflejar la estructura de datos
+const useUsuarios = (trigger: boolean, page: number = 1) => {
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]); // Cambia el tipo a usuario[] para reflejar la estructura de datos
   const [totalPages, setTotalPages] = useState<number>(1); // Número total de páginas
   const [loading, setLoading] = useState<boolean>(true); // Estado de carga
   const [error, setError] = useState<string | null>(null); // Mensaje de error
 
   useEffect(() => {
     /**
-     * Función para obtener la lista de clientes desde la API.
+     * Función para obtener la lista de usuarios desde la API.
      * Maneja el estado de carga y errores.
      */
-    const fetchClientes = async () => {
+    const fetchUsuarios = async () => {
       setLoading(true);
       setError(null);
 
@@ -32,9 +32,9 @@ const useClientes = (trigger: boolean, page: number = 1) => {
         if (!token) throw new Error("No se encontró el token de autenticación");
 
         /**
-         * Realiza la solicitud a la API para obtener la lista de clientes.
+         * Realiza la solicitud a la API para obtener la lista de usuarios.
          */
-        const url = `${getApiUrl(config.endpoints.clientes.list)}?page=${page}`;
+        const url = `${getApiUrl(config.endpoints.users.list)}?page=${page}`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -44,7 +44,7 @@ const useClientes = (trigger: boolean, page: number = 1) => {
         });
 
         if (!response.ok)
-          throw new Error(`Error al obtener clientes: ${response.statusText}`);
+          throw new Error(`Error al obtener usuarios: ${response.statusText}`);
 
         /**
          * Convierte la respuesta a JSON y maneja los datos.
@@ -52,19 +52,19 @@ const useClientes = (trigger: boolean, page: number = 1) => {
         const data = await response.json();
 
         /**
-         * Extrae la lista de clientes y el número total de páginas de la respuesta.
+         * Extrae la lista de usuarios y el número total de páginas de la respuesta.
          * Si no hay datos, establece un array vacío y una página total de 1.
          */
-        const clientesArray = data.data?.data || [];
+        const UsuariosArray = data.data?.data || [];
         const totalPages = Math.ceil(data.data?.total / 10) || 1;
-        setClientes(clientesArray);
+        setUsuarios(UsuariosArray);
         setTotalPages(totalPages);
 
         /**
          * Manejo de errores en la solicitud y respuesta.
          */
       } catch (err) {
-        console.error("🚨 Error en fetchClientes:", err);
+        console.error("🚨 Error en fetchusuarios:", err);
         setError(
           err instanceof Error ? err.message : "Ocurrió un error desconocido"
         );
@@ -73,15 +73,15 @@ const useClientes = (trigger: boolean, page: number = 1) => {
       }
     };
 
-    fetchClientes();
+    fetchUsuarios();
   }, [trigger, page]); //
 
   return {
-    clientes, // Lista de clientes
+    usuarios, // Lista de usuarios
     totalPages, // Número total de páginas
     loading, // Estado de carga
     error, // Mensaje de error
   };
 };
 
-export default useClientes;
+export default useUsuarios;

@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
-import AddDataModal from "../../admin/tables/modals/AddUpdateModal.tsx";
-import DeleteClienteModal from "../../admin/tables/modals/DeleteModal.tsx";
-import useClientes from "../../../hooks/admin/seguimiento/useClientes.ts";
+import AddDataModal from "../../admin/tables/modals/usuarios/AddUpdateModalUsuario.tsx";
+import DeleteClienteModal from "../../admin/tables/modals/usuarios/DeleteModalUsuario.tsx";
+import useUsuarios from "../../../hooks/admin/usuarios/useUsuarios.ts";
 import Paginator from "../../../components/admin/Paginator.tsx";
 
 const DataTable = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(false); // Estado para forzar la recarga de datos
   const [currentPage, setCurrentPage] = useState(1); // Estado para manejar la página actual
-  const { clientes, totalPages, loading, error } = useClientes(
+  const { usuarios, totalPages, loading, error } = useUsuarios(
     refetchTrigger,
     currentPage
   ); // Hook para obtener la lista de clientes
@@ -24,7 +24,7 @@ const DataTable = () => {
    * Manejo de errores en la solicitud y carga.
    */
   if (loading)
-    return <p className="text-center text-gray-500">Cargando datos...</p>;
+    return <p className="text-center py-4 text-gray-500">Cargando datos...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   /**
@@ -73,20 +73,20 @@ const DataTable = () => {
             <th className="px-4 py-2 rounded-xl">NOMBRE</th>
             <th className="px-4 py-2 rounded-xl">GMAIL</th>
             <th className="px-4 py-2 rounded-xl">TELÉFONO</th>
-            <th className="px-4 py-2 rounded-xl">SECCIÓN</th>
+            <th className="px-4 py-2 rounded-xl">ROL</th>
             <th className="px-4 py-2 rounded-xl">FECHA</th>
             <th className="px-4 py-2 rounded-xl">ACCIÓN</th>
           </tr>
         </thead>
         <tbody>
-          {clientes.length === 0 ? (
+          {usuarios.length === 0 ? (
             <tr>
               <td colSpan={7} className="text-center py-4 text-gray-500">
-                No hay clientes disponibles.
+                No hay usuarios disponibles.
               </td>
             </tr>
           ) : (
-            clientes.map((item, index) => (
+            usuarios.map((item, index) => (
               <tr
                 key={item.id}
                 className={`text-center ${
@@ -98,7 +98,7 @@ const DataTable = () => {
                 <td className="px-4 rounded-xl">{item.email}</td>
                 <td className="px-4 font-bold rounded-xl">{item.celular}</td>
                 <td className="px-4 font-bold rounded-xl">
-                  {item.seccion || "N/A"}
+                  {item.rol || "N/A"}
                 </td>
                 <td className="px-4 font-bold rounded-xl">{item.created_at}</td>
                 <td className="px-4 rounded-xl">
@@ -125,16 +125,23 @@ const DataTable = () => {
         </tbody>
       </table>
 
-      {/**
+      {
+      /**
        * Botón para agregar un nuevo cliente.
-       */}
-      <button className="pagination-btn ml-2 mt-2" onClick={openModalForCreate}>
-        Agregar Cliente
+       */
+      }
+      <button
+        className="mt-4 ml-2 p-2 pl-4 bg-teal-600 text-white rounded-lg"
+        onClick={openModalForCreate}
+      >
+        Agregar Usuario
       </button>
 
-      {/**
+      {
+      /**
        * Modal para agregar o editar un cliente.
-       */}
+       */
+      }
       <AddDataModal
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
@@ -142,9 +149,11 @@ const DataTable = () => {
         onRefetch={handleClienteFormSuccess}
       />
 
-      {/**
+      {
+      /**
        * Modal para eliminar un cliente.
-       */}
+       */
+      }
       {clienteIdToDelete !== null && (
         <DeleteClienteModal
           isOpen={isDeleteModalOpen}
@@ -154,10 +163,12 @@ const DataTable = () => {
         />
       )}
 
-      {/**
-       * Componente de paginación para navegar entre las páginas de clientes.
+      {
+      /**
+       * Componente de paginación para navegar entre las páginas de usuarios.
        * Se muestra solo si hay más de una página.
-       */}
+       */
+      }
       <Paginator
         currentPage={currentPage}
         totalPages={totalPages}
