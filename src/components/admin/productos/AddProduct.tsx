@@ -188,6 +188,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
   }
 
+  const addNewSpecification = () => {
+    const newKey = prompt("Nombre de la nueva especificación:");
+    if (newKey && !formData.especificaciones[newKey]) {
+      setFormData((prev) => ({
+        ...prev,
+        especificaciones: {
+          ...prev.especificaciones,
+          [newKey]: "",
+        },
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true); // Cambia el estado de carga a verdadero
@@ -224,14 +237,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("lema", formData.lema);
       formDataToSend.append("mensaje_correo", "");
       formDataToSend.append("seccion", formData.seccion);
-      formDataToSend.append(
-        "especificaciones[color]",
-        formData.especificaciones.color
-      );
-      formDataToSend.append(
-        "especificaciones[material]",
-        formData.especificaciones.material
-      );
+      Object.entries(formData.especificaciones).forEach(([key, value]) => {
+        formDataToSend.append(`especificaciones[${key}]`, value);
+      });
       formDataToSend.append(
         "dimensiones[alto]",
         formData.dimensiones.alto + "cm"
@@ -415,30 +423,32 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </select>
                 </div>
                 <div className="group-form">
-                  <div className="form-input">
-                    <label>Color:</label>
-                    <input
-                      required
-                      value={formData.especificaciones.color}
-                      onChange={(e) =>
-                        handleNestedChange(e, "especificaciones")
-                      }
-                      name="color"
-                      type="text"
-                    />
-                  </div>
-                  <div className="form-input">
-                    <label>Material</label>
-                    <input
-                      required
-                      value={formData.especificaciones.material}
-                      onChange={(e) =>
-                        handleNestedChange(e, "especificaciones")
-                      }
-                      name="material"
-                      type="text"
-                    />
-                  </div>
+                  {Object.entries(formData.especificaciones).map(([key, value]) => (
+                      <div className="form-input" key={key}>
+                        <label>{key}:</label>
+                        <input
+                            type="text"
+                            name={key}
+                            value={value}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  especificaciones: {
+                                    ...prev.especificaciones,
+                                    [key]: e.target.value,
+                                  },
+                                }))
+                            }
+                        />
+                      </div>
+                  ))}
+                  <button
+                      type="button"
+                      onClick={addNewSpecification}
+                      className="admin-act-btn my-5"
+                  >
+                    Añadir Especificación
+                  </button>
                 </div>
                 <div className="group-form">
                   <div className="form-input">

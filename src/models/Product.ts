@@ -11,7 +11,7 @@ export interface ProductPOST {
   stock: number;
   precioProducto: number;
   seccion: string;
-  especificaciones: Specs;
+  especificaciones: Record<string, string>;
   dimensiones: Dimensions;
   imagenes: Imagen[];
   relacionados: number[];
