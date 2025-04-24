@@ -1,27 +1,31 @@
 ---
-interface Props {
-  id: string;
-  title: string;
-  image: string;
-  paragraph: string;
-}
-
 const props = Astro.props;
 ---
 
-<a
-  href={`/products#${props.id}`}
-  class="relative rounded-3xl overflow-hidden transition-all duration-300 ease-in-out w-full md:w-1/3 md:group-hover:w-[15%] md:hover:w-[70%] min-h-[200px] flex"
+<div
+  class="transition-all duration-300 ease-in-out w-full md:w-1/3 md:group-hover:w-[30%] md:hover:w-[70%] h-72 md:h-full flex flex-col items-center"
 >
-  <img
-    src={props.image}
-    alt={props.title}
-    class="absolute z-0 w-full h-full object-cover object-center"
-  />
-  <div
-    class="text-center flex flex-col justify-end bg-gradient-to-t from-teal-700 from-10% to-transparent relative z-10 text-white w-full px-2 py-4 md:py-2"
+  <a
+    href={`/products#${props.id}`}
+    class="relative rounded-3xl overflow-hidden w-full h-full flex"
   >
-    <h4 class="text-xl font-bold">{props.title}</h4>
-    <p class="text-lg font-light">{props.paragraph}</p>
+    <img
+      src={props.image}
+      alt={props.title}
+      class="absolute z-0 w-full h-full object-cover object-center"
+    />
+    <div
+      class="text-center flex flex-col justify-end bg-gradient-to-t from-teal-700 from-10% to-transparent relative z-10 text-white w-full px-2 py-4 md:py-2"
+    >
+      <h4 class="text-2xl md:text-xl font-bold">{props.title}</h4>
+      <p class="text-lg font-light hidden md:block">{props.paragraph}</p>
+    </div>
+  </a>
+
+  <!-- En mobile, se muestra fuera de la tarjeta -->
+  <div class="block md:hidden w-full mt-2 px-2">
+    <p class="text-base text-teal-700 font-medium">{props.paragraph}</p>
+    <hr class="border-t border-teal-800 my-3" />
   </div>
-</a>
+</div>
+
