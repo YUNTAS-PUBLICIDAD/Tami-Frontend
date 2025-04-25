@@ -109,33 +109,49 @@ const blogsUrl = config.endpoints.blogs;
           document.getElementById("blog-video-title");
         const blogVideoElement = document.getElementById("blog-video");
 
-        if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
-        if (blogSubtitleElement)
-          blogSubtitleElement.innerHTML = blog.subTituloBlog;
-        if (blogImgElement) {
-          blogImgElement.src = blog.imagenPrincipal;
-          blogImgElement.alt = blog.titulo;
+      if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
+      if (blogSubtitleElement)
+        blogSubtitleElement.innerHTML = blog.subTituloBlog;
+      if (blogImgElement) {
+        blogImgElement.src = blog.imagenPrincipal;
+        blogImgElement.alt = blog.titulo;
+      }
+      if (blogDateElement) {
+        const createdAt = blog.created_at;
+        if (createdAt) {
+          const formattedDate = new Date(createdAt).toLocaleDateString(
+            "es-ES",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            },
+          );
+          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+        } else {
+          blogDateElement.innerHTML = "Fecha de publicación no disponible";
         }
-        if (blogDateElement) {
-          const createdAt = blog.created_at;
-          if (createdAt) {
-            const formattedDate = new Date(createdAt).toLocaleDateString(
-              "es-ES",
-              {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            );
-            blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-          } else {
-            blogDateElement.innerHTML = "Fecha de publicación no disponible";
-          }
+      }
+      if (blogDateElement) {
+        const createdAt = blog.created_at;
+        if (createdAt) {
+          const formattedDate = new Date(createdAt).toLocaleDateString(
+            "es-ES",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            },
+          );
+          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+        } else {
+          blogDateElement.innerHTML = "Fecha de publicación no disponible";
         }
-        if (blogContentTitleElement)
-          blogContentTitleElement.innerHTML = blog.tituloBlog;
-        if (blogContentSubtitleElement)
-          blogContentSubtitleElement.innerHTML = blog.subTituloBlog;
+      }
+      if (blogContentTitleElement)
+        blogContentTitleElement.innerHTML = blog.tituloBlog;
+      if (blogContentSubtitleElement)
+        blogContentSubtitleElement.innerHTML = blog.parrafo; // Reemplazamos la primera asignación
 
         if (blogSectionsElement && Array.isArray(blog.imagenesBlog)) {
           blogSectionsElement.innerHTML = "";

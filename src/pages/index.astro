@@ -9,59 +9,68 @@ import ProductContainer from "src/components/index/ProductContainer.astro";
 import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
 import 'src/styles/global.css'
-import TestimonialsSlideshow from "src/components/index/Slideshow";
-import Testimonials from "../components/index/Slideshow";
 ---
 
 <Layout title="Tami Perú">
   <Hero client:load />
   <section
     id="bienvenida"
-    class="scroll-mt-16 h-96 h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-10rem)] md:h-[calc(90dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col justify-between max-w-screen-2xl mx-auto"
+    class="scroll-mt-16 h-96 sm:h-[calc(100dvh-10rem)] md:h-[calc(90dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col md:flex-row justify-between max-w-screen-2xl mx-auto"
   >
-    <div class="grid grid-cols-1 md:grid-cols-2 w-full h-11/12 overflow-hidden">
-      <div class="hidden md:block h-full w-full content-center">
-        <div class="relative">
-          <img src={manoRobotica.src} class="relative lg:max-w-10/12 z-10" />
-          <img
-            src={circuitos.src}
-            class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-0"
-          />
-        </div>
-      </div>
-      <div
-        class="w-full h-full content-center p-3 md:py-0 md:px-6 lg:p-0 xl:px-16 2xl:px-20"
-      >
-        <h2
-          class="flex items-center gap-2 text-sunset text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            class="-rotate-90 scale-75 lg:scale-100 xl:scale-125 2xl:scale-150"
-            stroke-width="2"
-          >
-            <path
-              d="M12 17.414 3.293 8.707l1.414-1.414L12 14.586l7.293-7.293 1.414 1.414L12 17.414z"
-            ></path>
-          </svg> BIENVENIDO A TAMI
-        </h2>
-        <h3
-          class="text-teal-700 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold py-2 tracking-wider lg:leading-16 2xl:leading-24"
-        >
-          TECNOLOGÍA E INNOVACIÓN PARA TI
-        </h3>
-        <p class="text-stone-500 text-base lg:text-lg xl:text-xl 2xl:text-2xl py-2">
-          Ofrecemos calidad y soluciones avanzadas para mejorar y equipar tu
-          negocio y hogar de manera eficiente.
-        </p>
+    {/* Contenedor de imágenes */}
+    <div
+      class="w-full md:w-1/2 flex justify-center items-center order-2 md:order-1"
+    >
+      <div class="relative">
+        <img
+          src={manoRobotica.src}
+          class="relative z-10 w-11/12 sm:w-full lg:max-w-10/12"
+        />
+        <img
+          src={circuitos.src}
+          class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-0 hidden md:block"
+        />
       </div>
     </div>
-    <BtnGoToSectionCards client:load />
+
+    {/* Contenedor de texto */}
+    <div
+      class="w-full md:w-1/2 flex flex-col justify-center content-center p-3 md:py-0 md:px-6 lg:p-0 xl:px-16 2xl:px-20 order-1 md:order-2"
+    >
+      <h2
+        class="flex items-center gap-2 text-sunset text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          class="-rotate-90 scale-75 lg:scale-100 xl:scale-125 2xl:scale-150"
+          stroke-width="2"
+        >
+          <path
+            d="M12 17.414 3.293 8.707l1.414-1.414L12 14.586l7.293-7.293 1.414 1.414L12 17.414z"
+          ></path>
+        </svg>
+        BIENVENIDO A TAMI
+      </h2>
+      <h3
+        class="text-teal-700 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold py-2 tracking-wider lg:leading-16 2xl:leading-24"
+      >
+        TECNOLOGÍA E INNOVACIÓN PARA TI
+      </h3>
+      <p
+        class="text-stone-500 text-base lg:text-lg xl:text-xl 2xl:text-2xl py-2"
+      >
+        Ofrecemos calidad y soluciones avanzadas para mejorar y equipar tu
+        negocio y hogar de manera eficiente.
+      </p>
+    </div>
   </section>
+  <div class="flex justify-center items-center pt-12 md:pt-0">
+    <BtnGoToSectionCards client:load />
+  </div>
   <!-- Arreglar ancho y alto para que se vea como en vimeo :like: -->
   <section
     class="w-full my-8 place-items-center scroll-mt-20 max-w-screen-2xl mx-auto"
@@ -71,7 +80,7 @@ import Testimonials from "../components/index/Slideshow";
     <SectionCardsContainer />
   </section>
   <section
-    class="flex flex-col justify-between align-center pt-6 px-16  lg:px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white max-w-screen-2xl mx-auto"
+    class="flex flex-col justify-between align-center pt-6 px-16 lg:px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white max-w-screen-2xl mx-auto"
   >
     <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
@@ -152,35 +161,70 @@ import Testimonials from "../components/index/Slideshow";
     <img src={trabajo.src} alt="Trabajo" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
   </section>
 
-  <section class="w-full pt-12 flex flex-col relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200">
-    <h2 class="text-center text-3xl md:text-4xl font-black text-teal-600 mb-4 tracking-widest">
+  <section
+    class="w-full pt-12 flex flex-col relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200"
+  >
+    <h2
+      class="text-center text-3xl md:text-4xl font-black text-teal-600 mb-4 tracking-widest"
+    >
       LO QUE DICEN NUESTROS CLIENTES
     </h2>
-    <h3 class="text-center text-lg md:text-2xl font-black text-teal-400 mb-8 md:mb-14 tracking-widest px-4 md:px-40 lg:px-80">
-      VALORAMOS CADA COMENTARIO PARA SEGUIR MEJORANDO Y OFRECIENDO LO MEJOR PARA TI.
+    <h3
+      class="text-center text-lg md:text-2xl font-black text-teal-400 mb-8 md:mb-14 tracking-widest px-4 md:px-40 lg:px-80"
+    >
+      VALORAMOS CADA COMENTARIO PARA SEGUIR MEJORANDO Y OFRECIENDO LO MEJOR PARA
+      TI.
     </h3>
-    <Testimonials client:load/>
-    <div class="relative w-full px-4 py-12 h-20 bg-gradient-to-r from-orange-300 from-30% to-teal-500 flex items-center justify-center">
-      <h1 class="text-white font-black text-2xl md:tracking-[.5em]">TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI</h1>
+    <div class="flex justify-center gap-8 px-8 md:gap-14 flex-wrap mb-20">
+      {
+        [
+          {
+            avatar: "",
+            name: "NOMBRE",
+            rating: 5,
+            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+          {
+            avatar: "",
+            name: "NOMBRE",
+            rating: 5,
+            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+          {
+            avatar: "",
+            name: "NOMBRE",
+            rating: 5,
+            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+        ].map((testimonial) => (
+          <div class="w-full sm:w-80 p-4 px-6 rounded-4xl border border-teal-400 flex flex-col">
+            <div class="flex items-center gap-x-4">
+              <img
+                src={testimonial.avatar}
+                alt="Avatar"
+                class="w-16 h-16 rounded-full"
+              />
+              <div>
+                <h3 class="text-xl font-bold text-teal-600 tracking-widest">
+                  {testimonial.name}
+                </h3>
+                <div class="text-orange-300 text-2xl md:text-4xl">
+                  {"★".repeat(testimonial.rating) +
+                    "☆".repeat(5 - testimonial.rating)}
+                </div>
+              </div>
+            </div>
+            <p class="mt-2">{testimonial.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div
+      class="relative w-full px-4 py-12 h-20 bg-gradient-to-r from-orange-300 from-30% to-teal-500 flex items-center justify-center"
+    >
+      <h1 class="text-white font-black text-2xl md:tracking-[.5em]">
+        TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI
+      </h1>
     </div>
   </section>
-  <!-- Botón flotante de WhatsApp (solo en móvil) -->
-  <a
-      href="https://api.whatsapp.com/send?phone=51978883199"
-      class="fixed bottom-1 right-1 z-50 md:hidden rounded-full p-4 transition-all duration-300"
-      aria-label="Contáctanos por WhatsApp"
-      target="_blank"
-      rel="noopener noreferrer"
-  >
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-12 h-12"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-    >
-      <path
-          d="M20.52 3.48A11.78 11.78 0 0012 0C5.37 0 .07 5.3.07 11.9a11.8 11.8 0 001.63 5.98L0 24l6.27-1.63a11.77 11.77 0 005.73 1.44h.01c6.63 0 11.94-5.3 11.94-11.9a11.8 11.8 0 00-3.43-8.43zM12 21.5a9.52 9.52 0 01-4.83-1.3l-.35-.21-3.72.97.99-3.63-.23-.37A9.46 9.46 0 012.5 11.9C2.5 6.68 6.77 2.5 12 2.5s9.5 4.18 9.5 9.4c0 5.22-4.27 9.6-9.5 9.6zm5.27-7.68c-.29-.14-1.7-.84-1.96-.93-.26-.1-.45-.14-.63.14-.18.29-.72.93-.89 1.12-.17.19-.33.22-.61.07-.29-.14-1.22-.45-2.32-1.45-.86-.77-1.44-1.72-1.6-2-.17-.29-.02-.45.13-.59.13-.13.29-.34.43-.5.14-.17.18-.29.27-.48.09-.2.04-.37-.02-.52-.07-.14-.63-1.51-.86-2.07-.22-.54-.45-.47-.63-.47-.16 0-.36 0-.55.02-.18.01-.47.07-.71.34-.24.26-.94.92-.94 2.23 0 1.3.96 2.55 1.1 2.73.14.18 1.88 2.87 4.56 4.02.63.27 1.12.43 1.5.55.63.2 1.2.17 1.65.1.5-.08 1.7-.7 1.94-1.36.24-.66.24-1.22.17-1.36-.07-.14-.26-.2-.55-.34z"
-      />
-    </svg>
-  </a>
 </Layout>
