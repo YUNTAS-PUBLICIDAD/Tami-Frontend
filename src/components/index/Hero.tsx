@@ -65,23 +65,23 @@ const Hero = () => {
         <button
           onClick={moveToBienvenida}
           className="cursor-pointer bg-white rounded-3xl border-2 border-slate-300 
-       font-bold text-teal-700 hover:text-white 
-       hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 
-       transition-all ease-in-out duration-500 
-       px-4 py-3 lg:px-6 lg:py-2 2xl:px-10 2xl:py-4 
-       text-lg lg:text-xl xl:text-2xl 2xl:text-3xl mt-8"
+     font-bold text-teal-700 hover:text-white 
+     hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 
+     transition-all ease-in-out duration-500 
+     px-4 py-3 lg:px-6 lg:py-2 2xl:px-10 2xl:py-4 
+     text-lg lg:text-xl xl:text-2xl 2xl:text-3xl mt-8"
         >
           Descubre más
         </button>
       </div>
 
       {/* Mobile gradient overlay */}
-      <div className="md:hidden absolute inset-0 z-10 bg-gradient-to-t from-transparent to-teal-800/80 " />
+      <div className="md:hidden absolute inset-0 z-10 bg-gradient-to-t from-transparent to-teal-800/80" />
 
       {/* Mobile content */}
-      <div className="md:hidden absolute bottom-0 left-0 w-full h-[35vh] z-20 flex flex-col justify-center items-center px-4 text-center bg-white">
+      <div className="md:hidden bg-white absolute bottom-0 left-0 w-full h-[35vh] z-20 flex flex-col justify-center items-center px-4 text-center">
         <h1
-          className={`text-teal-900 text-2xl font-extrabold mb-4 transition-all duration-1000 ${
+          className={`text-teal-700 text-2xl font-extrabold mb-4 transition-all duration-1000 ${
             isTextVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-5"
