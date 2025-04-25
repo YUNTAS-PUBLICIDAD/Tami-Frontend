@@ -1,12 +1,12 @@
 /**
- * @file useClientesActions.ts
- * @description Este archivo contiene los hooks para las acciones de los clientes.
+ * @file useUsuariosActions.ts
+ * @description Este archivo contiene los hooks para las acciones de los Usuarios.
  */
 
 import { getApiUrl, config } from "config"; // importa la configuración de la API
-import type Cliente from "../../../models/Clients"; // importa el modelo de cliente
+import type Usuario from "../../../models/Users"; // importa el modelo de Usuario
 
-const useClienteAcciones = () => {
+const useUsuarioAcciones = () => {
   
   /**
    * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
@@ -20,14 +20,14 @@ const useClienteAcciones = () => {
   };
 
   /**
-   * Funcion para añadir un cliente
+   * Funcion para añadir un Usuario
    */
 
-  const addCliente = async (
-    clienteData: Partial<Cliente>
-  ): Promise<Cliente> => {
+  const addUsuario = async (
+    UsuarioData: Partial<Usuario>
+  ): Promise<Usuario> => {
     const token = getValidToken(); 
-    const url = getApiUrl(config.endpoints.clientes.create); 
+    const url = getApiUrl(config.endpoints.users.create); 
 
     const response = await fetch(url, {
       method: "POST",
@@ -35,25 +35,25 @@ const useClienteAcciones = () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(clienteData),
+      body: JSON.stringify(UsuarioData),
     });
 
-    if (!response.ok) throw new Error("Error al agregar cliente");
+    if (!response.ok) throw new Error("Error al agregar Usuario");
 
-    const result: { data: Cliente } = await response.json();
+    const result: { data: Usuario } = await response.json();
     return result.data;
   };
 
   /**
-   * Función para actualizar un cliente, usando los tipos
+   * Función para actualizar un Usuario, usando los tipos
    */
 
-  const updateCliente = async (
+  const updateUsuario = async (
     id: number,
-    updatedData: Partial<Cliente>
-  ): Promise<Cliente> => {
+    updatedData: Partial<Usuario>
+  ): Promise<Usuario> => {
     const token = getValidToken();
-    const url = getApiUrl(config.endpoints.clientes.update(id));
+    const url = getApiUrl(config.endpoints.users.update(id));
 
     const response = await fetch(url, {
       method: "PUT",
@@ -64,19 +64,19 @@ const useClienteAcciones = () => {
       body: JSON.stringify(updatedData),
     });
 
-    if (!response.ok) throw new Error("Error al actualizar cliente");
+    if (!response.ok) throw new Error("Error al actualizar Usuario");
 
-    const result: { data: Cliente } = await response.json();
+    const result: { data: Usuario } = await response.json();
     return result.data;
   };
 
   /**
-   * Función para eliminar un cliente, usando los tipos
+   * Función para eliminar un Usuario, usando los tipos
    */
   
-  const deleteCliente = async (id: number): Promise<{ message: string }> => {
+  const deleteUsuario = async (id: number): Promise<{ message: string }> => {
     const token = getValidToken();
-    const url = getApiUrl(config.endpoints.clientes.delete(id));
+    const url = getApiUrl(config.endpoints.users.delete(id));
 
     const response = await fetch(url, {
       method: "DELETE",
@@ -85,17 +85,17 @@ const useClienteAcciones = () => {
       },
     });
 
-    if (!response.ok) throw new Error("Error al eliminar cliente");
+    if (!response.ok) throw new Error("Error al eliminar Usuario");
 
     const result: { message: string } = await response.json();
     return result;
   };
 
   return {
-    addCliente,
-    updateCliente,
-    deleteCliente,
+    addUsuario,
+    updateUsuario,
+    deleteUsuario,
   };
 };
 
-export default useClienteAcciones;
+export default useUsuarioAcciones;
