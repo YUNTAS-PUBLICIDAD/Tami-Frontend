@@ -9,22 +9,23 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    avatar: "",
-    name: "NOMBRE 1",
+    avatar: "/images/persona1.webp",
+    name: "Carlos Pérez",
     rating: 5,
-    text: "texto 1",
+    text: "¡Este servicio es increíble! Muy recomendable.",
   },
   {
-    avatar: "",
-    name: "NOMBRE 2",
-    rating: 5,
-    text: "texto 2",
+    avatar: "/images/persona2.webp",
+    name: "María López",
+    rating: 4,
+    text: "Buena experiencia en general, pero hay margen de mejora.",
   },
   {
-    avatar: "",
-    name: "NOMBRE 3",
+    avatar: "/images/persona3.webp",
+    name: "Javier Gómez",
     rating: 5,
-    text: "texto 3",},
+    text: "¡Absolutamente fantástico! Lo usaré de nuevo.",
+  },
 ];
 
 const Testimonials: React.FC = () => {
