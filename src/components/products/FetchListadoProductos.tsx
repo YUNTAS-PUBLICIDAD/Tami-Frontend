@@ -118,12 +118,10 @@ function ProductCard({ producto }: Props) {
       </div>
       <div className="flex flex-row justify-between text-teal-700 mt-3">
         <svg
-          width="50"
-          height="50"
           viewBox="0 0 25 25"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out"
+          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
         >
           <path
             d="M16 4L8 12L16 20"
@@ -142,16 +140,14 @@ function ProductCard({ producto }: Props) {
             transform="translate(5, 0)"
           ></path>
         </svg>
-        <button className="rounded-full bg-white px-6 font-bold text-xl border-4 border-gray-300 transition-transform duration-300 ease-in-out group-hover:scale-110 content-center">
+        <button className="rounded-full bg-white px-6 font-bold text-xl border-4 border-gray-300 transition-transform duration-300 ease-in-out group-hover:scale-110 content-center flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white">
           Saber Más
         </button>
         <svg
-          width="50"
-          height="50"
           viewBox="0 0 25 25"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out"
+          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
         >
           <path
             d="M8 4L16 12L8 20"
