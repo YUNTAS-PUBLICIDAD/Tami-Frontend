@@ -45,7 +45,7 @@ const ScrollModal = () => {
 
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay">
-            <div className={`bg-white flex rounded-3xl overflow-hidden shadow-lg max-w-2xl w-full relative 
+            <div className={`bg-white flex overflow-hidden shadow-lg max-w-3xl max-h-fit w-full relative 
                 ${isClosing ? "animate-slideOut" : "animate-slideIn"}
             `}>
                 {/* Imagen */}
@@ -63,45 +63,47 @@ const ScrollModal = () => {
                         alt="LogoTami"
                         className="absolute top-4 left-4 w-10 h-12"
                     />
-                    <div className="absolute bottom-8 right-6 left-6 text-white text-right text-2xl font-semibold">
-                        DISEÑO Y DESARROLLO WEB
+                    <div className="absolute bottom-32 text-white text-center text-3xl">
+                        TECNOLOGÍA E INNOVACIÓN
                     </div>
                 </div>
 
                 {/* Contenido */}
-                <div className="w-3/5 bg-gradient-to-b from-teal-700 to-orange-300 p-6 text-white relative">
+                <div className="w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative">
+                    <div className="py-10 mx-8">
                     <button
                         onClick={closeModal}
                         className="absolute top-4 right-5 text-md text-white hover:text-gray-300"
                     >
                         X
                     </button>
-                    <h2 className="text-3xl font-bold text-center mt-3 mb-8">
-                        OBTÉN UNA ASESORÍA ¡GRATIS!
+                    <h2 className="text-3xl font-bold text-center mt-3 mb-4">
+                        ¡RECIBE UNA ASESORÍA GRATIS!
                     </h2>
                     <form className="flex flex-col gap-1">
-                        <h3 className="text-md font-semibold">Nombre</h3>
+                        <h3 className="text-lg font-bold">Nombre</h3>
                         <input
                             type="text"
-                            className="p-1 rounded-lg bg-white text-black outline-none"
+                            className="p-2 rounded-lg bg-white text-black outline-none mb-8"
                         />
-                        <h3 className="text-md font-semibold">Teléfono</h3>
+                        <h3 className="text-lg font-bold">Teléfono</h3>
                         <input
                             type="tel"
-                            className="p-1 rounded-lg bg-white text-black outline-none"
+                            className="p-2 rounded-lg bg-white text-black outline-none mb-8"
                         />
-                        <h3 className="text-md font-semibold">Correo</h3>
+                        <h3 className="text-lg font-bold">Correo</h3>
                         <input
                             type="email"
-                            className="p-1 rounded-lg bg-white text-black outline-none mb-5"
+                            className="p-2 rounded-lg bg-white text-black outline-none mb-6"
                         />
                         <button
                             type="submit"
-                            className="bg-teal-500 hover:bg-teal-600 text-white py-2 text-2xl font-bold rounded-2xl mb-2"
+                            className="bg-orange-300 hover:bg-orange-400 text-white max-w-fit p-4 text-3xl font-bold rounded-xl mx-auto"
                         >
-                            HAZLO YA
+                            ¡HABLÉMOS!
                         </button>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>
