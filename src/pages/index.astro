@@ -5,11 +5,12 @@ import manoRobotica from "@images/index/mano_robotica.webp";
 import circuitos from "@images/index/circuitos.webp";
 import iconGarantia from "@icons/icon_garantia.webp";
 import trabajo from "@images/index/trabajo.webp";
-import ProductContainer from "src/components/index/ProductContainer.astro";
+import ProductSlideshow from "src/components/index/ProductSlideshow.tsx";
 import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
 import 'src/styles/global.css'
 import Testimonials from "../components/index/Slideshow";
+import ProductContainer from "../components/index/ProductContainer.astro";
 ---
 
 <Layout title="Tami Perú">
@@ -86,7 +87,7 @@ import Testimonials from "../components/index/Slideshow";
     <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
-    <ProductContainer />
+    <ProductSlideshow client:load/>
   </section>
   <h3
     class="text-xs py-2 md:text-2xl 2xl:text-4xl font-bold text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r from-teal-700 to-sunset gap-2"
