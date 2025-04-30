@@ -75,11 +75,11 @@ export default function ListadoDeProductos() {
 function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
   return (
     <div className="flex justify-center relative py-10" id={nombreSeccion}>
-      <div className="relative w-4/5 place-self-center">
+      <div className="relative w-[90%] sm:w-4/5 place-self-center">
         <h2 className="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
           {nombreSeccion}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3s md:grid-cols-4 gap-4 sm:gap-8">
           {productosDeLaSeccion.length > 0 ? (
             productosDeLaSeccion.map((producto) => (
               <ProductCard key={producto.id} producto={producto} />
@@ -101,7 +101,7 @@ function ProductCard({ producto }: Props) {
       href={`/products/details?id=${producto.id}`}
       className="my-10 flex flex-col items-center group hover:cursor-pointer"
     >
-      <div className="bg-gray-300 rounded-[15%] place-self-center h-56 w-56 p-0 mb-3 overflow-hidden">
+      <div className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden">
         <img
           src={
             producto.image ||
@@ -116,7 +116,7 @@ function ProductCard({ producto }: Props) {
           {producto.nombreProducto}
         </h3>
       </div>
-      <div className="flex flex-row justify-between text-teal-700 mt-3">
+      <div className="flex flex-row justify-center items-center text-teal-700 mt-3 ">
         <svg
           viewBox="0 0 25 25"
           fill="none"
@@ -124,23 +124,23 @@ function ProductCard({ producto }: Props) {
           className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
         >
           <path
-            d="M16 4L8 12L16 20"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(-2, 0)"
+        d="M16 4L8 12L16 20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(-2, 0)"
           ></path>
           <path
-            d="M16 4L8 12L16 20"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(5, 0)"
+        d="M16 4L8 12L16 20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(5, 0)"
           ></path>
         </svg>
-        <button className="rounded-full bg-white px-6 font-bold text-xl border-4 border-gray-300 transition-transform duration-300 ease-in-out group-hover:scale-110 content-center flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white">
+        <button className="rounded-full bg-white font-bold text-xl border-4 border-gray-300 transition-transform duration-300 ease-in-out group-hover:scale-110 content-center flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white md:p-2 md:px-6">
           Saber Más
         </button>
         <svg
@@ -150,20 +150,20 @@ function ProductCard({ producto }: Props) {
           className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
         >
           <path
-            d="M8 4L16 12L8 20"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(2, 0)"
+        d="M8 4L16 12L8 20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(2, 0)"
           ></path>
           <path
-            d="M8 4L16 12L8 20"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(-5, 0)"
+        d="M8 4L16 12L8 20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(-5, 0)"
           ></path>
         </svg>
       </div>
