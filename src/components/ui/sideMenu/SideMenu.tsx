@@ -71,6 +71,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
               </NavLink>
             </li>
           ))}
+          <li>
+            <NavLink isForNavBar={false} to="/blog">
+              Blog
+            </NavLink>
+          </li>
         </ul>
         <div className="border-y-2 py-3">
           <p className="font-semibold text-center text-xl">
