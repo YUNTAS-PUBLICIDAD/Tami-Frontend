@@ -1,3 +1,7 @@
+/**
+ * @file SideMenu.tsx
+ * @description Componente de menú lateral para la navegación en dispositivos móviles
+ */
 import NavLink from "../navbar/NavLink";
 import NavSocialMediaLink from "./NavSocialMediaLink";
 import socialMediaLinks from "@data/socialMedia.data";
@@ -53,13 +57,13 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
             className="max-w-12 sm:max-w-16"
             alt="Icono de usuario"
           />
-          <p className="sm:text-2xl">
+          <p className="text-3xl">
             Bienvenido
             <br />
             <span className="font-bold">Usuario</span>!
           </p>
         </div>
-        <ul>
+        <ul className="text-xl">
           {links.map((item, index: number) => (
             <li key={index}>
               <NavLink isForNavBar={false} to={item.url}>
@@ -69,7 +73,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           ))}
         </ul>
         <div className="border-y-2 py-3">
-          <p className="font-semibold text-center text-base">
+          <p className="font-semibold text-center text-xl">
             Síguenos en nuestras redes
           </p>
           <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between">
@@ -84,8 +88,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           </div>
         </div>
         <div>
-          <p className="font-semibold pt-2">Horario de atención</p>
-          <div>
+          <p className="font-semibold pt-2 text-xl">
+            Horario de atención
+          </p>
+          <div className="text-xl">
             <p>
               Lunes a Viernes
               <br />
