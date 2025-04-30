@@ -35,7 +35,7 @@ function NavBar() {
 
   return (
     <header
-      className={`items-center justify-between text-white fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
+      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
         isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
       }`}
     >
@@ -64,14 +64,14 @@ function NavBar() {
               </NavLink>
             </li>
           ))}
-          <li className="relative group text-white hover:text-teal-300 transition-colors duration-500 text-lg font-bold cursor-pointer">
+          <li className="relative group text-white hover:text-teal-300 transition-colors duration-500 text-lg sm:text-xl font-bold cursor-pointer">
             Más
             <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-teal-300 transition-all duration-500 group-hover:w-full group-hover:left-0"></span>
             <ul className="absolute w-24 hidden group-hover:block bg-teal-800 text-white shadow-2xl rounded-ss-none rounded-md font-bold top-7">
               <li>
                 <a
                   href="/blog"
-                  className="block px-4 py-2 hover:bg-teal-900 hover:rounded-tr-md"
+                  className="block px-4 py-2 hover:bg-teal-900 hover:rounded-tr-md text-base sm:text-lg"
                 >
                   Blog
                 </a>
@@ -79,7 +79,7 @@ function NavBar() {
               <li>
                 <a
                   href="/auth/sign-in"
-                  className="block px-4 py-2 hover:bg-teal-900 hover:rounded-b-md"
+                  className="block px-4 py-2 hover:bg-teal-900 hover:rounded-b-md text-base sm:text-lg"
                 >
                   Iniciar Sesión
                 </a>
@@ -92,7 +92,7 @@ function NavBar() {
         <a
           href="https://api.whatsapp.com/send?phone=51978883199"
           target="_blank"
-          className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-500 font-bold"
+          className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-500 font-bold"
         >
           Contáctanos
         </a>
