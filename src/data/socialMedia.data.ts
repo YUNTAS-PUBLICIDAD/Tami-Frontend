@@ -11,12 +11,12 @@ const socialMediaLinks = [
     image: tiktokIcon,
   },
   {
-    url: "https://www.instagram.com/tamiperu01/",
+    url: "https://www.instagram.com/tami_maquinarias_peru/",
     socialMediaName: "Instagram",
     image: instagramIcon,
   },
   {
-    url: "#",
+    url: "https://x.com/Tami_Maquinaria",
     socialMediaName: "Twitter",
     image: twitterIcon,
   },
