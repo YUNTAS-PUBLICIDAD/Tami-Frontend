@@ -37,7 +37,7 @@ export default function ListadoDeProductos() {
       // Construimos las secciones
       const seccionesArray: SeccionProps[] = [
         {
-          nombreSeccion: "Trabajo",
+          nombreSeccion: "Negocio",
           productosDeLaSeccion: productosMapeados
             .filter((p: Product) => p.seccion === "Trabajo")
         },
@@ -47,7 +47,7 @@ export default function ListadoDeProductos() {
             .filter((p: Product) => p.seccion === "Decoración")
         },
         {
-          nombreSeccion: "Negocio",
+          nombreSeccion: "Maquinaria",
           productosDeLaSeccion: productosMapeados
             .filter((p: Product) => p.seccion === "Negocio")
         },
