@@ -40,19 +40,16 @@ export default function ListadoDeProductos() {
           nombreSeccion: "Trabajo",
           productosDeLaSeccion: productosMapeados
             .filter((p: Product) => p.seccion === "Trabajo")
-            .slice(0, 4),
         },
         {
           nombreSeccion: "Decoración",
           productosDeLaSeccion: productosMapeados
             .filter((p: Product) => p.seccion === "Decoración")
-            .slice(0, 4),
         },
         {
           nombreSeccion: "Negocio",
           productosDeLaSeccion: productosMapeados
             .filter((p: Product) => p.seccion === "Negocio")
-            .slice(0, 4),
         },
       ];
 
