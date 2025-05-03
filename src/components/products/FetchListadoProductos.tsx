@@ -108,11 +108,6 @@ function ProductCard({ producto }: Props) {
           className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-150"
         />
       </div>
-      <div className="flex-grow text-center">
-        <h3 className="text-lg font-bold text-teal-700">
-          {producto.nombreProducto}
-        </h3>
-      </div>
       <div className="flex flex-row justify-center items-center text-teal-700 mt-3 ">
         <svg
           viewBox="0 0 25 25"
@@ -137,9 +132,11 @@ function ProductCard({ producto }: Props) {
         transform="translate(5, 0)"
           ></path>
         </svg>
-        <button className="rounded-full bg-white font-bold text-xl border-4 border-gray-300 transition-transform duration-300 ease-in-out group-hover:scale-110 content-center flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white md:p-2 md:px-6">
-          Saber Más
-        </button>
+        <div className="flex-grow text-center group">
+          <h3 className="text-lg font-bold text-teal-700 transition-transform duration-300 ease-in-out group-hover:scale-110">
+            {producto.nombreProducto}
+          </h3>
+        </div>
         <svg
           viewBox="0 0 25 25"
           fill="none"
