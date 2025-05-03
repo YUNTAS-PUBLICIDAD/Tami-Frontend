@@ -2,6 +2,7 @@
 import Footer from "../components/ui/footer/Footer.astro";
 import NavBar from "../components/ui/navbar/NavBar";
 import ScrollModal from "../components/ui/ScrollModal.tsx";
+import WhatsApp from "../components/ui/whatsapp.astro";
 import "../styles/global.css";
 interface Props {
   title: string;
@@ -17,11 +18,19 @@ const { title } = Astro.props;
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <style>
+      .float {
+          text-align: center;
+          font-size: 30px;
+          z-index: 100;
+      }
+  </style>
   </head>
   <body class="font-montserrat scroll-smooth">
     <NavBar client:load />
     <slot />
     <Footer />
     <ScrollModal client:load />
+    <WhatsApp />
   </body>
 </html>
