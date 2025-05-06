@@ -73,7 +73,7 @@ function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
   return (
     <div className="flex justify-center relative py-10" id={nombreSeccion}>
       <div className="relative w-[90%] sm:w-4/5 place-self-center">
-        <h2 className="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
+        <h2 className="text-white bg-gradient-to-r mb-4 sm:mb-0 from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
           {nombreSeccion}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3s md:grid-cols-4 gap-4 sm:gap-8">
@@ -96,7 +96,7 @@ function ProductCard({ producto }: Props) {
   return (
     <a
       href={`/products/details?id=${producto.id}`}
-      className="my-10 flex flex-col items-center group hover:cursor-pointer"
+      className="mt-6 sm:my-10 flex flex-col items-center group hover:cursor-pointer"
     >
       <div className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden">
         <img
@@ -108,7 +108,7 @@ function ProductCard({ producto }: Props) {
           className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-150"
         />
       </div>
-      <div className="flex flex-row justify-center items-center text-teal-700 mt-3 ">
+      <div className="flex flex-row justify-center items-center text-teal-700 mt-3">
         <svg
           viewBox="0 0 25 25"
           fill="none"
@@ -132,8 +132,8 @@ function ProductCard({ producto }: Props) {
         transform="translate(5, 0)"
           ></path>
         </svg>
-        <div className="flex-grow text-center group">
-          <h3 className="text-lg font-bold text-teal-700 transition-transform duration-300 ease-in-out group-hover:scale-110">
+        <div className="flex-grow text-center group max-w-[80px] mx-auto sm:max-w-[200px] md:max-w-[200px]">
+          <h3 className="w-full truncate overflow-hidden whitespace-nowrap text-lg font-bold text-teal-700 transition-transform duration-300 ease-in-out group-hover:scale-110">
             {producto.nombreProducto}
           </h3>
         </div>

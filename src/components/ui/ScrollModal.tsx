@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import asesoriaImg from "../../assets/images/about/nosotros_hero.webp";
+import asesoriaImg from "../../assets/images/Diseno.webp";
 import Logo from "../../assets/images/logos/logo_animado.gif";
 
 const ScrollModal = () => {
@@ -63,9 +63,6 @@ const ScrollModal = () => {
                         alt="LogoTami"
                         className="absolute top-4 left-4 w-10 h-12"
                     />
-                    <div className="absolute bottom-32 text-white text-center text-3xl">
-                        TECNOLOGÍA E INNOVACIÓN
-                    </div>
                 </div>
 
                 {/* Contenido */}
