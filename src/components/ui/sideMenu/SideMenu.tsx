@@ -6,7 +6,7 @@ import NavLink from "../navbar/NavLink";
 import NavSocialMediaLink from "./NavSocialMediaLink";
 import socialMediaLinks from "@data/socialMedia.data";
 import userIcon from "@icons/icon_user.webp";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface NavLink {
   url: string;
