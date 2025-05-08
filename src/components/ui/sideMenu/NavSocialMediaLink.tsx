@@ -1,3 +1,5 @@
+import React from "react";
+
 interface NavSocialMediaLinkProps {
   socialMediaName: string;
   image: string;

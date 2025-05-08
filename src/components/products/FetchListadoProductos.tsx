@@ -71,24 +71,32 @@ export default function ListadoDeProductos() {
 
 function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
   return (
-    <div className="flex justify-center relative py-10" id={nombreSeccion}>
-      <div className="relative w-[90%] sm:w-4/5 place-self-center">
-        <h2 className="text-white bg-gradient-to-r mb-4 sm:mb-0 from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
-          {nombreSeccion}
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3s md:grid-cols-4 gap-4 sm:gap-8">
-          {productosDeLaSeccion.length > 0 ? (
-            productosDeLaSeccion.map((producto) => (
-              <ProductCard key={producto.id} producto={producto} />
-            ))
-          ) : (
-            <p className="text-gray-400 text-lg">
-              No hay productos en esta sección.
-            </p>
-          )}
+      <div className="flex justify-center relative py-6 sm:py-8 md:py-10" id={nombreSeccion}>
+        <div className="relative w-[95%] xs:w-[90%] sm:w-4/5 place-self-center">
+          {/* Título de sección con gradiente - responsivo en todos los tamaños */}
+          <h2 className="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-2 sm:py-3
+                       w-fit text-xl xs:text-2xl sm:text-3xl font-bold
+                       ps-3 xs:ps-4 sm:ps-5 lg:ps-10
+                       pe-8 xs:pe-12 sm:pe-16 lg:pe-28">
+            {nombreSeccion}
+          </h2>
+
+          {/* Grid de productos - de 1 columna en móvil pequeño a 4 columnas en desktop */}
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4
+                       gap-2 xs:gap-4 sm:gap-6 md:gap-8
+                       mt-4 sm:mt-6">
+            {productosDeLaSeccion.length > 0 ? (
+                productosDeLaSeccion.map((producto) => (
+                    <ProductCard key={producto.id} producto={producto} />
+                ))
+            ) : (
+                <p className="text-gray-400 text-lg col-span-full text-center py-8">
+                  No hay productos en esta sección.
+                </p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
@@ -96,7 +104,7 @@ function ProductCard({ producto }: Props) {
   return (
     <a
       href={`/products/details?id=${producto.id}`}
-      className="mt-6 sm:my-10 flex flex-col items-center group hover:cursor-pointer"
+      className="my-4 sm:my-6 md:my-10 flex flex-col items-center group hover:cursor-pointer w-full"
     >
       <div className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden">
         <img
