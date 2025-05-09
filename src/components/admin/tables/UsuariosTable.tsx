@@ -1,147 +1,208 @@
 import { useState } from "react";
-import { FaTrash } from "react-icons/fa";
-import { GrUpdate } from "react-icons/gr";
+import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt } from "react-icons/fa";
 import AddDataModal from "../../admin/tables/modals/usuarios/AddUpdateModalUsuario.tsx";
 import DeleteClienteModal from "../../admin/tables/modals/usuarios/DeleteModalUsuario.tsx";
 import useUsuarios from "../../../hooks/admin/usuarios/useUsuarios.ts";
 import Paginator from "../../../components/admin/Paginator.tsx";
+import Swal from "sweetalert2";
 
-const DataTable = () => {
-  const [refetchTrigger, setRefetchTrigger] = useState(false); // Estado para forzar la recarga de datos
-  const [currentPage, setCurrentPage] = useState(1); // Estado para manejar la página actual
-  const { usuarios, totalPages, loading, error } = useUsuarios(
-    refetchTrigger,
-    currentPage
-  ); // Hook para obtener la lista de clientes
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para manejar la apertura y cierre del modal
-  const [selectedCliente, setSelectedCliente] = useState<any>(null); // Estado para manejar el cliente seleccionado
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para manejar la apertura y cierre del modal de eliminación
-  const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(
-    null
-  ); // Estado para manejar el ID del cliente a eliminar
+const UsuariosTable = () => {
+  const [refetchTrigger, setRefetchTrigger] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { usuarios, totalPages, loading, error } = useUsuarios(refetchTrigger, currentPage);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<any>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  /**
-   * Manejo de errores en la solicitud y carga.
-   */
-  if (loading)
-    return <p className="text-center py-4 text-gray-500">Cargando datos...</p>;
-  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+  // Filtrar usuarios basado en el término de búsqueda
+  const filteredUsuarios = usuarios.filter(usuario =>
+      usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.celular?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.rol?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.id.toString().includes(searchTerm)
+  );
 
-  /**
-   * Función para forzar la recarga de datos.
-   */
   const handleRefetch = () => setRefetchTrigger((prev) => !prev);
 
-  /**
-   * Función para abrir el modal de edición de cliente.
-   */
   const openModalForEdit = (cliente: any) => {
     setSelectedCliente(cliente);
     setIsModalOpen(true);
   };
 
-  /**
-   * Función para abrir el modal de creacion de cliente.
-   */
   const openModalForCreate = () => {
     setSelectedCliente(null);
     setIsModalOpen(true);
   };
 
-  /**
-   * Función para abrir el modal de eliminación de cliente.
-   */
   const openDeleteModal = (id: number) => {
     setClienteIdToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
-  /**
-   * Función para manejar el cierre del modal de eliminación.
-   */
   const handleClienteFormSuccess = () => {
-    handleRefetch(); // Recarga la lista de clientes
-    setIsModalOpen(false); // Cierra el modal después de añadir o editar un cliente
+    handleRefetch();
+    setIsModalOpen(false);
+    Swal.fire({
+      icon: "success",
+      title: "Operación exitosa",
+      text: "El usuario se ha guardado correctamente",
+      confirmButtonColor: "#38a169", // Verde corporativo
+    });
   };
 
+  if (loading) return (
+      <div className="flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+        <p className="ml-4 text-teal-600">Cargando usuarios...</p>
+      </div>
+  );
+
+  if (error) return (
+      <div className="text-center py-10">
+        <p className="text-red-500">Error al cargar los usuarios: {error}</p>
+        <button
+            onClick={handleRefetch}
+            className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 flex items-center mx-auto"
+        >
+          <FaSyncAlt className="mr-2" /> Intentar nuevamente
+        </button>
+      </div>
+  );
+
   return (
-      <>
-        {/* Contenedor con margen y scroll horizontal */}
-        <div className="mx-4 my-6 overflow-x-auto rounded-xl shadow-lg bg-white">
-          <table className="min-w-[700px] w-full text-sm text-gray-700">
-            <thead className="bg-teal-600 text-white sticky top-0 z-10">
-            <tr>
-              {["ID", "NOMBRE", "GMAIL", "TELÉFONO", "ROL", "FECHA", "ACCIÓN"].map((header, index) => (
-                  <th
-                      key={index}
-                      className="px-4 py-3 text-left font-semibold tracking-wide whitespace-nowrap"
-                  >
-                    {header}
-                  </th>
-              ))}
-            </tr>
-            </thead>
-            <tbody>
-            {usuarios.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-500">
-                    No hay usuarios disponibles.
-                  </td>
-                </tr>
-            ) : (
-                usuarios.map((item, index) => (
-                    <tr
-                        key={item.id}
-                        className={`hover:bg-green-50 transition-colors ${
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                        }`}
-                    >
-                      <td className="px-4 py-2 font-bold">{item.id}</td>
-                      <td className="px-4 py-2 font-medium">{item.name}</td>
-                      <td className="px-4 py-2">{item.email}</td>
-                      <td className="px-4 py-2">{item.celular}</td>
-                      <td className="px-4 py-2">{item.rol || "N/A"}</td>
-                      <td className="px-4 py-2">{item.created_at}</td>
-                      <td className="px-4 py-2">
-                        <div className="flex gap-2">
-                          <button
-                              className="rounded-full p-2 hover:bg-red-100 text-red-600 transition"
-                              title="Eliminar"
-                              onClick={() => openDeleteModal(item.id)}
-                          >
-                            <FaTrash size={18} />
-                          </button>
-                          <button
-                              className="rounded-full p-2 hover:bg-green-100 text-green-600 transition"
-                              title="Editar"
-                              onClick={() => openModalForEdit(item)}
-                          >
-                            <GrUpdate size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                ))
-            )}
-            </tbody>
-          </table>
+      <div className="container mx-auto px-4 py-6">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+          <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 rounded-t-lg">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+              <div>
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  Gestión de Usuarios
+                </h2>
+                <p className="text-white/80 mt-1">
+                  Administra los usuarios registrados en el sistema
+                </p>
+              </div>
+              <button
+                  onClick={openModalForCreate}
+                  className="flex items-center gap-2 bg-white text-teal-600 hover:bg-gray-100 transition-colors px-4 py-2 rounded-md text-sm font-medium"
+              >
+                <FaPlus /> Agregar Usuario
+              </button>
+            </div>
+          </div>
+
+          {/* Controles de búsqueda */}
+          <div className="p-6 space-y-4 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
+              <div className="relative w-full sm:w-64">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                    type="text"
+                    placeholder="Buscar usuarios..."
+                    className="pl-9 w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              <button
+                  onClick={handleRefetch}
+                  disabled={loading}
+                  className="flex items-center gap-2 bg-white text-teal-600 border border-teal-600 hover:bg-teal-50 transition-colors px-4 py-2 rounded-md text-sm font-medium w-full sm:w-auto justify-center"
+              >
+                <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                {loading ? "Cargando..." : "Actualizar"}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+              <div className="text-sm font-medium text-gray-600">
+                {filteredUsuarios.length} {filteredUsuarios.length === 1 ? "usuario" : "usuarios"} encontrados
+              </div>
+            </div>
+          </div>
+
+          {/* Tabla de usuarios */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-teal-50 text-teal-800">
+              <tr>
+                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "ROL", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
+                    <th key={index} className="px-6 py-3 text-left font-semibold tracking-wide whitespace-nowrap">
+                      {header}
+                    </th>
+                ))}
+              </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+              {filteredUsuarios.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8 text-gray-500">
+                      {searchTerm ? "No se encontraron usuarios que coincidan con tu búsqueda" : "No hay usuarios registrados"}
+                    </td>
+                  </tr>
+              ) : (
+                  filteredUsuarios.map((item, index) => (
+                      <tr key={item.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 font-medium whitespace-nowrap">{item.id}</td>
+                        <td className="px-6 py-4">{item.name}</td>
+                        <td className="px-6 py-4">{item.email}</td>
+                        <td className="px-6 py-4">{item.celular || "N/A"}</td>
+                        <td className="px-6 py-4 capitalize">{item.rol?.toLowerCase() || "N/A"}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex gap-3 items-center">
+                            <button
+                                className="p-2 rounded-full hover:bg-red-50 text-red-600 transition-colors"
+                                title="Eliminar"
+                                onClick={() => openDeleteModal(item.id)}
+                            >
+                              <FaTrash size={18} />
+                            </button>
+                            <button
+                                className="p-2 rounded-full hover:bg-green-50 text-green-600 transition-colors"
+                                title="Editar"
+                                onClick={() => openModalForEdit(item)}
+                            >
+                              <FaEdit size={18} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                  ))
+              )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          {filteredUsuarios.length > 0 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Mostrando {(currentPage - 1) * 5 + 1}-{Math.min(currentPage * 5, filteredUsuarios.length)} de {filteredUsuarios.length} usuarios
+                </div>
+                <Paginator
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                />
+              </div>
+          )}
         </div>
 
-        {/* Botón agregar usuario */}
-        <button
-            className="mt-4 ml-6 p-2 px-4 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-            onClick={openModalForCreate}
-        >
-          Agregar Usuario
-        </button>
-
-        {/* Modales y paginador */}
+        {/* Modales */}
         <AddDataModal
             isOpen={isModalOpen}
             setIsOpen={setIsModalOpen}
             cliente={selectedCliente}
             onRefetch={handleClienteFormSuccess}
         />
+
         {clienteIdToDelete !== null && (
             <DeleteClienteModal
                 isOpen={isDeleteModalOpen}
@@ -150,14 +211,8 @@ const DataTable = () => {
                 onRefetch={handleRefetch}
             />
         )}
-        <Paginator
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
-        />
-      </>
+      </div>
   );
-
 };
 
-export default DataTable;
+export default UsuariosTable;
