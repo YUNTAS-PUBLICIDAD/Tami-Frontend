@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaEye } from "react-icons/fa";
 import AddBlogModal from "../AddBlogModel";
 import { config, getApiUrl } from "config";
@@ -148,7 +148,7 @@ const BlogsTable = () => {
   };
 
   return (
-      <div className="bg-gray-50 min-h-screen pb-12">
+      <div className="bg-gray-50 min-h-screen pb-12 sm:pb-16 md:pb-20 lg:pb-24 xl:pb-28">
         <div className="bg-gradient-to-r from-teal-600 to-teal-400 text-white p-8 shadow-md">
           <div className="container mx-auto">
             <h1 className="text-3xl font-bold mb-2">Gestión de Blog</h1>

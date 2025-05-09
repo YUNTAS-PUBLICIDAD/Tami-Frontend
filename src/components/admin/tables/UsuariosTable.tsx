@@ -16,7 +16,6 @@ const UsuariosTable = () => {
   const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filtrar usuarios basado en el término de búsqueda
   const filteredUsuarios = usuarios.filter(usuario =>
       usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,7 +72,7 @@ const UsuariosTable = () => {
   );
 
   return (
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
           <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 rounded-t-lg">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">

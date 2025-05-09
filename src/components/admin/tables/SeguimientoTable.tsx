@@ -78,9 +78,8 @@ const ClientesTable = () => {
   );
 
   return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto md:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-          {/* Encabezado con título y botón de agregar */}
           <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div>
@@ -201,7 +200,7 @@ const ClientesTable = () => {
                               <FaEdit size={18} />
                             </button>
                             <button
-                                className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
+                                className="p-2 rounded-full text-red-500 border border-transparent transition-colors duration-200 hover:bg-red-100 hover:border-red-200"
                                 title="Eliminar"
                                 onClick={() => openDeleteModal(item.id)}
                             >
