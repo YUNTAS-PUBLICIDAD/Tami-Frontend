@@ -71,7 +71,7 @@ const Sidebar = () => {
                   <li key={index}>
                     <a
                         href={item.path}
-                        className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                        className={`flex items-center px-4 py-1 rounded-lg transition-all duration-200 group relative ${
                             isActive
                                 ? 'bg-teal-500 text-white'
                                 : 'text-gray-700 hover:bg-teal-50 hover:text-teal-700'
