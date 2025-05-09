@@ -1,6 +1,5 @@
 import { config, getApiUrl } from "config";
-import { useState } from "react";
-import { FaRegFolder } from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 async function logout() {
   try {
@@ -33,6 +32,13 @@ async function logout() {
 
 const Sidebar = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [currentPath, setCurrentPath] = useState("");
+
+  // Detectar la ruta actual de manera segura usando useEffect
+  useEffect(() => {
+    // Solo ejecutar en el cliente
+    setCurrentPath(window.location.pathname);
+  }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -48,64 +54,81 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="flex-1 fixed top-24 left-0 row-start-2 bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
-      <nav>
-        <ul className="space-y-1">
-          <li className="font-bold text-lg">★ Administracion</li>
-          {items.map((item, index) => (
-            <li key={index}>
-              <a
-                href={item.path}
-                className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900"
-              >
-                <FaRegFolder className="text-gray-500" />
-                {item.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* Switch animado */}
-      <div className="border-t border-gray-400 pt-4 flex items-center justify-between">
-        <span className="text-sm font-medium">Dark Mode</span>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={darkMode}
-            onChange={toggleDarkMode}
-          />
-          <div
-            className={`w-10 h-5 rounded-full transition-colors duration-300 ${
-              darkMode ? "bg-gray-700" : "bg-gray-400"
-            }`}
-          >
-            <div
-              className={`absolute w-4 h-4 bg-white rounded-full shadow-md transition-transform translate-y-0.5 duration-300 ${
-                darkMode ? "translate-x-5" : "translate-x-1"
-              }`}
-            ></div>
+      <aside className="flex-1 fixed top-24 left-0 row-start-2 bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
+        <nav className="mt-3">
+          <div className="mb-6">
+            <h2 className="flex items-center text-lg font-bold text-gray-800 mb-3">
+              <span className="text-teal-500 mr-2">★</span>
+              Administración
+            </h2>
+            <div className="h-1 w-16 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full mb-4"></div>
           </div>
-        </label>
-      </div>
+          <ul className="space-y-2">
+            {items.map((item, index) => {
+              const isActive = currentPath === item.path;
 
-      <div className="border-t border-gray-400 pt-4 text-center">
-        <div className="flex flex-col items-center space-y-1">
-          <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white text-lg">
-            👤
-          </div>
-          <p className="font-semibold">Bienvenido</p>
-          <p className="text-sm text-gray-600">Administrador</p>
+              return (
+                  <li key={index}>
+                    <a
+                        href={item.path}
+                        className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                            isActive
+                                ? 'bg-teal-500 text-white'
+                                : 'text-gray-700 hover:bg-teal-50 hover:text-teal-700'
+                        }`}
+                    >
+                      <svg
+                          className={`w-6 h-6 fill-current ${isActive ? 'text-white' : 'text-teal-500'} mr-2`}
+                          viewBox="0 0 24 24"
+                      >
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"></path>
+                      </svg>
+                      {item.name}
+                    </a>
+                  </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Switch animado */}
+        <div className="border-t border-gray-400 dark:border-gray-600 pt-4 flex items-center justify-between">
           <button
-            onClick={logout}
-            className="mt-2 w-full bg-teal-500 text-white py-2 rounded-full hover:bg-teal-600 transition"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3  rounded-lg shadow-sm hover:shadow transition-all duration-300"
           >
-            Cerrar sesión
+            {darkMode ? (
+                <>
+                  <span className="text-xl">🌙</span>
+                  <span className="font-medium text-gray-800 dark:text-white">Modo Oscuro</span>
+                </>
+            ) : (
+                <>
+                  <span className="text-xl">☀️</span>
+                  <span className="font-medium text-gray-500 dark:text-black">Modo Claro</span>
+                </>
+            )}
           </button>
         </div>
-      </div>
-    </aside>
+
+        <div className="border-t border-gray-200 pt-6 text-center rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-white">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-16 h-16 bg-gradient-to-r from-teal-400 to-blue-500 rounded-full flex items-center justify-center text-white text-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+              <span className="text-2xl">👤</span>
+            </div>
+            <p className="font-bold text-lg text-gray-800">Bienvenido</p>
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <p className="text-sm text-gray-600 font-medium">Administrador</p>
+            </div>
+            <button
+                onClick={logout}
+                className="mt-4 w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </aside>
   );
 };
 
