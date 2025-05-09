@@ -18,89 +18,97 @@ interface AddDataModalProps {
 }
 
 const AddUpdateDataModal = ({
-  isOpen,
-  setIsOpen,
-  cliente,
-  onRefetch,
-}: AddDataModalProps) => {
-  {
-    /*
-     * Hook para manejar el formulario de cliente, y la lógica de añadir o editar clientes
-     */
-  }
+                              isOpen,
+                              setIsOpen,
+                              cliente,
+                              onRefetch,
+                            }: AddDataModalProps) => {
   const { formData, handleChange, handleSubmit } = useClienteForm(
-    cliente,
-    () => {
-      onRefetch(); // Llamar al callback para actualizar la lista de clientes
-      setIsOpen(false); // Cerrar el modal después de guardar
-    }
+      cliente,
+      () => {
+        onRefetch();
+        setIsOpen(false);
+      }
   );
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-teal-600 text-white px-10 py-8 rounded-4xl w-3/5">
-        <h2 className="text-2xl font-bold mb-4">
-          {cliente ? "EDITAR CLIENTE" : "AÑADIR CLIENTE"}
-        </h2>
+      <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl px-8 py-10 animate-scaleIn">
+          <h2 className="text-2xl font-semibold text-teal-700 mb-6 text-center">
+            {cliente ? "Editar Cliente" : "Añadir Cliente"}
+          </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-2 gap-4 gap-x-12"
-        >
-          <div>
-            <label className="block">Nombres</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            />
-          </div>
+          <form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <div className="flex flex-col">
+              <label htmlFor="name" className="text-sm font-medium mb-1 text-teal-800">
+                Nombres
+              </label>
+              <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+              />
+            </div>
 
-          <div>
-            <label className="block">Teléfono</label>
-            <input
-              type="text"
-              name="celular"
-              value={formData.celular}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            />
-          </div>
+            <div className="flex flex-col">
+              <label htmlFor="celular" className="text-sm font-medium mb-1 text-teal-800">
+                Teléfono
+              </label>
+              <input
+                  id="celular"
+                  name="celular"
+                  type="text"
+                  value={formData.celular}
+                  onChange={handleChange}
+                  required
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+              />
+            </div>
 
-          <div className="col-span-2">
-            <label className="block">Gmail</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            />
-          </div>
+            <div className="flex flex-col md:col-span-2">
+              <label htmlFor="email" className="text-sm font-medium mb-1 text-teal-800">
+                Gmail
+              </label>
+              <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+              />
+            </div>
 
-          <div className="flex gap-2 mt-8 col-span-2">
-            <button type="submit" className="admin-act-btn">
-              {cliente ? "Guardar cambios" : "Añadir cliente"}
-            </button>
-            <button
-              onClick={() => setIsOpen(false)} // Cerrar el modal
-              type="button"
-              className="cancel-btn"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+            <div className="md:col-span-2 flex justify-end gap-3 mt-4">
+              <button
+                  type="submit"
+                  className="bg-teal-600 text-white px-5 py-2 rounded-lg hover:bg-teal-700 transition shadow"
+              >
+                {cliente ? "Guardar Cambios" : "Añadir Cliente"}
+              </button>
+              <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
   );
 };
+
 
 export default AddUpdateDataModal;

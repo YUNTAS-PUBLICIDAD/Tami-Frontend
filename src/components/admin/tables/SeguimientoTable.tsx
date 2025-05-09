@@ -66,64 +66,64 @@ const DataTable = () => {
 
   return (
     <>
-      <table className="w-full border-separate border-spacing-2">
-        <thead>
-          <tr className="bg-teal-600 text-white">
-            <th className="px-4 py-2 rounded-xl">ID</th>
-            <th className="px-4 py-2 rounded-xl">NOMBRE</th>
-            <th className="px-4 py-2 rounded-xl">GMAIL</th>
-            <th className="px-4 py-2 rounded-xl">TELÉFONO</th>
-            <th className="px-4 py-2 rounded-xl">SECCIÓN</th>
-            <th className="px-4 py-2 rounded-xl">FECHA</th>
-            <th className="px-4 py-2 rounded-xl">ACCIÓN</th>
-          </tr>
+      <div className="mx-4 my-6 overflow-x-auto rounded-xl shadow-lg bg-white">
+
+      <table className="w-full text-sm text-gray-700 rounded-xl shadow-md overflow-hidden">
+        <thead className="bg-teal-600 text-white sticky top-0 z-10">
+        <tr>
+          {["ID", "NOMBRE", "GMAIL", "TELÉFONO", "SECCIÓN", "FECHA", "ACCIÓN"].map((header, index) => (
+              <th key={index} className="px-4 py-3 text-left font-semibold tracking-wide">
+                {header}
+              </th>
+          ))}
+        </tr>
         </thead>
         <tbody>
-          {clientes.length === 0 ? (
+        {clientes.length === 0 ? (
             <tr>
-              <td colSpan={7} className="text-center py-4 text-gray-500">
+              <td colSpan={7} className="text-center py-6 text-gray-500">
                 No hay clientes disponibles.
               </td>
             </tr>
-          ) : (
+        ) : (
             clientes.map((item, index) => (
-              <tr
-                key={item.id}
-                className={`text-center ${
-                  index % 2 === 0 ? "bg-gray-100" : "bg-gray-300"
-                }`}
-              >
-                <td className="px-4 font-bold rounded-xl">{item.id}</td>
-                <td className="px-4 font-bold rounded-xl">{item.name}</td>
-                <td className="px-4 rounded-xl">{item.email}</td>
-                <td className="px-4 font-bold rounded-xl">{item.celular}</td>
-                <td className="px-4 font-bold rounded-xl">
-                  {item.seccion || "N/A"}
-                </td>
-                <td className="px-4 font-bold rounded-xl">{item.created_at}</td>
-                <td className="px-4 rounded-xl">
-                  <div className="flex justify-center gap-2 rounded-xl p-1">
-                    <button
-                      className="p-2 text-red-600 hover:text-red-800 transition"
-                      title="Eliminar"
-                      onClick={() => openDeleteModal(item.id)}
-                    >
-                      <FaTrash size={18} />
-                    </button>
-                    <button
-                      className="p-2 text-green-600 hover:text-green-800 transition"
-                      title="Editar"
-                      onClick={() => openModalForEdit(item)}
-                    >
-                      <GrUpdate size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                <tr
+                    key={item.id}
+                    className={`hover:bg-green-50 transition-colors ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
+                >
+                  <td className="px-4 py-2 font-bold">{item.id}</td>
+                  <td className="px-4 py-2 font-medium">{item.name}</td>
+                  <td className="px-4 py-2">{item.email}</td>
+                  <td className="px-4 py-2">{item.celular}</td>
+                  <td className="px-4 py-2">{item.seccion || "N/A"}</td>
+                  <td className="px-4 py-2">{item.created_at}</td>
+                  <td className="px-4 py-2">
+                    <div className="flex gap-2">
+                      <button
+                          className="rounded-full p-2 hover:bg-red-100 text-red-600 transition"
+                          title="Eliminar"
+                          onClick={() => openDeleteModal(item.id)}
+                      >
+                        <FaTrash size={18} />
+                      </button>
+                      <button
+                          className="rounded-full p-2 hover:bg-green-100 text-green-600 transition"
+                          title="Editar"
+                          onClick={() => openModalForEdit(item)}
+                      >
+                        <GrUpdate size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
             ))
-          )}
+        )}
         </tbody>
       </table>
+      </div>
+
 
       {/**
        * Botón para agregar un nuevo cliente.

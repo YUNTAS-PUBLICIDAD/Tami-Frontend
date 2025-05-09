@@ -65,117 +65,99 @@ const DataTable = () => {
   };
 
   return (
-    <>
-      <table className="w-full border-separate border-spacing-2">
-        <thead>
-          <tr className="bg-teal-600 text-white">
-            <th className="px-4 py-2 rounded-xl">ID</th>
-            <th className="px-4 py-2 rounded-xl">NOMBRE</th>
-            <th className="px-4 py-2 rounded-xl">GMAIL</th>
-            <th className="px-4 py-2 rounded-xl">TELÉFONO</th>
-            <th className="px-4 py-2 rounded-xl">ROL</th>
-            <th className="px-4 py-2 rounded-xl">FECHA</th>
-            <th className="px-4 py-2 rounded-xl">ACCIÓN</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.length === 0 ? (
+      <>
+        {/* Contenedor con margen y scroll horizontal */}
+        <div className="mx-4 my-6 overflow-x-auto rounded-xl shadow-lg bg-white">
+          <table className="min-w-[700px] w-full text-sm text-gray-700">
+            <thead className="bg-teal-600 text-white sticky top-0 z-10">
             <tr>
-              <td colSpan={7} className="text-center py-4 text-gray-500">
-                No hay usuarios disponibles.
-              </td>
+              {["ID", "NOMBRE", "GMAIL", "TELÉFONO", "ROL", "FECHA", "ACCIÓN"].map((header, index) => (
+                  <th
+                      key={index}
+                      className="px-4 py-3 text-left font-semibold tracking-wide whitespace-nowrap"
+                  >
+                    {header}
+                  </th>
+              ))}
             </tr>
-          ) : (
-            usuarios.map((item, index) => (
-              <tr
-                key={item.id}
-                className={`text-center ${
-                  index % 2 === 0 ? "bg-gray-100" : "bg-gray-300"
-                }`}
-              >
-                <td className="px-4 font-bold rounded-xl">{item.id}</td>
-                <td className="px-4 font-bold rounded-xl">{item.name}</td>
-                <td className="px-4 rounded-xl">{item.email}</td>
-                <td className="px-4 font-bold rounded-xl">{item.celular}</td>
-                <td className="px-4 font-bold rounded-xl">
-                  {item.rol || "N/A"}
-                </td>
-                <td className="px-4 font-bold rounded-xl">{item.created_at}</td>
-                <td className="px-4 rounded-xl">
-                  <div className="flex justify-center gap-2 rounded-xl p-1">
-                    <button
-                      className="p-2 text-red-600 hover:text-red-800 transition"
-                      title="Eliminar"
-                      onClick={() => openDeleteModal(item.id)}
+            </thead>
+            <tbody>
+            {usuarios.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-6 text-gray-500">
+                    No hay usuarios disponibles.
+                  </td>
+                </tr>
+            ) : (
+                usuarios.map((item, index) => (
+                    <tr
+                        key={item.id}
+                        className={`hover:bg-green-50 transition-colors ${
+                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        }`}
                     >
-                      <FaTrash size={18} />
-                    </button>
-                    <button
-                      className="p-2 text-green-600 hover:text-green-800 transition"
-                      title="Editar"
-                      onClick={() => openModalForEdit(item)}
-                    >
-                      <GrUpdate size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+                      <td className="px-4 py-2 font-bold">{item.id}</td>
+                      <td className="px-4 py-2 font-medium">{item.name}</td>
+                      <td className="px-4 py-2">{item.email}</td>
+                      <td className="px-4 py-2">{item.celular}</td>
+                      <td className="px-4 py-2">{item.rol || "N/A"}</td>
+                      <td className="px-4 py-2">{item.created_at}</td>
+                      <td className="px-4 py-2">
+                        <div className="flex gap-2">
+                          <button
+                              className="rounded-full p-2 hover:bg-red-100 text-red-600 transition"
+                              title="Eliminar"
+                              onClick={() => openDeleteModal(item.id)}
+                          >
+                            <FaTrash size={18} />
+                          </button>
+                          <button
+                              className="rounded-full p-2 hover:bg-green-100 text-green-600 transition"
+                              title="Editar"
+                              onClick={() => openModalForEdit(item)}
+                          >
+                            <GrUpdate size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                ))
+            )}
+            </tbody>
+          </table>
+        </div>
 
-      {
-      /**
-       * Botón para agregar un nuevo cliente.
-       */
-      }
-      <button
-        className="mt-4 ml-2 p-2 pl-4 bg-teal-600 text-white rounded-lg"
-        onClick={openModalForCreate}
-      >
-        Agregar Usuario
-      </button>
+        {/* Botón agregar usuario */}
+        <button
+            className="mt-4 ml-6 p-2 px-4 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+            onClick={openModalForCreate}
+        >
+          Agregar Usuario
+        </button>
 
-      {
-      /**
-       * Modal para agregar o editar un cliente.
-       */
-      }
-      <AddDataModal
-        isOpen={isModalOpen}
-        setIsOpen={setIsModalOpen}
-        cliente={selectedCliente}
-        onRefetch={handleClienteFormSuccess}
-      />
-
-      {
-      /**
-       * Modal para eliminar un cliente.
-       */
-      }
-      {clienteIdToDelete !== null && (
-        <DeleteClienteModal
-          isOpen={isDeleteModalOpen}
-          setIsOpen={setIsDeleteModalOpen}
-          clienteId={clienteIdToDelete}
-          onRefetch={handleRefetch}
+        {/* Modales y paginador */}
+        <AddDataModal
+            isOpen={isModalOpen}
+            setIsOpen={setIsModalOpen}
+            cliente={selectedCliente}
+            onRefetch={handleClienteFormSuccess}
         />
-      )}
-
-      {
-      /**
-       * Componente de paginación para navegar entre las páginas de usuarios.
-       * Se muestra solo si hay más de una página.
-       */
-      }
-      <Paginator
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
-    </>
+        {clienteIdToDelete !== null && (
+            <DeleteClienteModal
+                isOpen={isDeleteModalOpen}
+                setIsOpen={setIsDeleteModalOpen}
+                clienteId={clienteIdToDelete}
+                onRefetch={handleRefetch}
+            />
+        )}
+        <Paginator
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+        />
+      </>
   );
+
 };
 
 export default DataTable;
