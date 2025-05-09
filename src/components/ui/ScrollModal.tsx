@@ -38,7 +38,7 @@ const ScrollModal = () => {
         setTimeout(() => {
             setShowModal(false);
             setIsClosing(false);
-        }, 300); // Duración de la animación
+        }, 300);
     };
 
     if (!showModal) return null;
@@ -97,7 +97,7 @@ const ScrollModal = () => {
                             type="submit"
                             className="bg-orange-300 hover:bg-orange-400 text-white max-w-fit p-4 text-3xl font-bold rounded-xl mx-auto"
                         >
-                            ¡HABLÉMOS!
+                            ¡HABLEMOS!
                         </button>
                     </form>
                     </div>
