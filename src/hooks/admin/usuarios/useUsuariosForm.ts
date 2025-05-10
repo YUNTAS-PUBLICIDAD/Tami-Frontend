@@ -1,103 +1,130 @@
-import React, { useState, useEffect } from "react";
-import useUsuarioAcciones from "./useUsuariosActions";
-import type Usuarios from "../../../models/Users";
-import Swal from "sweetalert2";
+/**
+ * @file useUsuarioForm.ts
+ * @description Este hook maneja el formulario para añadir o editar Usuarios.
+ * Maneja el estado del formulario, la validación de los campos y la lógica de envío.
+ */
 
-const useUsuarioForm = (usuario?: Usuarios | null, onSuccess?: () => void) => {
-  type FormData = {
-    name: string;
-    celular: string;
-    email: string;
-    rol: string;
-  };
-  const [formData, setFormData] = useState<FormData>({
+import { useState, useEffect } from "react";
+import useUsuarioAcciones from "./useUsuariosActions";
+import type Usuario from "../../../models/Users";
+/**
+ * Funcion para manejar el formulario de Usuario
+ */
+const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
+  type UsuarioFormData = Pick<Usuario, "name" | "celular" | "email" | "rol">;
+
+  /**
+   * Estado para manejar los datos del formulario.
+   * Inicialmente se establece como un objeto vacío.
+   */
+  const [formData, setFormData] = useState<UsuarioFormData>({
     name: "",
     celular: "",
     email: "",
-    rol: "USER",
+    rol: "USER", // Se establece un rol por defecto
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const { addUsuario, updateUsuario } = useUsuarioAcciones();
 
+  /**
+   * Efecto para manejar la carga inicial del formulario.
+   * Si se pasa un Usuario, se cargan sus datos en el formulario.
+   */
   useEffect(() => {
     if (usuario) {
-      console.log("Cargando usuario para editar:", usuario);
+
+      /**
+       * Si hay un Usuario, cargamos sus datos en el formulario.
+       */
       setFormData({
         name: usuario.name,
-        celular: usuario.celular || "",
+        celular: usuario.celular,
         email: usuario.email,
-        rol: usuario.rol || "USER",
+        rol: usuario.rol,
       });
       setIsEditing(true);
     } else {
+      /**
+       * Si no hay Usuario, reiniciamos el formulario
+       * y establecemos el estado de edición en falso.
+       */
       resetForm();
       setIsEditing(false);
     }
   }, [usuario]);
 
+  /**
+   * Función para manejar los cambios en los inputs del formulario.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Función para manejar el envío del formulario.
+   * Valida los campos y llama a las funciones de añadir o actualizar Usuario.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const { name, celular, email, rol } = formData;
+    e.preventDefault(); // Prevenimos el comportamiento por defecto del formulario
+    const { name, celular, email } = formData; // Desestructuramos los datos del formulario
 
+    /**
+     * Validación de los campos del formulario.
+     */
     if (!name.trim() || !celular.trim() || !email.trim()) {
       alert("⚠️ Todos los campos son obligatorios.");
       return;
     }
 
+    /**
+     * Validación del formato del email.
+     */
     if (!/^\d+$/.test(celular)) {
       alert("⚠️ El teléfono solo debe contener números.");
       return;
     }
 
     try {
-      if (isEditing && usuario) {
-        await updateUsuario(usuario.id, { name, celular, email, rol });
-        Swal.fire({
-          icon: "success",
-          title: "Usuario actualizado",
-          text: "Los cambios se guardaron correctamente",
-        });
+      if (isEditing) {
+        /**
+         * Si estamos editando un Usuario, llamamos a la función de actualización.
+         */
+        await updateUsuario(usuario!.id, { name, celular, email });
+        alert("✅ Usuario actualizado correctamente");
       } else {
-        await addUsuario({ name, celular, email, rol });
-        Swal.fire({
-          icon: "success",
-          title: "Usuario creado",
-          text: "El nuevo usuario fue registrado",
-        });
+        /**
+         * Si estamos añadiendo un nuevo Usuario, llamamos a la función de añadir.
+         */
+        await addUsuario({ name, celular, email });
+        alert("✅ Usuario registrado exitosamente");
       }
 
-      // CRÍTICO: Asegúrate de llamar a onSuccess después de la operación exitosa
-      if (typeof onSuccess === 'function') {
-        console.log("Llamando a onSuccess para actualizar la lista"); // Debug log
-        onSuccess();
-      } else {
-        console.warn("onSuccess no es una función o no está definida"); // Debug log
-      }
-      resetForm();
+      onSuccess?.(); // Llamamos a la función de éxito si existe
+      resetForm(); // Reiniciamos el formulario después de la operación
+
+      /**
+       * Manejo de errores en la operación de añadir o actualizar Usuario.
+       */
     } catch (error: any) {
-      console.error("Error:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error.message || "Ocurrió un error",
-      });
+      console.error("❌ Error en la operación:", error);
+      alert(`❌ Error: ${error.message || "Error desconocido"}`);
     }
   };
 
+  /**
+   * Función para reiniciar el formulario.
+   * Limpia los datos del formulario y establece el estado de edición en falso.
+   */
   const resetForm = () => {
-    setFormData({ name: "", celular: "", email: "", rol: "USER" });
+    setFormData({ name: "", celular: "", email: "" , rol: "USER" });
     setIsEditing(false);
   };
 
   return {
-    formData,
-    handleChange,
-    handleSubmit,
+    formData, // Retornamos los datos del formulario
+    handleChange, // Retornamos la función para manejar los cambios en los inputs
+    handleSubmit, // Retornamos la función para manejar el envío del formulario
   };
 };
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers } from "react-icons/fa";
-import AddDataModal from "../../admin/tables/modals/AddUpdateModal.tsx";
+import AddUpdateModal from "../../admin/tables/modals/AddUpdateModal.tsx";
 import DeleteClienteModal from "../../admin/tables/modals/DeleteModal.tsx";
 import useClientes from "../../../hooks/admin/seguimiento/useClientes.ts";
 import Paginator from "../../../components/admin/Paginator.tsx";
@@ -233,7 +233,7 @@ const ClientesTable = () => {
         </div>
 
         {/* Modales */}
-        <AddDataModal
+        <AddUpdateModal
             isOpen={isModalOpen}
             setIsOpen={setIsModalOpen}
             cliente={selectedCliente}
