@@ -66,7 +66,7 @@ const Sidebar = () => {
   ];
 
   return (
-      <aside className="flex-1 fixed left-0 w-full row-start-2 bg-gray-200 p-4 space-y-4 h-full text-gray-800 md:w-72 md:block">
+      <aside className="flex-1 fixed left-0 w-full row-start-2 bg-gray-200 p-4 space-y-4 h-full text-gray-800 md:w-76 md:block">
         <nav className="mt-3">
           <div className="mb-6">
             <h2 className="flex items-center text-lg font-bold text-gray-800 mb-3">
@@ -83,7 +83,7 @@ const Sidebar = () => {
                   <li key={index}>
                     <a
                         href={item.path}
-                        className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                        className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 group relative ${
                             isActive
                                 ? 'bg-teal-500 text-white'
                                 : 'text-gray-700 hover:bg-teal-50 hover:text-teal-700'

@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt } from "react-icons/fa";
 import AddDataModal from "../../admin/tables/modals/usuarios/AddUpdateModalUsuario.tsx";
-import DeleteClienteModal from "../../admin/tables/modals/usuarios/DeleteModalUsuario.tsx";
+import DeleteUsuarioModal from "../../admin/tables/modals/usuarios/DeleteModalUsuario.tsx";
 import useUsuarios from "../../../hooks/admin/usuarios/useUsuarios.ts";
 import Paginator from "../../../components/admin/Paginator.tsx";
 import Swal from "sweetalert2";
+import type Usuario from "../../../models/Users";
 
 const UsuariosTable = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const { usuarios, totalPages, loading, error } = useUsuarios(refetchTrigger, currentPage);
+  const {usuarios, totalPages, loading, error } = useUsuarios(refetchTrigger, currentPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCliente, setSelectedCliente] = useState<any>(null);
+  const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
+  const [usuarioIdToDelete, setUsuarioIdToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredUsuarios = usuarios.filter(usuario =>
@@ -26,29 +27,29 @@ const UsuariosTable = () => {
 
   const handleRefetch = () => setRefetchTrigger((prev) => !prev);
 
-  const openModalForEdit = (cliente: any) => {
-    setSelectedCliente(cliente);
+  const openModalForEdit = (usuario: Usuario) => {
+    setSelectedUsuario(usuario);
     setIsModalOpen(true);
   };
 
   const openModalForCreate = () => {
-    setSelectedCliente(null);
+    setSelectedUsuario(null);
     setIsModalOpen(true);
   };
 
   const openDeleteModal = (id: number) => {
-    setClienteIdToDelete(id);
+    setUsuarioIdToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
-  const handleClienteFormSuccess = () => {
-    handleRefetch();
+  const handleUsuarioFormSuccess = () => {
+    setRefetchTrigger((prev) => !prev);
     setIsModalOpen(false);
     Swal.fire({
       icon: "success",
       title: "Operación exitosa",
       text: "El usuario se ha guardado correctamente",
-      confirmButtonColor: "#38a169", // Verde corporativo
+      confirmButtonColor: "#38a169",
     });
   };
 
@@ -144,29 +145,29 @@ const UsuariosTable = () => {
                     </td>
                   </tr>
               ) : (
-                  filteredUsuarios.map((item, index) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 font-medium whitespace-nowrap">{item.id}</td>
-                        <td className="px-6 py-4">{item.name}</td>
-                        <td className="px-6 py-4">{item.email}</td>
-                        <td className="px-6 py-4">{item.celular || "N/A"}</td>
-                        <td className="px-6 py-4 capitalize">{item.rol?.toLowerCase() || "N/A"}</td>
+                  filteredUsuarios.map((usuario) => (
+                      <tr key={usuario.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 font-medium whitespace-nowrap">{usuario.id}</td>
+                        <td className="px-6 py-4">{usuario.name}</td>
+                        <td className="px-6 py-4">{usuario.email}</td>
+                        <td className="px-6 py-4">{usuario.celular || "N/A"}</td>
+                        <td className="px-6 py-4 capitalize">{usuario.rol?.toLowerCase() || "N/A"}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {new Date(item.created_at).toLocaleDateString()}
+                          {usuario.created_at ? new Date(usuario.created_at).toLocaleDateString() : "N/A"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-3 items-center">
                             <button
                                 className="p-2 rounded-full hover:bg-red-50 text-red-600 transition-colors"
                                 title="Eliminar"
-                                onClick={() => openDeleteModal(item.id)}
+                                onClick={() => openDeleteModal(usuario.id)}
                             >
                               <FaTrash size={18} />
                             </button>
                             <button
                                 className="p-2 rounded-full hover:bg-green-50 text-green-600 transition-colors"
                                 title="Editar"
-                                onClick={() => openModalForEdit(item)}
+                                onClick={() => openModalForEdit(usuario)}
                             >
                               <FaEdit size={18} />
                             </button>
@@ -198,15 +199,15 @@ const UsuariosTable = () => {
         <AddDataModal
             isOpen={isModalOpen}
             setIsOpen={setIsModalOpen}
-            cliente={selectedCliente}
-            onRefetch={handleClienteFormSuccess}
+            Usuario={selectedUsuario}
+            onRefetch={handleUsuarioFormSuccess}
         />
 
-        {clienteIdToDelete !== null && (
-            <DeleteClienteModal
+        {usuarioIdToDelete !== null && (
+            <DeleteUsuarioModal
                 isOpen={isDeleteModalOpen}
                 setIsOpen={setIsDeleteModalOpen}
-                clienteId={clienteIdToDelete}
+                usuarioId={usuarioIdToDelete}
                 onRefetch={handleRefetch}
             />
         )}
