@@ -312,7 +312,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
   return (
     <>
-      <button onClick={openModal} className="w-full pagination-btn">
+      <button onClick={openModal} className="flex items-center gap-2 bg-white text-teal-600 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg">
         Agregar Producto
       </button>
       {showModal && (

@@ -8,16 +8,12 @@ const AddDataModal = () => {
     nombres: "",
     telefono: "",
     gmail: "",
-    // seccion: "",
-    // fecha: "",
   });
 
-  // Función para manejar el cambio en los inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Función para enviar los datos a la API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -34,23 +30,23 @@ const AddDataModal = () => {
       };
 
       const response = await fetch(
-        getApiUrl(config.endpoints.clientes.create),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(dataToSend),
-        }
+          getApiUrl(config.endpoints.clientes.create),
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(dataToSend),
+          }
       );
 
       const data = await response.json();
-      console.log("Respuesta del servidor:", data); // Verifica la respuesta
+      console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
         alert("✅ Usuario registrado exitosamente");
-        setIsOpen(false); // Cerrar modal
+        setIsOpen(false);
       } else {
         alert(`❌ Error: ${data.message}`);
       }
@@ -61,101 +57,100 @@ const AddDataModal = () => {
   };
 
   return (
-    <>
-      {/* Botón para abrir el modal */}
-      <button onClick={() => setIsOpen(true)} className="mt-4 admin-act-btn">
-        Añadir dato
-      </button>
+      <>
+        {/* Botón para abrir el modal */}
+        <button
+            onClick={() => setIsOpen(true)}
+            className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-md transition-colors duration-300 flex items-center gap-2"
+        >
+          <FaPlus className="text-sm" />
+          Añadir dato
+        </button>
 
-      {/* Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/75">
-          <div className="bg-teal-600 text-white px-10 py-8 rounded-4xl w-3/5">
-            <h2 className="text-2xl font-bold mb-4">AÑADIR DATOS</h2>
+        {/* Modal */}
+        {isOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
+              <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+                {/* Encabezado */}
+                <div className="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-white">Añadir Nuevo Cliente</h2>
+                  <button
+                      onClick={() => setIsOpen(false)}
+                      className="text-white hover:text-indigo-200 transition-colors"
+                  >
+                    <FaTimes className="text-lg" />
+                  </button>
+                </div>
 
-            {/* Formulario */}
-            <form
-              onSubmit={handleSubmit}
-              className="grid grid-cols-2 gap-4 gap-x-12"
-            >
-              <div>
-                <label className="block">Nombres</label>
-                <input
-                  type="text"
-                  name="nombres"
-                  value={formData.nombres}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
+                {/* Formulario */}
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Nombres*
+                    </label>
+                    <input
+                        type="text"
+                        name="nombres"
+                        value={formData.nombres}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        placeholder="Ingrese nombres completos"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Teléfono*
+                    </label>
+                    <input
+                        type="text"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        placeholder="Ingrese número telefónico"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Correo Electrónico*
+                    </label>
+                    <input
+                        type="email"
+                        name="gmail"
+                        value={formData.gmail}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        placeholder="Ingrese dirección de correo"
+                    />
+                  </div>
+
+                  {/* Botones */}
+                  <div className="flex justify-end gap-3 pt-4">
+                    <button
+                        type="button"
+                        onClick={() => setIsOpen(false)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2"
+                    >
+                      <FaPlus />
+                      Añadir Cliente
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              <div>
-                <label className="block">Teléfono</label>
-                <input
-                  type="text"
-                  name="telefono"
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block">Gmail</label>
-                <input
-                  type="email"
-                  name="gmail"
-                  value={formData.gmail}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              {/*<div>*/}
-              {/*  <label className="block">Sección</label>*/}
-              {/*    <input*/}
-              {/*        type="text"*/}
-              {/*        name="seccion"*/}
-              {/*        value={formData.seccion}*/}
-              {/*        onChange={handleChange}*/}
-              {/*        required*/}
-              {/*        className="w-full bg-white p-2 outline-none rounded-md text-black"*/}
-              {/*    />*/}
-              {/*</div>*/}
-
-              {/*<div>*/}
-              {/*  <label className="block">Fecha</label>*/}
-              {/*    <input*/}
-              {/*        type="date"*/}
-              {/*        name="fecha"*/}
-              {/*        value={formData.fecha}*/}
-              {/*        onChange={handleChange}*/}
-              {/*        required*/}
-              {/*        className="w-full bg-white p-2 outline-none rounded-md text-black"*/}
-              {/*    />*/}
-              {/*</div>*/}
-
-              {/* Botones */}
-              <div className="w-full flex gap-2 mt-8 py-3">
-                <button type="submit" className="border admin-act-btn">
-                  Añadir dato
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  type="button"
-                  className="cancel-btn"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </>
+            </div>
+        )}
+      </>
   );
 };
 
