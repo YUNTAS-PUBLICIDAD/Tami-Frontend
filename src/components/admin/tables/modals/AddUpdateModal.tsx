@@ -5,7 +5,8 @@
  */
 
 import useClienteForm from "../../../../hooks/admin/seguimiento/useClienteForm";
-import type Cliente from "../../../../models/Clients";
+import type Cliente from "../../../../models/clients.ts";
+import React from "react";
 
 {
   /* Interfaz de modals, Typescript */
