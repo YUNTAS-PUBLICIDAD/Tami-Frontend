@@ -62,10 +62,10 @@ const productosUrl = config.endpoints.productos;
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {/* Left Column - Gallery */}
-        <div class="space-y-4">
+        <div class="space-y-4 w-full max-w-[440px]">
           {/* Imagen principal */}
           <div
-              class="w-[440px] h-[440px] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
+              class="w-full aspect-[1/1] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
           >
             <img
                 id="product-viewer"
@@ -77,12 +77,11 @@ const productosUrl = config.endpoints.productos;
 
           {/* Grid de miniaturas */}
           <div
-              class="grid grid-cols-4 gap-2 w-full md:max-w-[440px]"
+              class="grid grid-cols-4 gap-2 w-full"
               id="images-list"
           >
           </div>
         </div>
-
         {/* Right Column - Product Info */}
         <div>
           <div class="mb-6">
