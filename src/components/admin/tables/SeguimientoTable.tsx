@@ -78,7 +78,7 @@ const ClientesTable = () => {
   );
 
   return (
-      <div className="container mx-auto md:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
+      <div className="container mx-auto p-4">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
           <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -139,7 +139,7 @@ const ClientesTable = () => {
             <table className="w-full text-sm">
               <thead className="bg-teal-50 text-teal-800">
               <tr>
-                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "SECCIÓN", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
+                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
                     <th key={index} className="px-6 py-4 text-left font-bold tracking-wide uppercase text-xs whitespace-nowrap">
                       {header}
                     </th>
@@ -175,15 +175,6 @@ const ClientesTable = () => {
                           {item.celular ||
                               <span className="text-gray-400 italic text-xs">No disponible</span>
                           }
-                        </td>
-                        <td className="px-6 py-4">
-                          {item.seccion ? (
-                              <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                          {item.seccion.toLowerCase()}
-                        </span>
-                          ) : (
-                              <span className="text-gray-400 italic text-xs">Sin asignar</span>
-                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                       <span className="bg-gray-100 py-1 px-3 rounded-full text-xs text-gray-700">

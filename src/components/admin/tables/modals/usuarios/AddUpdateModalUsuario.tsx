@@ -51,6 +51,7 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
             <input
               type="text"
               name="name"
+              placeholder="Ingrese los nombres"
               value={formData.name}
               onChange={handleChange}
               required
@@ -63,6 +64,7 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
             <input
               type="text"
               name="celular"
+              placeholder="Ingrese el teléfono"
               value={formData.celular}
               onChange={handleChange}
               required
@@ -71,10 +73,11 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
           </div>
 
           <div className="col-span-2">
-            <label className="block">Gmail</label>
+            <label className="block">Correo</label>
             <input
               type="email"
               name="email"
+              placeholder="Ingrese el correo"
               value={formData.email}
               onChange={handleChange}
               required
@@ -82,21 +85,21 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
             />
           </div>
 
-          <div className="col-span-2">
-            <label className="block">Rol</label>
-            <select
-              name="rol"
-              value={formData.rol}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            >
-              <option value="ADMIN">ADMIN</option>
-              <option value="USER">USER</option>
-              <option value="MARK">MARK</option>
-              <option value="VENTAS">VENTAS</option>
-            </select>
-          </div>
+          {/*<div className="col-span-2">*/}
+          {/*  <label className="block">Rol</label>*/}
+          {/*  <select*/}
+          {/*    name="rol"*/}
+          {/*    value={formData.rol}*/}
+          {/*    onChange={handleChange}*/}
+          {/*    required*/}
+          {/*    className="w-full bg-white outline-none p-2 rounded-md text-black"*/}
+          {/*  >*/}
+          {/*    <option value="ADMIN">ADMIN</option>*/}
+          {/*    <option value="USER">USER</option>*/}
+          {/*    <option value="MARK">MARK</option>*/}
+          {/*    <option value="VENTAS">VENTAS</option>*/}
+          {/*  </select>*/}
+          {/*</div>*/}
 
           <div className="flex gap-2 mt-8 col-span-2">
             <button

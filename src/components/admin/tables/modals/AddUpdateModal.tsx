@@ -53,6 +53,7 @@ const AddUpdateDataModal = ({
                   id="name"
                   name="name"
                   type="text"
+                  placeholder="Ingrese los nombres"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -68,6 +69,7 @@ const AddUpdateDataModal = ({
                   id="celular"
                   name="celular"
                   type="text"
+                  placeholder="Ingrese el celular"
                   value={formData.celular}
                   onChange={handleChange}
                   required
@@ -77,12 +79,13 @@ const AddUpdateDataModal = ({
 
             <div className="flex flex-col md:col-span-2">
               <label htmlFor="email" className="text-sm font-medium mb-1 text-teal-800">
-                Gmail
+                Correo
               </label>
               <input
                   id="email"
                   name="email"
                   type="email"
+                  placeholder="Ingrese el correo"
                   value={formData.email}
                   onChange={handleChange}
                   required
