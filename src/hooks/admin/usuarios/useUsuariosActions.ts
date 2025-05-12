@@ -1,101 +1,65 @@
-/**
- * @file useUsuariosActions.ts
- * @description Este archivo contiene los hooks para las acciones de los Usuarios.
- */
-
-import { getApiUrl, config } from "config"; // importa la configuración de la API
-import type Usuario from "../../../models/Users"; // importa el modelo de Usuario
+import { getApiUrl, config } from "config";
+import type Usuarios from "../../../models/Users.ts";
 
 const useUsuarioAcciones = () => {
-  
-  /**
-   * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
-   * Si no se encuentra el token, lanza un error.
-   */
-
-  const getValidToken = () => {
+  const getToken = () => {
     const token = localStorage.getItem("token");
-    if (!token) throw new Error("No se encontró el token");
+    if (!token) throw new Error("No hay token de autenticación");
     return token;
   };
 
-  /**
-   * Funcion para añadir un Usuario
-   */
+  // Cambiamos el tipo para aceptar datos parciales sin id
+  const addUsuario = async (usuarioData: Omit<Partial<Usuarios>, "id">) => {
+    try {
+      const response = await fetch(getApiUrl(config.endpoints.users.create), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${getToken()}`
+        },
+        body: JSON.stringify(usuarioData)
+      });
 
-  const addUsuario = async (
-    UsuarioData: Partial<Usuario>
-  ): Promise<Usuario> => {
-    const token = getValidToken(); 
-    const url = getApiUrl(config.endpoints.users.create); 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al crear usuario");
+      }
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(UsuarioData),
-    });
-
-    if (!response.ok) throw new Error("Error al agregar Usuario");
-
-    const result: { data: Usuario } = await response.json();
-    return result.data;
+      return await response.json();
+    } catch (error) {
+      console.error("Error en addUsuario:", error);
+      throw error;
+    }
   };
 
-  /**
-   * Función para actualizar un Usuario, usando los tipos
-   */
-
-  const updateUsuario = async (
-    id: number,
-    updatedData: Partial<Usuario>
-  ): Promise<Usuario> => {
-    const token = getValidToken();
-    const url = getApiUrl(config.endpoints.users.update(id));
-
-    const response = await fetch(url, {
+  // También cambiamos este para que acepte datos parciales
+  const updateUsuario = async (id: number, data: Partial<Usuarios>) => {
+    const response = await fetch(getApiUrl(config.endpoints.users.update(id)), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        "Authorization": `Bearer ${getToken()}`
       },
-      body: JSON.stringify(updatedData),
+      body: JSON.stringify(data)
     });
 
-    if (!response.ok) throw new Error("Error al actualizar Usuario");
-
-    const result: { data: Usuario } = await response.json();
-    return result.data;
+    if (!response.ok) throw new Error("Error al actualizar usuario");
+    return await response.json();
   };
 
-  /**
-   * Función para eliminar un Usuario, usando los tipos
-   */
-  
-  const deleteUsuario = async (id: number): Promise<{ message: string }> => {
-    const token = getValidToken();
-    const url = getApiUrl(config.endpoints.users.delete(id));
-
-    const response = await fetch(url, {
+  const deleteUsuario = async (id: number) => {
+    const response = await fetch(getApiUrl(config.endpoints.users.delete(id)), {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        "Authorization": `Bearer ${getToken()}`
+      }
     });
 
-    if (!response.ok) throw new Error("Error al eliminar Usuario");
-
-    const result: { message: string } = await response.json();
-    return result;
+    if (!response.ok) throw new Error("Error al eliminar usuario");
+    return { success: true };
   };
 
-  return {
-    addUsuario,
-    updateUsuario,
-    deleteUsuario,
-  };
+  return { addUsuario, updateUsuario, deleteUsuario };
 };
 
 export default useUsuarioAcciones;

@@ -1,5 +1,6 @@
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 import type Blog from "src/models/Blog";
+import React from "react";
 
 interface CardBlogProps {
   blog: Blog;

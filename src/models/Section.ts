@@ -1,6 +1,6 @@
-import type Producto from "./Product";
+import type { Product } from "./Product";
 
 export default interface Section {
   nombreSeccion: string;
-  productosDeLaSeccion: Producto[];
+  productosDeLaSeccion: Product[];
 }

@@ -6,6 +6,7 @@
 
 import useUsuariosForm from "../../../../../hooks/admin/usuarios/useUsuariosForm";
 import type Usuario from "../../../../../models/Users";
+import React from "react";
 
 {
   /* Interfaz de modals, Typescript */
@@ -13,11 +14,11 @@ import type Usuario from "../../../../../models/Users";
 interface AddDataModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  cliente: Usuario | null; // Cliente a editar o null para añadir uno nuevo
+  Usuario: Usuario | null; // Cliente a editar o null para añadir uno nuevo
   onRefetch: () => void; // Función para actualizar la lista después de agregar o editar
 }
 
-const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataModalProps) => {
+const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataModalProps) => {
   
   {
     /* 
@@ -25,7 +26,7 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataMo
     */
   }
   const { formData, handleChange, handleSubmit } = useUsuariosForm(
-    cliente,
+      Usuario,
     () => {
       onRefetch(); // Llamar al callback para actualizar la lista de clientes
       setIsOpen(false); // Cerrar el modal después de guardar
@@ -38,7 +39,7 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataMo
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div className="bg-teal-600 text-white px-10 py-8 rounded-4xl w-3/5">
         <h2 className="text-2xl font-bold mb-4">
-          {cliente ? "EDITAR CLIENTE" : "AÑADIR CLIENTE"}
+          {Usuario ? "EDITAR USUARIO" : "AÑADIR USUARIO"}
         </h2>
 
         <form
@@ -102,7 +103,7 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, cliente, onRefetch }: AddDataMo
               type="submit"
               className="px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500"
             >
-              {cliente ? "Guardar cambios" : "Añadir cliente"}
+              {Usuario ? "Guardar cambios" : "Añadir Usuario"}
             </button>
             <button
               onClick={() => setIsOpen(false)} // Cerrar el modal

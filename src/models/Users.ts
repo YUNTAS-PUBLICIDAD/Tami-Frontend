@@ -4,5 +4,5 @@ export default interface Usuarios {
     email: string;
     celular: string;
     rol: string;
-    created_at: string;
+    created_at?: string;
   }

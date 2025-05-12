@@ -1,32 +1,44 @@
 import { config, getApiUrl } from "config";
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 async function logout() {
-  try {
-    const response = await fetch(getApiUrl(config.endpoints.auth.logout), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: '¿Deseas cerrar sesión?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, cerrar sesión',
+    cancelButtonText: 'Cancelar',
+  });
 
-    console.log("Respuesta recibida:", response);
+  if (result.isConfirmed) {
+    try {
+      const response = await fetch(getApiUrl(config.endpoints.auth.logout), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
 
-    const data = await response.json();
-    console.log("Datos del servidor:", data);
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.removeItem("token"); // Eliminar token
-      window.location.href = "/"; // Redirigir al inicio
-    } else {
-      console.error("Error en la respuesta del servidor:", data.message);
-      alert(data.message || "Error al cerrar sesión");
+      if (response.ok) {
+        localStorage.removeItem('token');
+        await Swal.fire('¡Sesión cerrada!', 'Has cerrado sesión exitosamente.', 'success');
+        window.location.href = '/';
+      } else {
+        console.error('Error en la respuesta del servidor:', data.message);
+        Swal.fire('Error', data.message || 'Error al cerrar sesión', 'error');
+      }
+    } catch (error) {
+      console.error('Error de conexión con el servidor:', error);
+      Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
     }
-  } catch (error) {
-    console.error("Error de conexión con el servidor:", error);
-    alert("Error de conexión con el servidor.");
   }
 }
 
@@ -54,7 +66,7 @@ const Sidebar = () => {
   ];
 
   return (
-      <aside className="flex-1 fixed top-24 left-0 row-start-2 bg-gray-200 w-64 p-4 space-y-4 h-full text-gray-800">
+      <aside className="flex-1 fixed left-0 w-full row-start-2 bg-gray-200 p-4 space-y-4 h-full text-gray-800 md:w-76 md:block">
         <nav className="mt-3">
           <div className="mb-6">
             <h2 className="flex items-center text-lg font-bold text-gray-800 mb-3">
@@ -71,7 +83,7 @@ const Sidebar = () => {
                   <li key={index}>
                     <a
                         href={item.path}
-                        className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                        className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 group relative ${
                             isActive
                                 ? 'bg-teal-500 text-white'
                                 : 'text-gray-700 hover:bg-teal-50 hover:text-teal-700'
@@ -122,8 +134,7 @@ const Sidebar = () => {
             </div>
             <button
                 onClick={logout}
-                className="mt-4 w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50"
-            >
+                className="mt-4 w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">
               Cerrar sesión
             </button>
           </div>
