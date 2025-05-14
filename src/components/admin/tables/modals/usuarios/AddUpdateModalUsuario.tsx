@@ -42,66 +42,6 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
             {Usuario ? "EDITAR USUARIO" : "AÑADIR USUARIO"}
           </h2>
 
-<<<<<<< HEAD
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-2 gap-4 gap-x-12"
-        >
-          <div>
-            <label className="block">Nombres</label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Ingrese los nombres"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            />
-          </div>
-
-          <div>
-            <label className="block">Teléfono</label>
-            <input
-              type="text"
-              name="celular"
-              placeholder="Ingrese el teléfono"
-              value={formData.celular}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            />
-          </div>
-
-          <div className="col-span-2">
-            <label className="block">Correo</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Ingrese el correo"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full bg-white outline-none p-2 rounded-md text-black"
-            />
-          </div>
-
-          {/*<div className="col-span-2">*/}
-          {/*  <label className="block">Rol</label>*/}
-          {/*  <select*/}
-          {/*    name="rol"*/}
-          {/*    value={formData.rol}*/}
-          {/*    onChange={handleChange}*/}
-          {/*    required*/}
-          {/*    className="w-full bg-white outline-none p-2 rounded-md text-black"*/}
-          {/*  >*/}
-          {/*    <option value="ADMIN">ADMIN</option>*/}
-          {/*    <option value="USER">USER</option>*/}
-          {/*    <option value="MARK">MARK</option>*/}
-          {/*    <option value="VENTAS">VENTAS</option>*/}
-          {/*  </select>*/}
-          {/*</div>*/}
-=======
           <form
               onSubmit={handleSubmit}
               className="grid grid-cols-1 sm:grid-cols-2 gap-6"
@@ -160,7 +100,6 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
                 <option value="VENTAS">VENTAS</option>
               </select>
             </div>
->>>>>>> Rodrigo
 
             <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:col-span-2 justify-end">
               <button
