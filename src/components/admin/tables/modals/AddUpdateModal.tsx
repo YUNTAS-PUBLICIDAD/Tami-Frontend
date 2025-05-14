@@ -41,59 +41,6 @@ const AddUpdateDataModal = ({
                     {cliente ? "Editar Cliente" : "Añadir Cliente"}
                 </h2>
 
-<<<<<<< HEAD
-          <form
-              onSubmit={handleSubmit}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            <div className="flex flex-col">
-              <label htmlFor="name" className="text-sm font-medium mb-1 text-teal-800">
-                Nombres
-              </label>
-              <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="Ingrese los nombres"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label htmlFor="celular" className="text-sm font-medium mb-1 text-teal-800">
-                Teléfono
-              </label>
-              <input
-                  id="celular"
-                  name="celular"
-                  type="text"
-                  placeholder="Ingrese el celular"
-                  value={formData.celular}
-                  onChange={handleChange}
-                  required
-                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
-              />
-            </div>
-
-            <div className="flex flex-col md:col-span-2">
-              <label htmlFor="email" className="text-sm font-medium mb-1 text-teal-800">
-                Correo
-              </label>
-              <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Ingrese el correo"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
-              />
-            </div>
-=======
                 <form
                     onSubmit={handleSubmit}
                     className="grid grid-cols-1 sm:grid-cols-2 gap-6"
@@ -145,7 +92,6 @@ const AddUpdateDataModal = ({
                             placeholder="Ej. cliente@gmail.com"
                         />
                     </div>
->>>>>>> Rodrigo
 
                     <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end items-center gap-3 mt-4">
                         <button
