@@ -8,13 +8,13 @@ const useUsuarioForm = (usuario?: Usuarios | null, onSuccess?: () => void) => {
     name: string;
     celular: string;
     email: string;
-    rol: string;
+    // rol: string;
   };
   const [formData, setFormData] = useState<FormData>({
     name: "",
     celular: "",
     email: "",
-    rol: "USER",
+    // rol: "USER",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -27,7 +27,7 @@ const useUsuarioForm = (usuario?: Usuarios | null, onSuccess?: () => void) => {
         name: usuario.name,
         celular: usuario.celular || "",
         email: usuario.email,
-        rol: usuario.rol || "USER",
+        // rol: usuario.rol || "USER",
       });
       setIsEditing(true);
     } else {
@@ -42,7 +42,7 @@ const useUsuarioForm = (usuario?: Usuarios | null, onSuccess?: () => void) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, celular, email, rol } = formData;
+    const { name, celular, email} = formData;
 
     if (!name.trim() || !celular.trim() || !email.trim()) {
       alert("⚠️ Todos los campos son obligatorios.");
@@ -56,14 +56,16 @@ const useUsuarioForm = (usuario?: Usuarios | null, onSuccess?: () => void) => {
 
     try {
       if (isEditing && usuario) {
-        await updateUsuario(usuario.id, { name, celular, email, rol });
+        const response = await updateUsuario(usuario.id, { name, celular, email });
+        console.log("Respuesta de la API:", response);
         Swal.fire({
           icon: "success",
           title: "Usuario actualizado",
           text: "Los cambios se guardaron correctamente",
         });
+        console.log("Enviando datos a la API:", { name, celular, email });
       } else {
-        await addUsuario({ name, celular, email, rol });
+        await addUsuario({ name, celular, email});
         Swal.fire({
           icon: "success",
           title: "Usuario creado",
@@ -90,7 +92,7 @@ const useUsuarioForm = (usuario?: Usuarios | null, onSuccess?: () => void) => {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", celular: "", email: "", rol: "USER" });
+    setFormData({ name: "", celular: "", email: ""});
     setIsEditing(false);
   };
 

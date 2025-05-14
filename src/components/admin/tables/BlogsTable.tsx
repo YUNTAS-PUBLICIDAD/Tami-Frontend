@@ -172,13 +172,7 @@ const BlogsTable = () => {
                 />
               </div>
 
-              <button
-                  onClick={openAddModal}
-                  className="flex items-center justify-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors shadow-md"
-              >
-                <FaPlus className="mr-2" />
-                <span>Nuevo Blog</span>
-              </button>
+              <AddBlogModal />
             </div>
 
             {isLoading ? (
@@ -317,10 +311,6 @@ const BlogsTable = () => {
             </div>
           </div>
         </div>
-
-        {/* Modal para añadir nuevo blog */}
-        {isAddModalOpen && <AddBlogModal />}
-
         {/* Vista previa del blog */}
         {selectedBlog && <BlogPreview blog={selectedBlog} onClose={closePreview} />}
       </div>

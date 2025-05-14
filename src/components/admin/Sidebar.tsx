@@ -61,20 +61,13 @@ const Sidebar = () => {
     { name: "Seguimiento", path: "/admin/seguimiento" },
     { name: "Ventas", path: "/admin/ventas" },
     { name: "Usuarios", path: "/admin/usuarios" },
-    { name: "productos", path: "/admin/productos"},
-    { name:"blog", path:"/admin/blog"},
+    { name: "Productos", path: "/admin/productos"},
+    { name:"Blog", path:"/admin/blog"},
   ];
 
   return (
       <aside className="flex-1 fixed left-0 w-full row-start-2 bg-gray-200 p-4 space-y-4 h-full text-gray-800 md:w-76 md:block">
         <nav className="mt-3">
-          <div className="mb-6">
-            <h2 className="flex items-center text-lg font-bold text-gray-800 mb-3">
-              <span className="text-teal-500 mr-2">★</span>
-              Administración
-            </h2>
-            <div className="h-1 w-16 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full mb-4"></div>
-          </div>
           <ul className="space-y-2">
             {items.map((item, index) => {
               const isActive = currentPath === item.path;
@@ -104,9 +97,9 @@ const Sidebar = () => {
         </nav>
 
         {/* Switch animado */}
-        <div className="border-t border-gray-400 dark:border-gray-600 pt-4 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <button
-              className="w-full flex items-center justify-center gap-3 px-4 py-3  rounded-lg shadow-sm hover:shadow transition-all duration-300"
+              className="w-full flex items-center justify-center gap-3 py-3 rounded-lg bg-gray-300 shadow-sm hover:shadow px-4 transition-all duration-300"
           >
             {darkMode ? (
                 <>
@@ -134,7 +127,7 @@ const Sidebar = () => {
             </div>
             <button
                 onClick={logout}
-                className="mt-4 w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">
+                className="w-full bg-gradient-to-r my-2 from-teal-500 to-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">
               Cerrar sesión
             </button>
           </div>

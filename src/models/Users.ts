@@ -3,6 +3,6 @@ export default interface Usuarios {
     name: string;
     email: string;
     celular: string;
-    rol: string;
+    // rol: string;
     created_at?: string;
   }

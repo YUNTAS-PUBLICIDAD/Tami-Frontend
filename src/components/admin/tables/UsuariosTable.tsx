@@ -21,7 +21,6 @@ const UsuariosTable = () => {
       usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       usuario.celular?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      usuario.rol?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       usuario.id.toString().includes(searchTerm)
   );
 
@@ -130,7 +129,7 @@ const UsuariosTable = () => {
             <table className="w-full text-sm">
               <thead className="bg-teal-50 text-teal-800">
               <tr>
-                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "ROL", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
+                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
                     <th key={index} className="px-6 py-3 text-left font-semibold tracking-wide whitespace-nowrap">
                       {header}
                     </th>
@@ -151,7 +150,6 @@ const UsuariosTable = () => {
                         <td className="px-6 py-4">{usuario.name}</td>
                         <td className="px-6 py-4">{usuario.email}</td>
                         <td className="px-6 py-4">{usuario.celular || "N/A"}</td>
-                        <td className="px-6 py-4 capitalize">{usuario.rol?.toLowerCase() || "N/A"}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {usuario.created_at ? new Date(usuario.created_at).toLocaleDateString() : "N/A"}
                         </td>
