@@ -9,7 +9,7 @@ const navLinks = [
     texto: "Productos",
   },
   {
-    url: "/shipping-policies",
+    url: "/politicas-de-envio",
     texto: "Politicas de Envio",
   },
 ];

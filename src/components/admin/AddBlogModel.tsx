@@ -18,8 +18,14 @@ interface BlogPOST {
   imagenes: ImagenAdicional[];
 }
 
-const AddBlogModal = () => {
+interface AddBlogModalProps {
+  onBlogAdded: () => void;
+}
+
+
+const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
     parrafo: "",
@@ -103,6 +109,7 @@ const AddBlogModal = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true); // Mostrar mensaje "Guardando..."
 
     if (
         !formData.titulo ||
@@ -117,6 +124,7 @@ const AddBlogModal = () => {
         formData.imagenes.some((imagen) => !imagen.url_imagen)
     ) {
       alert("⚠️ Todos los campos son obligatorios.");
+      setIsSaving(false); // Ocultar mensaje si hay error de validación
       return;
     }
 
@@ -171,7 +179,10 @@ const AddBlogModal = () => {
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       alert(`❌ Error: ${error}`);
+    } finally {
+      setIsSaving(false); // Ocultar mensaje cuando termina
     }
+    onBlogAdded(); // notificar al componente padre
   };
 
   return (
@@ -341,7 +352,7 @@ const AddBlogModal = () => {
                       </div>
                   ))}
 
-                  <div className="md:col-span-2 flex justify-end gap-4 mt-6">
+                  <div className="md:col-span-2 flex justify-end gap-4">
                     <button
                         type="button"
                         onClick={closeModal}
@@ -351,9 +362,34 @@ const AddBlogModal = () => {
                     </button>
                     <button
                         type="submit"
-                        className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow-md"
+                        className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow-md flex items-center justify-center gap-2 min-w-[140px]"
+                        disabled={isSaving}
                     >
-                      Guardar Blog
+                      {isSaving ? (
+                          <>
+                            <svg
+                                className="animate-spin h-4 w-4 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                              <circle
+                                  className="opacity-25"
+                                  cx="12" cy="12" r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                              />
+                              <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v8z"
+                              />
+                            </svg>
+                            Guardando...
+                          </>
+                      ) : (
+                          'Guardar Blog'
+                      )}
                     </button>
                   </div>
                 </form>

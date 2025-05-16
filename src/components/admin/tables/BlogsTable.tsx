@@ -30,21 +30,27 @@ const BlogsTable = () => {
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const itemsPerPage = 6;
 
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(getApiUrl(config.endpoints.blogs.list));
+      const result = await response.json();
+      setData(result.data || []);
+    } catch (error) {
+      console.error("❌ Error al cargar datos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(getApiUrl(config.endpoints.blogs.list));
-        const result = await response.json();
-        setData(result.data || []);
-      } catch (error) {
-        console.error("❌ Error al cargar datos:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
+  const handleBlogAdded = () => {
+    fetchData(); // recarga la tabla
+    setIsAddModalOpen(false); // opcional, si controlas el modal desde aquí
+  };
 
   const filteredData = data.filter(blog =>
       blog.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -172,7 +178,7 @@ const BlogsTable = () => {
                 />
               </div>
 
-              <AddBlogModal />
+              <AddBlogModal onBlogAdded={handleBlogAdded} />
             </div>
 
             {isLoading ? (
@@ -284,32 +290,32 @@ const BlogsTable = () => {
             )}
           </div>
 
-          <div className="mt-6 bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-teal-700 mb-4">Estadísticas del Blog</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">
-                <h3 className="text-teal-700 font-medium mb-1">Total de Blogs</h3>
-                <p className="text-3xl font-bold text-teal-800">{data.length}</p>
-              </div>
-              <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">
-                <h3 className="text-teal-700 font-medium mb-1">Blogs este mes</h3>
-                <p className="text-3xl font-bold text-teal-800">
-                  {data.filter(blog => {
-                    if (!blog.created_at) return false;
-                    const date = new Date(blog.created_at);
-                    const now = new Date();
-                    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-                  }).length}
-                </p>
-              </div>
-              <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">
-                <h3 className="text-teal-700 font-medium mb-1">Con video</h3>
-                <p className="text-3xl font-bold text-teal-800">
-                  {data.filter(blog => blog.videoBlog).length}
-                </p>
-              </div>
-            </div>
-          </div>
+          {/*<div className="mt-6 bg-white rounded-xl shadow-lg p-6">*/}
+          {/*  <h2 className="text-xl font-bold text-teal-700 mb-4">Estadísticas del Blog</h2>*/}
+          {/*  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">*/}
+          {/*    <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">*/}
+          {/*      <h3 className="text-teal-700 font-medium mb-1">Total de Blogs</h3>*/}
+          {/*      <p className="text-3xl font-bold text-teal-800">{data.length}</p>*/}
+          {/*    </div>*/}
+          {/*    <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">*/}
+          {/*      <h3 className="text-teal-700 font-medium mb-1">Blogs este mes</h3>*/}
+          {/*      <p className="text-3xl font-bold text-teal-800">*/}
+          {/*        {data.filter(blog => {*/}
+          {/*          if (!blog.created_at) return false;*/}
+          {/*          const date = new Date(blog.created_at);*/}
+          {/*          const now = new Date();*/}
+          {/*          return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();*/}
+          {/*        }).length}*/}
+          {/*      </p>*/}
+          {/*    </div>*/}
+          {/*    <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">*/}
+          {/*      <h3 className="text-teal-700 font-medium mb-1">Con video</h3>*/}
+          {/*      <p className="text-3xl font-bold text-teal-800">*/}
+          {/*        {data.filter(blog => blog.videoBlog).length}*/}
+          {/*      </p>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
         {/* Vista previa del blog */}
         {selectedBlog && <BlogPreview blog={selectedBlog} onClose={closePreview} />}
