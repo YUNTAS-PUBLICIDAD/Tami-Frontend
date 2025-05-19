@@ -5,7 +5,7 @@
  */
 
 import useClienteForm from "../../../../hooks/admin/seguimiento/useClienteForm";
-import type Cliente from "../../../../models/clients.ts";
+import type Cliente from "../../../../models/Clients.ts";
 import React from "react";
 
 {

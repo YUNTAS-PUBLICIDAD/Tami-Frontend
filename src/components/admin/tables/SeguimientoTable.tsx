@@ -5,13 +5,14 @@ import DeleteClienteModal from "../../admin/tables/modals/DeleteModal.tsx";
 import useClientes from "../../../hooks/admin/seguimiento/useClientes.ts";
 import Paginator from "../../../components/admin/Paginator.tsx";
 import Swal from "sweetalert2";
+import type Cliente from "../../../models/Clients";
 
 const ClientesTable = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const { clientes, totalPages, loading, error } = useClientes(refetchTrigger, currentPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCliente, setSelectedCliente] = useState<any>(null);
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,13 +22,12 @@ const ClientesTable = () => {
       cliente.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.celular?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cliente.seccion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.id.toString().includes(searchTerm)
   );
 
   const handleRefetch = () => setRefetchTrigger((prev) => !prev);
 
-  const openModalForEdit = (cliente: any) => {
+  const openModalForEdit = (cliente: Cliente) => {
     setSelectedCliente(cliente);
     setIsModalOpen(true);
   };
@@ -43,7 +43,7 @@ const ClientesTable = () => {
   };
 
   const handleClienteFormSuccess = () => {
-    handleRefetch();
+    setRefetchTrigger((prev) => !prev);
     setIsModalOpen(false);
     Swal.fire({
       icon: "success",
@@ -79,8 +79,8 @@ const ClientesTable = () => {
 
   return (
       <div className="container mx-auto p-4">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-          <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+          <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-6 rounded-t-2xl">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div>
                 <h2 className="text-2xl font-extrabold flex items-center gap-3 text-white">
@@ -107,7 +107,7 @@ const ClientesTable = () => {
                 <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-teal-500" />
                 <input
                     type="text"
-                    placeholder="Buscar por nombre, email, teléfono..."
+                    placeholder="Buscar por clientes..."
                     className="pl-10 w-full rounded-full border-2 border-teal-100 py-3 px-5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm transition-all duration-300"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -120,7 +120,7 @@ const ClientesTable = () => {
                   className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
               >
                 <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                {loading ? "Cargando..." : "Actualizar Lista"}
+                {loading ? "Cargando..." : "Actualizar"}
               </button>
             </div>
 
@@ -164,6 +164,7 @@ const ClientesTable = () => {
                     </td>
                   </tr>
               ) : (
+                  // Filas de la tabla
                   filteredClientes.map((item) => (
                       <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
                         <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
@@ -178,7 +179,11 @@ const ClientesTable = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                       <span className="bg-gray-100 py-1 px-3 rounded-full text-xs text-gray-700">
-                        {new Date(item.created_at).toLocaleDateString()}
+                          {item.created_at ? new Date(item.created_at).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit"
+                          }) : "Fecha no disponible"}
                       </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -206,19 +211,17 @@ const ClientesTable = () => {
             </table>
           </div>
 
-          {/* Paginación */}
+          {/* Paginación: falta corregir Mostrando */}
           {filteredClientes.length > 0 && (
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-8 py-6 bg-teal-50/50 border-t border-teal-100">
-                <div className="text-sm text-teal-700 font-medium">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
                   Mostrando {(currentPage - 1) * 5 + 1}-{Math.min(currentPage * 5, filteredClientes.length)} de {filteredClientes.length} clientes
                 </div>
-                <div className="flex gap-2">
-                  <Paginator
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={(page) => setCurrentPage(page)}
-                  />
-                </div>
+                <Paginator
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                />
               </div>
           )}
         </div>
