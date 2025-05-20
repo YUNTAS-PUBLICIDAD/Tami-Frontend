@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt } from "react-icons/fa";
+import {FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers} from "react-icons/fa";
 import AddDataModal from "../../admin/tables/modals/usuarios/AddUpdateModalUsuario.tsx";
 import DeleteUsuarioModal from "../../admin/tables/modals/usuarios/DeleteModalUsuario.tsx";
 import useUsuarios from "../../../hooks/admin/usuarios/useUsuarios.ts";
@@ -48,45 +48,51 @@ const UsuariosTable = () => {
       icon: "success",
       title: "Operación exitosa",
       text: "El usuario se ha guardado correctamente",
-      confirmButtonColor: "#38a169",
+      confirmButtonColor: "#14b8a6",
     });
   };
 
   if (loading) return (
-      <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
-        <p className="ml-4 text-teal-600">Cargando usuarios...</p>
+      <div className="flex justify-center items-center py-24 bg-white rounded-2xl shadow-lg">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-3 border-b-3 border-teal-500"></div>
+          <p className="text-teal-600 font-medium text-lg">Cargando usuarios...</p>
+        </div>
       </div>
   );
 
   if (error) return (
-      <div className="text-center py-10">
-        <p className="text-red-500">Error al cargar los usuarios: {error}</p>
-        <button
-            onClick={handleRefetch}
-            className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 flex items-center mx-auto"
-        >
-          <FaSyncAlt className="mr-2" /> Intentar nuevamente
-        </button>
+      <div className="text-center py-16 bg-white rounded-2xl shadow-lg">
+        <div className="bg-red-50 p-6 rounded-xl max-w-md mx-auto border border-red-100">
+          <p className="text-red-600 font-medium mb-4">Error al cargar los usuarios:</p>
+          <p className="bg-white p-3 rounded-lg text-red-500 mb-6 border border-red-100">{error}</p>
+          <button
+              onClick={handleRefetch}
+              className="px-5 py-2 bg-teal-500 text-white rounded-full hover:bg-teal-600 flex items-center gap-2 mx-auto transition-all duration-300 shadow-md"
+          >
+            <FaSyncAlt /> Intentar nuevamente
+          </button>
+        </div>
       </div>
   );
 
   return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-          <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 rounded-t-lg">
+      <div className="container mx-auto p-4">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+          <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-6 rounded-t-2xl">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div>
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  Gestión de Usuarios
+                <h2 className="text-2xl font-extrabold flex items-center gap-3 text-white">
+                  <FaUsers />
+                  <span>Gestión de Usuarios</span>
                 </h2>
-                <p className="text-white/80 mt-1">
+                <p className="text-teal-50 mt-2 text-lg">
                   Administra los usuarios registrados en el sistema
                 </p>
               </div>
               <button
                   onClick={openModalForCreate}
-                  className="flex items-center gap-2 bg-white text-teal-600 hover:bg-gray-100 transition-colors px-4 py-2 rounded-md text-sm font-medium"
+                  className="flex items-center gap-2 bg-white text-teal-600 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg"
               >
                 <FaPlus /> Agregar Usuario
               </button>
@@ -94,14 +100,14 @@ const UsuariosTable = () => {
           </div>
 
           {/* Controles de búsqueda */}
-          <div className="p-6 space-y-4 border-b border-gray-200">
-            <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
-              <div className="relative w-full sm:w-64">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="p-8 space-y-6 border-b border-gray-100 bg-white">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+              <div className="relative w-full sm:w-80">
+                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-teal-500" />
                 <input
                     type="text"
                     placeholder="Buscar usuarios..."
-                    className="pl-9 w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="pl-10 w-full rounded-full border-2 border-teal-100 py-3 px-5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm transition-all duration-300"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -110,16 +116,19 @@ const UsuariosTable = () => {
               <button
                   onClick={handleRefetch}
                   disabled={loading}
-                  className="flex items-center gap-2 bg-white text-teal-600 border border-teal-600 hover:bg-teal-50 transition-colors px-4 py-2 rounded-md text-sm font-medium w-full sm:w-auto justify-center"
+                  className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
               >
                 <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
                 {loading ? "Cargando..." : "Actualizar"}
               </button>
             </div>
 
-            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
-              <div className="text-sm font-medium text-gray-600">
-                {filteredUsuarios.length} {filteredUsuarios.length === 1 ? "usuario" : "usuarios"} encontrados
+            <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
+              <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+              <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
+                {filteredUsuarios.length}
+              </span>
+                {filteredUsuarios.length === 1 ? "usuario" : "usuarios"} encontrados
               </div>
             </div>
           </div>
@@ -130,44 +139,66 @@ const UsuariosTable = () => {
               <thead className="bg-teal-50 text-teal-800">
               <tr>
                 {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
-                    <th key={index} className="px-6 py-3 text-left font-semibold tracking-wide whitespace-nowrap">
+                    <th key={index} className="px-6 py-4 text-left font-bold tracking-wide uppercase text-xs whitespace-nowrap">
                       {header}
                     </th>
                 ))}
               </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
               {filteredUsuarios.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-gray-500">
-                      {searchTerm ? "No se encontraron usuarios que coincidan con tu búsqueda" : "No hay usuarios registrados"}
+                    <td colSpan={7} className="text-center py-16 text-gray-500">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="bg-teal-50 p-6 rounded-full">
+                          <FaUsers className="h-10 w-10 text-teal-300" />
+                        </div>
+                        <p className="text-xl font-medium text-gray-600 mt-4">
+                          {searchTerm ? "No se encontraron usuarios que coincidan con tu búsqueda" : "No hay usuarios registrados"}
+                        </p>
+                        <p className="text-gray-400 max-w-md mx-auto">
+                          {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando usuarios a tu sistema con el botón 'Agregar Usuario'"}
+                        </p>
+                      </div>
                     </td>
                   </tr>
               ) : (
-                  filteredUsuarios.map((usuario) => (
-                      <tr key={usuario.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 font-medium whitespace-nowrap">{usuario.id}</td>
-                        <td className="px-6 py-4">{usuario.name}</td>
-                        <td className="px-6 py-4">{usuario.email}</td>
-                        <td className="px-6 py-4">{usuario.celular || "N/A"}</td>
+                  filteredUsuarios.map((item) => (
+                      <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
+                        <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
+                          #{item.id}
+                        </td>
+                        <td className="px-6 py-4 font-medium">{item.name}</td>
+                        <td className="px-6 py-4 text-blue-600">{item.email}</td>
+                        <td className="px-6 py-4">
+                          {item.celular ||
+                              <span className="text-gray-400 italic text-xs">No disponible</span>
+                          }
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {usuario.created_at ? new Date(usuario.created_at).toLocaleDateString() : "N/A"}
+                      <span className="bg-gray-100 py-1 px-3 rounded-full text-xs text-gray-700">
+                        {item.created_at ? new Date(item.created_at).toLocaleDateString("es-ES", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit"
+                        }) : "Fecha no disponible"}
+                      </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-3 items-center">
                             <button
-                                className="p-2 rounded-full hover:bg-red-50 text-red-600 transition-colors"
-                                title="Eliminar"
-                                onClick={() => openDeleteModal(usuario.id)}
-                            >
-                              <FaTrash size={18} />
-                            </button>
-                            <button
-                                className="p-2 rounded-full hover:bg-green-50 text-green-600 transition-colors"
+                                className="p-2 rounded-full hover:bg-green-100 text-green-600 transition-colors duration-200 border border-transparent hover:border-green-200"
                                 title="Editar"
-                                onClick={() => openModalForEdit(usuario)}
+                                onClick={() => openModalForEdit(item)}
                             >
                               <FaEdit size={18} />
+                            </button>
+                            <button
+                                className="p-2 rounded-full text-red-500 border border-transparent transition-colors duration-200 hover:bg-red-100 hover:border-red-200"
+                                title="Eliminar"
+                                onClick={() => openDeleteModal(item.id)}
+                            >
+                              <FaTrash size={18} />
                             </button>
                           </div>
                         </td>
@@ -178,7 +209,7 @@ const UsuariosTable = () => {
             </table>
           </div>
 
-          {/* Paginación */}
+          {/* Paginación: falta corregir Mostrando */}
           {filteredUsuarios.length > 0 && (
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200">
                 <div className="text-sm text-gray-600">
