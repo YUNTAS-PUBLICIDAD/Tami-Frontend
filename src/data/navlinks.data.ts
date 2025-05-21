@@ -5,7 +5,7 @@ const navLinks = [
     texto: "Nosotros",
   },
   {
-    url: "/products",
+    url: "/productos",
     texto: "Productos",
   },
   {
