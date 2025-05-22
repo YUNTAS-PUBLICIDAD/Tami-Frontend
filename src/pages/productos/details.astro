@@ -299,7 +299,7 @@ const productosUrl = config.endpoints.productos;
       localStorage.setItem(`product_${productSlug}`, prod.id);
 
       const a = document.createElement("a");
-      a.href = `/products/${productSlug}`;
+      a.href = `/productos/${productSlug}`;
       a.className = "group cursor-pointer";
 
       const div = document.createElement("div");
@@ -343,7 +343,7 @@ const productosUrl = config.endpoints.productos;
       productId = idFromParams;
     }
     // Prioridad 2: Buscar ID asociado al slug en localStorage
-    else if (productSlug && productSlug !== "products") {
+    else if (productSlug && productSlug !== "productos") {
       const storedId = localStorage.getItem(`product_${productSlug}`);
       if (storedId) {
         productId = storedId;
@@ -400,7 +400,7 @@ const productosUrl = config.endpoints.productos;
 
       // Si llegamos desde una URL antigua, actualizar a la nueva estructura
       const currentProductSlug = slugify(product.title);
-      const desiredPath = `/products/${currentProductSlug}`;
+      const desiredPath = `/productos/${currentProductSlug}`;
 
       if (window.location.pathname !== desiredPath) {
         window.history.replaceState(null, '', desiredPath);

@@ -53,7 +53,7 @@ const ProductSlideshow = () => {
                             {item.nombreProducto}
                         </h3>
                         <a
-                            href={`/products/details?id=${item.id}`}
+                            href={`/productos/details?id=${item.id}`}
                             className="mt-2 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full transition-all"
                         >
                             Información
@@ -103,7 +103,7 @@ const ProductSlideshow = () => {
                     className="bg-gradient-to-b to-white text-center justify-items-center text-teal-700 h-full group relative flex flex-col items-center p-6 transition-all duration-300 hover:cursor-pointer"
                 >
                     <a
-                        href={`/products/details?id=${item.id}`}
+                        href={`/productos/details?id=${item.id}`}
                         className="w-full h-full font-extrabold text-xl flex flex-col items-center gap-6"
                     >
                         <img
