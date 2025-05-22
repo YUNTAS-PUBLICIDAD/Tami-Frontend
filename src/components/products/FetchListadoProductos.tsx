@@ -1,14 +1,14 @@
 import { config, getApiUrl } from "config";
 import { useEffect, useState, type JSX } from "react";
-import type {Product} from "src/models/Product";
+import type Producto from "src/models/Product";
 
 interface SeccionProps {
   nombreSeccion: string;
-  productosDeLaSeccion: Product[];
+  productosDeLaSeccion: Producto[];
 }
 
 interface Props {
-  producto: Product;
+  producto: Producto;
 }
 
 export default function ListadoDeProductos() {
@@ -23,7 +23,7 @@ export default function ListadoDeProductos() {
       const productos = data.data; // Accedemos al array de productos en `data`
 
       // Mapeamos los datos del backend al modelo `Product`
-      const productosMapeados: Product[] = productos.map((producto: any) => ({
+      const productosMapeados: Producto[] = productos.map((producto: any) => ({
         id: producto.id.toString().trim(),
         nombreProducto: producto.nombreProducto,
         stockProducto: producto.stockProducto,
@@ -39,17 +39,17 @@ export default function ListadoDeProductos() {
         {
           nombreSeccion: "Negocio",
           productosDeLaSeccion: productosMapeados
-            .filter((p: Product) => p.seccion === "Trabajo")
+            .filter((p: Producto) => p.seccion === "Trabajo")
         },
         {
           nombreSeccion: "Decoración",
           productosDeLaSeccion: productosMapeados
-            .filter((p: Product) => p.seccion === "Decoración")
+            .filter((p: Producto) => p.seccion === "Decoración")
         },
         {
           nombreSeccion: "Maquinaria",
           productosDeLaSeccion: productosMapeados
-            .filter((p: Product) => p.seccion === "Negocio")
+            .filter((p: Producto) => p.seccion === "Negocio")
         },
       ];
 

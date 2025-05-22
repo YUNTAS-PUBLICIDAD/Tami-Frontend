@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaEye } from "react-icons/fa";
-import AddBlogModal from "../AddBlogModel";
+import AddBlogModal from "./AddBlogModel.tsx";
 import { config, getApiUrl } from "config";
 
 interface Blog {
