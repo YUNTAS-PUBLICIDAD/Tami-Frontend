@@ -1,0 +1,421 @@
+---
+import Layout from "src/layouts/Layout.astro";
+import boxSize from "@icons/box-size.svg";
+import { config } from "config";
+import { showLoaderString, removeLoaderString } from "src/utils/loader";
+
+const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
+const productosUrl = config.endpoints.productos;
+---
+
+<Layout title="Product Details">
+  <div class="w-full">
+    {/* Hero Banner */}
+    <div
+        class="pt-16 md:pt-40 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden"
+    >
+      <div class="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-5 md:w-6 h-5 md:h-6">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
+              <path d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2
+              class="text-xl uppercase md:text-3xl font-bold"
+              id="product-title"
+          >
+            Título Producto
+          </h2>
+        </div>
+        <h1
+            class="text-2xl md:text-5xl/14 uppercase font-bold mb-6 md:mb-8"
+            id="product-subtitle"
+        >
+          Subtitulo Producto
+        </h1>
+        <h3
+            class="text-2xl md:text-2xl uppercase font-bold mb-6 md:mb-8"
+            id="product-tagline"
+        >
+          Lema Producto
+        </h3>
+        <button
+            class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition"
+        >
+          ¡COTÍZALO!
+        </button>
+      </div>
+      <div
+          class="hidden md:block absolute right-0 top-32 w-full md:w-1/2 h-full bg-white rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%] rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
+      >
+        <img
+            id="product-img"
+            src=""
+            alt=""
+            class="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto my-auto"
+        />
+      </div>
+    </div>
+
+    {/* Main Content */}
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        {/* Left Column - Gallery */}
+        <div class="space-y-4 w-full max-w-[440px]">
+          {/* Imagen principal */}
+          <div
+              class="w-full aspect-[1/1] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
+          >
+            <img
+                id="product-viewer"
+                src=""
+                alt=""
+                class="w-full h-full object-contain"
+            />
+          </div>
+
+          {/* Grid de miniaturas */}
+          <div
+              class="grid grid-cols-4 gap-2 w-full"
+              id="images-list"
+          >
+          </div>
+        </div>
+        {/* Right Column - Product Info */}
+        <div>
+          <div class="mb-6">
+            <h3 class="text-3xl font-black mb-2 text-teal-800" id="info-title">
+              {/* Información del producto: */}
+            </h3>
+            <h1 class="font-bold mb-2 text-lg">Información del producto:</h1>
+            <p class="text-gray-700" id="info-description"></p>
+          </div>
+
+          <div class="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
+            <h3 class="font-bold mb-2 text-lg">Detalles del producto</h3>
+            <h3 class="font-bold mb-2">Descripción:</h3>
+            <!-- lista de especificaciones -->
+            <ul class="space-y-2 text-gray-700" id="specs-list"></ul>
+            <h3 class="font-bold mt-4 mb-4">Dimensiones:</h3>
+            <div class="flex items-start gap-4 md:gap-12">
+              <div class="w-24 md:w-32">
+                <img src={boxSize.src} alt="Box Size" class="w-full h-auto" />
+              </div>
+              <!-- dimensiones del producto -->
+              <ul class="space-y-2 md:space-y-4" id="product-dimensions"></ul>
+            </div>
+          </div>
+
+          <button
+              class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition hover:cursor-pointer"
+          >
+            COTIZACIÓN
+          </button>
+        </div>
+      </div>
+
+      {/* Similar Products */}
+      <div class="mt-8 md:mt-12">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-teal-500">
+          ARTÍCULOS SIMILARES
+        </h2>
+        <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6"
+            id="related-products-container"
+        >
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script
+    define:vars={{
+      getApiUrl,
+      productosUrl,
+      showLoaderString,
+      removeLoaderString,
+    }}
+>
+  eval(showLoaderString);
+  eval(removeLoaderString);
+
+  // Función para slugificar el nombre del producto
+  function slugify(text) {
+    return text
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+        .replace(/[^\w\-]+/g, '') // Eliminar caracteres no alfanuméricos
+        .replace(/\-\-+/g, '-'); // Reemplazar múltiples guiones con uno solo
+  }
+
+  // Función para mapear nombres de productos a IDs
+  const productNameToIdMap = {};
+
+  // Función para mostrar mensajes de error
+  function showErrorMessage(message) {
+    const container = document.createElement("div");
+    container.className =
+        "fixed z-50 inset-0 text-center bg-gradient-to-b from-teal-700 to-teal-400 flex items-center justify-center";
+
+    const messageEl = document.createElement("p");
+    messageEl.className = "text-white font-extrabold text-5xl";
+    messageEl.textContent = message;
+
+    container.appendChild(messageEl);
+    document.body.appendChild(container);
+  }
+
+  // Función para mostrar detalles del producto
+  function displayProductDetails(product) {
+    const productTitle = document.getElementById("product-title");
+    const productSubtitle = document.getElementById("product-subtitle");
+    const productTagline = document.getElementById("product-tagline");
+    const productImg = document.getElementById("product-img");
+    const productViewer = document.getElementById("product-viewer");
+    const imagesList = document.getElementById("images-list");
+    const infoTitle = document.getElementById("info-title");
+    const infoDescription = document.getElementById("info-description");
+    const specsList = document.getElementById("specs-list");
+    const productDimension = document.getElementById("product-dimensions");
+
+    if (!productTitle || !productSubtitle || !productTagline || !productImg ||
+        !productViewer || !imagesList || !infoTitle || !infoDescription ||
+        !specsList || !productDimension) {
+      console.error("One or more elements not found");
+      return;
+    }
+
+    // Actualizar elementos básicos
+    productTitle.innerHTML = product.title;
+    productSubtitle.innerHTML = product.subtitle;
+    productTagline.innerHTML = product.tagline;
+    productImg.src = product.image;
+    productImg.alt = product.title;
+    infoTitle.innerHTML = product.title;
+    infoDescription.innerHTML = product.description;
+
+    // Actualizar visor de imágenes
+    const images = product.images;
+    if (images && images.length > 0) {
+      productViewer.src = images[0];
+      productViewer.alt = `${product.title} - Vista 1`;
+
+      // Limpiar lista de imágenes previa
+      imagesList.innerHTML = '';
+
+      // Añadir miniaturas
+      images.slice(0, 4).forEach((image, index) => {
+        const alt = `${product.title} - Vista ${index + 1}`;
+        const div = document.createElement("div");
+        div.className =
+            "aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ease-in-out hover:cursor-pointer";
+
+        const img = document.createElement("img");
+        img.src = image;
+        img.alt = alt;
+        img.className = "w-full h-full object-cover";
+
+        div.appendChild(img);
+        imagesList.appendChild(div);
+
+        div.onclick = () => {
+          productViewer.src = image;
+          productViewer.alt = alt;
+        };
+      });
+    }
+
+    // Actualizar especificaciones
+    specsList.innerHTML = '';
+    const specs = product.specs;
+    Object.entries(specs).forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.textContent = `${key}: ${value}`;
+      specsList.appendChild(li);
+    });
+
+    // Actualizar dimensiones
+    productDimension.innerHTML = '';
+    const dimensions = product.dimensions;
+    Object.entries(dimensions).forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.className = "flex items-center gap-2";
+      const span = document.createElement("span");
+      span.className =
+          "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+      span.textContent = key.charAt(0).toUpperCase();
+      const text = document.createTextNode(`${key}: ${value}`);
+      li.appendChild(span);
+      li.appendChild(text);
+      productDimension.appendChild(li);
+    });
+
+    // Actualizar título de la página
+    document.title = `${product.title} - Detalles del Producto`;
+
+    // Guardar la asociación nombre-id para futuras referencias
+    const productSlug = slugify(product.title);
+    productNameToIdMap[productSlug] = product.id;
+    localStorage.setItem(`product_${productSlug}`, product.id);
+  }
+
+  // Función para cargar productos relacionados
+  async function loadRelatedProducts(relatedProductIds) {
+    const relatedProductsContainer = document.getElementById("related-products-container");
+    if (!relatedProductsContainer) return;
+
+    // Limpiar contenedor
+    relatedProductsContainer.innerHTML = '';
+
+    // Obtener detalles de productos relacionados
+    const relatedProducts = await Promise.all(
+        relatedProductIds.map(async (id) => {
+          try {
+            const res = await fetch(`${getApiUrl}${productosUrl.list}/${id}`);
+            if (!res.ok) return null;
+            const data = await res.json();
+            return data.data;
+          } catch (error) {
+            console.error(`Error fetching related product ${id}:`, error);
+            return null;
+          }
+        })
+    ).then((results) => results.filter((p) => p !== null));
+
+
+
+    // Añadir productos relacionados al contenedor
+    relatedProducts.forEach((prod) => {
+      const productSlug = slugify(prod.title);
+
+      // Guardar la asociación nombre-id para futuras referencias
+      productNameToIdMap[productSlug] = prod.id;
+      localStorage.setItem(`product_${productSlug}`, prod.id);
+
+      const a = document.createElement("a");
+      a.href = `/productos/${productSlug}`;
+      a.className = "group cursor-pointer";
+
+      const div = document.createElement("div");
+      div.className =
+          "aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2";
+
+      const img = document.createElement("img");
+      img.src = prod.image;
+      img.alt = prod.title;
+      img.className =
+          "w-full h-full object-cover group-hover:scale-105 transition";
+
+      const h3 = document.createElement("h3");
+      h3.className = "text-center font-bold text-xs md:text-sm";
+      h3.textContent = prod.title;
+
+      div.appendChild(img);
+      a.appendChild(div);
+      a.appendChild(h3);
+
+      relatedProductsContainer.appendChild(a);
+    });
+  }
+
+  // Función principal que se ejecuta al cargar la página
+  document.addEventListener("DOMContentLoaded", async () => {
+    showLoader();
+
+    // Extraemos el nombre del producto de la URL
+    const pathParts = window.location.pathname.split('/');
+    const productSlug = pathParts[pathParts.length - 1];
+
+    // Si no hay slug en la URL, verificamos si hay un ID en los parámetros
+    const params = new URLSearchParams(window.location.search);
+    const idFromParams = params.get("id")?.trim();
+
+    let productId = null;
+
+    // Prioridad 1: ID de los parámetros (para compatibilidad con enlaces antiguos)
+    if (idFromParams) {
+      productId = idFromParams;
+    }
+    // Prioridad 2: Buscar ID asociado al slug en localStorage
+    else if (productSlug && productSlug !== "productos") {
+      const storedId = localStorage.getItem(`product_${productSlug}`);
+      if (storedId) {
+        productId = storedId;
+      }
+      // Prioridad 3: Intentar obtener todos los productos y buscar el que coincida con el slug
+      else {
+        try {
+          // Obtener lista de productos (esto podría ser optimizado con una API dedicada)
+          const allProductsResponse = await fetch(`${getApiUrl}${productosUrl.list}`);
+
+          if (!allProductsResponse.ok) {
+            removeLoader();
+            showErrorMessage(`Error ${allProductsResponse.status}: ${allProductsResponse.statusText}`);
+            return;
+          }
+
+          const allProductsData = await allProductsResponse.json();
+
+          // Buscar el producto por slug
+          const matchingProduct = allProductsData.data.find(product =>
+              slugify(product.title) === productSlug
+          );
+
+          if (matchingProduct) {
+            productId = matchingProduct.id;
+            // Guardar para futuras referencias
+            localStorage.setItem(`product_${productSlug}`, productId);
+          }
+        } catch (error) {
+          console.error("Error fetching all products:", error);
+        }
+      }
+    }
+
+    // Si no se ha encontrado un ID, mostrar error
+    if (!productId) {
+      removeLoader();
+      showErrorMessage("No se encontró el producto");
+      return;
+    }
+
+    try {
+      // Obtener el producto por ID
+      const response = await fetch(`${getApiUrl}${productosUrl.list}/${productId}`);
+
+      if (!response.ok) {
+        removeLoader();
+        showErrorMessage(`Error ${response.status}: ${response.statusText}`);
+        return;
+      }
+
+      const data = await response.json();
+      const product = data.data;
+
+      // Si llegamos desde una URL antigua, actualizar a la nueva estructura
+      const currentProductSlug = slugify(product.title);
+      const desiredPath = `/productos/${currentProductSlug}`;
+
+      if (window.location.pathname !== desiredPath) {
+        window.history.replaceState(null, '', desiredPath);
+      }
+
+      removeLoader();
+      displayProductDetails(product);
+
+      // Cargar productos relacionados
+      await loadRelatedProducts(product.relatedProducts);
+
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      removeLoader();
+      showErrorMessage(`Error: ${error.message}`);
+    }
+  });
+</script>

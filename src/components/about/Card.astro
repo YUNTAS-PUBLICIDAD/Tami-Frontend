@@ -9,21 +9,21 @@ const { image, title, paragraph } = Astro.props;
 ---
 
 <div
-  class="relative w-11/12 sm:w-9/12 h-56 sm:h-60 md:h-80 lg:h-full lg:w-full shadow-lg rounded-2xl overflow-hidden my-2 sm:my-4"
+  class="relative w-[240px] sm:w-9/12 h-65 sm:h-60 md:h-80 lg:h-full lg:w-full rounded-3xl overflow-hidden my-2 sm:my-4"
 >
   <img
     src={image}
     alt={`Card del Valor de ${title}`}
-    class="absolute w-full h-full object-cover"
+    class="absolute z-0 w-full h-full object-cover object-center"
   />
   <div
     class="relative flex flex-col justify-end place-content-start bg-gradient-to-t from-teal-700 from-0% via-20% via-teal-600/90 w-full h-full text-white text-center pb-4 2xl:pb-8 2xl:px-2"
   >
     <span class="h-1/4 grid grid-rows-[auto_1fr]">
-      <h3 class="text-xs sm:text-base md:text-lg 2xl:text-4xl font-bold">
+      <h3 class="text-lg sm:text-base md:text-lg 2xl:text-4xl font-bold mt-8 sm:mt-0">
         {title}
       </h3>
-      <p class="text-xs sm:text-sm md:text-base 2xl:text-3xl sm:font-semibold">
+      <p class="text-xs sm:text-sm hidden md:block md:text-base 2xl:text-3xl sm:font-semibold">
         {paragraph}
       </p>
     </span>

@@ -179,6 +179,30 @@ const blogsUrl = config.endpoints.blogs;
           `;
         }
 
+        // Añade este bloque para reubicar el contenido en móviles
+        if (window.innerWidth < 768) {
+          const container = document.getElementById("blog-title").parentElement;
+          const mainContent = document.getElementById("blog-content");
+          // Reubicar el container
+          mainContent.prepend(container);
+
+          // Cambiar color de texto usando Tailwind
+          container.classList.remove("text-white");
+          container.classList.add("text-teal-600");
+
+          // Obtener los elementos
+          const blogTitle = document.getElementById("blog-title");
+          const blogSubtitle = document.getElementById("blog-subtitle");
+          blogSubtitle.classList.add("mb-6");
+
+          // Cambiar tamaño de texto manualmente (no con clases Tailwind dinámicas)
+          if (blogTitle) {
+            blogTitle.style.fontSize = "1.75rem"; // Ajuste para pantallas móviles
+          }
+          if (blogSubtitle) {
+            blogSubtitle.style.fontSize = "1.5rem"; // Ajuste para pantallas móviles
+          }
+        }
         removeLoader();
       } catch (error) {
         console.error("Error fetching blog:", error);

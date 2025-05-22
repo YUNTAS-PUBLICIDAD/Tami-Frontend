@@ -4,9 +4,9 @@
  * Maneja el estado del formulario, la validación de los campos y la lógica de envío.
  */
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import useClienteAcciones from "./useClientesActions";
-import type Cliente from "../../../models/Clients";
+import type Cliente from "../../../models/Clients.ts";
 
 /**
  * Funcion para manejar el formulario de cliente 

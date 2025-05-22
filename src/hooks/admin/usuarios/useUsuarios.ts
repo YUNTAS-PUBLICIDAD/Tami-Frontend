@@ -66,7 +66,7 @@ const useUsuarios = (trigger: boolean, page: number = 1) => {
       } catch (err) {
         console.error("🚨 Error en fetchusuarios:", err);
         setError(
-          err instanceof Error ? err.message : "Ocurrió un error desconocido"
+            err instanceof Error ? err.message : "Ocurrió un error desconocido"
         );
       } finally {
         setLoading(false);

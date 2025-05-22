@@ -4,7 +4,7 @@
  */
 
 import { getApiUrl, config } from "config"; // importa la configuración de la API
-import type Cliente from "../../../models/Clients"; // importa el modelo de cliente
+import type Clients from "../../../models/Clients.ts"; // importa el modelo de cliente
 
 const useClienteAcciones = () => {
   
@@ -24,8 +24,8 @@ const useClienteAcciones = () => {
    */
 
   const addCliente = async (
-    clienteData: Partial<Cliente>
-  ): Promise<Cliente> => {
+    clienteData: Partial<Clients>
+  ): Promise<Clients> => {
     const token = getValidToken(); 
     const url = getApiUrl(config.endpoints.clientes.create); 
 
@@ -40,7 +40,7 @@ const useClienteAcciones = () => {
 
     if (!response.ok) throw new Error("Error al agregar cliente");
 
-    const result: { data: Cliente } = await response.json();
+    const result: { data: Clients } = await response.json();
     return result.data;
   };
 
@@ -50,8 +50,8 @@ const useClienteAcciones = () => {
 
   const updateCliente = async (
     id: number,
-    updatedData: Partial<Cliente>
-  ): Promise<Cliente> => {
+    updatedData: Partial<Clients>
+  ): Promise<Clients> => {
     const token = getValidToken();
     const url = getApiUrl(config.endpoints.clientes.update(id));
 
@@ -66,7 +66,7 @@ const useClienteAcciones = () => {
 
     if (!response.ok) throw new Error("Error al actualizar cliente");
 
-    const result: { data: Cliente } = await response.json();
+    const result: { data: Clients } = await response.json();
     return result.data;
   };
 

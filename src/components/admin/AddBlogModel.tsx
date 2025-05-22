@@ -2,7 +2,7 @@ import { config, getApiUrl } from "config";
 import { useState } from "react";
 
 interface ImagenAdicional {
-  url_imagen: File | null; // 👈 aquí permitimos File o null
+  url_imagen: File | null;
   parrafo_imagen: string;
 }
 
@@ -10,21 +10,27 @@ interface BlogPOST {
   titulo: string;
   parrafo: string;
   descripcion: string;
-  imagen_principal: File | null; // 👈 aquí permitimos File o null
+  imagen_principal: File | null;
   titulo_blog: string;
   subtitulo_beneficio: string;
   url_video: string;
   titulo_video: string;
-  imagenes: ImagenAdicional[]; // 👈 arreglo con imagen y párrafo
+  imagenes: ImagenAdicional[];
 }
 
-const AddBlogModal = () => {
+interface AddBlogModalProps {
+  onBlogAdded: () => void;
+}
+
+
+const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
     parrafo: "",
     descripcion: "",
-    imagen_principal: null, // 👈 inicializamos con null
+    imagen_principal: null,
     titulo_blog: "",
     subtitulo_beneficio: "",
     url_video: "",
@@ -38,15 +44,13 @@ const AddBlogModal = () => {
         url_imagen: null,
         parrafo_imagen: "",
       },
-    ], // 👈 inicializamos como un arreglo vacío
+    ],
   });
 
-  // Manejar cambios en los inputs de texto
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Manejar cambios en la imagen (file input)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, imagen_principal: e.target.files[0] });
@@ -54,25 +58,22 @@ const AddBlogModal = () => {
   };
 
   const handleFileChangeAdicional = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+      e: React.ChangeEvent<HTMLInputElement>,
+      index: number
   ) => {
     if (e.target.files && e.target.files[0]) {
       const nuevoArray = [...formData.imagenes];
-
-      // Agregar el archivo y su parrafo
       nuevoArray[index] = {
         ...nuevoArray[index],
         url_imagen: e.target.files[0],
       };
-
       setFormData({ ...formData, imagenes: nuevoArray });
     }
   };
 
   const handleParrafoChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-    index: number
+      e: React.ChangeEvent<HTMLTextAreaElement>,
+      index: number
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = {
@@ -106,24 +107,24 @@ const AddBlogModal = () => {
     });
   };
 
-  // Enviar los datos a la API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true); // Mostrar mensaje "Guardando..."
 
-    // Validar campos requeridos
     if (
-      !formData.titulo ||
-      !formData.parrafo ||
-      !formData.descripcion ||
-      !formData.subtitulo_beneficio ||
-      !formData.titulo_blog ||
-      !formData.titulo_video ||
-      !formData.url_video ||
-      !formData.imagen_principal ||
-      !formData.imagenes ||
-      formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
+        !formData.titulo ||
+        !formData.parrafo ||
+        !formData.descripcion ||
+        !formData.subtitulo_beneficio ||
+        !formData.titulo_blog ||
+        !formData.titulo_video ||
+        !formData.url_video ||
+        !formData.imagen_principal ||
+        !formData.imagenes ||
+        formData.imagenes.some((imagen) => !imagen.url_imagen)
     ) {
       alert("⚠️ Todos los campos son obligatorios.");
+      setIsSaving(false); // Ocultar mensaje si hay error de validación
       return;
     }
 
@@ -135,8 +136,8 @@ const AddBlogModal = () => {
       formDataToSend.append("parrafo", formData.parrafo);
       formDataToSend.append("descripcion", formData.descripcion);
       formDataToSend.append(
-        "subtitulo_beneficio",
-        formData.subtitulo_beneficio
+          "subtitulo_beneficio",
+          formData.subtitulo_beneficio
       );
       formDataToSend.append("titulo_blog", formData.titulo_blog);
       formDataToSend.append("titulo_video", formData.titulo_video);
@@ -144,23 +145,23 @@ const AddBlogModal = () => {
       formData.imagenes.forEach((item, index) => {
         if (item.url_imagen) {
           formDataToSend.append(
-            `imagenes[${index}][url_imagen]`,
-            item.url_imagen as File
-          ); // Use 'imagen' key
+              `imagenes[${index}][url_imagen]`,
+              item.url_imagen as File
+          );
         }
         formDataToSend.append(
-          `imagenes[${index}][parrafo_imagen]`,
-          item.parrafo_imagen
+            `imagenes[${index}][parrafo_imagen]`,
+            item.parrafo_imagen
         );
       });
       formDataToSend.append(
-        "imagen_principal",
-        formData.imagen_principal as File
-      ); // Subir imagen como archivo
+          "imagen_principal",
+          formData.imagen_principal as File
+      );
 
       const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
         method: "POST",
-        body: formDataToSend, // FormData
+        body: formDataToSend,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -171,174 +172,231 @@ const AddBlogModal = () => {
 
       if (response.ok) {
         alert("✅ Blog añadido exitosamente");
-        closeModal(); // Cerrar modal
+        closeModal();
       } else {
         alert(`❌ Error: ${data.message}`);
       }
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       alert(`❌ Error: ${error}`);
+    } finally {
+      setIsSaving(false); // Ocultar mensaje cuando termina
     }
+    onBlogAdded(); // notificar al componente padre
   };
 
   return (
-    <>
-      {/* Botón para abrir el modal */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="mt-4 bg-teal-500 hover:bg-teal-600 text-white text-lg px-10 py-1.5 rounded-full flex items-center gap-2"
-      >
-        Añadir Blog
-      </button>
+      <>
+        <button
+            onClick={() => setIsOpen(true)}
+            className="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+        >
+          Añadir Blog
+        </button>
 
-      {/* Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="h-3/4 overflow-y-scroll bg-teal-600 text-white px-10 py-8 rounded-4xl w-3/5">
-            <h2 className="text-2xl font-bold mb-4">AÑADIR BLOG</h2>
-
-            {/* Formulario */}
-            <form
-              encType="multipart/form-data"
-              onSubmit={handleSubmit}
-              className="grid grid-cols-2 gap-4 gap-x-12"
-            >
-              <div>
-                <label className="block">Título</label>
-                <input
-                  type="text"
-                  name="titulo"
-                  value={formData.titulo}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div>
-                <label className="block">Párrafo</label>
-                <input
-                  type="text"
-                  name="parrafo"
-                  value={formData.parrafo}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block">Descripción</label>
-                <input
-                  type="text"
-                  name="descripcion"
-                  value={formData.descripcion}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block">Subtítulo Beneficio</label>
-                <input
-                  type="text"
-                  name="subtitulo_beneficio"
-                  value={formData.subtitulo_beneficio}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div>
-                <label className="block">Título Blog</label>
-                <input
-                  type="text"
-                  name="titulo_blog"
-                  value={formData.titulo_blog}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div>
-                <label className="block">Título Video</label>
-                <input
-                  type="text"
-                  name="titulo_video"
-                  value={formData.titulo_video}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block">URL del Video</label>
-                <input
-                  type="text"
-                  name="url_video"
-                  value={formData.url_video}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block">Imagen Principal</label>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg"
-                  name="imagen_principal"
-                  onChange={handleFileChange}
-                  required
-                  className="w-full bg-white outline-none p-2 rounded-md text-black"
-                />
-              </div>
-              {formData.imagenes.map((imagen, index) => (
-                <div key={index} className="col-span-2">
-                  <label className="block">Imagen {index + 1}</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      handleFileChangeAdicional(e, index);
-                    }}
-                    required
-                    className="w-full bg-white outline-none p-2 rounded-md text-black"
-                  />
-                  <textarea
-                    onChange={(e) => {
-                      handleParrafoChange(e, index);
-                    }}
-                    required
-                    placeholder="Descripción de la imagen..."
-                    className="w-full bg-white outline-none p-2 rounded-md text-black mt-2 min-h-36"
-                  />
+        {isOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+              <div className="max-h-[90vh] overflow-y-auto bg-white text-gray-800 p-8 rounded-xl w-full max-w-4xl shadow-2xl">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-3xl font-bold text-teal-600">Añadir Nuevo Blog</h2>
+                  <button
+                      onClick={closeModal}
+                      className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    &times;
+                  </button>
                 </div>
-              ))}
 
-              {/* Botones */}
-              <div className="flex gap-2 mt-8">
-                <button type="submit" className="admin-act-btn">
-                  Añadir Blog
-                </button>
-                <button
-                  onClick={closeModal}
-                  type="button"
-                  className="cancel-btn"
+                <form
+                    encType="multipart/form-data"
+                    onSubmit={handleSubmit}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
-                  Cancelar
-                </button>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Título*</label>
+                    <input
+                        type="text"
+                        name="titulo"
+                        value={formData.titulo}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Párrafo*</label>
+                    <input
+                        type="text"
+                        name="parrafo"
+                        value={formData.parrafo}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Descripción*</label>
+                    <input
+                        type="text"
+                        name="descripcion"
+                        value={formData.descripcion}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Subtítulo Beneficio*</label>
+                    <input
+                        type="text"
+                        name="subtitulo_beneficio"
+                        value={formData.subtitulo_beneficio}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Título Blog*</label>
+                    <input
+                        type="text"
+                        name="titulo_blog"
+                        value={formData.titulo_blog}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Título Video*</label>
+                    <input
+                        type="text"
+                        name="titulo_video"
+                        value={formData.titulo_video}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">URL del Video*</label>
+                    <input
+                        type="text"
+                        name="url_video"
+                        value={formData.url_video}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
+                    <div className="flex items-center gap-4">
+                      <label className="flex-1 cursor-pointer">
+                        <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-500 transition">
+                          <input
+                              type="file"
+                              accept="image/png, image/jpeg, image/jpg"
+                              name="imagen_principal"
+                              onChange={handleFileChange}
+                              required
+                              className="hidden"
+                          />
+                          <p className="text-center text-gray-500">
+                            {formData.imagen_principal
+                                ? formData.imagen_principal.name
+                                : "Seleccionar archivo"}
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {formData.imagenes.map((imagen, index) => (
+                      <div key={index} className="md:col-span-2 space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Imagen Adicional {index + 1}*
+                        </label>
+                        <div className="flex items-center gap-4 mb-2">
+                          <label className="flex-1 cursor-pointer">
+                            <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-500 transition">
+                              <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleFileChangeAdicional(e, index)}
+                                  required
+                                  className="hidden"
+                              />
+                              <p className="text-center text-gray-500">
+                                {imagen.url_imagen
+                                    ? imagen.url_imagen.name
+                                    : "Seleccionar archivo"}
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                        <textarea
+                            onChange={(e) => handleParrafoChange(e, index)}
+                            value={imagen.parrafo_imagen}
+                            required
+                            placeholder="Descripción de la imagen..."
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition min-h-24"
+                        />
+                      </div>
+                  ))}
+
+                  <div className="md:col-span-2 flex justify-end gap-4">
+                    <button
+                        type="button"
+                        onClick={closeModal}
+                        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow-md flex items-center justify-center gap-2 min-w-[140px]"
+                        disabled={isSaving}
+                    >
+                      {isSaving ? (
+                          <>
+                            <svg
+                                className="animate-spin h-4 w-4 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                              <circle
+                                  className="opacity-25"
+                                  cx="12" cy="12" r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                              />
+                              <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v8z"
+                              />
+                            </svg>
+                            Guardando...
+                          </>
+                      ) : (
+                          'Guardar Blog'
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </>
+            </div>
+        )}
+      </>
   );
 };
 

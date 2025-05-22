@@ -5,11 +5,11 @@ const navLinks = [
     texto: "Nosotros",
   },
   {
-    url: "/products",
+    url: "/productos",
     texto: "Productos",
   },
   {
-    url: "/shipping-policies",
+    url: "/politicas-de-envio",
     texto: "Politicas de Envio",
   },
 ];

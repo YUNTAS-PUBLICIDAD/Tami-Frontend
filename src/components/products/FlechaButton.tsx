@@ -1,3 +1,5 @@
+import React from "react";
+
 type Direction = "left" | "right";
 interface ButtonProps {
   direccion: Direction;

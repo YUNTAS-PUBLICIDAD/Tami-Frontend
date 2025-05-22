@@ -35,9 +35,10 @@ function NavBar() {
 
   return (
     <header
-      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
-        isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
-      }`}
+        className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
+            isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
+        }`}
+        style={{ maxWidth: '100vw' }}
     >
       <SideMenu links={navLinks} />
       <a

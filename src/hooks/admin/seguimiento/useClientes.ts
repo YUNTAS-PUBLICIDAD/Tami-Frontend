@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { getApiUrl, config } from "config";
-import type Cliente from "../../../models/Clients";
+import type Cliente from "../../../models/Clients.ts";
 
 const useClientes = (trigger: boolean, page: number = 1) => {
   const [clientes, setClientes] = useState<Cliente[]>([]); // Cambia el tipo a Cliente[] para reflejar la estructura de datos

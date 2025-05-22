@@ -7,7 +7,7 @@ import { getApiUrl, config } from "config"; // importa la configuración de la A
 import type Usuario from "../../../models/Users"; // importa el modelo de Usuario
 
 const useUsuarioAcciones = () => {
-  
+
   /**
    * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
    * Si no se encuentra el token, lanza un error.
@@ -24,10 +24,10 @@ const useUsuarioAcciones = () => {
    */
 
   const addUsuario = async (
-    UsuarioData: Partial<Usuario>
+      UsuarioData: Partial<Usuario>
   ): Promise<Usuario> => {
-    const token = getValidToken(); 
-    const url = getApiUrl(config.endpoints.users.create); 
+    const token = getValidToken();
+    const url = getApiUrl(config.endpoints.users.create);
 
     const response = await fetch(url, {
       method: "POST",
@@ -49,8 +49,8 @@ const useUsuarioAcciones = () => {
    */
 
   const updateUsuario = async (
-    id: number,
-    updatedData: Partial<Usuario>
+      id: number,
+      updatedData: Partial<Usuario>
   ): Promise<Usuario> => {
     const token = getValidToken();
     const url = getApiUrl(config.endpoints.users.update(id));
@@ -73,7 +73,7 @@ const useUsuarioAcciones = () => {
   /**
    * Función para eliminar un Usuario, usando los tipos
    */
-  
+
   const deleteUsuario = async (id: number): Promise<{ message: string }> => {
     const token = getValidToken();
     const url = getApiUrl(config.endpoints.users.delete(id));

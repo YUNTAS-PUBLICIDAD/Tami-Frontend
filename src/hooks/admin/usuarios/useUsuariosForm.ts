@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import useUsuarioAcciones from "./useUsuariosActions";
 import type Usuario from "../../../models/Users";
 /**
- * Funcion para manejar el formulario de Usuario 
+ * Funcion para manejar el formulario de Usuario
  */
 const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
   type UsuarioFormData = Pick<Usuario, "name" | "celular" | "email" | "rol">;
@@ -24,8 +24,8 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
     rol: "USER", // Se establece un rol por defecto
   });
 
-  const [isEditing, setIsEditing] = useState(false); // Estado para manejar si estamos editando o añadiendo un Usuario
-  const { addUsuario, updateUsuario } = useUsuarioAcciones(); // Importamos las funciones de los fetch para añadir y actualizar Usuarios
+  const [isEditing, setIsEditing] = useState(false);
+  const { addUsuario, updateUsuario } = useUsuarioAcciones();
 
   /**
    * Efecto para manejar la carga inicial del formulario.
@@ -33,7 +33,7 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
    */
   useEffect(() => {
     if (usuario) {
-      
+
       /**
        * Si hay un Usuario, cargamos sus datos en el formulario.
        */
@@ -46,7 +46,7 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
       setIsEditing(true);
     } else {
       /**
-       * Si no hay Usuario, reiniciamos el formulario 
+       * Si no hay Usuario, reiniciamos el formulario
        * y establecemos el estado de edición en falso.
        */
       resetForm();
@@ -103,9 +103,9 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
       onSuccess?.(); // Llamamos a la función de éxito si existe
       resetForm(); // Reiniciamos el formulario después de la operación
 
-    /**
-     * Manejo de errores en la operación de añadir o actualizar Usuario.
-     */
+      /**
+       * Manejo de errores en la operación de añadir o actualizar Usuario.
+       */
     } catch (error: any) {
       console.error("❌ Error en la operación:", error);
       alert(`❌ Error: ${error.message || "Error desconocido"}`);
