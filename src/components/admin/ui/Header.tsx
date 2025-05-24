@@ -1,4 +1,4 @@
-import logo from "../../assets/images/logos/logo_movil.webp";
+import logo from "@images/logos/logo_movil.webp";
 import React from "react";
 
 interface HeaderProps {

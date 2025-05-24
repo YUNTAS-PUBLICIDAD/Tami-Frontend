@@ -4,7 +4,7 @@
  * Muestra un formulario con campos para el nombre, teléfono y correo electrónico.
  */
 
-import useClienteForm from "../../../../hooks/admin/seguimiento/useClienteForm";
+import useClienteForm from "../../../../hooks/admin/seguimiento/useClienteForm.ts";
 import type Cliente from "../../../../models/Clients.ts";
 import React from "react";
 

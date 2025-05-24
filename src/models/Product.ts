@@ -21,9 +21,10 @@ interface Imagen {
   url_imagen: File | null;
 }
 
-export interface Product {
+export default interface Producto {
   id: number;
   name: string;
+  section: string;
   title: string;
   subtitle: string;
   tagline: string;

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, type FC } from "react";
-import type { Product, ProductPOST } from "src/models/Product";
+import type { ProductPOST } from "../../../models/Product.ts";
+import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
-import { config, getApiUrl } from "config";
-import { getProducts } from "src/hooks/admin/productos/productos";
+import { config, getApiUrl } from "../../../../config.ts";
+import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 type Props = {
   onProductAdded?: () => void;
 };

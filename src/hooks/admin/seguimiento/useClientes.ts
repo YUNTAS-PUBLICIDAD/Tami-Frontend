@@ -35,6 +35,7 @@ const useClientes = (trigger: boolean, page: number = 1) => {
          * Realiza la solicitud a la API para obtener la lista de clientes.
          */
         const url = `${getApiUrl(config.endpoints.clientes.list)}?page=${page}`;
+        console.log(url);
         const response = await fetch(url, {
           method: "GET",
           headers: {
