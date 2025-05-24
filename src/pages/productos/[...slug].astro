@@ -141,16 +141,7 @@ if (!producto) {
                     ARTÍCULOS SIMILARES
                 </h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
-                    {relatedProducts.map((related) => (
-                            <div class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
-                                <img src={related.image} alt={related.title} class="w-full h-40 object-cover" />
-                                <div class="p-4">
-                                    <h4 class="font-bold text-sm text-gray-900 truncate">{related.title}</h4>
-                                    <p class="text-gray-600 text-xs mb-2 truncate">{related.subtitle}</p>
-                                    <a href={`/productos/${related.slug}`} class="text-teal-600 text-sm font-semibold hover:underline">Ver más</a>
-                                </div>
-                            </div>
-                    ))}
+
                 </div>
             </div>
         </div>
