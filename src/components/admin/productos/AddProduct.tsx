@@ -4,6 +4,7 @@ import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
 import { config, getApiUrl } from "../../../../config.ts";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
+import Swal from "sweetalert2";
 type Props = {
   onProductAdded?: () => void;
 };
@@ -281,12 +282,21 @@ const AddProduct = ({ onProductAdded }: Props) => {
       console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
-        alert("✅ Producto añadido exitosamente");
+        Swal.fire({
+          icon: "success",
+          title: "Producto añadido exitosamente",
+          showConfirmButton: false,
+          timer: 1500
+        });
         closeModal(); // Cerrar modal
         setIsLoading(false); // Cambia el estado de carga a falso
         onProductAdded?.(); // Actualiza los productos
       } else {
-        alert(`❌ Error: ${data.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message,
+        });
         setIsLoading(false); // Cambia el estado de carga a falso
       }
     } catch (error) {
