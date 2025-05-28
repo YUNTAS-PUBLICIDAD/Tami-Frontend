@@ -23,16 +23,24 @@ export default function ListadoDeProductos() {
       const productos = data.data; // Accedemos al array de productos en `data`
 
       // Mapeamos los datos del backend al modelo `Product`
-      const productosMapeados: Producto[] = productos.map((producto: any) => ({
-        id: producto.id.toString().trim(),
-        nombreProducto: producto.nombreProducto,
-        stockProducto: producto.stockProducto,
-        precioProducto: parseFloat(producto.precioProducto),
-        image: producto.image.startsWith("https")
-          ? producto.image
-          : `https://apitami.tami-peru.com${producto.image}`,
-        seccion: producto.seccion,
-      }));
+      const productosMapeados: Producto[] = productos.map((producto: any) => {
+        const primeraImagen = producto.imagenes && producto.imagenes.length > 0
+          ? producto.imagenes[0].url_imagen
+          : null;
+
+        return {
+          id: producto.id.toString().trim(),
+          nombreProducto: producto.nombre,
+          stockProducto: producto.stock,
+          precioProducto: parseFloat(producto.precio),
+          image: primeraImagen
+            ? (primeraImagen.startsWith("https")
+              ? primeraImagen
+              : `https://apitami.tami-peru.com${primeraImagen}`)
+            : null,
+          seccion: producto.seccion,
+        };
+      });
 
       // Construimos las secciones
       const seccionesArray: SeccionProps[] = [
