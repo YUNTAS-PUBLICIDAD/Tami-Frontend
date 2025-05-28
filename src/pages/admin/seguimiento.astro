@@ -1,10 +1,7 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import SeguimientoTable from "../../components/admin/tables/SeguimientoTable";
+import SeguimientoTable from "../../components/admin/seguimiento/SeguimientoTable";
 ---
-
 <LayoutAdmin title="SEGUIMIENTO">
-  <div class="px-2 py-4">
-    <SeguimientoTable client:visible />
-  </div>
+  <SeguimientoTable client:only="react"/>
 </LayoutAdmin>

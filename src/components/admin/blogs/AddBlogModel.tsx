@@ -1,4 +1,4 @@
-import { config, getApiUrl } from "config";
+import { config, getApiUrl } from "../../../../config.ts";
 import { useState } from "react";
 
 interface ImagenAdicional {

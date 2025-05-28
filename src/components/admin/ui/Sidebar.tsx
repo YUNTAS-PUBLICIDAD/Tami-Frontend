@@ -1,4 +1,4 @@
-import { config, getApiUrl } from "config";
+import { config, getApiUrl } from "../../../../config.ts";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 

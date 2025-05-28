@@ -4,8 +4,8 @@
  * Muestra un formulario con campos para el nombre, teléfono y correo electrónico.
  */
 
-import useUsuariosForm from "../../../../../hooks/admin/usuarios/useUsuariosForm";
-import type Usuario from "../../../../../models/Users";
+import useUsuariosForm from "../../../hooks/admin/usuarios/useUsuariosForm.ts";
+import type Usuario from "../../../models/Users.ts";
 import React from "react";
 
 {
