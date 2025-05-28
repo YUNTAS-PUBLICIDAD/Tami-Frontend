@@ -1,0 +1,149 @@
+---
+import { getApiUrl, config } from '../../../config';
+import { slugify } from '../../utils/slugify';
+import Layout from '../../layouts/Layout.astro';
+import type Producto from '../../models/Product';
+
+// Esta función le dice a Astro qué rutas dinámicas debe generar en el build
+export async function getStaticPaths() {
+    const res = await fetch(getApiUrl(config.endpoints.productos.list));
+    const data = await res.json();
+
+    return data.data.map((product: any) => ({
+        params: { slug: slugify(product.title) }, // ✅ STRING, no objeto
+    }));
+}
+
+// Astro.params contiene el slug dinámico que llega desde la URL
+const { slug } = Astro.params as { slug: string };
+const productSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug;
+
+// Obtener lista completa de productos para buscar el que coincida con el slug
+const res = await fetch(getApiUrl(config.endpoints.productos.list));
+if (!res.ok) {
+    throw new Error(`Error al obtener productos: ${res.status}`);
+}
+const json = await res.json();
+const productos: Producto[] = json.data;
+
+const producto = productos.find((p) => slugify(p.title) === productSlug);
+
+if (!producto) {
+    throw new Error(`Producto no encontrado: ${productSlug}`);
+}
+---
+<Layout title={`${producto.title} - Detalles del Producto`}>
+    <div class="w-full">
+        {/* Hero Banner */}
+        <div class="pt-16 md:pt-40 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden">
+            <div class="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-5 md:w-6 h-5 md:h-6">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
+                            <path d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl uppercase md:text-3xl font-bold">
+                        {producto.title}
+                    </h2>
+                </div>
+                <h1 class="text-2xl md:text-5xl uppercase font-bold mb-6 md:mb-8">
+                    {producto.subtitle}
+                </h1>
+                <h3 class="text-2xl md:text-2xl uppercase font-bold mb-6 md:mb-8">
+                    {producto.tagline}
+                </h3>
+                <button class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition">
+                    ¡COTÍZALO!
+                </button>
+            </div>
+
+            <div class="hidden md:block absolute right-0 top-32 w-full md:w-1/2 h-full bg-white rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%] rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center">
+                <img
+                        src={producto.image}
+                        alt={producto.title}
+                        class="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto my-auto"
+                />
+            </div>
+        </div>
+
+        {/* Main Content */}
+        <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                {/* Gallery */}
+                <div class="space-y-4 w-full max-w-[440px]">
+                    <div class="w-full aspect-[1/1] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <img
+                                src={producto.images?.[0] || producto.image}
+                                alt={producto.title}
+                                class="w-full h-full object-contain"
+                        />
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 w-full">
+                        {producto.images?.slice(0, 4).map((img, i) => (
+                                <div
+                                        key={i}
+                                        class="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ease-in-out"
+                                >
+                                    <img
+                                            src={img}
+                                            alt={`${producto.title} - Vista ${i + 1}`}
+                                            class="w-full h-full object-contain"
+                                    />
+                                </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Product Info */}
+                <div>
+                    <div class="mb-6">
+                        <h3 class="text-3xl font-black mb-2 text-teal-800">{producto.title}</h3>
+                        <h1 class="font-bold mb-2 text-lg">Información del producto:</h1>
+                        <p class="text-gray-700">{producto.description}</p>
+                    </div>
+
+                    <div class="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
+                        <h3 class="font-bold mb-2 text-lg">Detalles del producto</h3>
+                        <h3 class="font-bold mb-2">Especificaciones:</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            {Object.entries(producto.specs || {}).map(([key, val]) => (
+                                    <li key={key}>
+                                        <strong>{key}:</strong> {val}
+                                    </li>
+                            ))}
+                        </ul>
+                        <h3 class="font-bold mt-4 mb-4">Dimensiones:</h3>
+                        <div class="flex items-start gap-4 md:gap-12">
+                            <div class="w-24 md:w-32">
+                                {/* Imagen de caja opcional, puedes reemplazar con producto.boxImage si tienes */}
+                                <img src="/box-size-placeholder.png" alt="Box Size" class="w-full h-auto" />
+                            </div>
+                            <ul class="space-y-2 md:space-y-4">
+                                {Object.entries(producto.dimensions || {}).map(([key, val]) => (
+                                        <li key={key}>
+                                            <strong>{key}:</strong> {val}
+                                        </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition">
+                        COTIZACIÓN
+                    </button>
+                </div>
+            </div>
+
+            {/* Similar Products */}
+            <div class="mt-8 md:mt-12">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-teal-500">
+                    ARTÍCULOS SIMILARES
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>

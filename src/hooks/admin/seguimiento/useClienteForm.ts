@@ -33,7 +33,6 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
    */
   useEffect(() => {
     if (cliente) {
-      
       /**
        * Si hay un cliente, cargamos sus datos en el formulario.
        */

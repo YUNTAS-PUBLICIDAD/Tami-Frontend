@@ -1,4 +1,4 @@
-import useUsuarioAcciones from "../../../../../hooks/admin/usuarios/useUsuariosActions";
+import useUsuarioAcciones from "../../../hooks/admin/usuarios/useUsuariosActions.ts";
 import { useState } from "react";
 
 interface DeleteUsuarioModalProps {
