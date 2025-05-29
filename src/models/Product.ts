@@ -23,20 +23,18 @@ interface Imagen {
 
 export default interface Producto {
   id: number;
-  name: string;
-  section: string;
-  title: string;
-  subtitle: string;
-  tagline: string;
-  description: string;
-  specs: any;
-  dimensions: any;
-  relatedProducts: number[] | null;
-  images: string[] | null;
-  image: string;
-  nombreProducto: string;
-  stockProducto: number;
-  precioProducto: number;
+  nombre: string;
   seccion: string;
+  link: string;
+  titulo: string;
+  subtitulo: string;
+  lema: string;
+  descripcion: string;
+  especificaciones: any;
+  productos_relacionados: object[] | null;
+  imagenes: string[] | null;
+  nombreProducto: string;
+  stock: number;
+  precio: number;
   createdAt: string;
 }
