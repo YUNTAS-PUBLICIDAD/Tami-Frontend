@@ -32,8 +32,7 @@ export default interface Producto {
   descripcion: string;
   especificaciones: any;
   productos_relacionados: object[] | null;
-  imagenes: string[] | null;
-  nombreProducto: string;
+  imagenes: object[] | null;
   stock: number;
   precio: number;
   createdAt: string;
