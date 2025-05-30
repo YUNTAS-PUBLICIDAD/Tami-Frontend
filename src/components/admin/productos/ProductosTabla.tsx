@@ -85,7 +85,7 @@ const ProductosTabla = () => {
             setCurrentPage(1);
         } else {
             const filtered = productos.filter(product =>
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 product.seccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 product.id.toString().includes(searchTerm)
             );
@@ -168,78 +168,82 @@ const ProductosTabla = () => {
                         </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={5} className="text-center py-12">
-                                    <div className="flex justify-center items-center gap-3">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500"></div>
-                                        <span className="text-teal-500 font-medium">Cargando productos...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : currentItems.length > 0 ? (
-                            currentItems.map((item, index) => (
-                                <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
-                                    <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
-                                        #{item.id}
-                                    </td>
-                                    <td className="px-6 py-4 font-medium">{item.name}</td>
-                                    <td className="px-6 py-4">
-                      <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                        {item.seccion.toLowerCase()}
-                      </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
-                                                onError={(e) => {
-                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
-                                                }}
-                                            />
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex gap-3 items-center">
-                                            <EditProduct
-                                                product={item}
-                                                onProductUpdated={fetchData}
-                                            />
-                                            <button
-                                                className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
-                                                title="Eliminar"
-                                                onClick={() => deleteProductHandler(item.id)}
-                                                disabled={loadingDeleteId === item.id}
-                                            >
-                                                {loadingDeleteId === item.id ? (
-                                                    <AiOutlineLoading3Quarters className="animate-spin" size={18} />
-                                                ) : (
-                                                    <FaTrash size={18} />
-                                                )}
-                                            </button>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={5} className="text-center py-12">
+                                        <div className="flex justify-center items-center gap-3">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500"></div>
+                                            <span className="text-teal-500 font-medium">Cargando productos...</span>
                                         </div>
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={5} className="text-center py-16 text-gray-500">
-                                    <div className="flex flex-col items-center justify-center gap-2">
-                                        <div className="bg-teal-50 p-6 rounded-full">
-                                            <FaTags className="h-10 w-10 text-teal-300" />
+                            ) : currentItems.length > 0 ? (
+                                currentItems.map((item, index) => (
+                                    <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
+                                        <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
+                                            #{item.id}
+                                        </td>
+                                        <td className="px-6 py-4 font-medium">{item.nombre}</td>
+                                        <td className="px-6 py-4">
+                                            <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
+                                                {item.seccion.toLowerCase()}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center">
+                                                {item.imagenes?.[0]?.url_imagen ? (
+                                                    <img
+                                                        src={`https://apitami.tami-peru.com${item.imagenes[0].url_imagen}`}
+                                                        alt={item.nombre}
+                                                        className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <span className="text-sm text-gray-400 italic">Sin imagen</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex gap-3 items-center">
+                                                <EditProduct
+                                                    product={item}
+                                                    onProductUpdated={fetchData}
+                                                />
+                                                <button
+                                                    className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
+                                                    title="Eliminar"
+                                                    onClick={() => deleteProductHandler(item.id)}
+                                                    disabled={loadingDeleteId === item.id}
+                                                >
+                                                    {loadingDeleteId === item.id ? (
+                                                        <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                                                    ) : (
+                                                        <FaTrash size={18} />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={5} className="text-center py-16 text-gray-500">
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <div className="bg-teal-50 p-6 rounded-full">
+                                                <FaTags className="h-10 w-10 text-teal-300" />
+                                            </div>
+                                            <p className="text-xl font-medium text-gray-600 mt-4">
+                                                {searchTerm ? "No se encontraron productos que coincidan con tu búsqueda" : "No hay productos registrados"}
+                                            </p>
+                                            <p className="text-gray-400 max-w-md mx-auto">
+                                                {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando productos a tu catálogo con el botón 'Agregar Producto'"}
+                                            </p>
                                         </div>
-                                        <p className="text-xl font-medium text-gray-600 mt-4">
-                                            {searchTerm ? "No se encontraron productos que coincidan con tu búsqueda" : "No hay productos registrados"}
-                                        </p>
-                                        <p className="text-gray-400 max-w-md mx-auto">
-                                            {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando productos a tu catálogo con el botón 'Agregar Producto'"}
-                                        </p>
-                                    </div>
-                                </td>
-                            </tr>
-                        )}
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
