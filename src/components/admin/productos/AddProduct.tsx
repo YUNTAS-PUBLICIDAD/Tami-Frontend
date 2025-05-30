@@ -362,7 +362,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   >
                     <div className="space-y-4">
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Nombre:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Nombre:</label>
                         <input
                             required
                             value={formData.nombre}
@@ -374,7 +374,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Descripción:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Descripción:</label>
                         <textarea
                             required
                             value={formData.descripcion}
@@ -385,7 +385,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Título:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Título:</label>
                         <input
                             required
                             value={formData.titulo}
@@ -397,7 +397,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Subtitulo:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Subtitulo:</label>
                         <input
                             required
                             value={formData.subtitulo}
@@ -409,7 +409,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Lema:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Lema:</label>
                         <input
                             required
                             value={formData.lema}
@@ -421,7 +421,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                           <input
                               required
@@ -434,7 +434,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         </div>
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
                         <select
                             required
                             value={formData.seccion}
@@ -450,7 +450,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                       {/* Especificaciones */}
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <h5 className="font-medium text-gray-700 mb-3">Especificaciones</h5>
+                        <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
                         <div className="space-y-3">
                           {Object.entries(formData.especificaciones).map(([key, value]) => (
                               <div className="flex flex-col sm:flex-row sm:items-center gap-2" key={key}>
@@ -487,7 +487,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                       {/* Dimensiones */}
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <h5 className="font-medium text-gray-700 mb-3">Dimensiones</h5>
+                        <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div className="form-input">
                             <label className="block text-sm text-gray-600 mb-1">Alto:</label>
@@ -562,11 +562,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       }`}
                   >
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
-                      <h5 className="font-medium text-gray-700 mb-4">Galería de Imágenes</h5>
+                      <h5 className="font-medium !text-gray-700 mb-4">Galería de Imágenes</h5>
                       <div className="space-y-4">
                         {formData.imagenes.map((_, index) => (
                             <div key={index} className="form-input">
-                              <label className="block text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
+                              <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
                               <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
                                 <input
                                     required
@@ -617,7 +617,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       }`}
                   >
                     <div className="form-input mb-6">
-                      <label className="block text-gray-700 text-sm font-medium mb-3">Productos Relacionados:</label>
+                      <label className="block !text-gray-700 text-sm font-medium mb-3">Productos Relacionados:</label>
                       {productos.length > 0 ? (
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-64 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-100">
                             {productos.map((item) => (
@@ -635,11 +635,18 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                         }
                                     />
                                     <div className="relative">
-                                      <img
-                                          src={item.image}
-                                          alt={item.name}
-                                          className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
-                                      />
+                                      {item.imagenes?.[0]?.url_imagen ? (
+                                          <img
+                                              src={`https://apitami.tami-peru.com${item.imagenes[0].url_imagen}`}
+                                              alt={item.nombre}
+                                              className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
+                                              onError={(e) => {
+                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
+                                              }}
+                                          />
+                                      ) : (
+                                          <span className="text-sm text-gray-400 italic">Sin imagen</span>
+                                      )}
                                       <div className="absolute inset-0 bg-teal-600/0 peer-checked:bg-teal-600/20 flex items-center justify-center rounded-xl transition-all duration-300">
                                         <svg
                                             className="w-8 h-8 text-white opacity-0 peer-checked:opacity-100 transition-all duration-300"
@@ -655,7 +662,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                         </svg>
                                       </div>
                                     </div>
-                                    <p className="text-xs text-center mt-1 text-gray-600">{item.name}</p>
+                                    <p className="text-xs text-center mt-1 text-gray-600">{item.nombre}</p>
                                   </label>
                                 </div>
                             ))}
