@@ -8,6 +8,7 @@ export async function getProducts() {
     const response = await fetch(url, {
       method: "GET",
       headers: {
+        Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -31,6 +32,7 @@ export async function deleteProduct(id: number) {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
         },
       }
     );

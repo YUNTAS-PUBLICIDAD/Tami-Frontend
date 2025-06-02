@@ -6,6 +6,9 @@ import { FaTrash, FaSearch, FaSyncAlt, FaPlus, FaTags } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import AddProduct from "./AddProduct";
 import Swal from "sweetalert2";
+import { config } from "config";
+
+const getApiUrl = config.apiUrl;
 
 const ProductosTabla = () => {
     const [productos, setProductos] = useState<Product[]>([]);
@@ -193,7 +196,7 @@ const ProductosTabla = () => {
                                             <div className="flex items-center">
                                                 {item.imagenes?.[0]?.url_imagen ? (
                                                     <img
-                                                        src={`https://apitami.tami-peru.com${item.imagenes[0].url_imagen}`}
+                                                        src={`${getApiUrl}${item.imagenes[0].url_imagen}`}
                                                         alt={item.nombre}
                                                         className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
                                                         onError={(e) => {
