@@ -245,19 +245,23 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("stock", formData.stock.toString());
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
-      Object.entries(formData.especificaciones).forEach(([key, value]) => {
-        formDataToSend.append(`especificaciones[${key}]`, value);
-      });
-      
-      formDataToSend.append("especificaciones[alto]", formData.dimensiones.alto + "cm");
-      formDataToSend.append("especificaciones[largo]", formData.dimensiones.largo + "cm");
-      formDataToSend.append("especificaciones[ancho]", formData.dimensiones.ancho + "cm"
-      );
-      formData.imagenes.forEach((item, index) => {
-        if (item.url_imagen) {
-          formDataToSend.append(`imagenes[${index}][url_imagen]`, item.url_imagen);
+      formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
+
+      formData.imagenes.forEach((imagen, index) => {
+        if (imagen.url_imagen) {
+          formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
         }
       });
+
+      formData.imagenes.forEach((imagen, index) => {
+        const altText = imagen.texto_alt.trim() || "Texto SEO para imagen";
+
+        if (imagen.url_imagen) {
+          formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
+          formDataToSend.append(`textos_alt[${index}]`, altText);
+        }
+      });
+
       formData.relacionados.forEach((item, index) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
@@ -635,7 +639,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                     <div className="relative">
                                       {item.imagenes?.[0]?.url_imagen ? (
                                           <img
-                                              src={`https://apitami.tami-peru.com${item.imagenes[0].url_imagen}`}
+                                              src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
                                               alt={item.nombre}
                                               className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
                                               onError={(e) => {
