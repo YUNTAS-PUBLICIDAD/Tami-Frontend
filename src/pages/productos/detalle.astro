@@ -184,7 +184,7 @@ const productosUrl = config.endpoints.productos;
     productTitle.innerHTML = product.titulo;
     productSubtitle.innerHTML = product.subtitulo;
     productTagline.innerHTML = product.lema;
-    productImg.src = "https://apitami.tami-peru.com"+product.imagenes[0].url_imagen;
+    productImg.src = `${getApiUrl}`+product.imagenes[0].url_imagen;
     console.log(productImg.src);
     productImg.alt = product.titulo;
     infoTitle.innerHTML = product.titulo;
@@ -193,7 +193,7 @@ const productosUrl = config.endpoints.productos;
     // Actualizar visor de imágenes
     const images = product.imagenes;
     if (images && images.length > 0) {
-      productViewer.src = `https://apitami.tami-peru.com${images[0].url_imagen}`;
+      productViewer.src = `${getApiUrl}${images[0].url_imagen}`;
       console.log(productViewer.src);
       productViewer.alt = `${product.titulo} - Vista 1`;
 
@@ -208,7 +208,7 @@ const productosUrl = config.endpoints.productos;
             "aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ease-in-out hover:cursor-pointer";
 
         const img = document.createElement("img");
-        img.src = `https://apitami.tami-peru.com${image.url_imagen}`;
+        img.src = `${getApiUrl}${image.url_imagen}`;
         console.log(img.src);
         img.alt = alt;
         img.className = "w-full h-full object-cover";
@@ -217,7 +217,7 @@ const productosUrl = config.endpoints.productos;
         imagesList.appendChild(div);
 
         div.onclick = () => {
-          productViewer.src = `https://apitami.tami-peru.com${image.url_imagen}`;
+          productViewer.src = `${getApiUrl}${image.url_imagen}`;
           productViewer.alt = alt;
         };
       });
@@ -298,7 +298,7 @@ const productosUrl = config.endpoints.productos;
           "aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2";
 
       const img = document.createElement("img");
-      img.src = `https://apitami.tami-peru.com${prod.image.url_imagen}`;
+      img.src = `${getApiUrl}${prod.image.url_imagen}`;
       img.alt = prod.title;
       img.className =
           "w-full h-full object-cover group-hover:scale-105 transition";

@@ -2,6 +2,8 @@ import { config, getApiUrl } from "config";
 import { useEffect, useState, type JSX } from "react";
 import type Producto from "src/models/Product";
 
+const ApiUrl = config.apiUrl;
+
 interface SeccionProps {
   nombreSeccion: string;
   productosDeLaSeccion: Producto[];
@@ -37,7 +39,7 @@ export default function ListadoDeProductos() {
           image: primeraImagen
             ? (primeraImagen.startsWith("https")
               ? primeraImagen
-              : `https://apitami.tami-peru.com${primeraImagen}`)
+              : `${ApiUrl}${primeraImagen}`)
             : null,
           seccion: producto.seccion,
         };

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, type FC } from "react";
-import type { ProductPOST } from "../../../models/Product.ts";
+import type { ProductApiPOST, ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
 import { config, getApiUrl } from "../../../../config.ts";
@@ -14,40 +14,44 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [formPage, setFormPage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
   const [productos, setProductos] = useState<Product[]>([]);
-  const [formData, setFormData] = useState<ProductPOST>({
+  const [formData, setFormData] = useState<ProductFormularioPOST>({
     nombre: "",
     titulo: "",
     subtitulo: "",
     lema: "",
     descripcion: "",
-    imagen_principal: null,
     stock: 100,
-    precioProducto: 199.99,
+    precio: 199.99,
     seccion: "Trabajo",
-    especificaciones: {
-      color: "",
-      material: "",
-    },
     dimensiones: {
       alto: "",
       largo: "",
       ancho: "",
     },
+    especificaciones: {
+      color: "",
+      material: "",
+    },
+    relacionados: [],
     imagenes: [
       {
         url_imagen: null,
+        texto_alt:"",
       },
       {
         url_imagen: null,
+        texto_alt:"",
       },
       {
         url_imagen: null,
+        texto_alt:"",
       },
       {
         url_imagen: null,
+        texto_alt:"",
       },
     ],
-    relacionados: [],
+    textos_alt: [],
   });
 
   const handleChange = (
@@ -71,11 +75,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, imagen_principal: e.target.files[0] });
     }
-  };
+  };*/
 
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -131,9 +135,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       subtitulo: "",
       lema: "",
       descripcion: "",
-      imagen_principal: null,
       stock: 100,
-      precioProducto: 199.99,
+      precio: 199.99,
       seccion: "Trabajo",
       especificaciones: {
         color: "",
@@ -144,21 +147,26 @@ const AddProduct = ({ onProductAdded }: Props) => {
         largo: "",
         ancho: "",
       },
-      imagenes: [
-        {
-          url_imagen: null,
-        },
-        {
-          url_imagen: null,
-        },
-        {
-          url_imagen: null,
-        },
-        {
-          url_imagen: null,
-        },
-      ],
       relacionados: [],
+      imagenes: [
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+    ],
+      textos_alt: [],
     });
   }
 
@@ -211,7 +219,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.subtitulo ||
       !formData.lema ||
       !formData.descripcion ||
-      !formData.imagen_principal ||
       !formData.seccion ||
       !formData.especificaciones.color ||
       !formData.especificaciones.material ||
@@ -232,36 +239,24 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("subtitulo", formData.subtitulo);
       formDataToSend.append("lema", formData.lema);
-      formDataToSend.append("stock", formData.stock.toString());
-      formDataToSend.append("precio", formData.precioProducto.toString());
+      formDataToSend.append("link", formData.lema);
       formDataToSend.append("descripcion", formData.descripcion);
-      formDataToSend.append("lema", formData.lema);
-      formDataToSend.append("mensaje_correo", "");
+      formDataToSend.append("stock", formData.stock.toString());
+      formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       Object.entries(formData.especificaciones).forEach(([key, value]) => {
         formDataToSend.append(`especificaciones[${key}]`, value);
       });
-      formDataToSend.append(
-        "dimensiones[alto]",
-        formData.dimensiones.alto + "cm"
-      );
-      formDataToSend.append(
-        "dimensiones[largo]",
-        formData.dimensiones.largo + "cm"
-      );
-      formDataToSend.append(
-        "dimensiones[ancho]",
-        formData.dimensiones.ancho + "cm"
+      
+      formDataToSend.append("especificaciones[alto]", formData.dimensiones.alto + "cm");
+      formDataToSend.append("especificaciones[largo]", formData.dimensiones.largo + "cm");
+      formDataToSend.append("especificaciones[ancho]", formData.dimensiones.ancho + "cm"
       );
       formData.imagenes.forEach((item, index) => {
         if (item.url_imagen) {
-          formDataToSend.append(
-            `imagenes[${index}][url_imagen]`,
-            item.url_imagen
-          );
+          formDataToSend.append(`imagenes[${index}][url_imagen]`, item.url_imagen);
         }
       });
-      formDataToSend.append("imagen_principal", formData.imagen_principal); // Subir imagen como archivo
       formData.relacionados.forEach((item, index) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
@@ -273,6 +268,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
           body: formDataToSend, // FormData
           headers: {
             Authorization: `Bearer ${token}`,
+            Accept: "application/json"
           },
         }
       );
@@ -410,6 +406,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                         />
                       </div>
+                      {/* 
                       <div className="form-input">
                         <label className="block text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
@@ -423,6 +420,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           />
                         </div>
                       </div>
+                      */}
                       <div className="form-input">
                         <label className="block text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
                         <select
