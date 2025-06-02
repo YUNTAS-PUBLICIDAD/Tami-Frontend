@@ -1,10 +1,13 @@
 // src/pages/api/blogs.ts
 import type { APIRoute } from "astro";
+import { config } from "config";
+
+const ApiUrl = config.apiUrl;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("https://apitami.tami-peru.com/api/v1/blogs", {
+    const response = await fetch(`${ApiUrl}/api/v1/blogs`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

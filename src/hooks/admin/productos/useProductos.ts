@@ -40,6 +40,7 @@ const useProductos = (trigger: boolean, page: number = 1) => {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
