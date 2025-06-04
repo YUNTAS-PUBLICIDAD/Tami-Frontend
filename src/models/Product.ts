@@ -30,7 +30,7 @@ export interface ProductFormularioPOST {
   dimensiones: Dimensions;
   imagenes: Imagen[];
   relacionados: number[];
-  textos_alt: number[];
+  textos_alt: string[];
 }
 
 interface Imagen {
