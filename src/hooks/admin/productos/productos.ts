@@ -1,5 +1,5 @@
 import { config, getApiUrl } from "config";
-import type { ProductPOST } from "src/models/Product";
+import type { ProductApiPOST } from "src/models/Product";
 
 export async function getProducts() {
   try {
@@ -8,6 +8,7 @@ export async function getProducts() {
     const response = await fetch(url, {
       method: "GET",
       headers: {
+        Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -31,6 +32,7 @@ export async function deleteProduct(id: number) {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
         },
       }
     );
@@ -45,4 +47,4 @@ export async function deleteProduct(id: number) {
   }
 }
 
-export async function createProduct(producto: ProductPOST) {}
+export async function createProduct(producto: ProductApiPOST) {}

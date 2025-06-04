@@ -2,6 +2,8 @@ import { config, getApiUrl } from "config";
 import { useEffect, useState, type JSX } from "react";
 import type Producto from "src/models/Product";
 
+const ApiUrl = config.apiUrl;
+
 interface SeccionProps {
   nombreSeccion: string;
   productosDeLaSeccion: Producto[];
@@ -23,16 +25,25 @@ export default function ListadoDeProductos() {
       const productos = data.data; // Accedemos al array de productos en `data`
 
       // Mapeamos los datos del backend al modelo `Product`
-      const productosMapeados: Producto[] = productos.map((producto: any) => ({
-        id: producto.id.toString().trim(),
-        nombreProducto: producto.nombreProducto,
-        stockProducto: producto.stockProducto,
-        precioProducto: parseFloat(producto.precioProducto),
-        image: producto.image.startsWith("https")
-          ? producto.image
-          : `https://apitami.tami-peru.com${producto.image}`,
-        seccion: producto.seccion,
-      }));
+      const productosMapeados: Producto[] = productos.map((producto: any) => {
+        const primeraImagen = producto.imagenes && producto.imagenes.length > 0
+          ? producto.imagenes[0].url_imagen
+          : null;
+
+        return {
+          id: producto.id.toString().trim(),
+          link: producto.link,
+          nombreProducto: producto.nombre,
+          stockProducto: producto.stock,
+          precioProducto: parseFloat(producto.precio),
+          image: primeraImagen
+            ? (primeraImagen.startsWith("https")
+              ? primeraImagen
+              : `${ApiUrl}${primeraImagen}`)
+            : null,
+          seccion: producto.seccion,
+        };
+      });
 
       // Construimos las secciones
       const seccionesArray: SeccionProps[] = [
@@ -103,7 +114,7 @@ function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
 function ProductCard({ producto }: Props) {
   return (
     <a
-      href={`/productos/details?id=${producto.id}`}
+      href={`/productos/detalle?link=${producto.link}`}
       className="my-4 sm:my-6 md:my-10 flex flex-col items-center group hover:cursor-pointer w-full"
     >
       <div className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden">

@@ -142,17 +142,6 @@ const productosUrl = config.endpoints.productos;
   eval(removeLoaderString);
 
   // Función para slugificar el nombre del producto
-  function slugify(text) {
-    return text
-        .toString()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '-') // Reemplazar espacios con guiones
-        .replace(/[^\w\-]+/g, '') // Eliminar caracteres no alfanuméricos
-        .replace(/\-\-+/g, '-'); // Reemplazar múltiples guiones con uno solo
-  }
 
   // Función para mapear nombres de productos a IDs
   const productNameToIdMap = {};
@@ -192,32 +181,35 @@ const productosUrl = config.endpoints.productos;
     }
 
     // Actualizar elementos básicos
-    productTitle.innerHTML = product.title;
-    productSubtitle.innerHTML = product.subtitle;
-    productTagline.innerHTML = product.tagline;
-    productImg.src = product.image;
-    productImg.alt = product.title;
-    infoTitle.innerHTML = product.title;
-    infoDescription.innerHTML = product.description;
+    productTitle.innerHTML = product.titulo;
+    productSubtitle.innerHTML = product.subtitulo;
+    productTagline.innerHTML = product.lema;
+    productImg.src = `${getApiUrl}`+product.imagenes[0].url_imagen;
+    console.log(productImg.src);
+    productImg.alt = product.titulo;
+    infoTitle.innerHTML = product.titulo;
+    infoDescription.innerHTML = product.descripcion;
 
     // Actualizar visor de imágenes
-    const images = product.images;
+    const images = product.imagenes;
     if (images && images.length > 0) {
-      productViewer.src = images[0];
-      productViewer.alt = `${product.title} - Vista 1`;
+      productViewer.src = `${getApiUrl}${images[0].url_imagen}`;
+      console.log(productViewer.src);
+      productViewer.alt = `${product.titulo} - Vista 1`;
 
       // Limpiar lista de imágenes previa
       imagesList.innerHTML = '';
 
       // Añadir miniaturas
       images.slice(0, 4).forEach((image, index) => {
-        const alt = `${product.title} - Vista ${index + 1}`;
+        const alt = `${product.titulo} - Vista ${index + 1}`;
         const div = document.createElement("div");
         div.className =
             "aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ease-in-out hover:cursor-pointer";
 
         const img = document.createElement("img");
-        img.src = image;
+        img.src = `${getApiUrl}${image.url_imagen}`;
+        console.log(img.src);
         img.alt = alt;
         img.className = "w-full h-full object-cover";
 
@@ -225,7 +217,7 @@ const productosUrl = config.endpoints.productos;
         imagesList.appendChild(div);
 
         div.onclick = () => {
-          productViewer.src = image;
+          productViewer.src = `${getApiUrl}${image.url_imagen}`;
           productViewer.alt = alt;
         };
       });
@@ -233,7 +225,7 @@ const productosUrl = config.endpoints.productos;
 
     // Actualizar especificaciones
     specsList.innerHTML = '';
-    const specs = product.specs;
+    const specs = product.especificaciones;
     Object.entries(specs).forEach(([key, value]) => {
       const li = document.createElement("li");
       li.textContent = `${key}: ${value}`;
@@ -242,7 +234,7 @@ const productosUrl = config.endpoints.productos;
 
     // Actualizar dimensiones
     productDimension.innerHTML = '';
-    const dimensions = product.dimensions;
+    const dimensions = product.especificaciones;
     Object.entries(dimensions).forEach(([key, value]) => {
       const li = document.createElement("li");
       li.className = "flex items-center gap-2";
@@ -257,12 +249,12 @@ const productosUrl = config.endpoints.productos;
     });
 
     // Actualizar título de la página
-    document.title = `${product.title} - Detalles del Producto`;
+    document.title = `${product.titulo} - Detalles del Producto`;
 
     // Guardar la asociación nombre-id para futuras referencias
-    const productSlug = slugify(product.title);
+    const productSlug = product.link;
     productNameToIdMap[productSlug] = product.id;
-    localStorage.setItem(`product_${productSlug}`, product.id);
+    localStorage.setItem(`product_${productSlug}`, product.link);
   }
 
   // Función para cargar productos relacionados
@@ -292,11 +284,10 @@ const productosUrl = config.endpoints.productos;
 
     // Añadir productos relacionados al contenedor
     relatedProducts.forEach((prod) => {
-      const productSlug = slugify(prod.title);
-
+      const productSlug = product.link;
       // Guardar la asociación nombre-id para futuras referencias
       productNameToIdMap[productSlug] = prod.id;
-      localStorage.setItem(`product_${productSlug}`, prod.id);
+      localStorage.setItem(`product_${productSlug}`, prod.link);
 
       const a = document.createElement("a");
       a.href = `/productos/${productSlug}`;
@@ -307,7 +298,7 @@ const productosUrl = config.endpoints.productos;
           "aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2";
 
       const img = document.createElement("img");
-      img.src = prod.image;
+      img.src = `${getApiUrl}${prod.image.url_imagen}`;
       img.alt = prod.title;
       img.className =
           "w-full h-full object-cover group-hover:scale-105 transition";
@@ -334,7 +325,7 @@ const productosUrl = config.endpoints.productos;
 
     // Si no hay slug en la URL, verificamos si hay un ID en los parámetros
     const params = new URLSearchParams(window.location.search);
-    const idFromParams = params.get("id")?.trim();
+    const idFromParams = params.get("link")?.trim();
 
     let productId = null;
 
@@ -364,13 +355,13 @@ const productosUrl = config.endpoints.productos;
 
           // Buscar el producto por slug
           const matchingProduct = allProductsData.data.find(product =>
-              slugify(product.title) === productSlug
+              product.link === productSlug
           );
 
           if (matchingProduct) {
             productId = matchingProduct.id;
             // Guardar para futuras referencias
-            localStorage.setItem(`product_${productSlug}`, productId);
+            localStorage.setItem(`product_${productSlug}`, product.link);
           }
         } catch (error) {
           console.error("Error fetching all products:", error);
@@ -387,7 +378,7 @@ const productosUrl = config.endpoints.productos;
 
     try {
       // Obtener el producto por ID
-      const response = await fetch(`${getApiUrl}${productosUrl.list}/${productId}`);
+      const response = await fetch(`${getApiUrl}${productosUrl.list}/link/${productId}`);
 
       if (!response.ok) {
         removeLoader();
@@ -399,18 +390,18 @@ const productosUrl = config.endpoints.productos;
       const product = data.data;
 
       // Si llegamos desde una URL antigua, actualizar a la nueva estructura
-      const currentProductSlug = slugify(product.title);
+      const currentProductSlug = product.link;
       const desiredPath = `/productos/${currentProductSlug}`;
 
-      if (window.location.pathname !== desiredPath) {
+      /*if (window.location.pathname !== desiredPath) {
         window.history.replaceState(null, '', desiredPath);
-      }
+      }*/
 
       removeLoader();
       displayProductDetails(product);
 
       // Cargar productos relacionados
-      await loadRelatedProducts(product.relatedProducts);
+      await loadRelatedProducts(product.productos_relacionados);
 
     } catch (error) {
       console.error("Error fetching product:", error);

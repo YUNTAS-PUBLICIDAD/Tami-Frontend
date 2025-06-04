@@ -1,42 +1,56 @@
 import type Dimensions from "./Dimensions";
 import type Specs from "./Specs";
 
-export interface ProductPOST {
+export interface ProductApiPOST {
+  nombre: string;
+  titulo: string;
+  subtitulo: string;
+  lema: string;
+  link: string;
+  descripcion: string;
+  stock: number;
+  precio: number;
+  seccion: string;
+  especificaciones: Object
+  imagenes: File[];
+  textos_alt: string[];
+  relacionados: number[];
+}
+
+export interface ProductFormularioPOST {
   nombre: string;
   titulo: string;
   subtitulo: string;
   lema: string;
   descripcion: string;
-  imagen_principal: File | null;
   stock: number;
-  precioProducto: number;
+  precio: number;
   seccion: string;
   especificaciones: Record<string, string>;
   dimensiones: Dimensions;
   imagenes: Imagen[];
   relacionados: number[];
+  textos_alt: string[];
 }
 
 interface Imagen {
   url_imagen: File | null;
+  texto_alt: string;
 }
 
 export default interface Producto {
   id: number;
-  name: string;
-  section: string;
-  title: string;
-  subtitle: string;
-  tagline: string;
-  description: string;
-  specs: any;
-  dimensions: any;
-  relatedProducts: number[] | null;
-  images: string[] | null;
-  image: string;
-  nombreProducto: string;
-  stockProducto: number;
-  precioProducto: number;
+  nombre: string;
   seccion: string;
+  link: string;
+  titulo: string;
+  subtitulo: string;
+  lema: string;
+  descripcion: string;
+  especificaciones: any;
+  productos_relacionados: object[] | null;
+  imagenes: object[] | null;
+  stock: number;
+  precio: number;
   createdAt: string;
 }

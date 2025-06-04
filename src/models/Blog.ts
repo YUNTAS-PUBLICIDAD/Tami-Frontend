@@ -1,6 +1,7 @@
 export default interface Blog {
   id: number;
   titulo: string;
+  producto_id: number;
   parrafo: string;
   descripcion: string;
   imagenPrincipal: string;

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, type FC } from "react";
-import type { ProductPOST } from "../../../models/Product.ts";
+import type { ProductApiPOST, ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
 import { config, getApiUrl } from "../../../../config.ts";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
+import Swal from "sweetalert2";
 type Props = {
   onProductAdded?: () => void;
 };
@@ -14,40 +15,44 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [formPage, setFormPage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
   const [productos, setProductos] = useState<Product[]>([]);
-  const [formData, setFormData] = useState<ProductPOST>({
+  const [formData, setFormData] = useState<ProductFormularioPOST>({
     nombre: "",
     titulo: "",
     subtitulo: "",
     lema: "",
     descripcion: "",
-    imagen_principal: null,
     stock: 100,
-    precioProducto: 199.99,
+    precio: 199.99,
     seccion: "Trabajo",
-    especificaciones: {
-      color: "",
-      material: "",
-    },
     dimensiones: {
       alto: "",
       largo: "",
       ancho: "",
     },
+    especificaciones: {
+      color: "",
+      material: "",
+    },
+    relacionados: [],
     imagenes: [
       {
         url_imagen: null,
+        texto_alt:"",
       },
       {
         url_imagen: null,
+        texto_alt:"",
       },
       {
         url_imagen: null,
+        texto_alt:"",
       },
       {
         url_imagen: null,
+        texto_alt:"",
       },
     ],
-    relacionados: [],
+    textos_alt: [],
   });
 
   const handleChange = (
@@ -71,11 +76,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, imagen_principal: e.target.files[0] });
     }
-  };
+  };*/
 
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -131,9 +136,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       subtitulo: "",
       lema: "",
       descripcion: "",
-      imagen_principal: null,
       stock: 100,
-      precioProducto: 199.99,
+      precio: 199.99,
       seccion: "Trabajo",
       especificaciones: {
         color: "",
@@ -144,21 +148,26 @@ const AddProduct = ({ onProductAdded }: Props) => {
         largo: "",
         ancho: "",
       },
-      imagenes: [
-        {
-          url_imagen: null,
-        },
-        {
-          url_imagen: null,
-        },
-        {
-          url_imagen: null,
-        },
-        {
-          url_imagen: null,
-        },
-      ],
       relacionados: [],
+      imagenes: [
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+      {
+        url_imagen: null,
+        texto_alt:"",
+      },
+    ],
+      textos_alt: [],
     });
   }
 
@@ -211,7 +220,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.subtitulo ||
       !formData.lema ||
       !formData.descripcion ||
-      !formData.imagen_principal ||
       !formData.seccion ||
       !formData.especificaciones.color ||
       !formData.especificaciones.material ||
@@ -232,36 +240,28 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("subtitulo", formData.subtitulo);
       formDataToSend.append("lema", formData.lema);
-      formDataToSend.append("stock", formData.stock.toString());
-      formDataToSend.append("precio", formData.precioProducto.toString());
+      formDataToSend.append("link", formData.lema);
       formDataToSend.append("descripcion", formData.descripcion);
-      formDataToSend.append("lema", formData.lema);
-      formDataToSend.append("mensaje_correo", "");
+      formDataToSend.append("stock", formData.stock.toString());
+      formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
-      Object.entries(formData.especificaciones).forEach(([key, value]) => {
-        formDataToSend.append(`especificaciones[${key}]`, value);
-      });
-      formDataToSend.append(
-        "dimensiones[alto]",
-        formData.dimensiones.alto + "cm"
-      );
-      formDataToSend.append(
-        "dimensiones[largo]",
-        formData.dimensiones.largo + "cm"
-      );
-      formDataToSend.append(
-        "dimensiones[ancho]",
-        formData.dimensiones.ancho + "cm"
-      );
-      formData.imagenes.forEach((item, index) => {
-        if (item.url_imagen) {
-          formDataToSend.append(
-            `imagenes[${index}][url_imagen]`,
-            item.url_imagen
-          );
+      formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
+
+      formData.imagenes.forEach((imagen, index) => {
+        if (imagen.url_imagen) {
+          formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
         }
       });
-      formDataToSend.append("imagen_principal", formData.imagen_principal); // Subir imagen como archivo
+
+      formData.imagenes.forEach((imagen, index) => {
+        const altText = imagen.texto_alt.trim() || "Texto SEO para imagen";
+
+        if (imagen.url_imagen) {
+          formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
+          formDataToSend.append(`textos_alt[${index}]`, altText);
+        }
+      });
+
       formData.relacionados.forEach((item, index) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
@@ -273,6 +273,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
           body: formDataToSend, // FormData
           headers: {
             Authorization: `Bearer ${token}`,
+            Accept: "application/json"
           },
         }
       );
@@ -281,12 +282,21 @@ const AddProduct = ({ onProductAdded }: Props) => {
       console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
-        alert("✅ Producto añadido exitosamente");
+        Swal.fire({
+          icon: "success",
+          title: "Producto añadido exitosamente",
+          showConfirmButton: false,
+          timer: 1500
+        });
         closeModal(); // Cerrar modal
         setIsLoading(false); // Cambia el estado de carga a falso
         onProductAdded?.(); // Actualiza los productos
       } else {
-        alert(`❌ Error: ${data.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message,
+        });
         setIsLoading(false); // Cambia el estado de carga a falso
       }
     } catch (error) {
@@ -352,7 +362,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   >
                     <div className="space-y-4">
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Nombre:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Nombre:</label>
                         <input
                             required
                             value={formData.nombre}
@@ -364,7 +374,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Descripción:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Descripción:</label>
                         <textarea
                             required
                             value={formData.descripcion}
@@ -375,7 +385,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Título:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Título:</label>
                         <input
                             required
                             value={formData.titulo}
@@ -387,7 +397,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Subtitulo:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Subtitulo:</label>
                         <input
                             required
                             value={formData.subtitulo}
@@ -399,7 +409,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                       </div>
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Lema:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Lema:</label>
                         <input
                             required
                             value={formData.lema}
@@ -410,8 +420,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                         />
                       </div>
+                      {/* 
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                           <input
                               required
@@ -423,8 +434,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           />
                         </div>
                       </div>
+                      */}
                       <div className="form-input">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
+                        <label className="block !text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
                         <select
                             required
                             value={formData.seccion}
@@ -440,7 +452,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                       {/* Especificaciones */}
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <h5 className="font-medium text-gray-700 mb-3">Especificaciones</h5>
+                        <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
                         <div className="space-y-3">
                           {Object.entries(formData.especificaciones).map(([key, value]) => (
                               <div className="flex flex-col sm:flex-row sm:items-center gap-2" key={key}>
@@ -477,7 +489,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                       {/* Dimensiones */}
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <h5 className="font-medium text-gray-700 mb-3">Dimensiones</h5>
+                        <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div className="form-input">
                             <label className="block text-sm text-gray-600 mb-1">Alto:</label>
@@ -552,11 +564,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       }`}
                   >
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
-                      <h5 className="font-medium text-gray-700 mb-4">Galería de Imágenes</h5>
+                      <h5 className="font-medium !text-gray-700 mb-4">Galería de Imágenes</h5>
                       <div className="space-y-4">
                         {formData.imagenes.map((_, index) => (
                             <div key={index} className="form-input">
-                              <label className="block text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
+                              <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
                               <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
                                 <input
                                     required
@@ -607,7 +619,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       }`}
                   >
                     <div className="form-input mb-6">
-                      <label className="block text-gray-700 text-sm font-medium mb-3">Productos Relacionados:</label>
+                      <label className="block !text-gray-700 text-sm font-medium mb-3">Productos Relacionados:</label>
                       {productos.length > 0 ? (
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-64 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-100">
                             {productos.map((item) => (
@@ -625,11 +637,18 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                         }
                                     />
                                     <div className="relative">
-                                      <img
-                                          src={item.image}
-                                          alt={item.name}
-                                          className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
-                                      />
+                                      {item.imagenes?.[0]?.url_imagen ? (
+                                          <img
+                                              src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                              alt={item.nombre}
+                                              className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
+                                              onError={(e) => {
+                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
+                                              }}
+                                          />
+                                      ) : (
+                                          <span className="text-sm text-gray-400 italic">Sin imagen</span>
+                                      )}
                                       <div className="absolute inset-0 bg-teal-600/0 peer-checked:bg-teal-600/20 flex items-center justify-center rounded-xl transition-all duration-300">
                                         <svg
                                             className="w-8 h-8 text-white opacity-0 peer-checked:opacity-100 transition-all duration-300"
@@ -645,7 +664,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                         </svg>
                                       </div>
                                     </div>
-                                    <p className="text-xs text-center mt-1 text-gray-600">{item.name}</p>
+                                    <p className="text-xs text-center mt-1 text-gray-600">{item.nombre}</p>
                                   </label>
                                 </div>
                             ))}
