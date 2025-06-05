@@ -55,6 +55,11 @@ const blogsUrl = config.endpoints.blogs;
       {/* CONTENIDO DEL BLOG */}
       <div id="blog-sections" class="text-justify"></div>
 
+      {/* LINK A PRODUCTO RELACIONADO */}
+      <a id="blog-product-link" href="#" class="hidden mt-4 text-teal-600 font-bold underline hover:text-teal-800">
+        Ver producto relacionado
+      </a>
+
       {/* VIDEO DEL BLOG */}
       <div id="blog-video-section"></div>
     </main>
@@ -156,6 +161,14 @@ const blogsUrl = config.endpoints.blogs;
       `;
             blogSectionsElement.appendChild(section);
           });
+        }
+
+        const blogProductLinkElement = document.getElementById("blog-product-link");
+
+        // Verificar si existe un producto_id en el blog
+        if (blog.producto_id && blogProductLinkElement) {
+          blogProductLinkElement.href = `${config.apiUrl}${config.endpoints.productos.detail(blog.producto_id)}`;
+          blogProductLinkElement.classList.remove("hidden"); // Mostrar el enlace
         }
 
         // MOSTRAR VIDEO CON IFRAME

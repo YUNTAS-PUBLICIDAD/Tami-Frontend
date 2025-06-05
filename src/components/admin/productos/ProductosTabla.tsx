@@ -199,9 +199,9 @@ const ProductosTabla = () => {
                                                         src={`${getApiUrl}${item.imagenes[0].url_imagen}`}
                                                         alt={item.nombre}
                                                         className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
-                                                        onError={(e) => {
-                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
-                                                        }}
+                                                        // onError={(e) => {
+                                                        //     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
+                                                        // }}
                                                     />
                                                 ) : (
                                                     <span className="text-sm text-gray-400 italic">Sin imagen</span>
