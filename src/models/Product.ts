@@ -34,7 +34,7 @@ export interface ProductFormularioPOST {
 }
 
 interface Imagen {
-  url_imagen: File | null;
+  url_imagen: File | string | null;
   texto_alt: string;
 }
 
@@ -47,9 +47,12 @@ export default interface Producto {
   subtitulo: string;
   lema: string;
   descripcion: string;
-  especificaciones: any;
+  especificaciones: { [clave: string]: string };
   productos_relacionados: object[] | null;
-  imagenes: object[] | null;
+  imagenes: {
+    url_imagen: string;
+    texto_alt_SEO: string;
+  }[] | null;
   stock: number;
   precio: number;
   createdAt: string;

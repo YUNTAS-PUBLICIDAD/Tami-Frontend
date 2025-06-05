@@ -189,7 +189,7 @@ const ProductosTabla = () => {
                                         <td className="px-6 py-4 font-medium">{item.nombre}</td>
                                         <td className="px-6 py-4">
                                             <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                                                {item.seccion.toLowerCase()}
+                                              {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
