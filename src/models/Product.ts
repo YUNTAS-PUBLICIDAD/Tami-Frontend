@@ -27,7 +27,7 @@ export interface ProductFormularioPOST {
   precio: number;
   seccion: string;
   especificaciones: Record<string, string>;
-  dimensiones: Dimensions;
+  // dimensiones: Dimensions;
   imagenes: Imagen[];
   relacionados: number[];
   textos_alt: string[];
@@ -49,10 +49,8 @@ export default interface Producto {
   descripcion: string;
   especificaciones: { [clave: string]: string };
   productos_relacionados: object[] | null;
-  imagenes: {
-    url_imagen: string;
-    texto_alt_SEO: string;
-  }[] | null;
+  imagen_principal: File | string | null; // 👈 agregamos esto
+  imagenes: Imagen[]; // las adicionales
   stock: number;
   precio: number;
   createdAt: string;
