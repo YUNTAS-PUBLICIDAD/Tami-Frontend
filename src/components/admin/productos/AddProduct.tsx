@@ -76,15 +76,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
-<<<<<<< HEAD
-  /*const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, imagen_principal: e.target.files[0] });
-    }
-  };*/
-
-=======
->>>>>>> pre-main
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number
