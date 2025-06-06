@@ -76,12 +76,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
+<<<<<<< HEAD
   /*const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, imagen_principal: e.target.files[0] });
     }
   };*/
 
+=======
+>>>>>>> pre-main
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number
@@ -427,7 +430,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           <input
                               required
                               accept="image/png, image/jpeg, image/jpg"
-                              onChange={handleFileChange}
+                              // onChange={handleFileChange}
                               type="file"
                               name="imagen_principal"
                               className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
