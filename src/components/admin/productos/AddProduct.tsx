@@ -76,6 +76,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
+<<<<<<< HEAD
+  /*const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData({ ...formData, imagen_principal: e.target.files[0] });
+    }
+  };*/
+
+=======
+>>>>>>> pre-main
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number
@@ -414,6 +423,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                         />
                       </div>
+                      {/* 
                       <div className="form-input">
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
@@ -427,6 +437,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           />
                         </div>
                       </div>
+                      */}
                       <div className="form-input">
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
                         <select
