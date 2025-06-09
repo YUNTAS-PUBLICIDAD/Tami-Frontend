@@ -23,12 +23,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
     descripcion: "",
     stock: 100,
     precio: 199.99,
-    seccion: "Trabajo",
-    dimensiones: {
-      alto: "",
-      largo: "",
-      ancho: "",
-    },
+    seccion: "Negocio",
     especificaciones: {
       color: "",
       material: "",
@@ -132,15 +127,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       descripcion: "",
       stock: 100,
       precio: 199.99,
-      seccion: "Trabajo",
+      seccion: "Negocio",
       especificaciones: {
         color: "",
         material: "",
-      },
-      dimensiones: {
-        alto: "",
-        largo: "",
-        ancho: "",
       },
       relacionados: [],
       imagenes: [
@@ -432,9 +422,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             name="seccion"
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition appearance-none bg-white"
                         >
-                          <option value="Trabajo">Trabajo</option>
-                          <option value="Decoración">Decoración</option>
                           <option value="Negocio">Negocio</option>
+                          <option value="Decoración">Decoración</option>
+                          <option value="Maquinaria">Maquinaria</option>
                         </select>
                       </div>
 
