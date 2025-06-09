@@ -217,9 +217,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.seccion ||
       !formData.especificaciones.color ||
       !formData.especificaciones.material ||
-      !formData.dimensiones.alto ||
-      !formData.dimensiones.largo ||
-      !formData.dimensiones.ancho ||
       !formData.imagenes ||
       formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
     ) {
