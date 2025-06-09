@@ -22,7 +22,7 @@ const valoresArray = [
   {
     image: imgCompromiso.src,
     title: "COMPROMISO",
-    paragraph: "En ofrecer la máxima calidad en nuestros productos.",
+    paragraph: "Nos comprometemos a ofrecer la máxima calidad en nuestros productos.",
   },
 ];
 export default valoresArray;
