@@ -2,68 +2,35 @@
 import Layout from "src/layouts/Layout.astro";
 import bgBlog from "@images/blog/bg_blog.webp";
 import paleta from "@images/blog/paleta.webp";
-import { IoIosArrowDown } from "react-icons/io";
-import { FaSearch } from "react-icons/fa";
-
-import BlogList from "../components/blog/BlogList";
+import BlogPage from "../components/blog/BlogPage.tsx"; // Asegúrate de la ruta correcta
 ---
 
 <Layout title="Blog">
+  <!-- Sección principal con imagen de fondo y descripción -->
   <section
-  class="relative bg-cover bg-center h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
-  style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
->
-  <img src={paleta.src} alt="Paleta" class="w-52 wid mb-2 pl-4 sm:pl-12 md:pl-16 lg:pl-28" />
+      class="relative bg-cover bg-center h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
+      style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
+  >
+    <img src={paleta.src} alt="Paleta" class="w-52 wid mb-2 pl-4 sm:pl-12 md:pl-16 lg:pl-28" />
 
-  <h1 class="text-5xl sm:text-4xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 sm:mb-4">
-    BLOG TAMI
-  </h1>
+    <h1 class="text-5xl sm:text-4xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 sm:mb-4">
+      BLOG TAMI
+    </h1>
 
-  <div class="w-full flex">
-    <div
-      class="px-4 sm:px-12 md:px-16 lg:px-28 py-6 sm:rounded-r-[50px] max-w-[100%] md:max-w-[55%] sm:max-w-[90%] lg:max-w-[60%] sm:bg-teal-700/50"
-    >
-      <p class="text-sm sm:text-base lg:text-md font-bold">
-        En esta sección encontrarás temas sobre diseño de interiores para
-        entornos profesionales, como oficinas, restaurantes, hoteles y eventos
-        especiales, incluyendo tips, artículos, tendencias y consejos.
-      </p>
-    </div>
-  </div>
-</section>
-
-
-  <section class="container mx-auto p-4 md:p-10 lg:px-24">
-    <h2 class="text-teal-800 text-3xl font-bold mb-4 mx-4">
-      Todos los artículos
-    </h2>
-    <div class="flex flex-wrap items-center gap-4 mx-4 mb-6">
-      <div class="relative flex items-center flex-grow">
-        <FaSearch className="absolute left-3 text-teal-800" />
-        <input
-          type="text"
-          placeholder="Buscar..."
-          class="w-full border border-teal-800 rounded-3xl pl-10 pr-4 py-2 text-teal-800 focus:outline-none focus:border-2 focus:border-teal-800"
-        />
-      </div>
-      <label class="mr-2 ml-4 text-teal-800">Filtrar por:</label>
-      <div class="relative flex items-center">
-        <select
-          class="border border-teal-800 rounded-3xl pl-4 pr-10 py-2 text-teal-800 appearance-none focus:outline-none focus:border-2 focus:border-teal-800"
-        >
-          <option value="">Todas las categorías</option>
-          <option value="Construcción">Construcción</option>
-          <option value="Diseño">Diseño</option>
-          <option value="Tecnología">Tecnología</option>
-          <option value="Restauración">Restauración</option>
-        </select>
-        <IoIosArrowDown
-          className="absolute right-3 text-teal-800 pointer-events-none"
-        />
+    <div class="w-full flex">
+      <div
+          class="px-4 sm:px-12 md:px-16 lg:px-28 py-6 sm:rounded-r-[50px] max-w-[100%] md:max-w-[55%] sm:max-w-[90%] lg:max-w-[60%] sm:bg-teal-700/50"
+      >
+        <p class="text-sm sm:text-base lg:text-md font-bold">
+          En esta sección encontrarás temas sobre diseño de interiores para
+          entornos profesionales, como oficinas, restaurantes, hoteles y eventos
+          especiales, incluyendo tips, artículos, tendencias y consejos.
+        </p>
       </div>
     </div>
-
-    {/* Componente listando Blogs (o articulos) */}
-    <BlogList client:load />
   </section>
+
+  <!-- Monta el componente funcional del blog con búsqueda -->
+  <BlogPage client:load />
 </Layout>
+
