@@ -108,6 +108,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
       setFormData({ ...formData, imagenes: nuevoArray });
     }
   };
+  const handleImagesTextoSEOChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.target.value) {
+      const nuevoArray = [...formData.imagenes];
+
+      // Agregar el archivo y su parrafo
+      nuevoArray[index] = {
+        ...nuevoArray[index],
+        texto_alt: e.target.value,
+      };
+
+      setFormData({ ...formData, imagenes: nuevoArray });
+    }
+  };
 
   // Referencia al contenedor del formulario
   const formContainerRef = useRef<HTMLDivElement>(null);
@@ -553,6 +569,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleImagesChange(e, index)}
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                />
+                              </div>
+                              <label className="block !text-gray-700 text-sm font-medium mb-1">Texto SEO Imagen {index + 1}:</label>
+                              <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
+                                <input
+                                    required
+                                    type="text"
+                                    onChange={(e) => handleImagesTextoSEOChange(e, index)}
                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                 />
                               </div>
