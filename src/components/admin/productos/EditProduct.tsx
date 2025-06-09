@@ -39,6 +39,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         especificaciones: {
             color: "",
             material: "",
+            alto: "",
+            largo: "",
+            ancho: "",
         },
         relacionados: [],
         imagenes: [
@@ -70,17 +73,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleNestedChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        group: "dimensiones" | "especificaciones"
-    ) => {
-        setFormData({
-            ...formData,
-            [group]: {
-                ...formData[group],
-                [e.target.name]: e.target.value,
+    const handleSpecificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            especificaciones: {
+                ...prev.especificaciones,
+                [name]: value,
             },
-        });
+        }));
     };
 
     const handleRelacionadosChange = (
@@ -104,29 +105,21 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
     };
 
-    const handleImagesChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        index: number
-    ) => {
-        if (e.target.files && e.target.files[0]) {
-            const nuevoArray = [...formData.imagenes];
+    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-            // Agregar el archivo y su parrafo
-            nuevoArray[index] = {
-                ...nuevoArray[index],
-                url_imagen: e.target.files[0],
-            };
+        const nuevasImagenes = [...formData.imagenes];
+        nuevasImagenes[index] = {
+            ...nuevasImagenes[index],
+            url_imagen: file, // Reemplaza imagen existente
+        };
 
-            setFormData({ ...formData, imagenes: nuevoArray });
-        }
+        setFormData((prev) => ({
+            ...prev,
+            imagenes: nuevasImagenes,
+        }));
     };
-
-    // const handleEdit = () => {
-    //     console.log("Editando producto:", product);
-    //     // Aquí iría tu lógica para editar el producto
-    //     // Cuando termine la edición, llamarías a:
-    //     // onProductUpdated();
-    // };
 
     // Referencia al contenedor del formulario
     const formContainerRef = useRef<HTMLDivElement>(null);
@@ -151,11 +144,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 color: "",
                 material: "",
             },
-            dimensiones: {
-                alto: "",
-                largo: "",
-                ancho: "",
-            },
+            // dimensiones: {
+            //     alto: "",
+            //     largo: "",
+            //     ancho: "",
+            // },
             relacionados: [],
             imagenes: [
                 {
@@ -231,9 +224,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             !formData.seccion ||
             !formData.especificaciones.color ||
             !formData.especificaciones.material ||
-            !formData.dimensiones.alto ||
-            !formData.dimensiones.largo ||
-            !formData.dimensiones.ancho ||
+            !formData.especificaciones.alto ||
+            !formData.especificaciones.largo ||
+            !formData.especificaciones.ancho ||
             !formData.imagenes ||
             formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
         ) {
@@ -256,12 +249,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
 
             formData.imagenes.forEach((imagen, index) => {
-                if (imagen.url_imagen) {
-                    formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
-                }
-            });
-
-            formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt.trim() || "Texto SEO para imagen";
 
                 if (imagen.url_imagen) {
@@ -275,9 +262,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             });
 
             const response = await fetch(
-                getApiUrl(config.endpoints.productos.create),
+                getApiUrl(config.endpoints.productos.update(product.id)), // ← usa el ID del producto
                 {
-                    method: "POST",
+                    method: "PUT",
                     body: formDataToSend, // FormData
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -292,7 +279,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             if (response.ok) {
                 Swal.fire({
                     icon: "success",
-                    title: "Producto añadido exitosamente",
+                    title: "Producto actualizado exitosamente",
                     showConfirmButton: false,
                     timer: 1500
                 });
@@ -330,14 +317,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     }, [showModal]);
 
     useEffect(() => {
-        if (product) {
+        if (showModal && product) {
             const imagenesTransformadas = product.imagenes?.map((img) => ({
-                url_imagen: null, // Porque no puedes convertir una URL en un File directamente
-                texto_alt: img.texto_alt_SEO,
+                url_imagen: `https://apitami.tamimaquinarias.com${img.url_imagen}`,
+                // texto_alt: img.texto_alt_SEO,
             })) || [];
 
+            const relacionadosIds = product.productos_relacionados?.map((rel) => rel.id) || [];
+
             setFormData({
-                ...formData,
                 nombre: product.nombre,
                 titulo: product.titulo,
                 subtitulo: product.subtitulo,
@@ -346,14 +334,23 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 stock: product.stock,
                 precio: product.precio,
                 seccion: product.seccion,
-                // dimensiones: product.dimensiones,
-                especificaciones: product.especificaciones || {}, // aquí lo dejas como objeto plano
-                // relacionados: product.relacionados || [],
-                imagenes: imagenesTransformadas,
-                textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
+                especificaciones: product.especificaciones || {
+                    color: "",
+                    material: "",
+                },
+                relacionados: relacionadosIds,
+                imagenes: imagenesTransformadas.length > 0
+                    ? imagenesTransformadas
+                    : [
+                        { url_imagen: null, texto_alt: "" },
+                        { url_imagen: null, texto_alt: "" },
+                        { url_imagen: null, texto_alt: "" },
+                        { url_imagen: null, texto_alt: "" },
+                    ],
+                // textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
             });
         }
-    }, [product]);
+    }, [showModal, product]);
 
     return (
         <>
@@ -455,19 +452,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                     />
                                 </div>
-                                <div className="form-input">
-                                    <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
-                                    <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
-                                        <input
-                                            required
-                                            accept="image/png, image/jpeg, image/jpg"
-                                            // onChange={handleFileChange}
-                                            type="file"
-                                            name="imagen_principal"
-                                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                                        />
-                                    </div>
-                                </div>
+                                {/*<div className="form-input">*/}
+                                {/*    <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>*/}
+                                {/*    <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">*/}
+                                {/*        <input*/}
+                                {/*            required*/}
+                                {/*            accept="image/png, image/jpeg, image/jpg"*/}
+                                {/*            type="file"*/}
+                                {/*            name="imagen_principal"*/}
+                                {/*            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                                 <div className="form-input">
                                     <label className="block !text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
                                     <select
@@ -521,56 +517,56 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                 </div>
 
                                 {/* Dimensiones */}
-                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                        <div className="form-input">
-                                            <label className="block text-sm text-gray-600 mb-1">Alto:</label>
-                                            <div className="relative">
-                                                <input
-                                                    required
-                                                    value={formData.dimensiones.alto}
-                                                    onChange={(e) => handleNestedChange(e, "dimensiones")}
-                                                    name="alto"
-                                                    type="number"
-                                                    placeholder="0"
-                                                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                                                />
-                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
-                                            </div>
-                                        </div>
-                                        <div className="form-input">
-                                            <label className="block text-sm text-gray-600 mb-1">Ancho:</label>
-                                            <div className="relative">
-                                                <input
-                                                    required
-                                                    value={formData.dimensiones.ancho}
-                                                    onChange={(e) => handleNestedChange(e, "dimensiones")}
-                                                    name="ancho"
-                                                    type="number"
-                                                    placeholder="0"
-                                                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                                                />
-                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
-                                            </div>
-                                        </div>
-                                        <div className="form-input">
-                                            <label className="block text-sm text-gray-600 mb-1">Largo:</label>
-                                            <div className="relative">
-                                                <input
-                                                    required
-                                                    value={formData.dimensiones.largo}
-                                                    onChange={(e) => handleNestedChange(e, "dimensiones")}
-                                                    name="largo"
-                                                    type="number"
-                                                    placeholder="0"
-                                                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                                                />
-                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {/*<div className="bg-gray-50 p-4 rounded-lg border border-gray-100">*/}
+                                {/*    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>*/}
+                                {/*    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">*/}
+                                {/*        <div className="form-input">*/}
+                                {/*            <label className="block text-sm text-gray-600 mb-1">Alto:</label>*/}
+                                {/*            <div className="relative">*/}
+                                {/*                <input*/}
+                                {/*                    required*/}
+                                {/*                    value={formData.dimensiones.alto}*/}
+                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
+                                {/*                    name="alto"*/}
+                                {/*                    type="number"*/}
+                                {/*                    placeholder="0"*/}
+                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
+                                {/*                />*/}
+                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*        <div className="form-input">*/}
+                                {/*            <label className="block text-sm text-gray-600 mb-1">Ancho:</label>*/}
+                                {/*            <div className="relative">*/}
+                                {/*                <input*/}
+                                {/*                    required*/}
+                                {/*                    value={formData.dimensiones.ancho}*/}
+                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
+                                {/*                    name="ancho"*/}
+                                {/*                    type="number"*/}
+                                {/*                    placeholder="0"*/}
+                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
+                                {/*                />*/}
+                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*        <div className="form-input">*/}
+                                {/*            <label className="block text-sm text-gray-600 mb-1">Largo:</label>*/}
+                                {/*            <div className="relative">*/}
+                                {/*                <input*/}
+                                {/*                    required*/}
+                                {/*                    value={formData.dimensiones.largo}*/}
+                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
+                                {/*                    name="largo"*/}
+                                {/*                    type="number"*/}
+                                {/*                    placeholder="0"*/}
+                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
+                                {/*                />*/}
+                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                             </div>
                             <button
                                 onClick={goNextForm}
@@ -599,17 +595,47 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                             <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
                                 <h5 className="font-medium !text-gray-700 mb-4">Galería de Imágenes</h5>
                                 <div className="space-y-4">
-                                    {formData.imagenes.map((_, index) => (
+                                    {formData.imagenes.map((img, index) => (
                                         <div key={index} className="form-input">
-                                            <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
+                                            <label className="block !text-gray-700 text-sm font-medium mb-1">
+                                                Imagen {index + 1}:
+                                            </label>
+
                                             <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
-                                                <input
-                                                    required
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => handleImagesChange(e, index)}
-                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                                                />
+                                                {img.url_imagen ? (
+                                                    <div className="flex items-center gap-4">
+                                                        <img
+                                                            src={
+                                                                typeof img.url_imagen === "string"
+                                                                    ? img.url_imagen.startsWith("http")
+                                                                        ? img.url_imagen
+                                                                        : `https://apitami.tamimaquinarias.com${img.url_imagen}`
+                                                                    : URL.createObjectURL(img.url_imagen)
+                                                            }
+                                                            alt={img.texto_alt || `Imagen ${index + 1}`}
+                                                            className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                        />
+
+                                                        {/* Botón para reemplazar imagen */}
+                                                        <label className="text-sm text-blue-600 underline cursor-pointer">
+                                                            Reemplazar
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                onChange={(e) => handleImagesChange(e, index)}
+                                                                className="hidden"
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                ) : (
+                                                    <input
+                                                        required
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleImagesChange(e, index)}
+                                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                                    />
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -665,19 +691,19 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         type="checkbox"
                                                         className="peer absolute opacity-0"
                                                         value={item.id}
-                                                        onChange={(e) =>
-                                                            handleRelacionadosChange(e, item.id)
-                                                        }
+                                                        checked={formData.relacionados.includes(item.id)}
+                                                        onChange={(e) => handleRelacionadosChange(e, item.id)}
                                                     />
                                                     <div className="relative">
                                                         {item.imagenes?.[0]?.url_imagen ? (
                                                             <img
                                                                 src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
                                                                 alt={item.nombre}
-                                                                className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
-                                                                }}
+                                                                className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${
+                                                                    formData.relacionados.includes(item.id)
+                                                                        ? 'border-teal-600'
+                                                                        : 'border-gray-200 group-hover:border-teal-400'
+                                                                }`}
                                                             />
                                                         ) : (
                                                             <span className="text-sm text-gray-400 italic">Sin imagen</span>
