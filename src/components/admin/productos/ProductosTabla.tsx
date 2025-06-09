@@ -184,12 +184,12 @@ const ProductosTabla = () => {
                                 currentItems.map((item, index) => (
                                     <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
                                         <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
-                                            #{item.id}
+                                           #{item.id}
                                         </td>
                                         <td className="px-6 py-4 font-medium">{item.nombre}</td>
                                         <td className="px-6 py-4">
                                             <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                                                {item.seccion.toLowerCase()}
+                                              {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
@@ -199,9 +199,9 @@ const ProductosTabla = () => {
                                                         src={`${getApiUrl}${item.imagenes[0].url_imagen}`}
                                                         alt={item.nombre}
                                                         className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
-                                                        onError={(e) => {
-                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
-                                                        }}
+                                                        // onError={(e) => {
+                                                        //     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
+                                                        // }}
                                                     />
                                                 ) : (
                                                     <span className="text-sm text-gray-400 italic">Sin imagen</span>

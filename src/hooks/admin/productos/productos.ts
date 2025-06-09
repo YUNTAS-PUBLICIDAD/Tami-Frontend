@@ -1,5 +1,5 @@
 import { config, getApiUrl } from "config";
-import type { ProductPOST } from "src/models/Product";
+import type { ProductApiPOST } from "src/models/Product";
 
 export async function getProducts() {
   try {
@@ -47,4 +47,4 @@ export async function deleteProduct(id: number) {
   }
 }
 
-export async function createProduct(producto: ProductPOST) {}
+export async function createProduct(producto: ProductApiPOST) {}
