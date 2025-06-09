@@ -184,7 +184,7 @@ const ProductosTabla = () => {
                                 currentItems.map((item, index) => (
                                     <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
                                         <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
-                                            #{item.id}
+                                           #{item.id}
                                         </td>
                                         <td className="px-6 py-4 font-medium">{item.nombre}</td>
                                         <td className="px-6 py-4">

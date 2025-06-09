@@ -12,6 +12,9 @@ interface EditProductProps {
     product: Product;
     onProductUpdated: () => Promise<void> | void;
 }
+// type Props = {
+//     onProductAdded?: () => void;
+// };
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
