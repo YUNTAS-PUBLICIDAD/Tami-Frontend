@@ -21,17 +21,6 @@ const BlogPage = () => {
                         className="w-full border border-teal-800 rounded-3xl pl-10 pr-4 py-2 text-teal-800 focus:outline-none focus:border-2 focus:border-teal-800"
                     />
                 </div>
-        <label className="mr-2 ml-4 text-teal-800">Filtrar por:</label>
-        <div className="relative flex items-center">
-          <select className="border border-teal-800 rounded-3xl pl-4 pr-10 py-2 text-teal-800 appearance-none focus:outline-none focus:border-2 focus:border-teal-800">
-            <option value="">Todas las categorías</option>
-            <option value="Construcción">Construcción</option>
-            <option value="Diseño">Diseño</option>
-            <option value="Tecnología">Tecnología</option>
-            <option value="Restauración">Restauración</option>
-          </select>
-          <IoIosArrowDown className="absolute right-3 text-teal-800 pointer-events-none" />
-        </div>
             </div>
             <BlogList searchTerm={searchTerm} />
         </section>
