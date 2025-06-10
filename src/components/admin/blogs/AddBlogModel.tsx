@@ -1,5 +1,6 @@
 import { config, getApiUrl } from "../../../../config.ts";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 interface ImagenAdicional {
   url_imagen: File | null;
@@ -123,7 +124,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
         !formData.imagenes ||
         formData.imagenes.some((imagen) => !imagen.url_imagen)
     ) {
-      alert("⚠️ Todos los campos son obligatorios.");
+      Swal.fire({
+        icon: "warning",
+        title: "Campos obligatorios",
+        text: "⚠️ Todos los campos son obligatorios.",
+      });
       setIsSaving(false); // Ocultar mensaje si hay error de validación
       return;
     }
@@ -171,14 +176,26 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
-        alert("✅ Blog añadido exitosamente");
+        await Swal.fire({
+          icon: "success",
+          title: "Blog añadido exitosamente",
+          showConfirmButton: true,
+        });
         closeModal();
       } else {
-        alert(`❌ Error: ${data.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `❌ Error: ${data.message}`,
+        });
       }
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      alert(`❌ Error: ${error}`);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `❌ Error: ${error}`,
+      });
     } finally {
       setIsSaving(false); // Ocultar mensaje cuando termina
     }
