@@ -27,6 +27,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
     especificaciones: {
       color: "",
       material: "",
+      alto: "",
+      largo: "",
+      ancho: "",
     },
     relacionados: [],
     imagenes: [
@@ -147,6 +150,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
       especificaciones: {
         color: "",
         material: "",
+        alto: "",
+        largo: "",
+        ancho: "",
       },
       relacionados: [],
       imagenes: [
