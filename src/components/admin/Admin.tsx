@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const Admin: React.FC = () => {
   const [usuarioAutenticado, setUsuarioAutenticado] = useState(false);
@@ -7,8 +8,13 @@ const Admin: React.FC = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("No tienes permiso para acceder al dashboard.");
-      window.location.href = "/sign-in"; // Redirige al login
+      Swal.fire({
+        icon: "error",
+        title: "Acceso denegado",
+        text: "No tienes permiso para acceder al dashboard.",
+      }).then(() => {
+        window.location.href = "/sign-in"; // Redirige al login
+      });
     } else {
       setUsuarioAutenticado(true);
     }

@@ -226,7 +226,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.imagenes ||
       formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
     ) {
-      alert("⚠️ Todos los campos son obligatorios.");
+      Swal.fire({
+        icon: "warning",
+        title: "Campos obligatorios",
+        text: "⚠️ Todos los campos son obligatorios.",
+      });
+      setIsLoading(false);
       return;
     }
     try {
@@ -298,7 +303,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      alert(`❌ Error: ${error}`);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `❌ Error: ${error}`,
+      });
       setIsLoading(false); // Cambia el estado de carga a falso
     }
   };

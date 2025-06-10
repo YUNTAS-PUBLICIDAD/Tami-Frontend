@@ -9,7 +9,7 @@ import type { ProductPOST } from "../../../models/Product.ts";
 import useProductoAcciones from "./useProductosActions";
 import type Producto from "../../../models/Product.ts";
 import useClienteAcciones from "../seguimiento/useClientesActions.ts";
-
+import Swal from "sweetalert2";
 /**
  * Funcion para manejar el formulario de cliente
  */
@@ -141,6 +141,7 @@ const useProductForm = (
      * Función para manejar el envío del formulario.
      * Valida los campos y llama a las funciones de añadir o actualizar producto.
      */
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault(); // Prevenimos el comportamiento por defecto del formulario
         const {
@@ -180,7 +181,11 @@ const useProductForm = (
             imagenes.length === 0 ||
             imagenes.some((img) => !(img.url_imagen instanceof File))
         ) {
-            alert("⚠️ Todos los campos son obligatorios y deben tener valores válidos.");
+            await Swal.fire({
+                icon: "warning",
+                title: "Campos obligatorios",
+                text: "⚠️ Todos los campos son obligatorios y deben tener valores válidos.",
+            });
             return;
         }
         setIsLoading(true);
@@ -244,18 +249,32 @@ const useProductForm = (
 
             if (isEditing && producto) {
                 await updateProducto(producto!.id, productoData);
-                alert("✅ Producto actualizado correctamente");
+                await Swal.fire({
+                    icon: "success",
+                    title: "Producto actualizado correctamente",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
             } else {
                 console.log(productoData);
                 await addProducto(productoData);
-                alert("✅ Producto creado exitosamente");
+                await Swal.fire({
+                    icon: "success",
+                    title: "Producto creado exitosamente",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
             }
 
             onSuccess?.();
             resetForm();
         } catch (error: any) {
             console.error("❌ Error al enviar:", error);
-            alert(`❌ Error: ${error.message || "Error desconocido"}`);
+            await Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: `❌ Error: ${error.message || "Error desconocido"}`,
+            });
         } finally {
             setIsLoading(false);
         }

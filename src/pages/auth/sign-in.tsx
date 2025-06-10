@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import logoAnimado from "@images/logos/logo_animado.gif?url";
 import loginBg from "@images/login_bg.jpg";
 import { config, getApiUrl } from "config";
+import Swal from "sweetalert2";
 
 const SignIn: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -30,10 +31,18 @@ const SignIn: React.FC = () => {
         window.location.href = "/admin/inicio"; // Redirigir al dashboard
       } else {
         console.error("Error en la respuesta del servidor:", data.message);
-        alert(data.message || "Error al iniciar sesión");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message || "Error al iniciar sesión",
+        });
       }
     } catch (error) {
-      alert("Error de conexión con el servidor.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error de conexión con el servidor.",
+      });
     }
   };
 

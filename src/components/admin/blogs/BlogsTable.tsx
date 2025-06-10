@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaEye } from "react-icons/fa";
 import AddBlogModal from "./AddBlogModel.tsx";
 import { config, getApiUrl } from "config";
+import Swal from "sweetalert2";
 
 interface Blog {
   id: number;
@@ -64,8 +65,15 @@ const BlogsTable = () => {
 
   const handleDelete = async (id: number) => {
     const token = localStorage.getItem("token");
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este blog?");
-    if (confirmDelete) {
+    const confirmResult = await Swal.fire({
+      title: "¿Estás seguro de que deseas eliminar este blog?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (confirmResult.isConfirmed) {
       try {
         const response = await fetch(getApiUrl(config.endpoints.blogs.delete(id)), {
           method: "DELETE",
@@ -76,13 +84,13 @@ const BlogsTable = () => {
         });
         if (response.ok) {
           setData((prev) => prev.filter((item) => item.id !== id));
-          alert("Blog eliminado exitosamente");
+          await Swal.fire("Eliminado", "Blog eliminado exitosamente", "success");
         } else {
-          alert("Error al eliminar el blog");
+          await Swal.fire("Error", "Error al eliminar el blog", "error");
         }
       } catch (error) {
         console.error("Error al eliminar:", error);
-        alert("Error al conectar con el servidor");
+        await Swal.fire("Error", "Error al conectar con el servidor", "error");
       }
     }
   };

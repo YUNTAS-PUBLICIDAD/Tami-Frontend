@@ -1,6 +1,7 @@
 import { config, getApiUrl } from "config";
 import { useState } from "react";
 import { FaPlus, FaTimes } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const AddDataModal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,11 +15,17 @@ const AddDataModal = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Importa SweetAlert2
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.nombres || !formData.telefono || !formData.gmail) {
-      alert("⚠️ Todos los campos son obligatorios.");
+      Swal.fire({
+        icon: "warning",
+        title: "Campos obligatorios",
+        text: "⚠️ Todos los campos son obligatorios.",
+      });
       return;
     }
 
@@ -30,29 +37,41 @@ const AddDataModal = () => {
       };
 
       const response = await fetch(
-          getApiUrl(config.endpoints.clientes.create),
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify(dataToSend),
-          }
+        getApiUrl(config.endpoints.clientes.create),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(dataToSend),
+        }
       );
 
       const data = await response.json();
       console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
-        alert("✅ Usuario registrado exitosamente");
+        await Swal.fire({
+          icon: "success",
+          title: "Usuario registrado",
+          text: "✅ Usuario registrado exitosamente",
+        });
         setIsOpen(false);
       } else {
-        alert(`❌ Error: ${data.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `❌ Error: ${data.message}`,
+        });
       }
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      alert("❌ Hubo un error en la conexión con la API.");
+      Swal.fire({
+        icon: "error",
+        title: "Error de conexión",
+        text: "❌ Hubo un error en la conexión con la API.",
+      });
     }
   };
 
