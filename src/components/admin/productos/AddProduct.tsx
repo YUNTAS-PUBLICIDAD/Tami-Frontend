@@ -35,19 +35,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
     imagenes: [
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
     ],
     textos_alt: [],
@@ -121,7 +121,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       // Agregar el archivo y su parrafo
       nuevoArray[index] = {
         ...nuevoArray[index],
-        texto_alt: e.target.value,
+        texto_alt_SEO: e.target.value,
       };
 
       setFormData({ ...formData, imagenes: nuevoArray });
@@ -158,19 +158,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
       imagenes: [
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
     ],
       textos_alt: [],
@@ -257,7 +257,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       });
 
       formData.imagenes.forEach((imagen, index) => {
-        const altText = imagen.texto_alt.trim() || "Texto SEO para imagen";
+        const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
         if (imagen.url_imagen) {
           formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
