@@ -38,7 +38,7 @@ const ScrollModal = () => {
         setTimeout(() => {
             setShowModal(false);
             setIsClosing(false);
-        }, 8000);
+        }, 300);
     };
 
     if (!showModal) return null;

@@ -284,7 +284,7 @@ const productosUrl = config.endpoints.productos;
 
     // Añadir productos relacionados al contenedor
     relatedProducts.forEach((prod) => {
-      const productSlug = product.link;
+      const productSlug = prod.link;
       // Guardar la asociación nombre-id para futuras referencias
       productNameToIdMap[productSlug] = prod.id;
       localStorage.setItem(`product_${productSlug}`, prod.link);
@@ -424,4 +424,5 @@ const productosUrl = config.endpoints.productos;
     const url = `https://wa.me/${numero}?text=${mensaje}`;
     window.open(url, "_blank");
   }
+
 </script>
