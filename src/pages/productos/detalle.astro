@@ -185,7 +185,7 @@ const productosUrl = config.endpoints.productos;
     productSubtitle.innerHTML = product.subtitulo;
     productTagline.innerHTML = product.lema;
     productImg.src = `${getApiUrl}`+product.imagenes[0].url_imagen;
-    console.log(productImg.src);
+    //console.log(productImg.src);
     productImg.alt = product.titulo;
     infoTitle.innerHTML = product.titulo;
     infoDescription.innerHTML = product.descripcion;
@@ -194,7 +194,7 @@ const productosUrl = config.endpoints.productos;
     const images = product.imagenes;
     if (images && images.length > 0) {
       productViewer.src = `${getApiUrl}${images[0].url_imagen}`;
-      console.log(productViewer.src);
+      //console.log(productViewer.src);
       productViewer.alt = `${product.titulo} - Vista 1`;
 
       // Limpiar lista de imágenes previa
@@ -209,7 +209,7 @@ const productosUrl = config.endpoints.productos;
 
         const img = document.createElement("img");
         img.src = `${getApiUrl}${image.url_imagen}`;
-        console.log(img.src);
+        //console.log(img.src);
         img.alt = alt;
         img.className = "w-full h-full object-cover";
 
@@ -288,9 +288,12 @@ const productosUrl = config.endpoints.productos;
       // Guardar la asociación nombre-id para futuras referencias
       productNameToIdMap[productSlug] = prod.id;
       localStorage.setItem(`product_${productSlug}`, prod.link);
+      const imagenPrincipal = prod.imagenes && prod.imagenes.length > 0
+          ? prod.imagenes[0].url_imagen
+          : "/placeholder.png"; // ruta por defecto si no hay imagen
 
       const a = document.createElement("a");
-      a.href = `/productos/${productSlug}`;
+      a.href = `/productos/detalle?link=${encodeURIComponent(prod.link)}`;
       a.className = "group cursor-pointer";
 
       const div = document.createElement("div");
@@ -298,14 +301,14 @@ const productosUrl = config.endpoints.productos;
           "aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2";
 
       const img = document.createElement("img");
-      img.src = `${getApiUrl}${prod.image.url_imagen}`;
-      img.alt = prod.title;
+      img.src = `${getApiUrl}${imagenPrincipal}`;
+      img.alt = prod.titulo;
       img.className =
           "w-full h-full object-cover group-hover:scale-105 transition";
 
       const h3 = document.createElement("h3");
       h3.className = "text-center font-bold text-xs md:text-sm";
-      h3.textContent = prod.title;
+      h3.textContent = prod.titulo;
 
       div.appendChild(img);
       a.appendChild(div);
@@ -406,9 +409,9 @@ const productosUrl = config.endpoints.productos;
           sendWhatsAppQuoteRequest(product);
         });
       }
-
+      //console.log("Productos relacionados:", product.productos_relacionados);
       // Cargar productos relacionados
-      await loadRelatedProducts(product.productos_relacionados);
+      await loadRelatedProducts(product.productos_relacionados.map(p => p.id));
 
 
     } catch (error) {
