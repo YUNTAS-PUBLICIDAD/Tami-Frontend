@@ -28,6 +28,7 @@ interface AddBlogModalProps {
 const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [productos, setProductos] = useState<any[]>([]);
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
     link: "",
@@ -71,6 +72,21 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
           .catch((err) => console.error("Error al obtener blogs:", err));
     }
   }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      fetch("https://apitami.tamimaquinarias.com/api/v2/productos", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Accept: "application/json",
+        },
+      })
+          .then((res) => res.json())
+          .then((data) => {
+            setProductos(data?.data || []);
+          })
+          .catch((err) => console.error("Error al obtener productos:", err));
+    }
+  }, [isOpen]);
 
   function obtenerPrimerNumeroLibre(numeros: number[]): number {
     const set = new Set(numeros);
@@ -80,9 +96,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
     }
     return i;
   }
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -180,7 +199,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       formDataToSend.append("titulo_blog", formData.titulo_blog);
       formDataToSend.append("titulo_video", formData.titulo_video);
       formDataToSend.append("url_video", formData.url_video);
-      formDataToSend.append("producto_id", String(formData.producto_id));
+      console.log("Producto ID a enviar:", formData.producto_id);
+      if (formData.producto_id) {
+        formDataToSend.append("producto_id", formData.producto_id.toString());
+      } else {
+        console.error("producto_id no está definido o es vacío");
+      }
       formData.imagenes.forEach((item, index) => {
         if (item.url_imagen) {
           formDataToSend.append(
@@ -197,13 +221,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
           "imagen_principal",
           formData.imagen_principal as File
       );
-
+      //Dev
+      /*for (let [key, value] of formDataToSend.entries()) {
+        console.log(`${key}:`, value);
+      }*/
       const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
         method: "POST",
         body: formDataToSend,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       const data = await response.json();
@@ -348,16 +372,23 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                   </div>
 
                   <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Id del producto*</label>
-                    <input
-                        type="number"
+                    <label className="block text-sm font-medium text-gray-700">Producto*</label>
+                    <select
                         name="producto_id"
                         value={formData.producto_id}
                         onChange={handleChange}
-                        //required
+                        required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                    />
+                    >
+                      <option value="">Selecciona un producto</option>
+                      {productos.map((producto) => (
+                          <option key={producto.id} value={producto.id}>
+                            {producto.nombre}
+                          </option>
+                      ))}
+                    </select>
                   </div>
+
 
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
