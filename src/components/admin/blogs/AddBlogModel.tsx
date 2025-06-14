@@ -1,5 +1,5 @@
 import { config, getApiUrl } from "../../../../config.ts";
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 interface ImagenAdicional {
@@ -9,12 +9,14 @@ interface ImagenAdicional {
 
 interface BlogPOST {
   titulo: string;
+  link: string;
   parrafo: string;
   descripcion: string;
   imagen_principal: File | null;
   titulo_blog: string;
   subtitulo_beneficio: string;
   url_video: string;
+  producto_id: number;
   titulo_video: string;
   imagenes: ImagenAdicional[];
 }
@@ -27,14 +29,17 @@ interface AddBlogModalProps {
 const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [productos, setProductos] = useState<any[]>([]);
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
+    link: "",
     parrafo: "",
     descripcion: "",
     imagen_principal: null,
     titulo_blog: "",
     subtitulo_beneficio: "",
     url_video: "",
+    producto_id: 0,
     titulo_video: "",
     imagenes: [
       {
@@ -48,9 +53,56 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
     ],
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (isOpen) {
+      fetch("https://apitami.tamimaquinarias.com/api/v1/blogs", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Accept: "application/json",
+        },
+      })
+          .then((res) => res.json())
+          .then((data) => {
+            const linksUsados = data?.data
+                ?.map((b: any) => parseInt(b.link))
+                .filter((n: number) => Number.isInteger(n) && n > 0);
+
+            const linkLibre = obtenerPrimerNumeroLibre(linksUsados || []);
+            setFormData((prev) => ({ ...prev, link: String(linkLibre) }));
+          })
+          .catch((err) => console.error("Error al obtener blogs:", err));
+    }
+  }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      fetch("https://apitami.tamimaquinarias.com/api/v2/productos", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Accept: "application/json",
+        },
+      })
+          .then((res) => res.json())
+          .then((data) => {
+            setProductos(data?.data || []);
+          })
+          .catch((err) => console.error("Error al obtener productos:", err));
+    }
+  }, [isOpen]);
+
+  function obtenerPrimerNumeroLibre(numeros: number[]): number {
+    const set = new Set(numeros);
+    let i = 1;
+    while (set.has(i)) {
+      i++;
+    }
+    return i;
+  }
+  const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -88,12 +140,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
     setIsOpen(false);
     setFormData({
       titulo: "",
+      link: "",
       parrafo: "",
       descripcion: "",
       imagen_principal: null,
       titulo_blog: "",
       subtitulo_beneficio: "",
       url_video: "",
+      producto_id: 0,
       titulo_video: "",
       imagenes: [
         {
@@ -114,12 +168,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
 
     if (
         !formData.titulo ||
+        !formData.link ||
         !formData.parrafo ||
         !formData.descripcion ||
         !formData.subtitulo_beneficio ||
         !formData.titulo_blog ||
         !formData.titulo_video ||
         !formData.url_video ||
+        !formData.producto_id ||
         !formData.imagen_principal ||
         !formData.imagenes ||
         formData.imagenes.some((imagen) => !imagen.url_imagen)
@@ -138,6 +194,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       const formDataToSend = new FormData();
 
       formDataToSend.append("titulo", formData.titulo);
+      formDataToSend.append("link", formData.link);
       formDataToSend.append("parrafo", formData.parrafo);
       formDataToSend.append("descripcion", formData.descripcion);
       formDataToSend.append(
@@ -147,10 +204,16 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       formDataToSend.append("titulo_blog", formData.titulo_blog);
       formDataToSend.append("titulo_video", formData.titulo_video);
       formDataToSend.append("url_video", formData.url_video);
+      console.log("Producto ID a enviar:", formData.producto_id);
+      if (formData.producto_id) {
+        formDataToSend.append("producto_id", formData.producto_id.toString());
+      } else {
+        console.error("producto_id no está definido o es vacío");
+      }
       formData.imagenes.forEach((item, index) => {
         if (item.url_imagen) {
           formDataToSend.append(
-              `imagenes[${index}][url_imagen]`,
+              `imagenes[${index}][imagen]`,
               item.url_imagen as File
           );
         }
@@ -163,13 +226,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
           "imagen_principal",
           formData.imagen_principal as File
       );
-
+      //Dev
+      /*for (let [key, value] of formDataToSend.entries()) {
+        console.log(`${key}:`, value);
+      }*/
       const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
         method: "POST",
         body: formDataToSend,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       const data = await response.json();
@@ -236,7 +299,19 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="titulo"
                         value={formData.titulo}
                         onChange={handleChange}
-                        required
+                        //required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Link*</label>
+                    <input
+                        type="text"
+                        name="link"
+                        value={formData.link}
+                        readOnly
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -248,7 +323,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="parrafo"
                         value={formData.parrafo}
                         onChange={handleChange}
-                        required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -260,7 +335,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="descripcion"
                         value={formData.descripcion}
                         onChange={handleChange}
-                        required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -272,7 +347,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="subtitulo_beneficio"
                         value={formData.subtitulo_beneficio}
                         onChange={handleChange}
-                        required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -284,7 +359,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="titulo_blog"
                         value={formData.titulo_blog}
                         onChange={handleChange}
-                        required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -296,7 +371,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="titulo_video"
                         value={formData.titulo_video}
                         onChange={handleChange}
-                        required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -308,10 +383,29 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="url_video"
                         value={formData.url_video}
                         onChange={handleChange}
-                        required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Producto*</label>
+                    <select
+                        name="producto_id"
+                        value={formData.producto_id}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    >
+                      <option value="">Selecciona un producto</option>
+                      {productos.map((producto) => (
+                          <option key={producto.id} value={producto.id}>
+                            {producto.nombre}
+                          </option>
+                      ))}
+                    </select>
+                  </div>
+
 
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
@@ -323,7 +417,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                               accept="image/png, image/jpeg, image/jpg"
                               name="imagen_principal"
                               onChange={handleFileChange}
-                              required
+                              //required
                               className="hidden"
                           />
                           <p className="text-center text-gray-500">
@@ -348,7 +442,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                                   type="file"
                                   accept="image/*"
                                   onChange={(e) => handleFileChangeAdicional(e, index)}
-                                  required
+                                  //required
                                   className="hidden"
                               />
                               <p className="text-center text-gray-500">
@@ -362,7 +456,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         <textarea
                             onChange={(e) => handleParrafoChange(e, index)}
                             value={imagen.parrafo_imagen}
-                            required
+                            //required
                             placeholder="Descripción de la imagen..."
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition min-h-24"
                         />

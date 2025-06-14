@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import asesoriaImg from "../../assets/images/Diseno.webp";
 import Logo from "../../assets/images/logos/logo_animado.gif";
 
+const MODAL_STORAGE_KEY = "asesoriaModalLastClosed";
+const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
+
 const ScrollModal = () => {
     const [showModal, setShowModal] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -10,6 +13,14 @@ const ScrollModal = () => {
     const [hasShownOnce, setHasShownOnce] = useState(false);
 
     useEffect(() => {
+        const lastClosed = localStorage.getItem(MODAL_STORAGE_KEY);
+        const now = Date.now();
+
+        if (lastClosed && now - Number(lastClosed) < MODAL_COOLDOWN_MS) {
+            setHasShownOnce(true);
+            return; // Salir temprano: todavía dentro del cooldown
+        }
+
         const handleScroll = () => {
             const currentScroll = window.scrollY;
             const scrollDirection = currentScroll < lastScroll ? "up" : "down";
@@ -38,6 +49,7 @@ const ScrollModal = () => {
         setTimeout(() => {
             setShowModal(false);
             setIsClosing(false);
+            localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
         }, 300);
     };
 
@@ -46,9 +58,9 @@ const ScrollModal = () => {
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay">
             <div
-                className={`bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative
-      ${isClosing ? "animate-slideOut" : "animate-slideIn"}
-    `}
+                className={`bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative ${
+                    isClosing ? "animate-slideOut" : "animate-slideIn"
+                }`}
             >
                 {/* Imagen: solo visible en sm+ */}
                 <div className="hidden sm:block w-2/5 relative">
