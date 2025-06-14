@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from "react";
 import useClienteAcciones from "./useClientesActions";
 import type Cliente from "../../../models/Clients.ts";
+import Swal from "sweetalert2";
 
 /**
  * Funcion para manejar el formulario de cliente 
@@ -71,7 +72,11 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
      * Validación de los campos del formulario.
      */
     if (!name.trim() || !celular.trim() || !email.trim()) {
-      alert("⚠️ Todos los campos son obligatorios.");
+      await Swal.fire({
+        icon: "warning",
+        title: "Campos obligatorios",
+        text: "⚠️ Todos los campos son obligatorios.",
+      });
       return;
     }
 
@@ -79,7 +84,11 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
      * Validación del formato del email.
      */
     if (!/^\d+$/.test(celular)) {
-      alert("⚠️ El teléfono solo debe contener números.");
+      await Swal.fire({
+        icon: "warning",
+        title: "Teléfono inválido",
+        text: "⚠️ El teléfono solo debe contener números.",
+      });
       return;
     }
 
@@ -89,24 +98,36 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
          * Si estamos editando un cliente, llamamos a la función de actualización.
          */
         await updateCliente(cliente!.id, { name, celular, email });
-        alert("✅ Cliente actualizado correctamente");
+        await Swal.fire({
+          icon: "success",
+          title: "Cliente actualizado",
+          text: "✅ Cliente actualizado correctamente",
+        });
       } else {
         /**
          * Si estamos añadiendo un nuevo cliente, llamamos a la función de añadir.
          */
         await addCliente({ name, celular, email });
-        alert("✅ Cliente registrado exitosamente");
+        await Swal.fire({
+          icon: "success",
+          title: "Cliente registrado",
+          text: "✅ Cliente registrado exitosamente",
+        });
       }
 
       onSuccess?.(); // Llamamos a la función de éxito si existe
       resetForm(); // Reiniciamos el formulario después de la operación
 
-    /**
-     * Manejo de errores en la operación de añadir o actualizar cliente.
-     */
+      /**
+       * Manejo de errores en la operación de añadir o actualizar cliente.
+       */
     } catch (error: any) {
       console.error("❌ Error en la operación:", error);
-      alert(`❌ Error: ${error.message || "Error desconocido"}`);
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `❌ Error: ${error.message || "Error desconocido"}`,
+      });
     }
   };
 

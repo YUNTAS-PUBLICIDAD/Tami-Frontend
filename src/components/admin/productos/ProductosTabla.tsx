@@ -184,12 +184,12 @@ const ProductosTabla = () => {
                                 currentItems.map((item, index) => (
                                     <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
                                         <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
-                                            #{item.id}
+                                           #{item.id}
                                         </td>
                                         <td className="px-6 py-4 font-medium">{item.nombre}</td>
                                         <td className="px-6 py-4">
                                             <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                                                {item.seccion.toLowerCase()}
+                                              {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">

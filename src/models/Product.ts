@@ -27,15 +27,15 @@ export interface ProductFormularioPOST {
   precio: number;
   seccion: string;
   especificaciones: Record<string, string>;
-  dimensiones: Dimensions;
+  // dimensiones: Dimensions;
   imagenes: Imagen[];
   relacionados: number[];
   textos_alt: string[];
 }
 
 interface Imagen {
-  url_imagen: File | null;
-  texto_alt: string;
+  url_imagen: File | string | null;
+  texto_alt_SEO: string;
 }
 
 export default interface Producto {
@@ -47,9 +47,9 @@ export default interface Producto {
   subtitulo: string;
   lema: string;
   descripcion: string;
-  especificaciones: any;
+  especificaciones: { [clave: string]: string };
   productos_relacionados: object[] | null;
-  imagenes: object[] | null;
+  imagenes: Imagen[]; // las adicionales
   stock: number;
   precio: number;
   createdAt: string;

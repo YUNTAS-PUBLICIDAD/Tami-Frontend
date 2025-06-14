@@ -23,33 +23,31 @@ const AddProduct = ({ onProductAdded }: Props) => {
     descripcion: "",
     stock: 100,
     precio: 199.99,
-    seccion: "Trabajo",
-    dimensiones: {
-      alto: "",
-      largo: "",
-      ancho: "",
-    },
+    seccion: "Negocio",
     especificaciones: {
       color: "",
       material: "",
+      alto: "",
+      largo: "",
+      ancho: "",
     },
     relacionados: [],
     imagenes: [
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
     ],
     textos_alt: [],
@@ -75,12 +73,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       },
     });
   };
-
-  /*const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, imagen_principal: e.target.files[0] });
-    }
-  };*/
 
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -119,6 +111,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
       setFormData({ ...formData, imagenes: nuevoArray });
     }
   };
+  const handleImagesTextoSEOChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.target.value) {
+      const nuevoArray = [...formData.imagenes];
+
+      // Agregar el archivo y su parrafo
+      nuevoArray[index] = {
+        ...nuevoArray[index],
+        texto_alt_SEO: e.target.value,
+      };
+
+      setFormData({ ...formData, imagenes: nuevoArray });
+    }
+  };
 
   // Referencia al contenedor del formulario
   const formContainerRef = useRef<HTMLDivElement>(null);
@@ -138,12 +146,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       descripcion: "",
       stock: 100,
       precio: 199.99,
-      seccion: "Trabajo",
+      seccion: "Negocio",
       especificaciones: {
         color: "",
         material: "",
-      },
-      dimensiones: {
         alto: "",
         largo: "",
         ancho: "",
@@ -152,19 +158,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
       imagenes: [
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
       {
         url_imagen: null,
-        texto_alt:"",
+        texto_alt_SEO:"",
       },
     ],
       textos_alt: [],
@@ -223,13 +229,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.seccion ||
       !formData.especificaciones.color ||
       !formData.especificaciones.material ||
-      !formData.dimensiones.alto ||
-      !formData.dimensiones.largo ||
-      !formData.dimensiones.ancho ||
       !formData.imagenes ||
       formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
     ) {
-      alert("⚠️ Todos los campos son obligatorios.");
+      Swal.fire({
+        icon: "warning",
+        title: "Campos obligatorios",
+        text: "⚠️ Todos los campos son obligatorios.",
+      });
+      setIsLoading(false);
       return;
     }
     try {
@@ -254,7 +262,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       });
 
       formData.imagenes.forEach((imagen, index) => {
-        const altText = imagen.texto_alt.trim() || "Texto SEO para imagen";
+        const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
         if (imagen.url_imagen) {
           formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
@@ -301,7 +309,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      alert(`❌ Error: ${error}`);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `❌ Error: ${error}`,
+      });
       setIsLoading(false); // Cambia el estado de carga a falso
     }
   };
@@ -420,21 +432,18 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                         />
                       </div>
-                      {/* 
-                      <div className="form-input">
-                        <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>
-                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
-                          <input
-                              required
-                              accept="image/png, image/jpeg, image/jpg"
-                              onChange={handleFileChange}
-                              type="file"
-                              name="imagen_principal"
-                              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                          />
-                        </div>
-                      </div>
-                      */}
+                      {/*<div className="form-input">*/}
+                      {/*  <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>*/}
+                      {/*  <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">*/}
+                      {/*    <input*/}
+                      {/*        required*/}
+                      {/*        accept="image/png, image/jpeg, image/jpg"*/}
+                      {/*        type="file"*/}
+                      {/*        name="imagen_principal"*/}
+                      {/*        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"*/}
+                      {/*    />*/}
+                      {/*  </div>*/}
+                      {/*</div>*/}
                       <div className="form-input">
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
                         <select
@@ -444,9 +453,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             name="seccion"
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition appearance-none bg-white"
                         >
-                          <option value="Trabajo">Trabajo</option>
-                          <option value="Decoración">Decoración</option>
                           <option value="Negocio">Negocio</option>
+                          <option value="Decoración">Decoración</option>
+                          <option value="Maquinaria">Maquinaria</option>
                         </select>
                       </div>
 
@@ -488,56 +497,56 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       </div>
 
                       {/* Dimensiones */}
-                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div className="form-input">
-                            <label className="block text-sm text-gray-600 mb-1">Alto:</label>
-                            <div className="relative">
-                              <input
-                                  required
-                                  value={formData.dimensiones.alto}
-                                  onChange={(e) => handleNestedChange(e, "dimensiones")}
-                                  name="alto"
-                                  type="number"
-                                  placeholder="0"
-                                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                              />
-                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
-                            </div>
-                          </div>
-                          <div className="form-input">
-                            <label className="block text-sm text-gray-600 mb-1">Ancho:</label>
-                            <div className="relative">
-                              <input
-                                  required
-                                  value={formData.dimensiones.ancho}
-                                  onChange={(e) => handleNestedChange(e, "dimensiones")}
-                                  name="ancho"
-                                  type="number"
-                                  placeholder="0"
-                                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                              />
-                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
-                            </div>
-                          </div>
-                          <div className="form-input">
-                            <label className="block text-sm text-gray-600 mb-1">Largo:</label>
-                            <div className="relative">
-                              <input
-                                  required
-                                  value={formData.dimensiones.largo}
-                                  onChange={(e) => handleNestedChange(e, "dimensiones")}
-                                  name="largo"
-                                  type="number"
-                                  placeholder="0"
-                                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                              />
-                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      {/*<div className="bg-gray-50 p-4 rounded-lg border border-gray-100">*/}
+                      {/*  <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>*/}
+                      {/*  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">*/}
+                      {/*    <div className="form-input">*/}
+                      {/*      <label className="block text-sm text-gray-600 mb-1">Alto:</label>*/}
+                      {/*      <div className="relative">*/}
+                      {/*        <input*/}
+                      {/*            required*/}
+                      {/*            value={formData.dimensiones.alto}*/}
+                      {/*            onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
+                      {/*            name="alto"*/}
+                      {/*            type="number"*/}
+                      {/*            placeholder="0"*/}
+                      {/*            className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
+                      {/*        />*/}
+                      {/*        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
+                      {/*      </div>*/}
+                      {/*    </div>*/}
+                      {/*    <div className="form-input">*/}
+                      {/*      <label className="block text-sm text-gray-600 mb-1">Ancho:</label>*/}
+                      {/*      <div className="relative">*/}
+                      {/*        <input*/}
+                      {/*            required*/}
+                      {/*            value={formData.dimensiones.ancho}*/}
+                      {/*            onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
+                      {/*            name="ancho"*/}
+                      {/*            type="number"*/}
+                      {/*            placeholder="0"*/}
+                      {/*            className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
+                      {/*        />*/}
+                      {/*        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
+                      {/*      </div>*/}
+                      {/*    </div>*/}
+                      {/*    <div className="form-input">*/}
+                      {/*      <label className="block text-sm text-gray-600 mb-1">Largo:</label>*/}
+                      {/*      <div className="relative">*/}
+                      {/*        <input*/}
+                      {/*            required*/}
+                      {/*            value={formData.dimensiones.largo}*/}
+                      {/*            onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
+                      {/*            name="largo"*/}
+                      {/*            type="number"*/}
+                      {/*            placeholder="0"*/}
+                      {/*            className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
+                      {/*        />*/}
+                      {/*        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
+                      {/*      </div>*/}
+                      {/*    </div>*/}
+                      {/*  </div>*/}
+                      {/*</div>*/}
                     </div>
                     <button
                         onClick={goNextForm}
@@ -575,6 +584,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleImagesChange(e, index)}
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                />
+                              </div>
+                              <label className="block !text-gray-700 text-sm font-medium mb-1">Texto SEO Imagen {index + 1}:</label>
+                              <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
+                                <input
+                                    required
+                                    type="text"
+                                    onChange={(e) => handleImagesTextoSEOChange(e, index)}
                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                 />
                               </div>
@@ -641,10 +659,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                           <img
                                               src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
                                               alt={item.nombre}
-                                              className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 border-gray-200 group-hover:border-teal-400 transition-all duration-300 peer-checked:border-teal-600"
-                                              onError={(e) => {
-                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
-                                              }}
+                                              className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${
+                                                  formData.relacionados.includes(item.id)
+                                                      ? 'border-teal-600'
+                                                      : 'border-gray-200 group-hover:border-teal-400'
+                                              }`}
                                           />
                                       ) : (
                                           <span className="text-sm text-gray-400 italic">Sin imagen</span>
