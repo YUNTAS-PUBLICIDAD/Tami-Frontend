@@ -29,6 +29,7 @@ const BlogsTable = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const [editBlog, setEditBlog] = useState<Blog | null>(null);
   const itemsPerPage = 6;
 
   const fetchData = async () => {
@@ -96,6 +97,11 @@ const BlogsTable = () => {
   };
 
   const openAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const openEditModal = (blog: Blog) => {
+    setEditBlog(blog);
     setIsAddModalOpen(true);
   };
 
@@ -186,7 +192,12 @@ const BlogsTable = () => {
                 />
               </div>
 
-              <AddBlogModal onBlogAdded={handleBlogAdded} />
+              <AddBlogModal 
+                onBlogAdded={handleBlogAdded} 
+                isOpen={isAddModalOpen} 
+                onClose={() => { setIsAddModalOpen(false); setEditBlog(null); }} 
+                blogToEdit={editBlog} 
+              />
             </div>
 
             {isLoading ? (
@@ -212,8 +223,9 @@ const BlogsTable = () => {
                               <FaEye size={16} />
                             </button>
                             <button
-                                className="p-2 bg-white rounded-full hover:bg-yellow-50 text-yellow-600 shadow-md"
-                                title="Editar"
+                              className="p-2 bg-white rounded-full hover:bg-yellow-50 text-yellow-600 shadow-md"
+                              title="Editar"
+                              onClick={() => openEditModal(blog)}
                             >
                               <FaEdit size={16} />
                             </button>
