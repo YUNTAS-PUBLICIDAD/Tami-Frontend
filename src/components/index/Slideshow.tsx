@@ -15,13 +15,13 @@ const testimonials: Testimonial[] = [
     text: "¡Este servicio es increíble! Muy recomendable.",
   },
   {
-    avatar: "/images/persona2.webp",
+    avatar: "/images/persona3.webp",
     name: "María López",
     rating: 4,
     text: "Buena experiencia en general, pero hay margen de mejora.",
   },
   {
-    avatar: "/images/persona3.webp",
+    avatar: "/images/persona2.webp",
     name: "Javier Gómez",
     rating: 5,
     text: "¡Absolutamente fantástico! Lo usaré de nuevo.",

@@ -11,7 +11,7 @@ const socialMediaLinks = [
     image: tiktokIcon,
   },
   {
-    url: "https://www.instagram.com/tami_maquinarias_peru/",
+    url: "https://www.instagram.com/tami_maquinarias/",
     socialMediaName: "Instagram",
     image: instagramIcon,
   },

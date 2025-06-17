@@ -31,11 +31,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         stock: 100,
         precio: 199.99,
         seccion: "Trabajo",
-        dimensiones: {
-            alto: "",
-            largo: "",
-            ancho: "",
-        },
         especificaciones: {
             color: "",
             material: "",
@@ -47,19 +42,19 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         imagenes: [
             {
                 url_imagen: null,
-                texto_alt:"",
+                texto_alt_SEO:"",
             },
             {
                 url_imagen: null,
-                texto_alt:"",
+                texto_alt_SEO:"",
             },
             {
                 url_imagen: null,
-                texto_alt:"",
+                texto_alt_SEO:"",
             },
             {
                 url_imagen: null,
-                texto_alt:"",
+                texto_alt_SEO:"",
             },
         ],
         textos_alt: [],
@@ -121,6 +116,23 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }));
     };
 
+    const handleImagesTextoSEOChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        index: number
+    ) => {
+        if (e.target.value) {
+            const nuevoArray = [...formData.imagenes];
+
+            // Agregar el archivo y su parrafo
+            nuevoArray[index] = {
+                ...nuevoArray[index],
+                texto_alt_SEO: e.target.value,
+            };
+
+            setFormData({ ...formData, imagenes: nuevoArray });
+        }
+    };
+
     // Referencia al contenedor del formulario
     const formContainerRef = useRef<HTMLDivElement>(null);
 
@@ -143,29 +155,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             especificaciones: {
                 color: "",
                 material: "",
+                alto: "",
+                largo: "",
+                ancho: "",
             },
-            // dimensiones: {
-            //     alto: "",
-            //     largo: "",
-            //     ancho: "",
-            // },
             relacionados: [],
             imagenes: [
                 {
                     url_imagen: null,
-                    texto_alt:"",
+                    texto_alt_SEO:"",
                 },
                 {
                     url_imagen: null,
-                    texto_alt:"",
+                    texto_alt_SEO:"",
                 },
                 {
                     url_imagen: null,
-                    texto_alt:"",
+                    texto_alt_SEO:"",
                 },
                 {
                     url_imagen: null,
-                    texto_alt:"",
+                    texto_alt_SEO:"",
                 },
             ],
             textos_alt: [],
@@ -254,7 +264,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
 
             formData.imagenes.forEach((imagen, index) => {
-                const altText = imagen.texto_alt.trim() || "Texto SEO para imagen";
+                const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
                 if (imagen.url_imagen) {
                     formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
@@ -265,11 +275,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formData.relacionados.forEach((item, index) => {
                 formDataToSend.append(`relacionados[${index}]`, item.toString());
             });
+            formDataToSend.append("_method", "PUT");
 
             const response = await fetch(
                 getApiUrl(config.endpoints.productos.update(product.id)), // ← usa el ID del producto
                 {
-                    method: "PUT",
+                    method: "POST",
                     body: formDataToSend, // FormData
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -329,7 +340,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         if (showModal && product) {
             const imagenesTransformadas = product.imagenes?.map((img) => ({
                 url_imagen: `https://apitami.tamimaquinarias.com${img.url_imagen}`,
-                // texto_alt: img.texto_alt_SEO,
+                texto_alt_SEO: img.texto_alt_SEO,
             })) || [];
 
             const relacionadosIds = product.productos_relacionados?.map((rel) => rel.id) || [];
@@ -351,12 +362,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 imagenes: imagenesTransformadas.length > 0
                     ? imagenesTransformadas
                     : [
-                        { url_imagen: null, texto_alt: "" },
-                        { url_imagen: null, texto_alt: "" },
-                        { url_imagen: null, texto_alt: "" },
-                        { url_imagen: null, texto_alt: "" },
+                        { url_imagen: null, texto_alt_SEO: "" },
+                        { url_imagen: null, texto_alt_SEO: "" },
+                        { url_imagen: null, texto_alt_SEO: "" },
+                        { url_imagen: null, texto_alt_SEO: "" },
                     ],
-                // textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
+                textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
             });
         }
     }, [showModal, product]);
@@ -609,7 +620,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             <label className="block !text-gray-700 text-sm font-medium mb-1">
                                                 Imagen {index + 1}:
                                             </label>
-
                                             <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
                                                 {img.url_imagen ? (
                                                     <div className="flex items-center gap-4">
@@ -635,6 +645,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 className="hidden"
                                                             />
                                                         </label>
+                                                        <p>* Obligatorio</p>
                                                     </div>
                                                 ) : (
                                                     <input
@@ -645,6 +656,16 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                                     />
                                                 )}
+                                            </div>
+                                            <label className="block !text-gray-700 text-sm font-medium mb-1">Texto SEO Imagen {index + 1}:</label>
+                                            <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
+                                                <input
+                                                    required
+                                                    type="text"
+                                                    onChange={(e) => handleImagesTextoSEOChange(e, index)}
+                                                    value={img.texto_alt_SEO ? img.texto_alt_SEO : ""}
+                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                                />
                                             </div>
                                         </div>
                                     ))}
