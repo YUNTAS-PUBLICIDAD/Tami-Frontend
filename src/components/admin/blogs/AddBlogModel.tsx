@@ -83,7 +83,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       })
           .then((res) => res.json())
           .then((data) => {
-            setProductos(data?.data || []);
+            setProductos(data || []);
           })
           .catch((err) => console.error("Error al obtener productos:", err));
     }
