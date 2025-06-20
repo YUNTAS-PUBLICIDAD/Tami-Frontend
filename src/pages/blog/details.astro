@@ -34,22 +34,26 @@ const blogsUrl = config.endpoints.blogs;
       class="relative z-10 max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10
       -mt-42 md:-mt-36"
     >
-      {/* FECHA */}
-      <div
-        id="blog-date"
-        class="inline-block px-3 py-1 bg-teal-600 text-white text-sm rounded-full mb-4"
-      >
-        Fecha de publicación no disponible
+
+
+      <div class="flex flex-col md:flex-row justify-between mb-2">
+        <h2
+            id="blog-content-title"
+            class="text-3xl md:text-4xl font-bold text-black mb-2 md:mb-0"
+        ></h2>
+        <p
+            id="blog-content-subtitle"
+            class="text-lg md:text-2xl text-teal-600 md:text-right md:self-end"
+        ></p>
       </div>
 
-      <div class="flex flex-col md:flex-row justify-between items-end mb-6">
-        <h2
-          id="blog-content-title"
-          class="text-3xl md:text-4xl font-bold text-teal-600 mb-2 md:mb-0"
-        >
-        </h2>
-        <p id="blog-content-subtitle" class="text-lg md:text-2xl text-gray-700">
-        </p>
+
+      {/* FECHA DE PUBLICACIÓN DEBAJO DEL TÍTULO */}
+      <div
+          id="blog-date"
+          class="inline-block px-3 py-1 bg-teal-600 text-white text-sm rounded-full mb-6"
+      >
+        Fecha de publicación no disponible
       </div>
 
       {/* CONTENIDO DEL BLOG */}

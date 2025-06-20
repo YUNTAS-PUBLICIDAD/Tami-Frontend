@@ -1,5 +1,6 @@
 import useUsuarioAcciones from "../../../hooks/admin/usuarios/useUsuariosActions.ts";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 interface DeleteUsuarioModalProps {
   isOpen: boolean;
@@ -25,7 +26,11 @@ const DeleteUsuarioModal = ({
       setIsOpen(false);
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
-      alert("No se pudo eliminar el usuario");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo eliminar el usuario",
+      });
     } finally {
       setIsLoading(false);
     }

@@ -50,7 +50,7 @@ export default function ListadoDeProductos() {
         {
           nombreSeccion: "Negocio",
           productosDeLaSeccion: productosMapeados
-            .filter((p: Producto) => p.seccion === "Trabajo")
+            .filter((p: Producto) => p.seccion === "Negocio")
         },
         {
           nombreSeccion: "Decoración",
@@ -60,7 +60,7 @@ export default function ListadoDeProductos() {
         {
           nombreSeccion: "Maquinaria",
           productosDeLaSeccion: productosMapeados
-            .filter((p: Producto) => p.seccion === "Negocio")
+            .filter((p: Producto) => p.seccion === "Maquinaria")
         },
       ];
 
