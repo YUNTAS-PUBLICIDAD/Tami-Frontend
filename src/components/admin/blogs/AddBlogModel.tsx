@@ -88,7 +88,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
 
   useEffect(() => {
     if (isOpen) {
-      fetch("https://apitami.tamimaquinarias.com/api/v1/blogs", {
+      fetch(getApiUrl(config.endpoints.blogs.list), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           Accept: "application/json",
@@ -108,7 +108,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
   }, [isOpen]);
   useEffect(() => {
     if (isOpen) {
-      fetch("https://apitami.tamimaquinarias.com/api/v2/productos", {
+      fetch(getApiUrl(config.endpoints.productos.list), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           Accept: "application/json",
@@ -116,7 +116,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       })
           .then((res) => res.json())
           .then((data) => {
-            setProductos(data?.data || []);
+            setProductos(data || []);
           })
           .catch((err) => console.error("Error al obtener productos:", err));
     }
@@ -133,10 +133,26 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
   const handleChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "link") {
+      const sanitized = value
+          .normalize("NFD") // descompone letras acentuadas
+          .replace(/[\u0300-\u036f]/g, "") // elimina las marcas diacríticas
+          .toLowerCase()
+          .replaceAll(" ", "-");
+
+      setFormData((prev) => ({
+        ...prev,
+        link: sanitized,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
-
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, imagen_principal: e.target.files[0] });
@@ -350,11 +366,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         type="text"
                         name="link"
                         value={formData.link}
-                        readOnly
-                        //required
+                        onChange={handleChange}
+
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Párrafo*</label>
