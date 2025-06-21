@@ -36,13 +36,22 @@ const BlogsTable = () => {
     try {
       const response = await fetch(getApiUrl(config.endpoints.blogs.list));
       const result = await response.json();
-      setData(result.data || []);
+
+      // Validación defensiva con log para debugging
+      if (Array.isArray(result?.data)) {
+        setData(result.data);
+      } else {
+        console.warn("⚠️ 'data' no es un array válido:", result?.data);
+        setData([]); // evita errores como .map en algo que no es array
+      }
     } catch (error) {
       console.error("❌ Error al cargar datos:", error);
+      setData([]); // seguridad ante fallo
     } finally {
       setIsLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchData();
