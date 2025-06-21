@@ -1,1 +1,0 @@
-import{j as e}from"./jsx-runtime.D_zvdyIk.js";import{r as t}from"./index.BJfUAbRs.js";const i=()=>{const[o,r]=t.useState(!1);return t.useEffect(()=>{localStorage.getItem("token")?r(!0):(alert("No tienes permiso para acceder al dashboard."),window.location.href="/sign-in")},[]),o?e.jsx("div",{}):e.jsx("p",{children:"Cargando..."})};export{i as default};
