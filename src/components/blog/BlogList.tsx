@@ -32,7 +32,7 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
   }, []);
 
   const filteredBlogs = blogs.filter((blog) =>
-      blog.tituloBlog.toLowerCase().includes(searchTerm.toLowerCase())
+      blog.titulo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
