@@ -4,6 +4,7 @@ import type Blog from "src/models/Blog";
 import { getApiUrl, config } from "config";
 
 const BlogList = ({ searchTerm }: { searchTerm: string }) => {
+const BlogList = ({ searchTerm }: { searchTerm: string }) => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,6 +14,7 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
     const fetchBlogs = async () => {
       try {
         const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
         if (data.success) {
