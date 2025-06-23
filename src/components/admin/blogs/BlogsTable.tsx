@@ -7,14 +7,14 @@ import Swal from "sweetalert2";
 interface Blog {
   id: number;
   titulo: string;
-  parrafo: string;
-  descripcion: string;
-  imagenPrincipal: string;
-  tituloBlog?: string;
-  subTituloBlog?: string;
-  videoBlog?: string;
-  tituloVideoBlog?: string;
+  subtitulo1: string;
+  subtitulo2: string;
+  subtitulo3: string;
+  imagenes: { ruta_imagen: string }[];
+  video_id?: string;
+  video_titulo?: string;
   created_at?: string | null;
+  parrafos: { parrafo: string }[];
 }
 
 interface BlogPreviewProps {
@@ -64,7 +64,7 @@ const BlogsTable = () => {
 
   const filteredData = data.filter(blog =>
       blog.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+      blog.subtitulo2.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -124,7 +124,7 @@ const BlogsTable = () => {
           <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
             <div className="relative">
               <img
-                  src={blog.imagenPrincipal}
+                  src={blog.imagenes[0]?.ruta_imagen}
                   alt={blog.titulo}
                   className="w-full h-64 object-cover rounded-t-xl"
               />
@@ -143,20 +143,20 @@ const BlogsTable = () => {
               <p className="text-gray-500 mb-4">{blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'Fecha no disponible'}</p>
 
               <div className="prose max-w-none">
-                <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.tituloBlog || 'Sin título de blog'}</h3>
-                <p className="text-gray-700 mb-4">{blog.parrafo}</p>
+                <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.titulo   || 'Sin título de blog'}</h3>
+                <p className="text-gray-700 mb-4">{blog.subtitulo1}</p>
 
                 <div className="my-6">
-                  <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.subTituloBlog || 'Acerca de este blog'}</h4>
-                  <p className="text-gray-700">{blog.descripcion}</p>
+                  <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.subtitulo2   || 'Acerca de este blog'}</h4>
+                  <p className="text-gray-700">{blog.subtitulo2}</p>
                 </div>
 
-                {blog.videoBlog && (
+                {blog.video_id  && (
                     <div className="my-6">
-                      <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.tituloVideoBlog || 'Video relacionado'}</h4>
+                      <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.video_titulo || 'Video relacionado'}</h4>
                       <div className="aspect-w-16 aspect-h-9">
                         <iframe
-                            src={blog.videoBlog}
+                            src={`https://www.youtube.com/embed/${blog.video_id}`}
                             className="w-full h-64 rounded-lg"
                             allowFullScreen
                         ></iframe>
@@ -208,7 +208,7 @@ const BlogsTable = () => {
                       <div key={blog.id} className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
                         <div className="relative h-48">
                           <img
-                              src={blog.imagenPrincipal}
+                              src={blog.imagenes[0]?.ruta_imagen}
                               alt={blog.titulo}
                               className="w-full h-full object-cover"
                           />
@@ -238,7 +238,7 @@ const BlogsTable = () => {
 
                         <div className="p-5 flex-grow flex flex-col">
                           <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">{blog.titulo}</h3>
-                          <p className="text-gray-500 text-sm mb-3 line-clamp-2">{blog.descripcion}</p>
+                          <p className="text-gray-500 text-sm mb-3 line-clamp-2">{blog.subtitulo2}</p>
                           <div className="mt-auto pt-4 flex justify-between items-center">
                             <span className="text-xs text-gray-500">ID: {blog.id}</span>
                             <span className="px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-xs font-medium">Blog</span>
