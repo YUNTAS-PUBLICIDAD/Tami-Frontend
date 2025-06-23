@@ -103,13 +103,13 @@ const blogsUrl = config.endpoints.blogs;
         const blogVideoSectionElement = document.getElementById("blog-video-section");
 
       if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
-      if (blogSubtitleElement)
-        blogSubtitleElement.innerHTML = blog.subTituloBlog;
-      if (blogImgElement) {
-        blogImgElement.src = blog.imagenPrincipal;
-        blogImgElement.alt = blog.titulo;
-      }
-      if (blogDateElement) {
+        if (blogSubtitleElement)
+          blogSubtitleElement.innerHTML = blog.subtitulo1;
+        if (blogImgElement) {
+          blogImgElement.src = blog.imagenes?.[0]?.ruta_imagen || "/img/default.png";
+          blogImgElement.alt = blog.titulo;
+        }
+        if (blogDateElement) {
         const createdAt = blog.created_at;
         if (createdAt) {
           const formattedDate = new Date(createdAt).toLocaleDateString(
@@ -141,31 +141,32 @@ const blogsUrl = config.endpoints.blogs;
           blogDateElement.innerHTML = "Fecha de publicación no disponible";
         }
       }
-      if (blogContentTitleElement)
-        blogContentTitleElement.innerHTML = blog.tituloBlog;
-      if (blogContentSubtitleElement)
-        blogContentSubtitleElement.innerHTML = blog.parrafo; // Reemplazamos la primera asignación
+        if (blogContentTitleElement)
+          blogContentTitleElement.innerHTML = blog.titulo;
+        if (blogContentSubtitleElement)
+        blogContentSubtitleElement.innerHTML = blog.subtitulo2; // Reemplazamos la primera asignación
 
-        if (blogSectionsElement && Array.isArray(blog.imagenesBlog)) {
+        if (blogSectionsElement && Array.isArray(blog.imagenes) && Array.isArray(blog.parrafos)) {
           blogSectionsElement.innerHTML = "";
-          blog.imagenesBlog.forEach((imagen, index) => {
+          blog.imagenes.forEach((imagen, index) => {
             const section = document.createElement("section");
             section.className = "mb-5 text-justify";
             section.innerHTML = `
-        <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
-          <img src="${imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0" />
-          <div class="md:w-1/2 px-4 pt-2">
-            <article>
-              <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
-                ${blog.parrafoImagenesBlog?.[index] || "Texto no disponible"}
-              </p>
-            </article>
-          </div>
-        </div>
-      `;
+            <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
+              <img src="${imagen.ruta_imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0" />
+              <div class="md:w-1/2 px-4 pt-2">
+                <article>
+                  <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
+                    ${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}
+                  </p>
+                </article>
+              </div>
+            </div>
+    `;
             blogSectionsElement.appendChild(section);
           });
         }
+
 
         const blogProductLinkElement = document.getElementById("blog-product-link");
 

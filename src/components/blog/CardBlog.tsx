@@ -13,7 +13,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
     >
       <figure className="lg:w-1/3 w-full">
         <img
-          src={blog.imagenPrincipal}
+          src={blog.imagenes[0]?.ruta_imagen}
           alt={blog.titulo}
           loading="lazy"
           className="w-full h-48 object-cover"
@@ -28,7 +28,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
         <h2 className="text-2xl font-bold mb-2 ml-3">{blog.titulo}</h2>
         <div className="flex flex-row items-center gap-2">
           <MdOutlineArrowForwardIos className="text-5xl" />
-          <p className="text-gray-300">{blog.descripcion}</p>
+          <p className="text-gray-300">{blog.subtitulo2}</p>
         </div>
       </div>
     </a>
