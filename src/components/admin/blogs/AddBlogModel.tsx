@@ -21,10 +21,13 @@ interface BlogPOST {
 
 interface AddBlogModalProps {
   onBlogAdded: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  blogToEdit?: any;
 }
 
 
-const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
+const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIsOpen, onClose, blogToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [productos, setProductos] = useState<any[]>([]);
@@ -42,6 +45,36 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       { imagen: null, parrafo: "" },
     ],
   });
+
+  useEffect(() => {
+    if (typeof propIsOpen === 'boolean') setIsOpen(propIsOpen);
+  }, [propIsOpen]);
+
+  useEffect(() => {
+    if (blogToEdit) {
+      setFormData({
+        titulo: blogToEdit.titulo || '',
+        link: blogToEdit.link || '',
+        parrafo: blogToEdit.parrafo || '',
+        descripcion: blogToEdit.descripcion || '',
+        imagen_principal: null, // No se puede precargar file, solo mostrar nombre
+        titulo_blog: blogToEdit.tituloBlog || '',
+        subtitulo_beneficio: blogToEdit.subTituloBlog || '',
+        url_video: blogToEdit.videoBlog || '',
+        producto_id: blogToEdit.producto_id || 0,
+        titulo_video: blogToEdit.tituloVideoBlog || '',
+        imagenes: [
+          { url_imagen: null, parrafo_imagen: blogToEdit.parrafoImagenesBlog?.[0] || '' },
+          { url_imagen: null, parrafo_imagen: blogToEdit.parrafoImagenesBlog?.[1] || '' },
+        ],
+      });
+    }
+    if (!propIsOpen) {
+      setFormData({
+        titulo: '', link: '', parrafo: '', descripcion: '', imagen_principal: null, titulo_blog: '', subtitulo_beneficio: '', url_video: '', producto_id: 0, titulo_video: '', imagenes: [ { url_imagen: null, parrafo_imagen: '' }, { url_imagen: null, parrafo_imagen: '' } ]
+      });
+    }
+  }, [blogToEdit, propIsOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -202,7 +235,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
-
       // Petición
       const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
         method: "POST",
@@ -218,7 +250,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
       if (response.ok) {
         await Swal.fire({
           icon: "success",
-          title: "Blog añadido exitosamente",
+          title: blogToEdit ? "Blog actualizado exitosamente" : "Blog añadido exitosamente",
           showConfirmButton: true,
         });
         closeModal();
@@ -245,20 +277,19 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
 
   return (
       <>
-        <button
+        {(!propIsOpen && <button
             onClick={() => setIsOpen(true)}
             className="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
         >
           Añadir Blog
-        </button>
-
-        {isOpen && (
+        </button>)}
+        {(isOpen || propIsOpen) && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="max-h-[90vh] overflow-y-auto bg-white text-gray-800 p-8 rounded-xl w-full max-w-4xl shadow-2xl">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-3xl font-bold text-teal-600">Añadir Nuevo Blog</h2>
+                  <h2 className="text-3xl font-bold text-teal-600">{blogToEdit ? 'Editar Blog' : 'Añadir Nuevo Blog'}</h2>
                   <button
-                      onClick={closeModal}
+                      onClick={onClose ? onClose : closeModal}
                       className="text-gray-500 hover:text-gray-700 text-2xl"
                   >
                     &times;
@@ -407,7 +438,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                   <div className="md:col-span-2 flex justify-end gap-4">
                     <button
                         type="button"
-                        onClick={closeModal}
+                        onClick={onClose ? onClose : closeModal}
                         className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                     >
                       Cancelar
@@ -440,7 +471,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                             Guardando...
                           </>
                       ) : (
-                          'Guardar Blog'
+                          blogToEdit ? 'Actualizar Blog' : 'Guardar Blog'
                       )}
                     </button>
                   </div>
