@@ -1,8 +1,6 @@
 import { config, getApiUrl } from "../../../../config.ts";
 import {useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import {useEffect, useState } from "react";
-import Swal from "sweetalert2";
 
 interface ImagenAdicional {
   imagen: File | null;
@@ -32,7 +30,6 @@ interface AddBlogModalProps {
 const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIsOpen, onClose, blogToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [productos, setProductos] = useState<any[]>([]);
   const [productos, setProductos] = useState<any[]>([]);
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
