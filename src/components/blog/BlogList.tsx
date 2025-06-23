@@ -4,7 +4,6 @@ import type Blog from "src/models/Blog";
 import { getApiUrl, config } from "config";
 
 const BlogList = ({ searchTerm }: { searchTerm: string }) => {
-const BlogList = ({ searchTerm }: { searchTerm: string }) => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [error, setError] = useState<string | null>(null);
 
