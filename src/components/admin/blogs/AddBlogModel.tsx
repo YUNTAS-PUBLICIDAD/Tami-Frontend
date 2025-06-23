@@ -1,6 +1,8 @@
 import { config, getApiUrl } from "../../../../config.ts";
 import {useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import {useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 interface ImagenAdicional {
   imagen: File | null;
@@ -21,12 +23,16 @@ interface BlogPOST {
 
 interface AddBlogModalProps {
   onBlogAdded: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  blogToEdit?: any;
 }
 
 
-const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
+const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIsOpen, onClose, blogToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [productos, setProductos] = useState<any[]>([]);
   const [productos, setProductos] = useState<any[]>([]);
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
@@ -156,6 +162,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setIsSaving(true);
 
     // Validación básica
     if (
@@ -245,20 +252,19 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
 
   return (
       <>
-        <button
+        {(!propIsOpen && <button
             onClick={() => setIsOpen(true)}
             className="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
         >
           Añadir Blog
-        </button>
-
-        {isOpen && (
+        </button>)}
+        {(isOpen || propIsOpen) && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="max-h-[90vh] overflow-y-auto bg-white text-gray-800 p-8 rounded-xl w-full max-w-4xl shadow-2xl">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-3xl font-bold text-teal-600">Añadir Nuevo Blog</h2>
+                  <h2 className="text-3xl font-bold text-teal-600">{blogToEdit ? 'Editar Blog' : 'Añadir Nuevo Blog'}</h2>
                   <button
-                      onClick={closeModal}
+                      onClick={onClose ? onClose : closeModal}
                       className="text-gray-500 hover:text-gray-700 text-2xl"
                   >
                     &times;
@@ -278,9 +284,23 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         value={formData.titulo}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Link*</label>
+                    <input
+                        type="text"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleChange}
+
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Link*</label>
@@ -303,6 +323,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         value={formData.subtitulo1}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -314,6 +335,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         name="subtitulo2"
                         value={formData.subtitulo2}
                         onChange={handleChange}
+                        //required
                         //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
@@ -338,6 +360,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         value={formData.video_titulo}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -350,9 +373,29 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                         value={formData.video_id}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Producto*</label>
+                    <select
+                        name="producto_id"
+                        value={formData.producto_id}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    >
+                      <option value="">Selecciona un producto</option>
+                      {productos.map((producto) => (
+                          <option key={producto.id} value={producto.id}>
+                            {producto.nombre}
+                          </option>
+                      ))}
+                    </select>
+                  </div>
+
 
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Producto*</label>
@@ -384,6 +427,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                                   accept="image/*"
                                   onChange={(e) => handleFileChangeAdicional(e, index)}
                                   //required
+                                  //required
                                   className="hidden"
                               />
                               <p className="text-center text-gray-500">
@@ -407,7 +451,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                   <div className="md:col-span-2 flex justify-end gap-4">
                     <button
                         type="button"
-                        onClick={closeModal}
+                        onClick={onClose ? onClose : closeModal}
                         className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                     >
                       Cancelar
@@ -440,7 +484,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded }) => {
                             Guardando...
                           </>
                       ) : (
-                          'Guardar Blog'
+                          blogToEdit ? 'Actualizar Blog' : 'Guardar Blog'
                       )}
                     </button>
                   </div>
