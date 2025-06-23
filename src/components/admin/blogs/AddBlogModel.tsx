@@ -116,7 +116,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       })
           .then((res) => res.json())
           .then((data) => {
-            setProductos(data || []);
+            if (Array.isArray(data?.data)) {
+              setProductos(data.data);
+            } else {
+              console.error("❌ El formato de productos no es un array:", data);
+              setProductos([]); // fallback
+            }
           })
           .catch((err) => console.error("Error al obtener productos:", err));
     }
