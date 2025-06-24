@@ -47,36 +47,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
   });
 
   useEffect(() => {
-    if (typeof propIsOpen === 'boolean') setIsOpen(propIsOpen);
-  }, [propIsOpen]);
-
-  useEffect(() => {
-    if (blogToEdit) {
-      setFormData({
-        titulo: blogToEdit.titulo || '',
-        link: blogToEdit.link || '',
-        parrafo: blogToEdit.parrafo || '',
-        descripcion: blogToEdit.descripcion || '',
-        imagen_principal: null, // No se puede precargar file, solo mostrar nombre
-        titulo_blog: blogToEdit.tituloBlog || '',
-        subtitulo_beneficio: blogToEdit.subTituloBlog || '',
-        url_video: blogToEdit.videoBlog || '',
-        producto_id: blogToEdit.producto_id || 0,
-        titulo_video: blogToEdit.tituloVideoBlog || '',
-        imagenes: [
-          { url_imagen: null, parrafo_imagen: blogToEdit.parrafoImagenesBlog?.[0] || '' },
-          { url_imagen: null, parrafo_imagen: blogToEdit.parrafoImagenesBlog?.[1] || '' },
-        ],
-      });
-    }
-    if (!propIsOpen) {
-      setFormData({
-        titulo: '', link: '', parrafo: '', descripcion: '', imagen_principal: null, titulo_blog: '', subtitulo_beneficio: '', url_video: '', producto_id: 0, titulo_video: '', imagenes: [ { url_imagen: null, parrafo_imagen: '' }, { url_imagen: null, parrafo_imagen: '' } ]
-      });
-    }
-  }, [blogToEdit, propIsOpen]);
-
-  useEffect(() => {
     if (isOpen) {
       fetch(getApiUrl(config.endpoints.blogs.list), {
         headers: {
@@ -189,6 +159,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setIsSaving(true);
 
     // Validación básica
     if (
@@ -235,6 +206,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
+
       // Petición
       const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
         method: "POST",
@@ -250,7 +222,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       if (response.ok) {
         await Swal.fire({
           icon: "success",
-          title: blogToEdit ? "Blog actualizado exitosamente" : "Blog añadido exitosamente",
+          title: "Blog añadido exitosamente",
           showConfirmButton: true,
         });
         closeModal();
@@ -309,9 +281,23 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         value={formData.titulo}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Link*</label>
+                    <input
+                        type="text"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleChange}
+
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Link*</label>
@@ -334,6 +320,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         value={formData.subtitulo1}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -345,6 +332,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         name="subtitulo2"
                         value={formData.subtitulo2}
                         onChange={handleChange}
+                        //required
                         //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
@@ -369,6 +357,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         value={formData.video_titulo}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
@@ -381,9 +370,29 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         value={formData.video_id}
                         onChange={handleChange}
                         //required
+                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Producto*</label>
+                    <select
+                        name="producto_id"
+                        value={formData.producto_id}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    >
+                      <option value="">Selecciona un producto</option>
+                      {productos.map((producto) => (
+                          <option key={producto.id} value={producto.id}>
+                            {producto.nombre}
+                          </option>
+                      ))}
+                    </select>
+                  </div>
+
 
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Producto*</label>
