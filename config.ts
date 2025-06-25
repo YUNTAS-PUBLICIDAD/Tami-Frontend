@@ -31,11 +31,12 @@ export const config = {
     },
     productos: {
       // Endpoints de productos
-      list: "/api/v2/productos",
-      detail: (id: number | string) => `/api/v2/productos/${id}`,
-      create: "/api/v2/productos",
-      update: (id: number | string) => `/api/v2/productos/${id}`,
-      delete: (id: number | string) => `/api/v2/productos/${id}`,
+      // Cambiar a v2 cuando sea necesario
+      list: "/api/v1/productos",
+      detail: (id: number | string) => `/api/v1/productos/${id}`,
+      create: "/api/v1/productos",
+      update: (id: number | string) => `/api/v1/productos/${id}`,
+      delete: (id: number | string) => `/api/v1/productos/${id}`,
     },
     blogs: {
       // Endpoints de blogs
