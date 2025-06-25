@@ -40,7 +40,7 @@ const productosUrl = config.endpoints.productos;
         >
           Lema Producto
         </h3>
-        <button id="btnQuotation"
+        <button id="btnQuotationHero"
                 class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition hover:cursor-pointer"
         >
           ¡COTÍZALO!
@@ -107,8 +107,8 @@ const productosUrl = config.endpoints.productos;
             </div>
           </div>
 
-          <button id="btnQuotation"
-              class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition hover:cursor-pointer"
+          <button id="btnQuotationDetail"
+                  class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition hover:cursor-pointer"
           >
             COTIZACIÓN
           </button>
@@ -402,13 +402,18 @@ const productosUrl = config.endpoints.productos;
 
       removeLoader();
       displayProductDetails(product);
-      // Consante para el botón de cotización
-      const btnQuotation= document.getElementById("btnQuotation");
-      if (btnQuotation){
-        btnQuotation.addEventListener("click", () => {
-          sendWhatsAppQuoteRequest(product);
-        });
-      }
+      // Constantes para los botones de cotización
+      const btnQuotationHero = document.getElementById("btnQuotationHero");
+      const btnQuotationDetail = document.getElementById("btnQuotationDetail");
+
+      [btnQuotationHero, btnQuotationDetail].forEach((btn) => {
+        if (btn) {
+          btn.addEventListener("click", () => {
+            sendWhatsAppQuoteRequest(product);
+          });
+        }
+      });
+
       //console.log("Productos relacionados:", product.productos_relacionados);
       // Cargar productos relacionados
       await loadRelatedProducts(product.productos_relacionados.map(p => p.id));
