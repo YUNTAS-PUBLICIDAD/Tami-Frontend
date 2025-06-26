@@ -103,7 +103,21 @@ const productosUrl = config.endpoints.productos;
                 <img src={boxSize.src} alt="Box Size" class="w-full h-auto" />
               </div>
               <!-- dimensiones del producto -->
-              <ul class="space-y-2 md:space-y-4" id="product-dimensions"></ul>
+              <!-- dimensiones del producto (temporales, hardcoded) -->
+              <ul class="space-y-2 md:space-y-4">
+                <li class="flex items-center gap-2">
+                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">H</span>
+                  <span>Altura:</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">L</span>
+                  <span>Longitud:</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">A</span>
+                  <span>Ancho:</span>
+                </li>
+              </ul>
             </div>
           </div>
 
