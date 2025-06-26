@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { FormEvent } from "react";
-import logoAnimado from "@images/logos/logo_animado.gif?url";
+import logoAnimado from "@images/logos/logo-blanco-tami.gif?url";
 import loginBg from "@images/login_bg.jpg";
 import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
