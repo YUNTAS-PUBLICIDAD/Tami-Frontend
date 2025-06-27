@@ -52,5 +52,5 @@ export default interface Producto {
   imagenes: Imagen[]; // las adicionales
   stock: number;
   precio: number;
-  createdAt: string;
+  createdAt: string | null;
 }

@@ -20,9 +20,9 @@ const ProductosTabla = () => {
 
   // Filtrar productos basado en el término de búsqueda
   const filteredProductos = productos.filter(producto =>
-      producto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      producto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       producto.id.toString().includes(searchTerm) ||
-      producto.section.toString().includes(searchTerm)
+      producto.seccion.toString().includes(searchTerm)
   );
 
   const handleRefetch = () => setRefetchTrigger((prev) => !prev);
@@ -173,7 +173,7 @@ const ProductosTabla = () => {
                         <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
                           #{item.id}
                         </td>
-                        <td className="px-6 py-4 font-medium">{item.name}</td>
+                        <td className="px-6 py-4 font-medium">{item.nombre}</td>
                         <td className="px-6 py-4">
                           <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
                             {item.seccion.toLowerCase()}
@@ -182,8 +182,14 @@ const ProductosTabla = () => {
                         <td className="px-6 py-4">
                           <div className="flex items-center">
                             <img
-                                src={item.image}
-                                alt={item.name}
+                                src={
+                                  typeof item.imagenes[0]?.url_imagen === "string"
+                                      ? (item.imagenes[0].url_imagen.startsWith("https")
+                                          ? item.imagenes[0].url_imagen
+                                          : `${import.meta.env.PUBLIC_API_URL.replace(/\/$/, "")}${item.imagenes[0].url_imagen}`)
+                                      : `https://placehold.co/50x50/orange/white?text=${encodeURIComponent(item.nombre)}`
+                                }
+                                alt={item.imagenes[0]?.texto_alt_SEO || item.nombre}
                                 className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
                                 onError={(e) => {
                                   (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';

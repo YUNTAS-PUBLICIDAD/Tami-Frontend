@@ -8,6 +8,8 @@ import useProductoForm from "../../../../hooks/admin/productos/useProductoForm.t
 import type Producto from "../../../../models/Product.ts";
 import React, { useRef } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
+import type { ProductFormularioPOST } from "../../../../models/Product";
+type Imagen = ProductFormularioPOST["imagenes"][number];
 
 {
     /* Interfaz de modals, Typescript */
@@ -174,34 +176,29 @@ const AddUpdateProducto = ({
                                 <option value="Negocio">Negocio</option>
                             </select>
                         </div>
+                        {/*
                         <div className="group-form">
-                            {Object.entries(formData.especificaciones).map(([key, value]) => (
-                                <div className="form-input" key={key}>
-                                    <label>{key}:</label>
-                                    <input
-                                        type="text"
-                                        name={key}
-                                        value={value}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                especificaciones: {
-                                                    ...prev.especificaciones,
-                                                    [key]: e.target.value,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            ))}
-                            {/*<button*/}
-                            {/*    type="button"*/}
-                            {/*    onClick={addNewSpecification}*/}
-                            {/*    className="admin-act-btn my-5"*/}
-                            {/*>*/}
-                            {/*    Añadir Especificación*/}
-                            {/*</button>*/}
+                          {Object.entries(formData.especificaciones).map(([key, value]) => (
+                            <div className="form-input" key={key}>
+                              <label>{key}:</label>
+                              <input
+                                type="text"
+                                name={key}
+                                value={value}
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    especificaciones: {
+                                      ...prev.especificaciones,
+                                      [key]: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </div>
+                          ))}
                         </div>
+                        */}
                         <div className="group-form">
                             <div className="form-input">
                                 <label>Alto:</label>
@@ -258,7 +255,7 @@ const AddUpdateProducto = ({
                                 : "opacity-0 pointer-events-none"
                         }`}
                     >
-                        {formData.imagenes.map((_, index) => (
+                        {formData.imagenes.map((_: Imagen, index: number) => (
                             <div key={index} className="form-input">
                                 <label>Imagen {index + 1}:</label>
                                 <input
@@ -316,8 +313,14 @@ const AddUpdateProducto = ({
                                                     }
                                                 />
                                                 <img
-                                                    src={item.image}
-                                                    alt={item.name}
+                                                    src={
+                                                        typeof item.imagenes?.[0]?.url_imagen === "string"
+                                                            ? (item.imagenes[0].url_imagen.startsWith("https")
+                                                                ? item.imagenes[0].url_imagen
+                                                                : `${import.meta.env.PUBLIC_API_URL.replace(/\/$/, "")}${item.imagenes[0].url_imagen}`)
+                                                            : `https://placehold.co/100x100/orange/white?text=${encodeURIComponent(item.nombre)}`
+                                                    }
+                                                    alt={item.imagenes?.[0]?.texto_alt_SEO || item.nombre}
                                                     className="w-36 h-36 rounded-full border-2 border-teal-700 peer-checked:border-slate-900 object-cover"
                                                 />
                                             </label>

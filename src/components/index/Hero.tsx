@@ -28,6 +28,8 @@ const Hero = () => {
         <img
           key={index}
           src={slide.image}
+          title={slide.title}
+          alt={slide.alt}
           className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
