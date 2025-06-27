@@ -424,7 +424,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                                   accept="image/*"
                                   onChange={(e) => handleFileChangeAdicional(e, index)}
                                   //required
-                                  //required
                                   className="hidden"
                               />
                               <p className="text-center text-gray-500">
