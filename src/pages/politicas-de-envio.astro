@@ -9,30 +9,31 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="Políticas de Envio">
   <section
-    class="relative bg-cover bg-center h-screen lg:h-dvh 2xl:h-[90dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
-    style={{
-      backgroundImage: `linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
-    }}
+      class="relative bg-cover bg-center h-screen lg:h-dvh 2xl:h-[90dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
+      }}
   >
-    <img src={iconCamion.src} alt="Icono de Camión" class="h-16 2xl:h-36" />
-    <h1
-      style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
-      class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold mb-2 lg:mb-3 2xl:mb-5"
-    >
-      POLÍTICA
-      <br />
-      DE ENVÍOS
-    </h1>
-    <p
-      class="text-sm px-4 sm:px-0 lg:text-2xl 2xl:text-5xl/tight font-bold 2xl:font-semibold"
-    >
-      Descubre nuestras políticas de envío,
-      <br />
-      pensadas para garantizar una experiencia
-      <br />
+    <!-- Bloque: icono + título -->
+    <div class="flex flex-row items-center mb-4 lg:mb-6">
+      <img src={iconCamion.src} alt="Icono de Camión" class="h-16 2xl:h-36 mr-4 lg:mr-8" />
+      <h1
+          style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
+          class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold"
+      >
+        POLÍTICA<br />DE ENVÍOS
+      </h1>
+    </div>
+
+    <!-- Bloque: párrafo debajo -->
+    <p class="text-sm px-4 sm:px-0 lg:text-2xl 2xl:text-5xl/tight font-bold 2xl:font-semibold">
+      Descubre nuestras políticas de envío,<br />
+      pensadas para garantizar una experiencia<br />
       confiable y segura en cada pedido.
     </p>
   </section>
+
+
   <section
     class="w-full grid grid-cols-1 grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 py-5"
   >
