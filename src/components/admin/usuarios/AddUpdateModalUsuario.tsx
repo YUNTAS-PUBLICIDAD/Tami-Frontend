@@ -84,22 +84,23 @@ const AddUpdateDataModal = ({ isOpen, setIsOpen, Usuario, onRefetch }: AddDataMo
                   placeholder="Ej. usuario@gmail.com"
               />
             </div>
-
-            <div className="sm:col-span-2">
-              <label className="block text-sm mb-1">Rol</label>
-              <select
-                  name="rol"
-                  value={formData.rol}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white p-3 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-teal-400"
-              >
-                <option value="ADMIN">ADMIN</option>
-                <option value="USER">USER</option>
-                <option value="MARK">MARK</option>
-                <option value="VENTAS">VENTAS</option>
-              </select>
-            </div>
+            {/*
+          <div className="sm:col-span-2">
+            <label className="block text-sm mb-1">Rol</label>
+            <select
+              name="rol"
+              value={formData.rol}
+              onChange={handleChange}
+              required
+              className="w-full bg-white p-3 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-teal-400"
+            >
+              <option value="ADMIN">ADMIN</option>
+              <option value="USER">USER</option>
+              <option value="MARK">MARK</option>
+              <option value="VENTAS">VENTAS</option>
+            </select>
+          </div>
+          */}
 
             <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:col-span-2 justify-end">
               <button
