@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import asesoriaImg from "../../assets/images/Diseno.webp";
-import Logo from "../../assets/images/logos/logo_animado.gif";
+import Logo from "../../assets/images/logos/logo-blanco-tami.gif";
 
 const MODAL_STORAGE_KEY = "asesoriaModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
