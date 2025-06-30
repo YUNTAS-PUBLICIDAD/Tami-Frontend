@@ -172,8 +172,10 @@ const blogsUrl = config.endpoints.blogs;
 
         // Verificar si existe un producto_id en el blog
         if (blog.producto_id && blogProductLinkElement) {
-          blogProductLinkElement.href = `${config.apiUrl}${config.endpoints.productos.detail(blog.producto_id)}`;
-          blogProductLinkElement.classList.remove("hidden"); // Mostrar el enlace
+          if (blog.id && blogProductLinkElement) {
+            blogProductLinkElement.href = `/productos/detalle.html?id=${blog.id}`;
+            blogProductLinkElement.classList.remove("hidden");
+          }
         }
 
         // MOSTRAR VIDEO CON IFRAME
