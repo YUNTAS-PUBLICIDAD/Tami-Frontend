@@ -4,7 +4,7 @@ import boxSize from "@icons/box-size.svg";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
-const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
+const getApiUrl = config.apiUrl; // Obtener la URL de la API
 const productosUrl = config.endpoints.productos;
 ---
 
@@ -189,7 +189,7 @@ const productosUrl = config.endpoints.productos;
 
     if (!productTitle || !productSubtitle || !productTagline || !productImg ||
         !productViewer || !imagesList || !infoTitle || !infoDescription ||
-        !specsList || !productDimension) {
+        !specsList) {
       console.error("One or more elements not found");
       return;
     }
@@ -247,20 +247,22 @@ const productosUrl = config.endpoints.productos;
     });
 
     // Actualizar dimensiones
-    productDimension.innerHTML = '';
-    const dimensions = product.especificaciones;
-    Object.entries(dimensions).forEach(([key, value]) => {
-      const li = document.createElement("li");
-      li.className = "flex items-center gap-2";
-      const span = document.createElement("span");
-      span.className =
-          "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-      span.textContent = key.charAt(0).toUpperCase();
-      const text = document.createTextNode(`${key}: ${value}`);
-      li.appendChild(span);
-      li.appendChild(text);
-      productDimension.appendChild(li);
-    });
+    if (productDimension) {
+      productDimension.innerHTML = '';
+      Object.entries(dimensions).forEach(([key, value]) => {
+        const li = document.createElement("li");
+        li.className = "flex items-center gap-2";
+        const span = document.createElement("span");
+        span.className =
+            "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+        span.textContent = key.charAt(0).toUpperCase();
+        const text = document.createTextNode(`${key}: ${value}`);
+        li.appendChild(span);
+        li.appendChild(text);
+        productDimension.appendChild(li);
+      });
+    }
+
 
     // Actualizar título de la página
     document.title = `${product.titulo} - Detalles del Producto`;
