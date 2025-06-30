@@ -10,64 +10,73 @@ const blogsUrl = config.endpoints.blogs;
 {/* Details de blog */}
 <Layout title="Blog Details">
   <div class="bg-teal-500 flex flex-col min-h-screen">
-    {/* SECCIÓN HERO */}
-    <header class="relative w-full h-screen md:min-h-[80vh]">
-      <img
+
+  <!-- SECCIÓN HERO -->
+  <header class="relative w-full h-screen md:min-h-[80vh]">
+    <img
         id="blog-img"
         src=""
         alt=""
         class="w-full h-full object-cover filter brightness-50"
-      />
-      <div
-        class="absolute inset-0 pb-16 w-full h-full flex flex-col items-center justify-center bg-linear-to-b from-teal-700/65 to-85%"
-      >
-        <div class="max-w-6xl mx-auto px-4 text-white font-bold">
-          <h1 id="blog-title" class="text-4xl md:text-6xl mb-4"></h1>
-          <p id="blog-subtitle" class="text-3xl md:text-5xl"></p>
-        </div>
-      </div>
-    </header>
-
-    {/* CONTENIDO */}
-    <main
-      id="blog-content"
-      class="relative z-10 max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10
-      -mt-42 md:-mt-36"
+    />
+    <div
+        class="absolute inset-0 pb-16 w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-teal-700/65 to-85%"
     >
-
-
-      <div class="flex flex-col md:flex-row justify-between mb-2">
-        <h2
-            id="blog-content-title"
-            class="text-3xl md:text-4xl font-bold text-black mb-2 md:mb-0"
-        ></h2>
-        <p
-            id="blog-content-subtitle"
-            class="text-lg md:text-2xl text-teal-600 md:text-right md:self-end"
-        ></p>
+      <div class="max-w-6xl mx-auto px-4 text-white font-bold">
+        <h1 id="blog-title" class="text-4xl md:text-6xl mb-4"></h1>
+        <p id="blog-subtitle" class="text-3xl md:text-5xl"></p>
       </div>
+    </div>
+  </header>
 
+  <!-- CONTENIDO -->
+  <main
+      id="blog-content"
+      class="relative z-10 max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10 -mt-42 md:-mt-36"
+  >
 
-      {/* FECHA DE PUBLICACIÓN DEBAJO DEL TÍTULO */}
-      <div
-          id="blog-date"
-          class="inline-block px-3 py-1 bg-teal-600 text-white text-sm rounded-full mb-6"
-      >
-        Fecha de publicación no disponible
-      </div>
+    <!-- Título + Subtítulo 2 -->
+    <div class="flex flex-col md:flex-row justify-between mb-2">
+      <h2
+          id="blog-content-title"
+          class="text-3xl md:text-4xl font-bold text-black mb-2 md:mb-0"
+      ></h2>
+      <p
+          id="blog-content-subtitle"
+          class="text-lg md:text-2xl text-teal-600 md:text-right md:self-end"
+      ></p>
+    </div>
 
-      {/* CONTENIDO DEL BLOG */}
-      <div id="blog-sections" class="text-justify"></div>
+    <!-- Subtítulo 3 -->
+    <div class="flex flex-col md:flex-row justify-between mb-4">
+      <p
+          id="blog-content-subtitle3"
+          class="text-lg md:text-2xl text-teal-700 md:text-right md:self-end"
+      ></p>
+    </div>
 
-      {/* LINK A PRODUCTO RELACIONADO */}
-      <a id="blog-product-link" href="#" class="hidden mt-4 text-teal-600 font-bold underline hover:text-teal-800">
-        Ver producto relacionado
-      </a>
+    <!-- Fecha -->
+    <div
+        id="blog-date"
+        class="inline-block px-3 py-1 bg-teal-600 text-white text-sm rounded-full mb-6"
+    >
+      Fecha de publicación no disponible
+    </div>
 
-      {/* VIDEO DEL BLOG */}
-      <div id="blog-video-section"></div>
-    </main>
-  </div>
+    <!-- Contenido principal -->
+    <div id="blog-sections" class="text-justify"></div>
+
+    <!-- Link a producto
+    <a id="blog-product-link" href="#" class="hidden mt-4 text-teal-600 font-bold underline hover:text-teal-800">
+      Ver producto relacionado
+    </a> -->
+
+    <!-- Video -->
+    <div id="blog-video-section"></div>
+
+  </main>
+</div>
+
 
   <script
     define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
@@ -96,9 +105,9 @@ const blogsUrl = config.endpoints.blogs;
         const blogDateElement = document.getElementById("blog-date");
         const blogContentTitleElement =
           document.getElementById("blog-content-title");
-        const blogContentSubtitleElement = document.getElementById(
-          "blog-content-subtitle"
-        );
+        const blogContentSubtitleElement = document.getElementById("blog-content-subtitle");
+        const blogContentSubtitle2Element = document.getElementById("blog-content-subtitle2");
+        const blogContentSubtitle3Element = document.getElementById("blog-content-subtitle3");
         const blogSectionsElement = document.getElementById("blog-sections");
         const blogVideoSectionElement = document.getElementById("blog-video-section");
 
@@ -106,41 +115,30 @@ const blogsUrl = config.endpoints.blogs;
         if (blogSubtitleElement)
           blogSubtitleElement.innerHTML = blog.subtitulo1;
         if (blogImgElement) {
-          blogImgElement.src = blog.imagenes?.[0]?.ruta_imagen || "/img/default.png";
+          blogImgElement.src = blog.imagen_principal
+              || blog.imagenes?.[0]?.ruta_imagen
+              || "/img/default.png";
           blogImgElement.alt = blog.titulo;
         }
         if (blogDateElement) {
-        const createdAt = blog.created_at;
-        if (createdAt) {
-          const formattedDate = new Date(createdAt).toLocaleDateString(
-            "es-ES",
-            {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            },
-          );
-          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-        } else {
-          blogDateElement.innerHTML = "Fecha de publicación no disponible";
+          const updatedAt = blog.updated_at; // Esto cambiará, solo es provisional
+          if (updatedAt) {
+            const date = new Date(updatedAt);
+            const year = date.getFullYear();
+            if (year > 1970) {
+              const formattedDate = date.toLocaleDateString("es-ES", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+              blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
+            } else {
+              blogDateElement.innerHTML = "Fecha de publicación no disponible";
+            }
+          } else {
+            blogDateElement.innerHTML = "Fecha de publicación no disponible";
+          }
         }
-      }
-      if (blogDateElement) {
-        const createdAt = blog.created_at;
-        if (createdAt) {
-          const formattedDate = new Date(createdAt).toLocaleDateString(
-            "es-ES",
-            {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            },
-          );
-          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-        } else {
-          blogDateElement.innerHTML = "Fecha de publicación no disponible";
-        }
-      }
         if (blogContentTitleElement)
           blogContentTitleElement.innerHTML = blog.titulo;
         if (blogContentSubtitleElement)
@@ -172,8 +170,8 @@ const blogsUrl = config.endpoints.blogs;
 
         // Verificar si existe un producto_id en el blog
         if (blog.producto_id && blogProductLinkElement) {
-          if (blog.id && blogProductLinkElement) {
-            blogProductLinkElement.href = `/productos/detalle.html?id=${blog.id}`;
+          if (blog.producto_id && blogProductLinkElement) {
+            blogProductLinkElement.href = `/productos/detalle.html?id=${blog.producto_id}`;
             blogProductLinkElement.classList.remove("hidden");
           }
         }
@@ -182,7 +180,7 @@ const blogsUrl = config.endpoints.blogs;
         if (blogVideoSectionElement && blog.video_id) {
           blogVideoSectionElement.innerHTML = `
             <section class="bg-teal-700 p-6 rounded-lg">
-              <h1 class="text-white md:text-xl font-bold mb-4">${blog.tituloVideoBlog}</h1>
+              <h1 class="text-white md:text-xl font-bold mb-4">${blog.video_titulo}</h1>
               <div class="relative w-full h-[30rem]">
                 <iframe
                   width="100%"
