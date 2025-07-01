@@ -148,7 +148,7 @@ const blogsUrl = config.endpoints.blogs;
 
         const blogProductLinkElement = document.getElementById("blog-product-link");
 
-        // Verificar si existe un producto_id en el blog
+       // Verificar si existe un producto_id en el blog
         if (blog.producto_id && blogProductLinkElement) {
           if (blog.producto_id && blogProductLinkElement) {
             blogProductLinkElement.href = `/productos/detalle.html?id=${blog.producto_id}`;
