@@ -15,16 +15,15 @@ const blogsUrl = config.endpoints.blogs;
   <header class="relative w-full h-screen md:min-h-[80vh]">
     <img
         id="blog-img"
-        src=""
-        alt=""
+        src="/src/assets/images/index/hero/impulso-negocios-tecnologia.webp"
+        alt="Fondo Hero"
         class="w-full h-full object-cover filter brightness-50"
     />
     <div
         class="absolute inset-0 pb-16 w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-teal-700/65 to-85%"
     >
       <div class="max-w-6xl mx-auto px-4 text-white font-bold">
-        <h1 id="blog-title" class="text-4xl md:text-6xl mb-4"></h1>
-        <p id="blog-subtitle" class="text-3xl md:text-5xl"></p>
+        <h1 id="blog-title" class="font-montserrat text-[27px] md:text-6xl mb-4"></h1>
       </div>
     </div>
   </header>
@@ -35,26 +34,16 @@ const blogsUrl = config.endpoints.blogs;
       class="relative z-10 max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10 -mt-42 md:-mt-36"
   >
 
-    <!-- Título + Subtítulo 2 -->
     <div class="flex flex-col md:flex-row justify-between mb-2">
       <h2
-          id="blog-content-title"
+          id="blog-content-subtitle"
           class="text-3xl md:text-4xl font-bold text-black mb-2 md:mb-0"
       ></h2>
       <p
-          id="blog-content-subtitle"
+          id="blog-content-subtitle2"
           class="text-lg md:text-2xl text-teal-600 md:text-right md:self-end"
       ></p>
     </div>
-
-    <!-- Subtítulo 3 -->
-    <div class="flex flex-col md:flex-row justify-between mb-4">
-      <p
-          id="blog-content-subtitle3"
-          class="text-lg md:text-2xl text-teal-700 md:text-right md:self-end"
-      ></p>
-    </div>
-
     <!-- Fecha -->
     <div
         id="blog-date"
@@ -100,7 +89,6 @@ const blogsUrl = config.endpoints.blogs;
         const blog = data.data;
 
         const blogTitleElement = document.getElementById("blog-title");
-        const blogSubtitleElement = document.getElementById("blog-subtitle");
         const blogImgElement = document.getElementById("blog-img");
         const blogDateElement = document.getElementById("blog-date");
         const blogContentTitleElement =
@@ -111,13 +99,15 @@ const blogsUrl = config.endpoints.blogs;
         const blogSectionsElement = document.getElementById("blog-sections");
         const blogVideoSectionElement = document.getElementById("blog-video-section");
 
-      if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
-        if (blogSubtitleElement)
-          blogSubtitleElement.innerHTML = blog.subtitulo1;
+        // HERO grande
+        if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo.toUpperCase();
+        // Negro (h2)
+        if (blogContentSubtitleElement)
+          blogContentSubtitleElement.innerHTML = blog.subtitulo1;
+        // Verde (p)
+        if (blogContentSubtitle2Element)
+          blogContentSubtitle2Element.innerHTML = blog.subtitulo2;
         if (blogImgElement) {
-          blogImgElement.src = blog.imagen_principal
-              || blog.imagenes?.[0]?.ruta_imagen
-              || "/img/default.png";
           blogImgElement.alt = blog.titulo;
         }
         if (blogDateElement) {
@@ -139,11 +129,6 @@ const blogsUrl = config.endpoints.blogs;
             blogDateElement.innerHTML = "Fecha de publicación no disponible";
           }
         }
-        if (blogContentTitleElement)
-          blogContentTitleElement.innerHTML = blog.titulo;
-        if (blogContentSubtitleElement)
-        blogContentSubtitleElement.innerHTML = blog.subtitulo2; // Reemplazamos la primera asignación
-
         if (blogSectionsElement && Array.isArray(blog.imagenes) && Array.isArray(blog.parrafos)) {
           blogSectionsElement.innerHTML = "";
           blog.imagenes.forEach((imagen, index) => {
