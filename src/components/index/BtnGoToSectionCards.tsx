@@ -8,6 +8,7 @@ const BtnGoToSectionCards = () => {
   return (
     <button
       onClick={moveToSectionCards}
+      aria-label="Saber más"
       className="flex col-span-2 text-white place-self-center bg-teal-700 rounded-full lg:rounded-none lg:bg-transparent lg:text-teal-700 w-fit lg:w-full place-content-center hover:bg-teal-600 px-6 lg:px-0 py-2 lg:py-3 hover:text-white transition-colors duration-300 hover:cursor-pointer"
     >
       <svg
