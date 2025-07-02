@@ -130,7 +130,7 @@ const BlogsTable = () => {
           <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
             <div className="relative">
               <img
-                  src={blog.imagenes[0]?.ruta_imagen}
+                  src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
                   alt={blog.titulo}
                   className="w-full h-64 object-cover rounded-t-xl"
               />
@@ -216,10 +216,11 @@ const BlogsTable = () => {
             ) : currentItems.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {currentItems.map((blog) => (
-                      <div key={blog.id} className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+                      <div key={blog.id}
+                           className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
                         <div className="relative h-48">
                           <img
-                              src={blog.imagenes[0]?.ruta_imagen}
+                              src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
                               alt={blog.titulo}
                               className="w-full h-full object-cover"
                           />
