@@ -25,33 +25,36 @@ import CopyText from "./CopyText.astro";
     <div class="w-full lg:w-1/6">
       <ul class="space-y-4 font-bold text-sm text-center lg:text-left">
         <li>
-          <a href="/" class="hover:underline"> INICIO </a>
+          <a href="/" class="text-white hover:underline"> INICIO </a>
         </li>
         <li>
-          <a href="/about" class="hover:underline">NOSOTROS</a>
+          <a href="/about" class="text-white hover:underline">NOSOTROS</a>
         </li>
         <li>
-          <a href="/productos" class="hover:underline">PRODUCTOS</a>
+          <a href="/productos" class="text-white hover:underline">PRODUCTOS</a>
         </li>
         <li>
-          <a href="/src/pages/politicas-de-envio" class="hover:underline"
-          >POLÍTICAS DE ENVÍOS</a
+          <a href="/src/pages/politicas-de-envio" class="text-white hover:underline"
+            >POLÍTICAS DE ENVÍOS</a
           >
         </li>
         <li>
-          <a href="/blog" class="hover:underline">BLOGS</a>
+          <a href="/blog" class="text-white hover:underline">BLOGS</a>
+        </li>
+        <li>
+          <a href="/store" class="text-white hover:underline">TIENDA</a>
         </li>
       </ul>
     </div>
 
     {/* Información */}
     <div class="w-full lg:w-2/6 text-center lg:text-left">
-      <h3 class="font-bold mb-1 text-yellow-300">Horario de atención</h3>
-      <p>
+      <h3 class="font-bold mb-1 text-white">Horario de atención</h3>
+      <p aria-label="Horario de atención: lunes a viernes, de 9:00 a 21:00 horas.">
         Lunes a Viernes<br />
         9:00 am a 9:00 pm
       </p>
-      <h3 class="font-bold mt-3 mb-1 text-yellow-300">
+      <h3 class="font-bold mt-3 mb-1 text-white">
         Para mayor información
       </h3>
       <CopyText>informestami01@gmail.com</CopyText>
