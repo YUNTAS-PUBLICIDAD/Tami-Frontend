@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import asesoriaImg from "../../assets/images/Diseno.webp";
 import Logo from "../../assets/images/logos/logo-blanco-tami.gif";
 
@@ -8,41 +8,47 @@ const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
 const ScrollModal = () => {
     const [showModal, setShowModal] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
-    const [hasReachedBottom, setHasReachedBottom] = useState(false);
-    const [lastScroll, setLastScroll] = useState(0);
-    const [hasShownOnce, setHasShownOnce] = useState(false);
+
+    // Optimizamos con useRef para evitar renders innecesarios
+    const lastScrollRef = useRef(0);
+    const hasReachedBottomRef = useRef(false);
+    const hasShownRef = useRef(false);
 
     useEffect(() => {
-        const lastClosed = localStorage.getItem(MODAL_STORAGE_KEY);
-        const now = Date.now();
-
-        if (lastClosed && now - Number(lastClosed) < MODAL_COOLDOWN_MS) {
-            setHasShownOnce(true);
-            return; // Salir temprano: todavía dentro del cooldown
-        }
-
         const handleScroll = () => {
+            const lastClosed = Number(localStorage.getItem(MODAL_STORAGE_KEY)) || 0;
+            const now = Date.now();
+
+            // Si sigue dentro del cooldown, no mostrar
+            if (now - lastClosed < MODAL_COOLDOWN_MS) return;
+
             const currentScroll = window.scrollY;
-            const scrollDirection = currentScroll < lastScroll ? "up" : "down";
-            setLastScroll(currentScroll);
+            const scrollDirection =
+                currentScroll < lastScrollRef.current ? "up" : "down";
+
+            lastScrollRef.current = currentScroll;
 
             const atBottom =
                 window.innerHeight + window.scrollY >= document.body.offsetHeight;
 
             if (atBottom) {
-                setHasReachedBottom(true);
+                hasReachedBottomRef.current = true;
             }
 
-            if (hasReachedBottom && scrollDirection === "up" && !hasShownOnce) {
+            if (
+                hasReachedBottomRef.current &&
+                scrollDirection === "up" &&
+                !hasShownRef.current
+            ) {
                 setShowModal(true);
-                setHasShownOnce(true);
-                setHasReachedBottom(false);
+                hasShownRef.current = true;
+                hasReachedBottomRef.current = false;
             }
         };
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScroll, hasReachedBottom, hasShownOnce]);
+    }, []);
 
     const closeModal = () => {
         setIsClosing(true);
@@ -50,6 +56,7 @@ const ScrollModal = () => {
             setShowModal(false);
             setIsClosing(false);
             localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+            hasShownRef.current = false; // Permite mostrar de nuevo cuando pase el cooldown
         }, 300);
     };
 
@@ -81,6 +88,7 @@ const ScrollModal = () => {
                     <div className="py-6 sm:py-10 mx-2 sm:mx-8">
                         <button
                             onClick={closeModal}
+                            aria-label="Cerrar modal"
                             className="absolute top-4 right-5 text-md text-white hover:text-gray-300"
                         >
                             X
@@ -88,7 +96,14 @@ const ScrollModal = () => {
                         <h2 className="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
                             ¡RECIBE UNA ASESORÍA GRATIS!
                         </h2>
-                        <form className="flex flex-col gap-1">
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                // Aquí podrías agregar la lógica para enviar los datos.
+                                closeModal();
+                            }}
+                            className="flex flex-col gap-1"
+                        >
                             <h3 className="text-base sm:text-lg font-bold">Nombre</h3>
                             <input
                                 type="text"
@@ -104,12 +119,14 @@ const ScrollModal = () => {
                                 type="email"
                                 className="p-2 rounded-lg bg-white text-black outline-none mb-4 sm:mb-6"
                             />
-                            <button
-                                type="submit"
-                                className="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto"
+                            <a
+                                href="https://api.whatsapp.com/send?phone=51978883199&text=Hola%2C%20quiero%20recibir%20mi%20asesor%C3%ADa%20gratis."
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center"
                             >
                                 ¡HABLEMOS!
-                            </button>
+                            </a>
                         </form>
                     </div>
                 </div>

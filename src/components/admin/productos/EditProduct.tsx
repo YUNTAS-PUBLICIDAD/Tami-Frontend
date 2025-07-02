@@ -343,7 +343,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 texto_alt_SEO: img.texto_alt_SEO,
             })) || [];
 
-            const relacionadosIds = product.productos_relacionados?.map((rel) => rel.id) || [];
+            const relacionadosIds =
+                product.productos_relacionados?.map((rel) => (rel as { id: number }).id) || [];
 
             setFormData({
                 nombre: product.nombre,
@@ -631,7 +632,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                         : `https://apitami.tamimaquinarias.com${img.url_imagen}`
                                                                     : URL.createObjectURL(img.url_imagen)
                                                             }
-                                                            alt={img.texto_alt || `Imagen ${index + 1}`}
+                                                            alt={img.texto_alt_SEO || `Imagen ${index + 1}`}
                                                             className="w-16 h-16 object-cover rounded border-2 border-gray-200"
                                                         />
 

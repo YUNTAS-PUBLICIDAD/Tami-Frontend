@@ -1,9 +1,9 @@
 import { config, getApiUrl } from "config";
-import type { Product } from "src/models/Product";
+import type Producto from "src/models/Product";
 import { useEffect, useState } from "react";
 
 const ProductSlideshow = () => {
-    const [productsArray, setProductsArray] = useState<Product[]>([]);
+    const [productsArray, setProductsArray] = useState<Producto[]>([]);
     const [slideIndex, setSlideIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -45,12 +45,16 @@ const ProductSlideshow = () => {
                         }`}
                     >
                         <img
-                            src={item.image}
-                            alt={item.nombreProducto}
+                            src={
+                                item.imagenes[0]?.url_imagen instanceof File
+                                    ? URL.createObjectURL(item.imagenes[0].url_imagen)
+                                    : item.imagenes[0]?.url_imagen || "/placeholder.png"
+                            }
+                            alt={item.titulo}
                             className="w-32 h-32 rounded-2xl object-cover mb-4"
                         />
                         <h3 className="text-xl font-bold text-teal-600 tracking-wide mb-2">
-                            {item.nombreProducto}
+                            {item.titulo}
                         </h3>
                         <a
                             href={`/productos/details?id=${item.id}`}
@@ -107,12 +111,16 @@ const ProductSlideshow = () => {
                         className="w-full h-full font-extrabold text-xl flex flex-col items-center gap-6"
                     >
                         <img
-                            src={item.image}
-                            alt={item.nombreProducto}
+                            src={
+                                item.imagenes[0]?.url_imagen instanceof File
+                                    ? URL.createObjectURL(item.imagenes[0].url_imagen)
+                                    : item.imagenes[0]?.url_imagen || "/placeholder.png"
+                            }
+                            alt={item.titulo}
                             className="w-4/5 place-self-center transition-transform duration-300 ease-in-out mb-10 group-hover:scale-100"
                         />
                         <h3 className="text-xl font-bold text-teal-700 tracking-wide">
-                            {item.nombreProducto}
+                            {item.titulo}
                         </h3>
                         <div className="my-8 place-self-center border border-teal-700 rounded-full px-5 py-2 w-fit group-hover:cursor-pointer group-hover:bg-teal-700 group-hover:text-white transition-colors duration-300">
                             Información

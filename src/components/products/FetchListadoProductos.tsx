@@ -31,17 +31,20 @@ export default function ListadoDeProductos() {
           : null;
 
         return {
-          id: producto.id.toString().trim(),
+          id: producto.id,
+          nombre: producto.nombre,
           link: producto.link,
-          nombreProducto: producto.nombre,
-          stockProducto: producto.stock,
-          precioProducto: parseFloat(producto.precio),
-          image: primeraImagen
-            ? (primeraImagen.startsWith("https")
-              ? primeraImagen
-              : `${ApiUrl}${primeraImagen}`)
-            : null,
+          titulo: producto.titulo,
+          subtitulo: producto.subtitulo,
+          lema: producto.lema,
+          descripcion: producto.descripcion,
+          especificaciones: producto.especificaciones || {},
+          productos_relacionados: producto.productos_relacionados || [],
+          imagenes: producto.imagenes || [],
+          stock: producto.stock,
+          precio: parseFloat(producto.precio),
           seccion: producto.seccion,
+          createdAt: producto.created_at
         };
       });
 
@@ -119,12 +122,19 @@ function ProductCard({ producto }: Props) {
     >
       <div className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden">
         <img
-          src={
-            producto.image ||
-            `https://placehold.co/100x150/orange/white?text=${producto.nombreProducto}`
-          }
-          alt={producto.nombreProducto}
-          className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-150"
+            src={
+              (() => {
+                const src = typeof producto.imagenes[0]?.url_imagen === "string"
+                    ? (producto.imagenes[0].url_imagen.startsWith("https")
+                        ? producto.imagenes[0].url_imagen
+                        : `${ApiUrl.replace(/\/$/, "")}${producto.imagenes[0].url_imagen}`)
+                    : `https://placehold.co/100x150/orange/white?text=${encodeURIComponent(producto.nombre)}`;
+                //console.log(`[DEBUG] Imagen de ${producto.nombre}:`, src);
+                return src;
+              })()
+            }
+            alt={producto.imagenes[0]?.texto_alt_SEO || producto.nombre}
+            className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-150"
         />
       </div>
       <div className="flex flex-row justify-center items-center text-teal-700 mt-3">
@@ -153,7 +163,7 @@ function ProductCard({ producto }: Props) {
         </svg>
         <div className="flex-grow text-center group max-w-[80px] mx-auto sm:max-w-[200px] md:max-w-[200px]">
           <h3 className="w-full truncate overflow-hidden whitespace-nowrap text-lg font-bold text-teal-700 transition-transform duration-300 ease-in-out group-hover:scale-110">
-            {producto.nombreProducto}
+            {producto.nombre}
           </h3>
         </div>
         <svg

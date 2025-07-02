@@ -10,65 +10,60 @@ const blogsUrl = config.endpoints.blogs;
 {/* Details de blog */}
 <Layout title="Blog Details">
   <div class="bg-teal-500 flex flex-col min-h-screen">
-    {/* SECCIÓN HERO */}
-    <header class="relative w-full h-screen md:min-h-[80vh]">
-      <img
+
+  <!-- SECCIÓN HERO -->
+  <header class="relative w-full h-screen md:min-h-[80vh]">
+    <img
         id="blog-img"
-        src=""
-        alt=""
+        src="/src/assets/images/index/hero/impulso-negocios-tecnologia.webp"
+        alt="Fondo Hero"
         class="w-full h-full object-cover filter brightness-50"
-      />
-      <div
-        class="absolute inset-0 pb-16 w-full h-full flex flex-col items-center justify-center bg-linear-to-b from-teal-700/65 to-85%"
-      >
-        <div class="max-w-6xl mx-auto px-4 text-white font-bold">
-          <h1 id="blog-title" class="text-4xl md:text-6xl mb-4"></h1>
-          <p id="blog-subtitle" class="text-3xl md:text-5xl"></p>
-        </div>
-      </div>
-    </header>
-
-    {/* CONTENIDO */}
-    <main
-      id="blog-content"
-      class="relative z-10 max-w-6xl mx-auto px-4 py-10 bg-white rounded-lg shadow-lg mb-10
-      -mt-42 md:-mt-36"
+    />
+    <div
+        class="absolute inset-0 pb-16 w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-teal-700/65 to-85%"
     >
-
-
-      <div class="flex flex-col md:flex-row justify-between mb-2">
-        <h2
-            id="blog-content-title"
-            class="text-3xl md:text-4xl font-bold text-black mb-2 md:mb-0"
-        ></h2>
-        <p
-            id="blog-content-subtitle"
-            class="text-lg md:text-2xl text-teal-600 md:text-right md:self-end"
-        ></p>
+      <div class="max-w-6xl mx-auto px-4 text-white font-bold">
+        <h1 id="blog-title" class="font-montserrat text-4xl md:text-5xl mb-4"></h1>
       </div>
+    </div>
+  </header>
 
+  <!-- CONTENIDO -->
+  <main
+    id="blog-content"
+    class="relative z-10 max-w-5xl mx-auto px-8 py-10 bg-white rounded-xl shadow-2xl mb-10 -mt-44 md:-mt-36 border-4 border-teal-500"
+>
+  <div class="px-4 md:px-8">
+    <h1 id="blog-title" class="font-montserrat text-4xl md:text-5xl font-bold text-teal-700 mb-6 text-center"></h1>
+  </div>
+    <div class="flex flex-col md:flex-row justify-between mb-2 md:mb-4 gap-2 md:gap-8">
+      <h2
+          id="blog-content-subtitle"
+          class="text-1xl md:text-3xl font-bold font-garet text-black mb-1 md:mb-0"
+      ></h2>
+      <p
+          id="blog-content-subtitle2"
+          class="text-lg md:text-2xl font-bold font-garet text-teal-600 md:self-end"
+      ></p>
+    </div>
 
-      {/* FECHA DE PUBLICACIÓN DEBAJO DEL TÍTULO */}
-      <div
-          id="blog-date"
-          class="inline-block px-3 py-1 bg-teal-600 text-white text-sm rounded-full mb-6"
-      >
-        Fecha de publicación no disponible
-      </div>
-
-      {/* CONTENIDO DEL BLOG */}
-      <div id="blog-sections" class="text-justify"></div>
-
-      {/* LINK A PRODUCTO RELACIONADO */}
-      <a id="blog-product-link" href="#" class="hidden mt-4 text-teal-600 font-bold underline hover:text-teal-800">
-        Ver producto relacionado
-      </a>
-
-      {/* VIDEO DEL BLOG */}
-      <div id="blog-video-section"></div>
-    </main>
+    <!-- Fecha -->
+  <div
+      id="blog-date"
+      class="inline-block px-6 py-2 bg-teal-600 text-white text-base font-bold rounded-full mb-6 text-center shadow-md"
+  >
+    Fecha de publicación no disponible
   </div>
 
+  <!-- Contenido principal -->
+  <div id="blog-sections" class="space-y-8">
+    <!-- Aquí se insertan las secciones dinámicamente -->
+  </div>
+
+  <!-- Video -->
+  <div id="blog-video-section" class="mt-10"></div>
+</main>
+</div>
   <script
     define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
   >
@@ -91,69 +86,52 @@ const blogsUrl = config.endpoints.blogs;
         const blog = data.data;
 
         const blogTitleElement = document.getElementById("blog-title");
-        const blogSubtitleElement = document.getElementById("blog-subtitle");
         const blogImgElement = document.getElementById("blog-img");
         const blogDateElement = document.getElementById("blog-date");
         const blogContentTitleElement =
           document.getElementById("blog-content-title");
-        const blogContentSubtitleElement = document.getElementById(
-          "blog-content-subtitle"
-        );
+        const blogContentSubtitleElement = document.getElementById("blog-content-subtitle");
+        const blogContentSubtitle2Element = document.getElementById("blog-content-subtitle2");
+        //const blogContentSubtitle3Element = document.getElementById("blog-content-subtitle3");
         const blogSectionsElement = document.getElementById("blog-sections");
         const blogVideoSectionElement = document.getElementById("blog-video-section");
 
-      if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo + ":";
-        if (blogSubtitleElement)
-          blogSubtitleElement.innerHTML = blog.subtitulo1;
+        // HERO grande
+        if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo.toUpperCase();
+        // Negro (h2)
+        if (blogContentSubtitleElement)
+          blogContentSubtitleElement.innerHTML = blog.subtitulo1.toUpperCase();;
+        // Verde (p)
+        if (blogContentSubtitle2Element)
+          blogContentSubtitle2Element.innerHTML = blog.subtitulo2;
         if (blogImgElement) {
-          blogImgElement.src = blog.imagenes?.[0]?.ruta_imagen || "/img/default.png";
           blogImgElement.alt = blog.titulo;
         }
         if (blogDateElement) {
-        const createdAt = blog.created_at;
-        if (createdAt) {
-          const formattedDate = new Date(createdAt).toLocaleDateString(
-            "es-ES",
-            {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            },
-          );
-          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-        } else {
-          blogDateElement.innerHTML = "Fecha de publicación no disponible";
-        }
-      }
-      if (blogDateElement) {
-        const createdAt = blog.created_at;
-        if (createdAt) {
-          const formattedDate = new Date(createdAt).toLocaleDateString(
-            "es-ES",
-            {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            },
-          );
-          blogDateElement.innerHTML = `Publicado el ${formattedDate}`;
-        } else {
-          blogDateElement.innerHTML = "Fecha de publicación no disponible";
-        }
-      }
-        if (blogContentTitleElement)
-          blogContentTitleElement.innerHTML = blog.titulo;
-        if (blogContentSubtitleElement)
-        blogContentSubtitleElement.innerHTML = blog.subtitulo2; // Reemplazamos la primera asignación
+          const updatedAt = blog.updated_at;
+          if (updatedAt) {
+            const date = new Date(updatedAt);
 
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const year = date.getFullYear();
+
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+
+            blogDateElement.innerHTML = `${day}-${month}-${year} / ${hours}:${minutes}`;
+          } else {
+            blogDateElement.innerHTML = "FECHA / HORA DE PUBLICACIÓN";
+          }
+        }
         if (blogSectionsElement && Array.isArray(blog.imagenes) && Array.isArray(blog.parrafos)) {
           blogSectionsElement.innerHTML = "";
           blog.imagenes.forEach((imagen, index) => {
             const section = document.createElement("section");
             section.className = "mb-5 text-justify";
             section.innerHTML = `
-            <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
-              <img src="${imagen.ruta_imagen}" alt="Imagen del blog" class="w-full md:w-1/2 h-auto rounded-lg object-cover mb-6 md:mb-0" />
+                <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""}">
+                <img src="${getApiUrl}${imagen.ruta_imagen}" alt="Imagen del blog" class="..." />  
               <div class="md:w-1/2 px-4 pt-2">
                 <article>
                   <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
@@ -170,17 +148,19 @@ const blogsUrl = config.endpoints.blogs;
 
         const blogProductLinkElement = document.getElementById("blog-product-link");
 
-        // Verificar si existe un producto_id en el blog
+       // Verificar si existe un producto_id en el blog
         if (blog.producto_id && blogProductLinkElement) {
-          blogProductLinkElement.href = `${config.apiUrl}${config.endpoints.productos.detail(blog.producto_id)}`;
-          blogProductLinkElement.classList.remove("hidden"); // Mostrar el enlace
+          if (blog.producto_id && blogProductLinkElement) {
+            blogProductLinkElement.href = `/productos/detalle.html?id=${blog.producto_id}`;
+            blogProductLinkElement.classList.remove("hidden");
+          }
         }
 
         // MOSTRAR VIDEO CON IFRAME
         if (blogVideoSectionElement && blog.video_id) {
           blogVideoSectionElement.innerHTML = `
             <section class="bg-teal-700 p-6 rounded-lg">
-              <h1 class="text-white md:text-xl font-bold mb-4">${blog.tituloVideoBlog}</h1>
+              <h1 class="text-white md:text-xl font-bold mb-4">${blog.video_titulo}</h1>
               <div class="relative w-full h-[30rem]">
                 <iframe
                   width="100%"
