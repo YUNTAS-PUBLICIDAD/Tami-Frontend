@@ -61,7 +61,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleNestedChange = (
+  /*const handleNestedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     group: "dimensiones" | "especificaciones"
   ) => {
@@ -72,7 +72,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
         [e.target.name]: e.target.value,
       },
     });
-  };
+  };*/
 
   const handleRelacionadosChange = (
     e: React.ChangeEvent<HTMLInputElement>,

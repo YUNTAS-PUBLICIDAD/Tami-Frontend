@@ -3,26 +3,30 @@ import React, { useEffect, useState } from "react";
 interface Testimonial {
   avatar: string;
   name: string;
+  alt: string;
   rating: number;
   text: string;
 }
 
 const testimonials: Testimonial[] = [
   {
-    avatar: "/images/persona1.webp",
+    avatar: "/images/persona-sonriente-feliz.webp",
     name: "Carlos Pérez",
+    alt:"Adulto sonriente",
     rating: 5,
     text: "¡Este servicio es increíble! Muy recomendable.",
   },
   {
-    avatar: "/images/persona3.webp",
+    avatar: "/images/chica-guiño-ojo.webp",
     name: "María López",
+    alt:"Chica guiñando ojo",
     rating: 4,
     text: "Buena experiencia en general, pero hay margen de mejora.",
   },
   {
-    avatar: "/images/persona2.webp",
+    avatar: "/images/persona-camisa-risa.webp",
     name: "Javier Gómez",
+    alt:"Personas riendo",
     rating: 5,
     text: "¡Absolutamente fantástico! Lo usaré de nuevo.",
   },
