@@ -26,7 +26,8 @@ const blogsUrl = config.endpoints.blogs;
         class="absolute inset-0 pb-16 w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-teal-700/65 to-85%"
     >
       <div class="max-w-6xl mx-auto px-4 text-white font-bold">
-        <h1 id="blog-title" class="font-montserrat text-4xl md:text-5xl mb-4"></h1>
+        <!-- Título responsive: oculto en móviles, visible en tablets+ -->
+        <h1 id="blog-title" class="hidden md:block font-montserrat text-4xl md:text-5xl mb-4"></h1>
       </div>
     </div>
   </header>
@@ -37,7 +38,10 @@ const blogsUrl = config.endpoints.blogs;
     class="relative z-10 max-w-5xl mx-auto px-8 py-10 bg-white rounded-xl shadow-2xl mb-10 -mt-44 md:-mt-36 border-4 border-teal-500"
 >
   <div class="px-4 md:px-8">
-    <h1 id="blog-title" class="font-montserrat text-4xl md:text-5xl font-bold text-teal-700 mb-6 text-center"></h1>
+    <!-- Título responsive: visible en móviles con color teal, duplicado del header para móviles -->
+    <h1 id="blog-title-mobile" class="block md:hidden font-montserrat text-3xl font-bold text-teal-600 mb-6 text-center"></h1>
+    <!-- Título para tablets y desktop -->
+    <h1 id="blog-title-desktop" class="hidden md:block font-montserrat text-4xl md:text-5xl font-bold text-teal-700 mb-6 text-center"></h1>
   </div>
     <div class="flex flex-col md:flex-row justify-between mb-2 md:mb-4 gap-2 md:gap-8">
       <h2
@@ -72,23 +76,78 @@ const blogsUrl = config.endpoints.blogs;
   >
     eval(showLoaderString);
     eval(removeLoaderString);
+    
+    // Función mejorada para remover loader con timeout de seguridad
+    function removeLoaderSafe() {
+      try {
+        removeLoader();
+        console.log("Loader removido exitosamente");
+      } catch (error) {
+        console.error("Error removiendo loader:", error);
+      }
+      
+      // Timeout de seguridad para asegurar que el loader se remueva
+      setTimeout(() => {
+        const loader = document.getElementById("page-loader");
+        if (loader) {
+          loader.remove();
+          console.log("Loader removido por timeout de seguridad");
+        }
+      }, 100);
+    }
+    
     document.addEventListener("DOMContentLoaded", async () => {
       showLoader();
-      const params = new URLSearchParams(window.location.search);
-      const idBlog = params.get("id")?.trim();
-      if (!idBlog) return;
-
-      console.log(`Fetching: ${getApiUrl}${blogsUrl.list}/${idBlog}`);
-
+      
+      // Timeout de seguridad de 10 segundos para remover el loader
+      const safetyTimeout = setTimeout(() => {
+        console.warn("Timeout de seguridad: removiendo loader después de 10 segundos");
+        removeLoaderSafe();
+      }, 10000);
+      
       try {
-        const response = await fetch(`${getApiUrl}${blogsUrl.list}/${idBlog}`);
-        console.log("Response:", response);
+        const params = new URLSearchParams(window.location.search);
+        const idBlog = params.get("id")?.trim();
+        
+        if (!idBlog) {
+          console.error("No se encontró ID del blog");
+          clearTimeout(safetyTimeout);
+          removeLoaderSafe();
+          return;
+        }
+
+        console.log(`Fetching: ${getApiUrl}${blogsUrl.list}/${idBlog}`);
+        console.log(`User Agent: ${navigator.userAgent}`);
+        console.log(`Screen width: ${window.screen.width}`);
+        console.log(`API URL: ${getApiUrl}`);
+        console.log(`Blogs URL: ${JSON.stringify(blogsUrl)}`);
+        
+        // Verificar que la URL esté completa
+        const fullUrl = `${getApiUrl}${blogsUrl.list}/${idBlog}`;
+        if (!fullUrl.startsWith('http')) {
+          throw new Error(`URL inválida: ${fullUrl}`);
+        }
+
+        const response = await fetch(fullUrl);
+        console.log("Response status:", response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         console.log("Fetched data:", data);
 
+        if (!data || !data.data) {
+          throw new Error("No se encontraron datos del blog");
+        }
+
         const blog = data.data;
 
-        const blogTitleElement = document.getElementById("blog-title");
+        // Elementos del DOM
+        const blogTitleElement = document.getElementById("blog-title"); // Header
+        const blogTitleMobileElement = document.getElementById("blog-title-mobile"); // Mobile content
+        const blogTitleDesktopElement = document.getElementById("blog-title-desktop"); // Desktop content
         const blogImgElement = document.getElementById("blog-img");
         const blogDateElement = document.getElementById("blog-date");
         const blogContentTitleElement =
@@ -100,13 +159,33 @@ const blogsUrl = config.endpoints.blogs;
         const blogVideoSectionElement = document.getElementById("blog-video-section");
 
         // HERO grande
-        if (blogTitleElement) blogTitleElement.innerHTML = blog.titulo.toUpperCase();
+        // Asignar título a todos los elementos
+        const titulo = blog.titulo.toUpperCase();
+        if (blogTitleElement) blogTitleElement.innerHTML = titulo;
+        if (blogTitleMobileElement) blogTitleMobileElement.innerHTML = titulo;
+        if (blogTitleDesktopElement) blogTitleDesktopElement.innerHTML = titulo;
+        
         // Negro (h2)
-        if (blogContentSubtitleElement)
-          blogContentSubtitleElement.innerHTML = blog.subtitulo1.toUpperCase();;
+        if (blogContentSubtitleElement) {
+          blogContentSubtitleElement.innerHTML = blog.subtitulo1.toUpperCase();
+        }
         // Verde (p)
-        if (blogContentSubtitle2Element)
+        if (blogContentSubtitle2Element) {
           blogContentSubtitle2Element.innerHTML = blog.subtitulo2;
+        }
+        
+        // Verificar que todos los elementos necesarios existen
+        console.log("Elementos del DOM encontrados:", {
+          blogTitleElement: !!blogTitleElement,
+          blogTitleMobileElement: !!blogTitleMobileElement,
+          blogTitleDesktopElement: !!blogTitleDesktopElement,
+          blogContentSubtitleElement: !!blogContentSubtitleElement,
+          blogContentSubtitle2Element: !!blogContentSubtitle2Element,
+          blogImgElement: !!blogImgElement,
+          blogDateElement: !!blogDateElement,
+          blogSectionsElement: !!blogSectionsElement,
+          blogVideoSectionElement: !!blogVideoSectionElement
+        });
         if (blogImgElement) {
           blogImgElement.alt = blog.titulo;
         }
@@ -180,37 +259,58 @@ const blogsUrl = config.endpoints.blogs;
           `;
         }
 
-        // Añade este bloque para reubicar el contenido en móviles
-        if (window.innerWidth < 768) {
-          const container = document.getElementById("blog-title").parentElement;
-          const mainContent = document.getElementById("blog-content");
-          // Reubicar el container
-          mainContent.prepend(container);
-
-          // Cambiar color de texto usando Tailwind
-          container.classList.remove("text-white");
-          container.classList.add("text-teal-600");
-
-          // Obtener los elementos
-          const blogTitle = document.getElementById("blog-title");
-          const blogSubtitle = document.getElementById("blog-subtitle");
-          blogSubtitle.classList.add("mb-6");
-
-          // Cambiar tamaño de texto manualmente (no con clases Tailwind dinámicas)
-          if (blogTitle) {
-            blogTitle.style.fontSize = "1.75rem"; // Ajuste para pantallas móviles
-          }
-          if (blogSubtitle) {
-            blogSubtitle.style.fontSize = "1.5rem"; // Ajuste para pantallas móviles
-          }
-        }
-        removeLoader();
+        // Responsive design ahora se maneja completamente con CSS/Tailwind
+        // Sin necesidad de manipular el DOM en JavaScript
+        clearTimeout(safetyTimeout);
+        removeLoaderSafe();
+        
       } catch (error) {
         console.error("Error fetching blog:", error);
-        const container = document.getElementById("blog-container");
-        if (!container) return;
-        container.innerHTML = `<p>Error: ${error.message}</p>`;
+        console.error("Error stack:", error.stack);
+        
+        // Mostrar mensaje de error al usuario
+        const blogContent = document.getElementById("blog-content");
+        if (blogContent) {
+          blogContent.innerHTML = `
+            <div class="text-center p-8">
+              <h2 class="text-2xl font-bold text-red-600 mb-4">Error al cargar el blog</h2>
+              <p class="text-gray-600 mb-4">No se pudo cargar el contenido del blog. Por favor, intenta nuevamente.</p>
+              <button onclick="window.location.reload()" class="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600">
+                Reintentar
+              </button>
+            </div>
+          `;
+        }
+        
+        clearTimeout(safetyTimeout);
+        removeLoaderSafe();
       }
     });
+    
+    // Listener adicional para el evento load como respaldo
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const loader = document.getElementById("page-loader");
+        if (loader) {
+          console.warn("Removiendo loader en window.load como respaldo");
+          loader.remove();
+        }
+      }, 500);
+    });
+    
+    // Capturar cualquier error JavaScript no manejado
+    window.addEventListener("error", (event) => {
+      console.error("Error JavaScript no manejado:", event.error);
+      console.error("Stack:", event.error?.stack);
+      
+      // Si hay un error con classList, remover el loader
+      if (event.error?.message?.includes("classList")) {
+        console.warn("Error relacionado con classList detectado, removiendo loader");
+        removeLoaderSafe();
+      }
+    });
+    
+    // Timestamp para invalidar caché
+    console.log("Blog details script cargado:", new Date().toISOString());
   </script>
 </Layout>
