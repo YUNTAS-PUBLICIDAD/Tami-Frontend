@@ -146,23 +146,32 @@ const BlogsTable = () => {
 
             <div className="p-6">
               <h2 className="text-3xl font-bold text-teal-700 mb-2">{blog.titulo}</h2>
-              <p className="text-gray-500 mb-4">{blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'Fecha no disponible'}</p>
+              <p className="text-gray-500 mb-4">
+                {blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'Fecha no disponible'}
+              </p>
 
               <div className="prose max-w-none">
-                <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.titulo   || 'Sin título de blog'}</h3>
-                <p className="text-gray-700 mb-4">{blog.subtitulo1}</p>
+                {/* Subtítulo principal */}
+                <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.subtitulo1}</h3>
 
+                {/* Subtítulo 2 como bloque nuevo */}
                 <div className="my-6">
-                  <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.subtitulo2   || 'Acerca de este blog'}</h4>
+                  <h4 className="text-lg font-medium text-teal-600 mb-2">Acerca de este blog</h4>
                   <p className="text-gray-700">{blog.subtitulo2}</p>
                 </div>
 
-                {blog.video_id  && (
+                {/* Parrafos */}
+                {blog.parrafos?.map((p, i) => (
+                    <p key={i} className="text-gray-700 mb-4">{p.parrafo}</p>
+                ))}
+
+                {/* Video */}
+                {blog.video_id?.trim() && (
                     <div className="my-6">
                       <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.video_titulo || 'Video relacionado'}</h4>
                       <div className="aspect-w-16 aspect-h-9">
                         <iframe
-                            src={`https://www.youtube.com/embed/${blog.video_id}`}
+                            src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
                             className="w-full h-64 rounded-lg"
                             allowFullScreen
                         ></iframe>
