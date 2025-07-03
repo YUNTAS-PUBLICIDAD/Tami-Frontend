@@ -187,7 +187,7 @@ const BlogsTable = () => {
 
         <div className="container mx-auto px-4 -mt-6">
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div className="relative flex-grow max-w-md">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaSearch className="text-gray-400" />
@@ -201,14 +201,25 @@ const BlogsTable = () => {
                 />
               </div>
 
-              <AddBlogModal 
-                onBlogAdded={handleBlogAdded} 
-                isOpen={isAddModalOpen} 
-                onClose={() => { setIsAddModalOpen(false); setEditBlog(null); }} 
-                blogToEdit={editBlog} 
+              <button
+                  type="button"
+                  onClick={openAddModal}
+                  className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-full shadow hover:bg-teal-700 flex-shrink-0"
+              >
+                <FaPlus />
+                Añadir Blog
+              </button>
+
+              <AddBlogModal
+                  onBlogAdded={handleBlogAdded}
+                  isOpen={isAddModalOpen}
+                  onClose={() => {
+                    setIsAddModalOpen(false);
+                    setEditBlog(null);
+                  }}
+                  blogToEdit={editBlog}
               />
             </div>
-
             {isLoading ? (
                 <div className="flex justify-center items-center py-20">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
@@ -216,8 +227,10 @@ const BlogsTable = () => {
             ) : currentItems.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {currentItems.map((blog) => (
-                      <div key={blog.id}
-                           className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+                      <div
+                          key={blog.id}
+                          className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
+                      >
                         <div className="relative h-48">
                           <img
                               src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
@@ -233,9 +246,9 @@ const BlogsTable = () => {
                               <FaEye size={16} />
                             </button>
                             <button
-                              className="p-2 bg-white rounded-full hover:bg-yellow-50 text-yellow-600 shadow-md"
-                              title="Editar"
-                              onClick={() => openEditModal(blog)}
+                                className="p-2 bg-white rounded-full hover:bg-yellow-50 text-yellow-600 shadow-md"
+                                title="Editar"
+                                onClick={() => openEditModal(blog)}
                             >
                               <FaEdit size={16} />
                             </button>
@@ -250,11 +263,17 @@ const BlogsTable = () => {
                         </div>
 
                         <div className="p-5 flex-grow flex flex-col">
-                          <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">{blog.titulo}</h3>
-                          <p className="text-gray-500 text-sm mb-3 line-clamp-2">{blog.subtitulo2}</p>
+                          <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">
+                            {blog.titulo}
+                          </h3>
+                          <p className="text-gray-500 text-sm mb-3 line-clamp-2">
+                            {blog.subtitulo2}
+                          </p>
                           <div className="mt-auto pt-4 flex justify-between items-center">
                             <span className="text-xs text-gray-500">ID: {blog.id}</span>
-                            <span className="px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-xs font-medium">Blog</span>
+                            <span className="px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-xs font-medium">
+                        Blog
+                      </span>
                           </div>
                         </div>
                       </div>
@@ -262,11 +281,23 @@ const BlogsTable = () => {
                 </div>
             ) : (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                  >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
                   </svg>
                   <h3 className="mt-2 text-lg font-medium text-gray-900">No se encontraron blogs</h3>
-                  <p className="mt-1 text-gray-500">Intenta con otra búsqueda o crea un nuevo blog.</p>
+                  <p className="mt-1 text-gray-500">
+                    Intenta con otra búsqueda o crea un nuevo blog.
+                  </p>
                 </div>
             )}
 
@@ -282,7 +313,6 @@ const BlogsTable = () => {
                   </button>
 
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                    // Mostrar las páginas cercanas a la actual
                     let pageToShow: number;
                     if (totalPages <= 5) {
                       pageToShow = i + 1;
@@ -300,8 +330,8 @@ const BlogsTable = () => {
                             onClick={() => setCurrentPage(pageToShow)}
                             className={`px-3 py-1 border rounded-md text-sm ${
                                 currentPage === pageToShow
-                                    ? 'bg-teal-500 text-white border-teal-500'
-                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                    ? "bg-teal-500 text-white border-teal-500"
+                                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                             }`}
                         >
                           {pageToShow}
@@ -330,12 +360,7 @@ const BlogsTable = () => {
           {/*    <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">*/}
           {/*      <h3 className="text-teal-700 font-medium mb-1">Blogs este mes</h3>*/}
           {/*      <p className="text-3xl font-bold text-teal-800">*/}
-          {/*        {data.filter(blog => {*/}
-          {/*          if (!blog.created_at) return false;*/}
-          {/*          const date = new Date(blog.created_at);*/}
-          {/*          const now = new Date();*/}
-          {/*          return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();*/}
-          {/*        }).length}*/}
+
           {/*      </p>*/}
           {/*    </div>*/}
           {/*    <div className="bg-teal-50 p-4 rounded-lg border border-teal-100">*/}
@@ -347,7 +372,7 @@ const BlogsTable = () => {
           {/*  </div>*/}
           {/*</div>*/}
         </div>
-        {/* Vista previa del blog */}
+
         {selectedBlog && <BlogPreview blog={selectedBlog} onClose={closePreview} />}
       </div>
   );
