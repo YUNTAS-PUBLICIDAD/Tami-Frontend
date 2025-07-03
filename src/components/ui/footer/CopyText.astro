@@ -1,14 +1,6 @@
 ---
 const text = await Astro.slots.render("default");
 ---
-
-<p
-    data-copy
-    class="cursor-pointer hover:underline underline-offset-2 text-sm md:text-base"
->
-  {text}
-</p>
-
 <div
     id="copy-notification"
     class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-teal-950 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10"
