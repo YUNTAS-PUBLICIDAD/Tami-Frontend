@@ -2,6 +2,7 @@
 import Layout from "src/layouts/Layout.astro";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
+import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
 const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
 const blogsUrl = config.endpoints.blogs;
@@ -15,7 +16,9 @@ const blogsUrl = config.endpoints.blogs;
   <header class="relative w-full h-screen md:min-h-[80vh]">
     <img
         id="blog-img"
-        src="/src/assets/images/index/hero/impulso-negocios-tecnologia.webp"
+        src={blogHeroImage.src}
+        width={blogHeroImage.width}
+        height={blogHeroImage.height}
         alt="Fondo Hero"
         class="w-full h-full object-cover filter brightness-50"
     />
