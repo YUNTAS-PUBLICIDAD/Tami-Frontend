@@ -13,9 +13,10 @@ interface BlogPOST {
   subtitulo1: string;
   subtitulo2: string;
   subtitulo3: string;
-  video_id: string;
   video_titulo: string;
+  video_url:string;
   producto_id: number;
+  imagenPrincipal: File | null;
   imagenes: ImagenAdicional[];
 }
 
@@ -37,30 +38,52 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     subtitulo1: "",
     subtitulo2: "",
     subtitulo3: "",
-    video_id: "",
+    video_url: "",
     video_titulo: "",
     producto_id: 0,
+    imagenPrincipal: null,
     imagenes: [
       { imagen: null, parrafo: "" },
       { imagen: null, parrafo: "" },
     ],
   });
+  useEffect(() => {
+    if (propIsOpen !== undefined) {
+      setIsOpen(propIsOpen);
+    }
+  }, [propIsOpen]);
 
   useEffect(() => {
     if (isOpen) {
-      fetch(getApiUrl(config.endpoints.blogs.list), {
+      console.log("✅ useEffect ACTIVADO para PRODUCTOS");
+
+      const url = getApiUrl(config.endpoints.productos.list);
+      console.log("🔗 URL de productos:", url);
+
+      fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           Accept: "application/json",
         },
       })
-          .then((res) => res.json())
-          .then((data) => {
-            const linksUsados = data?.data
-                ?.map((b: any) => parseInt(b.link))
-                .filter((n: number) => Number.isInteger(n) && n > 0);
+          .then((res) => {
+            console.log("📦 Respuesta FETCH cruda:", res);
+            return res.json();
           })
-          .catch((err) => console.error("Error al obtener blogs:", err));
+          .then((data) => {
+            console.log("📦 JSON de productos:", data);
+
+            if (Array.isArray(data?.data)) {
+              console.log("✅ Es un array:", data.data);
+              setProductos(data.data);
+            } else {
+              console.error("❌ NO es un array:", data);
+              setProductos([]); // fallback
+            }
+          })
+          .catch((err) => {
+            console.error("🚫 Error en FETCH productos:", err);
+          });
     }
   }, [isOpen]);
   useEffect(() => {
@@ -105,13 +128,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         [name]: value,
       }));
     }
-  };/*
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, imagenPrincipal: e.target.files[0] });
     }
-  };*/
-
+  };
   const handleFileChangeAdicional = (
       e: React.ChangeEvent<HTMLInputElement>,
       index: number
@@ -146,9 +169,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       subtitulo1: "",
       subtitulo2: "",
       subtitulo3: "",
-      video_id: "",
+      video_url: "",
       video_titulo: "",
       producto_id: 0,
+      imagenPrincipal: null,
       imagenes: [
         { imagen: null, parrafo: "" },
         { imagen: null, parrafo: "" },
@@ -168,9 +192,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         !formData.subtitulo1 ||
         !formData.subtitulo2 ||
         !formData.subtitulo3 ||
-        !formData.video_id ||
+        !formData.video_url ||
         !formData.video_titulo ||
         !formData.producto_id ||
+        !formData.imagenPrincipal ||
         formData.imagenes.some((img) => !img.imagen || !img.parrafo)
     ) {
       Swal.fire({
@@ -192,13 +217,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
       formDataToSend.append("subtitulo3", formData.subtitulo3);
-      formDataToSend.append("video_url", formData.video_id);
-      formDataToSend.append("video_id", "placeholder");
+      formDataToSend.append("video_url", formData.video_url);
+      formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
       // Imagen principal
-      //formDataToSend.append("imagenPrincipal", formData.imagenPrincipal);
+      formDataToSend.append("imagen_principal", formData.imagenPrincipal as File);
 
       // Imagenes adicionales
       formData.imagenes.forEach((item) => {
@@ -295,19 +320,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
 
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Link*</label>
-                    <input
-                        type="text"
-                        name="link"
-                        value={formData.link}
-                        onChange={handleChange}
-
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                    />
-                  </div>
-
-
-                  <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Párrafo*</label>
                     <input
                         type="text"
@@ -356,20 +368,16 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
-
-                  <div className="md:col-span-2 space-y-2">
+                  <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">URL del Video*</label>
                     <input
                         type="text"
-                        name="video_id"
-                        value={formData.video_id}
+                        name="video_url"
+                        value={formData.video_url}
                         onChange={handleChange}
-                        //required
-                        //required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
-
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Producto*</label>
                     <select
@@ -387,24 +395,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                       ))}
                     </select>
                   </div>
-
-
                   <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Producto*</label>
-                    <select
-                        name="producto_id"
-                        value={formData.producto_id}
-                        onChange={handleChange}
-                        required
+                    <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                    >
-                      <option value="">Selecciona un producto</option>
-                      {productos.map((producto) => (
-                          <option key={producto.id} value={producto.id}>
-                            {producto.nombre}
-                          </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                   {formData.imagenes.map((imagen, index) => (
                       <div key={index} className="md:col-span-2 space-y-2">
