@@ -15,6 +15,10 @@ const { image, title, paragraph } = Astro.props;
     src={image}
     alt={`Card del Valor de ${title}`}
     class="absolute z-0 w-full h-full object-cover object-center"
+    width="300"
+    height="300"
+    loading="lazy"
+    decoding="async"
   />
   <div
     class="relative flex flex-col justify-end place-content-start bg-gradient-to-t from-teal-700 from-0% via-20% via-teal-600/90 w-full h-full text-white text-center pb-4 2xl:pb-8 2xl:px-2"
