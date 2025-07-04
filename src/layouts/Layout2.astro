@@ -4,21 +4,20 @@ interface Props {
   title: string;
   description: string;
 }
-const { title } = Astro.props;
-const { description } = Astro.props;
+const { title, description } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/webp+xml" href="/logo.webp" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    <description>{description}</description>
-  </head>
-  <body class="font-montserrat">
-    <slot />
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" type="image/webp+xml" href="/logo.webp" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+</head>
+<body class="font-montserrat">
+<slot />
+</body>
 </html>
