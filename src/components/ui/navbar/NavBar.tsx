@@ -20,25 +20,49 @@ function NavBar() {
     }) as T;
   };
 
-  const handleScroll = useCallback(
-    debounce(() => {
-      setIsScrolled(window.scrollY > 0);
-    }, 100),
-    []
-  );
+  const handleScroll = useCallback(() => {
+    if (window.requestIdleCallback) {
+      window.requestIdleCallback(() => {
+        setIsScrolled(window.scrollY > 0);
+      });
+    } else {
+      setTimeout(() => {
+        setIsScrolled(window.scrollY > 0)
+      }, 0);
+    }
+  }, []);
+
+  const throttledScroll = useCallback(() => {
+    let ticking = false;
+
+    const updateScroll = () => {
+      handleScroll();
+      ticking = false;
+    };
+
+    return () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScroll);
+        ticking = true;
+      }
+    };
+  }, [handleScroll])();
+
+
 
   useEffect(() => {
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    setIsScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", throttledScroll);
+    };
+  }, [throttledScroll]);
 
   return (
     <header
-        className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
-            isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
+      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
         }`}
-        style={{ maxWidth: '100vw' }}
+      style={{ maxWidth: '100vw' }}
     >
       <SideMenu links={navLinks} />
       <a
@@ -49,14 +73,24 @@ function NavBar() {
           src={logoMovil.src}
           alt="Logo de Tami con letras"
           className="h-full lg:hidden"
+          width="120"
+          height="60"
+          loading="eager"
         />
         <img
           src={logoTami.src}
           alt="logo de Tami sin letras"
           className="hidden lg:block"
+          width="120"
+          height="40"
+          loading="eager"
         />
       </a>
-      <nav className="hidden lg:block col-span-9 w-full h-full">
+
+
+      <nav className="lg:flex hidden  col-span-9 w-full h-full">
+
+
         <ul className="flex gap-10 w-full h-full items-center place-content-center">
           {navLinks.map((item, index) => (
             <li key={index}>
