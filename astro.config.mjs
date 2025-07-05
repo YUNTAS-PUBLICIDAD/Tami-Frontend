@@ -21,7 +21,11 @@ export default defineConfig({
     },
     integrations: [
         sitemap({
-            filter: (page) => !page.includes('/admin'),
+            filter: (page) =>
+                !page.includes('/admin') &&
+                !page.includes('/auth/') &&
+                !page.includes('/blog/details') &&
+                !page.includes('/productos/detalle')
         }),
         react(),
         criticalCSS({
