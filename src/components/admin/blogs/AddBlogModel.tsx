@@ -12,7 +12,7 @@ interface BlogPOST {
   link: string;
   subtitulo1: string;
   subtitulo2: string;
-  subtitulo3: string;
+  //subtitulo3: string;
   video_titulo: string;
   video_url:string;
   producto_id: number;
@@ -37,7 +37,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     link: "",
     subtitulo1: "",
     subtitulo2: "",
-    subtitulo3: "",
+    //subtitulo3: "",
     video_url: "",
     video_titulo: "",
     producto_id: 0,
@@ -106,6 +106,49 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           .catch((err) => console.error("Error al obtener productos:", err));
     }
   }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      if (blogToEdit) {
+        // Si hay blogToEdit: llenar
+        setFormData({
+          titulo: blogToEdit.titulo || "",
+          link: blogToEdit.link || "",
+          subtitulo1: blogToEdit.subtitulo1 || "",
+          subtitulo2: blogToEdit.subtitulo2 || "",
+          //subtitulo3: blogToEdit.subtitulo3 || "",
+          video_url: blogToEdit.video_url || "",
+          video_titulo: blogToEdit.video_titulo || "",
+          producto_id: blogToEdit.producto_id || 0,
+          imagenPrincipal: null,
+          imagenes: blogToEdit.imagenes?.map((img: any) => ({
+            imagen: null,
+            parrafo: img.parrafo || "",
+          })) || [
+            { imagen: null, parrafo: "" },
+            { imagen: null, parrafo: "" },
+          ],
+        });
+      } else {
+        // Si NO hay blogToEdit: limpiar
+        setFormData({
+          titulo: "",
+          link: "",
+          subtitulo1: "",
+          subtitulo2: "",
+          //subtitulo3: "",
+          video_url: "",
+          video_titulo: "",
+          producto_id: 0,
+          imagenPrincipal: null,
+          imagenes: [
+            { imagen: null, parrafo: "" },
+            { imagen: null, parrafo: "" },
+          ],
+        });
+      }
+    }
+  }, [isOpen, blogToEdit]);
+
   const handleChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -168,7 +211,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       link: "",
       subtitulo1: "",
       subtitulo2: "",
-      subtitulo3: "",
+      //subtitulo3: "",
       video_url: "",
       video_titulo: "",
       producto_id: 0,
@@ -183,7 +226,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setIsSaving(true);
 
     // Validación básica
     if (
@@ -191,12 +233,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         !formData.link ||
         !formData.subtitulo1 ||
         !formData.subtitulo2 ||
-        !formData.subtitulo3 ||
+        //!formData.subtitulo3 ||
         !formData.video_url ||
         !formData.video_titulo ||
         !formData.producto_id ||
-        !formData.imagenPrincipal ||
-        formData.imagenes.some((img) => !img.imagen || !img.parrafo)
+        (!blogToEdit && !formData.imagenPrincipal) || // Solo obligatorio si es nuevo
+        formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)
     ) {
       Swal.fire({
         icon: "warning",
@@ -211,29 +253,38 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
 
-      // Campos normales
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
-      formDataToSend.append("subtitulo3", formData.subtitulo3);
+      //formDataToSend.append("subtitulo3", formData.subtitulo3);
       formDataToSend.append("video_url", formData.video_url);
-      formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
-      // Imagen principal
-      formDataToSend.append("imagen_principal", formData.imagenPrincipal as File);
+      // Solo si hay nueva imagen principal
+      if (formData.imagenPrincipal) {
+        formDataToSend.append("imagen_principal", formData.imagenPrincipal);
+      }
 
-      // Imagenes adicionales
       formData.imagenes.forEach((item) => {
-        formDataToSend.append("imagenes[]", item.imagen as File);
+        if (item.imagen) {
+          formDataToSend.append("imagenes[]", item.imagen);
+        }
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
 
-      // Petición
-      const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
+      // Si es edición, agrega _method=PUT
+      if (blogToEdit) {
+        formDataToSend.append("_method", "PUT");
+      }
+
+      const url = blogToEdit
+          ? `${getApiUrl(config.endpoints.blogs.list)}/${blogToEdit.id}`
+          : getApiUrl(config.endpoints.blogs.create);
+
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -247,16 +298,16 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       if (response.ok) {
         await Swal.fire({
           icon: "success",
-          title: "Blog añadido exitosamente",
+          title: blogToEdit ? "Blog actualizado exitosamente" : "Blog añadido exitosamente",
           showConfirmButton: true,
         });
         closeModal();
-        onBlogAdded(); // notificar al padre
+        onBlogAdded();
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: `❌ Error: ${data.message || "Error al crear blog"}`,
+          text: `❌ Error: ${data.message || "Error al guardar blog"}`,
         });
       }
     } catch (error) {
@@ -269,8 +320,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     } finally {
       setIsSaving(false);
     }
-    onBlogAdded(); // notificar al componente padre
   };
+
 
   return (
       <>
@@ -345,17 +396,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                     />
                   </div>
 
+                  {/*
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Subtítulo Beneficio*</label>
                     <input
-                        type="text"
-                        name="subtitulo3"
-                        value={formData.subtitulo3}
-                        onChange={handleChange}
-                        //required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                      type="text"
+                      name="subtitulo3"
+                      value={formData.subtitulo3}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+                  */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Título Video*</label>
                     <input
