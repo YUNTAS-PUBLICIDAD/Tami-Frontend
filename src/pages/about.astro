@@ -96,29 +96,29 @@ import Card from "../components/about/Card.astro";
   <!-- Valores -->
   <section class="bg-white py-6 lg:py-12 lg:px-6">
     <h2
-      class="text-center lg:text-left text-teal-600 text-2xl sm:text-4xl md:text-5xl font-extrabold mb-5 lg:mb-10 px-4 lg:px-0"
+        class="text-center lg:text-left text-teal-600 text-2xl sm:text-4xl md:text-5xl font-extrabold mb-5 lg:mb-10 px-4 lg:px-0"
     >
       VALORES
     </h2>
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:h-96 justify-items-center md:justify-items-stretch"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 xl:gap-12 justify-items-center"
     >
       {
         valoresArray.map((valor: any) => (
-          <div class="flex flex-col items-center">
-            <Card
-              image={valor.image}
-              title={valor.title}
-              paragraph={valor.paragraph}
-            />
-            {/* Mostrar solo en móviles */}
-            <div class="block md:hidden w-full px-10">
-              <p class="text-base text-teal-700 font-medium">
-                {valor.paragraph}
-              </p>
-              <hr class="border-t border-teal-800 my-3" />
+            <div class="flex flex-col items-center">
+              <Card
+                  image={valor.image}
+                  title={valor.title}
+                  paragraph={valor.paragraph}
+              />
+              <!-- Mostrar solo en móviles -->
+              <div class="block md:hidden w-full px-6">
+                <p class="text-xs sm:text-sm text-teal-700 font-medium">
+                  {valor.paragraph}
+                </p>
+                <hr class="border-t border-teal-800 my-2" />
+              </div>
             </div>
-          </div>
         ))
       }
     </div>
