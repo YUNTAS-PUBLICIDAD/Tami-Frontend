@@ -3,7 +3,6 @@ import Layout from "src/layouts/Layout.astro";
 import boxSize from "@icons/box-size.svg";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
-
 const getApiUrl = config.apiUrl;
 const productosUrl = config.endpoints.productos;
 
@@ -375,7 +374,6 @@ const metadata = {
 
       removeLoader();
       displayProductDetails(product);
-
       // Constantes para los botones de cotización
       const btnQuotationHero = document.getElementById("btnQuotationHero");
       const btnQuotationDetail = document.getElementById("btnQuotationDetail");
@@ -387,7 +385,6 @@ const metadata = {
           });
         }
       });
-
       // Cargar productos relacionados
       await loadRelatedProducts(product.productos_relacionados.map(p => p.id));
 

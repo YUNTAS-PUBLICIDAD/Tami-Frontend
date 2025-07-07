@@ -11,44 +11,45 @@ import Layout from "../layouts/Layout.astro";
         description="Envíos, cobertura, entrega, condiciones, tiempos, logística, Perú, tarifas, productos, máquinas, embalaje, garantía, seguridad, rapidez, atención, servicio nacional, maquinaria, confianza, transporte, seguimiento."        
 >
   <section
-    class="relative bg-cover bg-center h-screen lg:h-dvh 2xl:h-[90dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
-    style={{
-      backgroundImage: `linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
-    }}
+      class="relative bg-cover bg-center h-screen lg:h-dvh 2xl:h-[90dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
+      }}
   >
-    <img src={iconCamion.src} alt="Icono de Camión" class="h-16 2xl:h-36" />
-    <h1
-      style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
-      class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold mb-2 lg:mb-3 2xl:mb-5"
-    >
-      POLÍTICA
-      <br />
-      DE ENVÍOS
-    </h1>
-    <p
-      class="text-sm px-4 sm:px-0 lg:text-2xl 2xl:text-5xl/tight font-bold 2xl:font-semibold"
-    >
-      Descubre nuestras políticas de envío,
-      <br />
-      pensadas para garantizar una experiencia
-      <br />
+    <!-- Bloque: icono + título -->
+    <div class="flex flex-row items-center mb-4 lg:mb-6">
+      <img src={iconCamion.src} alt="Icono de Camión" class="h-16 2xl:h-36 mr-4 lg:mr-8" />
+      <h1
+          style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
+          class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold"
+      >
+        POLÍTICA<br />DE ENVÍOS
+      </h1>
+    </div>
+
+    <!-- Bloque: párrafo debajo -->
+    <p class="text-sm px-4 sm:px-0 lg:text-2xl 2xl:text-5xl/tight font-bold 2xl:font-semibold">
+      Descubre nuestras políticas de envío,<br />
+      pensadas para garantizar una experiencia<br />
       confiable y segura en cada pedido.
     </p>
   </section>
+
+
   <section
-    class="w-full grid grid-cols-1 grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 py-5"
+      class="w-full grid grid-cols-1 grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 py-5"
   >
     <div class="w-full flex justify-center items-center">
-      <img src={mapaPeru.src} class="w-3/4 md:w-1/2 lg:w-1/2" />
+      <img src={mapaPeru.src} alt="Mapa apuntando Lima" class="w-3/4 md:w-1/2 lg:w-1/2" />
     </div>
     <div class="flex flex-col px-3 sm:pr-4">
       <h2
-        class="text-teal-700 font-extrabold text-lg lg:text-3xl 2xl:text-6xl lg:mb-4"
+          class="text-teal-700 font-extrabold text-lg lg:text-3xl 2xl:text-6xl lg:mb-4"
       >
         ENVÍOS A LIMA Y PROVINCIAS
       </h2>
       <div
-        class="flex place-content-center sm:place-content-start sm:items-start my-1 sm:my-3"
+          class="flex place-content-center sm:place-content-start sm:items-start my-1 sm:my-3"
       >
         <!--<img-->
         <!--  src={iconUbicacionRojo.src}-->
@@ -65,14 +66,14 @@ import Layout from "../layouts/Layout.astro";
             <li>La Victoria</li>
           </ul>
           <div
-            class="flex place-self-center items-center justify-center gap-3 bg-orange-300 text-white rounded-full px-4 sm:px-6 py-1 font-semibold text-xs lg:text-base 2xl:text-2xl my-5"
+              class="flex place-self-center items-center justify-center gap-3 bg-orange-600 text-white rounded-full px-4 sm:px-6 py-1 font-semibold text-xs lg:text-base 2xl:text-2xl my-5"
           >
             <svg
-              viewBox="0 0 24 24"
-              class="scale-x-[-1] w-8 h-8"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              ><path
+                viewBox="0 0 24 24"
+                class="scale-x-[-1] w-8 h-8"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            ><path
                 fill-rule="evenodd"
                 clip-rule="evenodd"
                 d="M2.678 11.422a2.5 2.5 0 0 0 0 3.536l6.364 6.364a2.5 2.5 0 0 0 3.536 0l7.69-7.69A2.5 2.5 0 0 0 21 11.864V4.5A1.5 1.5 0 0 0 19.5 3h-7.365a2.5 2.5 0 0 0-1.768.732l-7.69 7.69zM14.988 7C13.878 7 13 7.832 13 8.988c0 1.157.878 2.012 1.988 2.012C16.121 11 17 10.145 17 8.988 17 7.832 16.12 7 14.988 7z"
@@ -84,21 +85,21 @@ import Layout from "../layouts/Layout.astro";
                 <span class="font-extrabold">15 soles</span>
               </p>
               <ul
-                class="list-disc text-[0.62rem] lg:text-xs 2xl:text-xl ml-3 2xl:ml-6"
+                  class="list-disc text-[0.62rem] lg:text-xs 2xl:text-xl ml-3 2xl:ml-6"
               >
                 <li>Otros productos a cotizar</li>
               </ul>
             </div>
           </div>
           <div
-            class="flex place-self-center items-center justify-center gap-3 text-teal-700 font-bold lg:font-semibold text-xs lg:text-base 2xl:text-2xl"
+              class="flex place-self-center items-center justify-center gap-3 text-teal-700 font-bold lg:font-semibold text-xs lg:text-base 2xl:text-2xl"
           >
             <svg
-              viewBox="0 0 24 24"
-              class="scale-x-[-1] w-8 h-8"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              ><path
+                viewBox="0 0 24 24"
+                class="scale-x-[-1] w-8 h-8"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            ><path
                 fill-rule="evenodd"
                 clip-rule="evenodd"
                 d="M2.678 11.422a2.5 2.5 0 0 0 0 3.536l6.364 6.364a2.5 2.5 0 0 0 3.536 0l7.69-7.69A2.5 2.5 0 0 0 21 11.864V4.5A1.5 1.5 0 0 0 19.5 3h-7.365a2.5 2.5 0 0 0-1.768.732l-7.69 7.69zM14.988 7C13.878 7 13 7.832 13 8.988c0 1.157.878 2.012 1.988 2.012C16.121 11 17 10.145 17 8.988 17 7.832 16.12 7 14.988 7z"
@@ -112,7 +113,7 @@ import Layout from "../layouts/Layout.astro";
                 <span class="font-extrabold"> 20 soles</span>
               </p>
               <ul
-                class="list-disc text-[0.62rem] lg:text-sm 2xl:text-2xl ml-3 2xl:ml-6"
+                  class="list-disc text-[0.62rem] lg:text-sm 2xl:text-2xl ml-3 2xl:ml-6"
               >
                 <li>Otros productos a cotizar</li>
               </ul>
@@ -122,17 +123,18 @@ import Layout from "../layouts/Layout.astro";
       </div>
       <div class="flex items-start my-2 md:my-10">
         <img
-          src={iconUbicacionVerde.src}
-          class="hidden sm:block w-3 lg:w-5 2xl:w-8 ms-1 me-3 mt-1 lg:me-5"
+            src={iconUbicacionVerde.src}
+            alt = "Signo de ubicación"
+            class="hidden sm:block w-3 lg:w-5 2xl:w-8 ms-1 me-3 mt-1 lg:me-5"
         />
         <div>
           <h2
-            class="text-teal-700 font-extrabold mb-1 text-lg lg:text-3xl 2xl:text-6xl"
+              class="text-teal-700 font-extrabold mb-1 text-lg lg:text-3xl 2xl:text-6xl"
           >
             PROVINCIAS
           </h2>
           <p
-            class="font-semibold text-xs lg:text-lg 2xl:text-3xl text-justify 2xl:pe-8"
+              class="font-semibold text-xs lg:text-lg 2xl:text-3xl text-justify 2xl:pe-8"
           >
             El cliente elegirá la empresa por la cual desea el envío y pagará lo
             que la empresa cotice al momento de la entrega.

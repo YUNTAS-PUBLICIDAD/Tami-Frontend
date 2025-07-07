@@ -249,18 +249,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
 
   return (
       <>
-        {(!propIsOpen && <button
-            onClick={() => setIsOpen(true)}
-            className="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
-        >
-          Añadir Blog
-        </button>)}
         {(isOpen || propIsOpen) && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="max-h-[90vh] overflow-y-auto bg-white text-gray-800 p-8 rounded-xl w-full max-w-4xl shadow-2xl">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-3xl font-bold text-teal-600">{blogToEdit ? 'Editar Blog' : 'Añadir Nuevo Blog'}</h2>
                   <button
+                      type="button"
                       onClick={onClose ? onClose : closeModal}
                       className="text-gray-500 hover:text-gray-700 text-2xl"
                   >
