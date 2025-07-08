@@ -129,7 +129,7 @@ function ProductCard({ producto }: Props) {
                         ? producto.imagenes[0].url_imagen
                         : `${ApiUrl.replace(/\/$/, "")}${producto.imagenes[0].url_imagen}`)
                     : `https://placehold.co/100x150/orange/white?text=${encodeURIComponent(producto.nombre)}`;
-                //console.log(`[DEBUG] Imagen de ${producto.nombre}:`, src);
+                console.log(`[DEBUG] Imagen de ${producto.nombre}:`, src);
                 return src;
               })()
             }
