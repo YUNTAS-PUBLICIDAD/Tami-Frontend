@@ -49,11 +49,7 @@ function NavBar() {
           alt="Logo de Tami con letras"
           className="h-full lg:hidden"
           width="120"
-<<<<<<< HEAD
           height="50"
-=======
-          height="60"
->>>>>>> fcf0e87b697139d48ec88ea119b3fc6432538ef9
           loading="eager"
         />
         <img
@@ -66,14 +62,7 @@ function NavBar() {
         />
       </a>
 
-<<<<<<< HEAD
       <nav className="lg:flex hidden col-span-9 w-full h-full">
-=======
-
-      <nav className="lg:flex hidden  col-span-9 w-full h-full">
-
-
->>>>>>> fcf0e87b697139d48ec88ea119b3fc6432538ef9
         <ul className="flex gap-10 w-full h-full items-center place-content-center">
           {navLinks.map((item, index) => (
             <li key={index}>
