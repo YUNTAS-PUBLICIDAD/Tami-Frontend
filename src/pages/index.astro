@@ -8,13 +8,15 @@ import trabajo from "@images/index/personas-manos-hablando.webp";
 import ProductSlideshow from "src/components/index/ProductSlideshow.tsx";
 import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
-import 'src/styles/global.css'
+import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
 import ProductContainer from "../components/index/ProductContainer.astro";
 ---
 
-<Layout title="Maquinaria para Negocios y Soluciones Comerciales Innovadoras en Perú | Venta a Nivel Nacional Tami Maquinaria Inicio"
-        description="Selladoras, mesas LED, sillas LED, ventiladores holográficos, máquinas de empaque, equipos industriales, maquinaria comercial, maquinaria para negocios, Perú, embalaje, selladora industrial, eventos, productos innovadores, equipos LED, máquinas automáticas, negocio propio, artículos para empresas, atención nacional, máquinas modernas, iluminación LED.">
+<Layout
+  title="Maquinaria para Negocios y Soluciones Comerciales Innovadoras en Perú | Venta a Nivel Nacional Tami Maquinaria Inicio"
+  description="Selladoras, mesas LED, sillas LED, ventiladores holográficos, máquinas de empaque, equipos industriales, maquinaria comercial, maquinaria para negocios, Perú, embalaje, selladora industrial, eventos, productos innovadores, equipos LED, máquinas automáticas, negocio propio, artículos para empresas, atención nacional, máquinas modernas, iluminación LED."
+>
   <Hero client:load />
   <section
     id="bienvenida"
@@ -90,7 +92,7 @@ import ProductContainer from "../components/index/ProductContainer.astro";
     <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
-    <ProductSlideshow client:load/>
+    <ProductSlideshow client:load />
   </section>
   <h3
     class="text-xs py-2 md:text-2xl 2xl:text-4xl font-bold text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r from-teal-700 to-sunset gap-2"
@@ -150,20 +152,30 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       <div
         class="flex flex-wrap gap-4 my-6 justify-center text-white lg:justify-start 2xl:text-2xl xl:text-lg"
       >
-        <div class="bg-teal-700 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
+        <div
+          class="bg-teal-700 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full"
+        >
           CALIDAD
         </div>
-        <div class="bg-teal-600 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
+        <div
+          class="bg-teal-600 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full"
+        >
           INNOVACIÓN
         </div>
-        <div class="bg-teal-500 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
+        <div
+          class="bg-teal-500 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full"
+        >
           NEGOCIO PROPIO
         </div>
       </div>
     </div>
 
     {/* Imagen */}
-    <img src={trabajo.src} alt="Personal hablando" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
+    <img
+      src={trabajo.src}
+      alt="Personal hablando"
+      class="w-5/6 lg:w-1/2 2xl:w-1/4"
+    />
   </section>
 
   <section
@@ -180,10 +192,14 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       VALORAMOS CADA COMENTARIO PARA SEGUIR MEJORANDO Y OFRECIENDO LO MEJOR PARA
       TI.
     </h3>
-    <Testimonials client:load/>
-    <div class="relative w-full py-12 h-20 bg-gradient-to-r from-orange-300 from-30% to-teal-500 flex items-center justify-center">
+    <Testimonials client:load />
+    <div
+      class="relative w-full py-12 h-20 bg-gradient-to-r from-orange-300 from-30% to-teal-500 flex items-center justify-center"
+    >
       <div class="w-full max-w-screen-xl px-4 md:px-12 text-center">
-        <h1 class="text-white font-black text-2xl md:tracking-[.5em]">TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI</h1>
+        <h1 class="text-white font-black text-2xl md:tracking-[.5em]">
+          TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI
+        </h1>
       </div>
     </div>
   </section>

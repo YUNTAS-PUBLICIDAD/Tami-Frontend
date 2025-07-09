@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
 import logoTami from "@images/logos/logo_web.webp";
 import NavLink from "./NavLink";
@@ -7,61 +7,36 @@ import navLinks from "@data/navlinks.data";
 
 function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const debounce = <T extends (...args: any[]) => void>(
-    func: T,
-    delay: number
-  ): T => {
-    let timer: ReturnType<typeof setTimeout>;
-    return ((...args: Parameters<T>) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func(...args);
-      }, delay);
-    }) as T;
-  };
 
-  const handleScroll = useCallback(() => {
-    if (window.requestIdleCallback) {
-      window.requestIdleCallback(() => {
-        setIsScrolled(window.scrollY > 0);
-      });
-    } else {
-      setTimeout(() => {
-        setIsScrolled(window.scrollY > 0)
-      }, 0);
-    }
-  }, []);
-
-  const throttledScroll = useCallback(() => {
+  useEffect(() => {
     let ticking = false;
 
-    const updateScroll = () => {
-      handleScroll();
-      ticking = false;
-    };
-
-    return () => {
+    const handleScroll = () => {
       if (!ticking) {
-        requestAnimationFrame(updateScroll);
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
+          ticking = false;
+        });
         ticking = true;
       }
     };
-  }, [handleScroll])();
 
+    // Verificar estado inicial
+    setIsScrolled(window.scrollY > 50);
 
+    // Agregar listener con passive para mejor rendimiento
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
-  useEffect(() => {
-    setIsScrolled(window.scrollY > 0);
-    window.addEventListener("scroll", throttledScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", throttledScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
-  }, [throttledScroll]);
+  }, []);
 
   return (
     <header
-      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
-        }`}
+      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-300 grid grid-cols-2 lg:grid-cols-12 ${
+        isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
+      }`}
       style={{ maxWidth: '100vw' }}
     >
       <SideMenu links={navLinks} />
@@ -74,7 +49,7 @@ function NavBar() {
           alt="Logo de Tami con letras"
           className="h-full lg:hidden"
           width="120"
-          height="60"
+          height="50"
           loading="eager"
         />
         <img
@@ -87,10 +62,7 @@ function NavBar() {
         />
       </a>
 
-
-      <nav className="lg:flex hidden  col-span-9 w-full h-full">
-
-
+      <nav className="lg:flex hidden col-span-9 w-full h-full">
         <ul className="flex gap-10 w-full h-full items-center place-content-center">
           {navLinks.map((item, index) => (
             <li key={index}>
@@ -99,9 +71,9 @@ function NavBar() {
               </NavLink>
             </li>
           ))}
-          <li className="relative group text-white hover:text-teal-300 transition-colors duration-500 text-lg sm:text-xl font-bold cursor-pointer">
+          <li className="relative group text-white hover:text-teal-300 transition-colors duration-300 text-lg sm:text-xl font-bold cursor-pointer">
             Más
-            <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-teal-300 transition-all duration-500 group-hover:w-full group-hover:left-0"></span>
+            <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-teal-300 transition-all duration-300 group-hover:w-full group-hover:left-0"></span>
             <ul className="absolute w-24 hidden group-hover:block bg-teal-800 text-white shadow-2xl rounded-ss-none rounded-md font-bold top-7">
               <li>
                 <a
@@ -123,11 +95,12 @@ function NavBar() {
           </li>
         </ul>
       </nav>
+      
       <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
         <a
           href="https://api.whatsapp.com/send?phone=51978883199"
           target="_blank"
-          className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-500 font-bold"
+          className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-300 font-bold"
         >
           Contáctanos
         </a>

@@ -17,7 +17,7 @@ const { title, description } = Astro.props;
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
+      content="width=device-width, initial-scale=1.0"
     />
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,7 +78,7 @@ const { title, description } = Astro.props;
     <NavBar client:load />
     <slot />
     <Footer />
-    <ScrollModal client:load />
+    <ScrollModal client:visible />
     <WhatsApp />
   </body>
 </html>
