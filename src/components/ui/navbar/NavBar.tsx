@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
-import logoTami from "@images/logos/logo_web.webp";
+import logoTami from "@images/logos/logo-estatico.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
 import NavLink from "./NavLink";
 import SideMenu from "../sideMenu/SideMenu";
@@ -36,7 +36,7 @@ function NavBar() {
   return (
     <header
       className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-300 grid grid-cols-2 lg:grid-cols-12 ${
-        isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
+        isScrolled ? "bg-teal-700 shadow-lg" : "bg-teal-700e"
       }`}
       style={{ maxWidth: '100vw' }}
     >
@@ -56,14 +56,15 @@ function NavBar() {
         <img
           src={logoTami.src}
           alt="logo de Tami sin letras"
-          className="hidden lg:block"
-          width="120"
-          height="40"
+          className="hidden lg:block object-contain" // Agregado object-contain
+          width="76"
+          height="86"
           loading="eager"
+          style={{maxHeight: '60px' }} // Limita la altura máxima
         />
       </a>
 
-      <nav className="lg:flex hidden col-span-9 w-full h-full">
+      <nav className="lg:flex hidden col-span-7 w-full h-full">
         <ul className="flex gap-10 w-full h-full items-center place-content-center">
           {navLinks.map((item, index) => (
             <li key={index}>
@@ -97,7 +98,7 @@ function NavBar() {
         </ul>
       </nav>
 
-      <div className="hidden lg:flex col-span-2 h-full content-center text-end w-full items-center justify-end gap-4">
+      <div className="hidden lg:flex h-full content-center text-end col-span-4 w-full items-center justify-end gap-4">
         <a href="https://api.whatsapp.com/send?phone=51978883199" target="_blank" rel="noopener noreferrer">
           <img
               src={whatsappIcon.src}
