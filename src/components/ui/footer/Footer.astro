@@ -116,6 +116,18 @@ import CopyText from "./CopyText.astro";
         </h3>
         <CopyText>informestami01@gmail.com</CopyText>
         <CopyText>+51978883199</CopyText>
+        <!-- Redes sociales en mobile -->
+        <div class="mt-3 flex justify-start space-x-4">
+          {
+            socialMediaLinks.map((item) => (
+                <NavSocialMediaLink
+                    socialMediaName={item.socialMediaName}
+                    image={item.image.src}
+                    link={item.url}
+                />
+            ))
+          }
+        </div>
       </div>
     </div>
   </div>
