@@ -15,28 +15,25 @@ const { title, description } = Astro.props;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <meta name="generator" content={Astro.generator} />
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="preload"
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
       as="style"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
 
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <style>
@@ -49,7 +46,7 @@ const { title, description } = Astro.props;
           "Segoe UI",
           Roboto,
           sans-serif;
-        font-display: swap;
+
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden;
@@ -68,12 +65,22 @@ const { title, description } = Astro.props;
         font-size: 30px;
         z-index: 100;
       }
+
+      .font-loading {
+        visibility: hidden;
+      }
+
+      .fonts-loaded .font-loading {
+        visibility: visible;
+      }
     </style>
+
     <meta
       name="google-site-verification"
       content="fMYl61WKoofkx6daixXAZuFbR-zw9NlYGrf22iA1r0w"
     />
   </head>
+
   <body class="font-montserrat scroll-smooth w-full">
     <NavBar client:load />
     <slot />

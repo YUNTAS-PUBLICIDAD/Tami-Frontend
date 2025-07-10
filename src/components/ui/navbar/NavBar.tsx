@@ -21,8 +21,9 @@ function NavBar() {
       }
     };
 
-    // Verificar estado inicial
-    setIsScrolled(window.scrollY > 50);
+    const initialCheck = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
 
     // Agregar listener con passive para mejor rendimiento
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -34,33 +35,31 @@ function NavBar() {
 
   return (
     <header
-      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-300 grid grid-cols-2 lg:grid-cols-12 ${
-        isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
-      }`}
-      style={{ maxWidth: '100vw' }}
+      className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-300 grid grid-cols-2 lg:grid-cols-12 ${isScrolled ? "navbar-scrolled" : "navbar-transparent"
+        }`}
+      style={{ maxWidth: '100vw', minHeight: '60px' }}
     >
       <SideMenu links={navLinks} />
-      <a
-        href="/"
-        className="place-self-end lg:place-self-auto content-center h-14"
-      >
-        <img
-          src={logoMovil.src}
-          alt="Logo de Tami con letras"
-          className="h-full lg:hidden"
-          width="120"
-          height="50"
-          loading="eager"
-        />
-        <img
-          src={logoTami.src}
-          alt="logo de Tami sin letras"
-          className="hidden lg:block"
-          width="120"
-          height="40"
-          loading="eager"
-        />
-      </a>
+      <div className="place-self-end lg:place-self-auto content-center h-14">
+        <a href="/" className="block h-full">
+          <img
+            src={logoMovil.src}
+            alt="Logo de Tami con letras"
+            className="h-full lg:hidden object-contain"
+            width="120"
+            height="56"
+            loading="eager"
+          />
+          <img
+            src={logoTami.src}
+            alt="logo de Tami sin letras"
+            className="hidden lg:block h-full object-contain"
+            width="120"
+            height="56"
+            loading="eager"
+          />
+        </a>
+      </div>
 
       <nav className="lg:flex hidden col-span-9 w-full h-full">
         <ul className="flex gap-10 w-full h-full items-center place-content-center">
@@ -95,7 +94,7 @@ function NavBar() {
           </li>
         </ul>
       </nav>
-      
+
       <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
         <a
           href="https://api.whatsapp.com/send?phone=51978883199"

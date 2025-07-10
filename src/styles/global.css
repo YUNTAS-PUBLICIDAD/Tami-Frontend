@@ -139,3 +139,17 @@ input[type="checkbox"]:checked+label {
         min-height: 100vh;
     }
 }
+
+/* CODIGO CSS PARA OPTIMIZACION DE NAVBAR */
+
+.navbar-transparent {
+  background-color: transparent;
+  border-bottom: 1px solid white;
+  box-shadow: none;
+}
+
+.navbar-scrolled {
+  background-color: rgb(15 118 110); /* teal-700 */
+  border-bottom: none;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
