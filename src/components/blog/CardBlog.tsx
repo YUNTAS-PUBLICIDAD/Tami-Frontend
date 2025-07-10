@@ -34,7 +34,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
       >
         <figure className="lg:w-1/3 w-full">
           <img
-              src={`${apiUrl}${blog.imagenes[0]?.ruta_imagen}`}
+              src={`${apiUrl}${blog.imagen_principal}`}
               alt={blog.titulo}
               loading="lazy"
               className="w-full h-48 object-cover"

@@ -1,5 +1,6 @@
 ---
 import logoTami from "@images/logos/logo-blanco-tami.gif";
+import { Image } from "astro:assets";
 import socialMediaLinks from "@data/socialMedia.data";
 import NavSocialMediaLink from "../sideMenu/NavSocialMediaLink";
 import mascotaTami from "@images/logos/tami-mascota.webp";
@@ -9,13 +10,17 @@ import CopyText from "./CopyText.astro";
 <footer class="bg-teal-600 text-white py-6">
   {/* Diseño para resoluciones mayores a 1024px */}
   <div
-      class="hidden lg:flex container mx-auto px-4 mb-8 flex-col lg:flex-row justify-evenly items-start space-y-8 lg:space-y-0 lg:space-x-4"
+    class="hidden lg:flex container mx-auto px-4 mb-8 flex-col lg:flex-row justify-evenly items-start space-y-8 lg:space-y-0 lg:space-x-4"
   >
     {/* Logo */}
-    <img
-      src={logoTami.src}
+    <Image
+      src={logoTami}
       alt="Logo de Tami"
       class="self-center w-1/12 sm:w-1/16 lg:w-1/16 2xl:w-1/12"
+      width={120}
+      height={60}
+      loading="lazy"
+      format="webp"
     />
 
     {/* Línea vertical (visible solo en pantallas grandes) */}
@@ -34,15 +39,13 @@ import CopyText from "./CopyText.astro";
           <a href="/productos" class="text-white hover:underline">PRODUCTOS</a>
         </li>
         <li>
-          <a href="/src/pages/politicas-de-envio" class="text-white hover:underline"
-            >POLÍTICAS DE ENVÍOS</a
+          <a
+            href="/src/pages/politicas-de-envio"
+            class="text-white hover:underline">POLÍTICAS DE ENVÍOS</a
           >
         </li>
         <li>
           <a href="/blog" class="text-white hover:underline">BLOGS</a>
-        </li>
-        <li>
-          <a href="/store" class="text-white hover:underline">TIENDA</a>
         </li>
       </ul>
     </div>
@@ -50,23 +53,23 @@ import CopyText from "./CopyText.astro";
     {/* Información */}
     <div class="w-full lg:w-2/6 text-center lg:text-left">
       <h3 class="font-bold mb-1 text-white">Horario de atención</h3>
-      <p aria-label="Horario de atención: lunes a viernes, de 9:00 a 21:00 horas.">
+      <p
+        aria-label="Horario de atención: lunes a viernes, de 9:00 a 21:00 horas."
+      >
         Lunes a Viernes<br />
         9:00 am a 9:00 pm
       </p>
-      <h3 class="font-bold mt-3 mb-1 text-white">
-        Para mayor información
-      </h3>
+      <h3 class="font-bold mt-3 mb-1 text-white">Para mayor información</h3>
       <CopyText>informestami01@gmail.com</CopyText>
       <CopyText>+51978883199</CopyText>
       <div class="mt-3 flex justify-center lg:justify-start space-x-4">
         {
           socialMediaLinks.map((item) => (
-              <NavSocialMediaLink
-                  socialMediaName={item.socialMediaName}
-                  image={item.image.src}
-                  link={item.url}
-              />
+            <NavSocialMediaLink
+              socialMediaName={item.socialMediaName}
+              image={item.image.src}
+              link={item.url}
+            />
           ))
         }
       </div>
@@ -74,15 +77,19 @@ import CopyText from "./CopyText.astro";
 
     {/* Mascota y botón */}
     <div class="w-full lg:w-1/6 flex flex-col self-center items-center">
-      <img
-        src={mascotaTami.src}
+      <Image
+        src={mascotaTami}
         alt="Mascota de Tami"
         class="w-2/5 sm:w-1/4 lg:w-3/4 2xl:w-4/6 mb-4"
+        width={150}
+        height={150}
+        loading="lazy"
+        format="webp"
       />
       <a
-          href="https://api.whatsapp.com/send?phone=51978883199"
-          target="_blank"
-          class="bg-teal-700 hover:bg-teal-900 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
+        href="https://api.whatsapp.com/send?phone=51978883199"
+        target="_blank"
+        class="bg-teal-700 hover:bg-teal-900 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
       >
         ¡CONTÁCTANOS!
       </a>
@@ -91,8 +98,18 @@ import CopyText from "./CopyText.astro";
   {/* Diseño para resoluciones menores a 1024px */}
 
   <div class="block lg:hidden bg-teal-600 text-white py-4">
-    <div class="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:space-x-10 space-y-6 sm:space-y-0">
-      <img src={logoTami.src} alt="logo-tami" class="w-[80px] h-auto" />
+    <div
+      class="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:space-x-10 space-y-6 sm:space-y-0"
+    >
+      <Image
+        src={logoTami}
+        alt="logo-tami"
+        class="w-[80px] h-auto"
+        width={80}
+        height={40}
+        loading="lazy"
+        format="webp"
+      />
       <div class="text-left">
         <h3 class="font-bold text-yellow-300 text-sm md:text-base">
           Para mayor información
