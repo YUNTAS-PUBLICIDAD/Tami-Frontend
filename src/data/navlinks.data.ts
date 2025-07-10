@@ -10,7 +10,7 @@ const navLinks = [
   },
   {
     url: "/politicas-de-envio",
-    texto: "POLITICAS DE ENVIO",
+    texto: "POLÍTICAS DE ENVÍO",
   },
   {
     url: "/blog",
