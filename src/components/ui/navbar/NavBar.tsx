@@ -47,7 +47,7 @@ function NavBar() {
         <img
           src={logoMovil.src}
           alt="Logo de Tami con letras"
-          className="h-full lg:hidden"
+          className="h-full lg:hidden object-contain"
           width="120"
           height="50"
           loading="eager"
@@ -55,9 +55,9 @@ function NavBar() {
         <img
           src={logoTami.src}
           alt="logo de Tami sin letras"
-          className="hidden lg:block"
+          className="hidden lg:block object-contain"
           width="120"
-          height="40"
+          height="43"
           loading="eager"
         />
       </a>
