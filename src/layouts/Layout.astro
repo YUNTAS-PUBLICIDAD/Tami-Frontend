@@ -21,17 +21,17 @@ const { title, description } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="preload"
+      href="https://fonts.gstatic.com/s/montserrat/v29/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLjztg.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
       as="style"
       onload="this.onload=null;this.rel='stylesheet'"
     />
-
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
 
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
@@ -82,7 +82,7 @@ const { title, description } = Astro.props;
   </head>
 
   <body class="font-montserrat scroll-smooth w-full">
-    <NavBar client:load />
+    <NavBar client:idle />
     <slot />
     <Footer />
     <ScrollModal client:visible />
