@@ -20,8 +20,11 @@ const NavSocialMediaLink: React.FC<NavSocialMediaLinkProps> = ({
       <img 
       src={image} 
       alt={socialMediaName} 
-      className="w-full h-full" 
-      fetchPriority="high"/>
+      className="w-6 h-6" 
+      fetchPriority="high"
+      width = "24"
+      height = "24"
+      style={{ aspectRatio: '1/1' }}/>
     </a>
   );
 };

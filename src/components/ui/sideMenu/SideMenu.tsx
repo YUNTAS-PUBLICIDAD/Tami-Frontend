@@ -26,7 +26,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
 
   return (
       <>
-        <button className="w-9 h-9 lg:hidden" onClick={changeSideBarStatus}>
+        <button className="w-9 h-9 lg:hidden" title="Abrir Menú" onClick={changeSideBarStatus}>
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 18L20 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M4 12L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -65,15 +65,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                   </NavLink>
                 </li>
             ))}
-            <li>
-              <NavLink isForNavBar={false} to="/blog">
-                Blog
-              </NavLink>
-            </li>
           {/* Botón de Iniciar Sesión */}
             <li>
               <NavLink isForNavBar={false} to="/auth/sign-in">
-                Iniciar Sesión
+                INICIAR SESIÓN
               </NavLink>
             </li>
 

@@ -1,16 +1,20 @@
 const navLinks = [
-  { url: "/", texto: "Inicio" },
+  { url: "/", texto: "INICIO" },
   {
     url: "/about",
-    texto: "Nosotros",
+    texto: "NOSOTROS",
   },
   {
     url: "/productos",
-    texto: "Productos",
+    texto: "PRODUCTOS",
   },
   {
     url: "/politicas-de-envio",
-    texto: "Politicas de Envio",
+    texto: "POLÍTICAS DE ENVÍO",
   },
+  {
+    url: "/blog",
+    texto: "BLOGS",
+  }
 ];
 export default navLinks;
