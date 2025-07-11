@@ -12,18 +12,20 @@ const props = Astro.props;
   >
     <img
       src={props.image}
-      alt={props.title}
+      alt={props.alt}
+      title={props.imageTitle}
       class="absolute z-0 w-full h-full object-cover object-center"
-      width = "485px"
+      width="485px"
       height="728px"
     />
+
     <div
       class="text-center flex flex-col justify-end bg-gradient-to-t from-teal-700 from-10% to-transparent relative z-10 text-white w-full px-2 py-4 md:py-2"
     >
       <h3 class="text-2xl md:text-xl font-bold">{props.title}</h3>
       <p class="text-lg font-light hidden md:block">{props.paragraph}</p>
     </div>
-  </a>  
+  </a>
 
   <!-- En mobile, se muestra fuera de la tarjeta -->
   <div class="block md:hidden w-full mt-2 px-2">
@@ -31,4 +33,3 @@ const props = Astro.props;
     <hr class="border-t border-teal-800 my-3" />
   </div>
 </div>
-

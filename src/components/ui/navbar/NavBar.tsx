@@ -49,6 +49,7 @@ function NavBar() {
             width="120"
             height="56"
             loading="eager"
+            title="Logo de Tami con letras"
           />
           <img
             src={logoTami.src}
@@ -57,6 +58,7 @@ function NavBar() {
             width="120"
             height="56"
             loading="eager"
+            title="Logo de Tami sin letras"
           />
         </a>
       </div>

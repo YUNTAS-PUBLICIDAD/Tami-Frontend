@@ -4,12 +4,14 @@ interface NavSocialMediaLinkProps {
   socialMediaName: string;
   image: string;
   link: string;
+  imageTitle: string;
 }
 
 const NavSocialMediaLink: React.FC<NavSocialMediaLinkProps> = ({
   link,
   image,
   socialMediaName,
+  imageTitle,
 }) => {
   return (
     <a
@@ -24,7 +26,10 @@ const NavSocialMediaLink: React.FC<NavSocialMediaLinkProps> = ({
       fetchPriority="high"
       width = "24"
       height = "24"
-      style={{ aspectRatio: '1/1' }}/>
+      style={{ aspectRatio: '1/1' }}
+      title={imageTitle}
+      />
+      
     </a>
   );
 };

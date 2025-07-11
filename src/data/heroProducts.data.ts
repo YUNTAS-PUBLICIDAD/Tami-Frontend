@@ -8,6 +8,7 @@ const heroProducts = [
   {
     image: slide1.src,
     title: "NUESTROS\nPRODUCTOS",
+    imageTitle: "Nuestros productos",
     items: [],
   },
   {

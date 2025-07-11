@@ -48,6 +48,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                 loading="lazy"
                 className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                 alt="Icono de usuario"
+                title = "Icono de usuario"
             />
             <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
               Bienvenido
@@ -91,6 +92,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                       image={item.image.src}
                       link={item.url}
                       socialMediaName={item.socialMediaName}
+                      imageTitle={item.imageTitle}
                   />
               ))}
             </div>
