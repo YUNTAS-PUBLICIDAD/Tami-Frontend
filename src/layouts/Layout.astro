@@ -7,8 +7,9 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  canonicalUrl?: string;
 }
-const { title, description } = Astro.props;
+const { title, description, canonicalUrl } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,6 +17,7 @@ const { title, description } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,6 +34,8 @@ const { title, description } = Astro.props;
       as="style"
       onload="this.onload=null;this.rel='stylesheet'"
     />
+
+    <link rel="canonical" href={canonicalUrl} />
 
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
