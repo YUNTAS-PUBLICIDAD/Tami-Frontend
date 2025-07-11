@@ -7,9 +7,9 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
-  canonical?: string;
+  canonicalUrl?: string;
 }
-const { title, description, canonical } = Astro.props;
+const { title, description, canonicalUrl } = Astro.props;
 ---
 
 <!doctype html>
@@ -35,7 +35,7 @@ const { title, description, canonical } = Astro.props;
       onload="this.onload=null;this.rel='stylesheet'"
     />
 
-    <link rel="canonical" href={canonical} />
+    <link rel="canonical" href={canonicalUrl} />
 
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
