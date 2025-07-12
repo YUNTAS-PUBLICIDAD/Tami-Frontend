@@ -16,7 +16,7 @@ interface BlogPOST {
   video_titulo: string;
   video_url:string;
   producto_id: number;
-  imagenPrincipal: File | null;
+  miniatura: File | null;
   imagenes: ImagenAdicional[];
 }
 
@@ -41,7 +41,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     video_url: "",
     video_titulo: "",
     producto_id: 0,
-    imagenPrincipal: null,
+    miniatura: null,
     imagenes: [
       { imagen: null, parrafo: "" },
       { imagen: null, parrafo: "" },
@@ -119,7 +119,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           video_url: blogToEdit.video_url || "",
           video_titulo: blogToEdit.video_titulo || "",
           producto_id: blogToEdit.producto_id || 0,
-          imagenPrincipal: null,
+          miniatura: null,
           imagenes: blogToEdit.imagenes?.map((img: any) => ({
             imagen: null,
             parrafo: img.parrafo || "",
@@ -139,7 +139,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           video_url: "",
           video_titulo: "",
           producto_id: 0,
-          imagenPrincipal: null,
+          miniatura: null,
           imagenes: [
             { imagen: null, parrafo: "" },
             { imagen: null, parrafo: "" },
@@ -175,7 +175,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, imagenPrincipal: e.target.files[0] });
+      setFormData({ ...formData, miniatura: e.target.files[0] });
     }
   };
   const handleFileChangeAdicional = (
@@ -215,7 +215,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       video_url: "",
       video_titulo: "",
       producto_id: 0,
-      imagenPrincipal: null,
+      miniatura: null,
       imagenes: [
         { imagen: null, parrafo: "" },
         { imagen: null, parrafo: "" },
@@ -237,7 +237,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         !formData.video_url ||
         !formData.video_titulo ||
         !formData.producto_id ||
-        (!blogToEdit && !formData.imagenPrincipal) || // Solo obligatorio si es nuevo
+        (!blogToEdit && !formData.miniatura) || // Solo obligatorio si es nuevo
         formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)
     ) {
       Swal.fire({
@@ -263,8 +263,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
       // Solo si hay nueva imagen principal
-      if (formData.imagenPrincipal) {
-        formDataToSend.append("imagen_principal", formData.imagenPrincipal);
+      if (formData.miniatura) {
+        formDataToSend.append("imagen_principal", formData.miniatura);
       }
 
       formData.imagenes.forEach((item) => {
