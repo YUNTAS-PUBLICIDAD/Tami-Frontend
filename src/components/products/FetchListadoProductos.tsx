@@ -134,6 +134,7 @@ function ProductCard({ producto }: Props) {
               })()
             }
             alt={producto.imagenes[0]?.texto_alt_SEO || producto.nombre}
+            title={producto.imagenes[0]?.texto_alt_SEO || producto.imagenes[0]?.imageTitle}
             className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-150"
         />
       </div>
