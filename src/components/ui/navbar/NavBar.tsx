@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
-import logoTami from "@images/logos/logo_web.webp";
+import logoTami from "@images/logos/logo-estatico.webp";
+import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
 import NavLink from "./NavLink";
 import SideMenu from "../sideMenu/SideMenu";
 import navLinks from "@data/navlinks.data";
@@ -93,17 +94,16 @@ function NavBar() {
                 </a>
               </li>
             </ul>
-          </li>
+          </li>*/}
         </ul>
       </nav>
-
       <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
         <a
           href="https://api.whatsapp.com/send?phone=51978883199"
           target="_blank"
           className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-300 font-bold"
         >
-          Contáctanos
+          LOGIN
         </a>
       </div>
     </header>
