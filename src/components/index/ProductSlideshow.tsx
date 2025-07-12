@@ -59,6 +59,7 @@ const ProductSlideshow = () => {
                                 })()
                             }
                             alt={item.titulo}
+                            title={item.titulo}
                             className="w-32 h-32 rounded-2xl object-cover mb-4"
                         />
                         <h3 className="text-xl font-bold text-teal-600 tracking-wide mb-2">
@@ -131,6 +132,7 @@ const ProductSlideshow = () => {
                                 })()
                             }
                             alt={item.titulo}
+                            title={item.titulo}
                             className="w-4/5 place-self-center transition-transform duration-300 ease-in-out mb-10 group-hover:scale-100"
                         />
                         <h3 className="text-xl font-bold text-teal-700 tracking-wide">

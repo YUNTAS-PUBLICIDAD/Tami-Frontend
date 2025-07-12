@@ -17,6 +17,7 @@ const heroProducts = [
     title: "SELLADORA\nDE VASOS",
     subTitulo2: "Los derrames jamás volverán\na ser un problema",
     items: [],
+    imageTitle: "Selladora de vasos",
   },
   {
     image: slide3.src,
@@ -25,6 +26,7 @@ const heroProducts = [
     subTitulo2:
       "Potencia, versatilidad y resultados\nde calidad con la soldadura SPARK",
     items: [],
+    imageTitle: "Soldadora Spark",
   },
   {
     image: slide4.src,
@@ -32,6 +34,7 @@ const heroProducts = [
     title: "VENTILADOR\nHOLOGRÁFICO",
     subTitulo2: "Impulsa tu marca con\nnuestros hologramas",
     items: [],
+    imageTitle: "Ventilador holográfico",
   },
   {
     image: slide5.src,
@@ -39,6 +42,7 @@ const heroProducts = [
     title: "SELLADORA\nDE BOTELLAS",
     subTitulo2: "Sella, protege y asegura\ncada botella con presión.",
     items: [],
+    imageTitle: "Selladora de botellas",
   },
 ];
 export default heroProducts;

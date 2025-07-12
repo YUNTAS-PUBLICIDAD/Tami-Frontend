@@ -94,7 +94,7 @@ function NavBar() {
                 </a>
               </li>
             </ul>
-          </li>*/}
+          </li>
         </ul>
       </nav>
       <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
