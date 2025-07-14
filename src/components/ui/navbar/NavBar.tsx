@@ -55,6 +55,7 @@ function NavBar() {
               height="50"
               loading="eager"
               style={{ paddingLeft: '5rem' }}
+              title="Logo de Tami con letras"
           />
           <img
               src={logoTami.src}
@@ -64,6 +65,7 @@ function NavBar() {
               height="86"
               loading="eager"
               style={{maxHeight: '60px' }} // Limita la altura máxima
+              title="logo de Tami sin letras"
           />
         </a>
 
@@ -84,6 +86,7 @@ function NavBar() {
             <img
                 src={whatsappIcon.src}
                 alt="WhatsApp"
+                title="Conéctate con nosotros por WhatsApp"
                 className="w-7 h-7"
             />
           </a>
