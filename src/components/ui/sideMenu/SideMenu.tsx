@@ -66,15 +66,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                   </NavLink>
                 </li>
             ))}
-            <li>
-              <NavLink isForNavBar={false} to="/blog">
-                Blog
-              </NavLink>
-            </li>
           {/* Botón de Iniciar Sesión */}
             <li>
               <NavLink isForNavBar={false} to="/auth/sign-in">
-                Iniciar Sesión
+                INICIAR SESIÓN
               </NavLink>
             </li>
 

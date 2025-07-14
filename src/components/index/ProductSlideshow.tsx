@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 
 const ApiUrl = config.apiUrl;
 
+// Genera slug si no hay `link`
+function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+}
+
 const ProductSlideshow = () => {
     const [productsArray, setProductsArray] = useState<Producto[]>([]);
     const [slideIndex, setSlideIndex] = useState(0);
@@ -17,7 +26,7 @@ const ProductSlideshow = () => {
                     throw new Error(`Error en la petición: ${response.status}`);
                 }
                 const data = await response.json();
-                setProductsArray(data.data.slice(-3)); // Solo los últimos 3
+                setProductsArray(data.data.slice(-3));
             } catch (error) {
                 console.error("Error al obtener los productos:", error);
                 setProductsArray([]);
@@ -32,7 +41,10 @@ const ProductSlideshow = () => {
         return () => window.removeEventListener("resize", checkScreen);
     }, []);
 
-    if (productsArray.length === 0) return null; // Si no hay productos
+    if (productsArray.length === 0) return null;
+
+    const getLinkHref = (item: Producto) =>
+        `/productos/detalle?link=${item.link ?? slugify(item.titulo)}`;
 
     if (isMobile) {
         return (
@@ -40,10 +52,11 @@ const ProductSlideshow = () => {
                 {productsArray.map((item, index) => (
                     <div
                         key={item.id}
-                        className={`w-72 p-6 bg-gradient-to-b to-white flex flex-col items-center text-center transition-all duration-500 absolute ${slideIndex === index
-                            ? "opacity-100 scale-100 relative"
-                            : "opacity-0 scale-95 pointer-events-none"
-                            }`}
+                        className={`w-72 p-6 bg-gradient-to-b to-white flex flex-col items-center text-center transition-all duration-500 absolute ${
+                            slideIndex === index
+                                ? "opacity-100 scale-100 relative"
+                                : "opacity-0 scale-95 pointer-events-none"
+                        }`}
                     >
                         <img
                             src={
@@ -51,10 +64,11 @@ const ProductSlideshow = () => {
                                     if (item.imagenes[0]?.url_imagen instanceof File) {
                                         return URL.createObjectURL(item.imagenes[0].url_imagen);
                                     }
-
                                     const url = item.imagenes[0]?.url_imagen;
                                     return typeof url === "string"
-                                        ? (url.startsWith("http") ? url : `${ApiUrl.replace(/\/$/, "")}${url}`)
+                                        ? url.startsWith("http")
+                                            ? url
+                                            : `${ApiUrl.replace(/\/$/, "")}${url}`
                                         : `https://placehold.co/300x300/orange/white?text=${encodeURIComponent(item.titulo)}`;
                                 })()
                             }
@@ -66,7 +80,7 @@ const ProductSlideshow = () => {
                             {item.titulo}
                         </h3>
                         <a
-                            href={`/productos/details?id=${item.id}`}
+                            href={getLinkHref(item)}
                             className="mt-2 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full transition-all"
                         >
                             Información
@@ -74,7 +88,7 @@ const ProductSlideshow = () => {
                     </div>
                 ))}
 
-                {/* Flechas de navegación */}
+                {/* Flechas */}
                 <button
                     onClick={() =>
                         setSlideIndex((prev) => (prev - 1 + productsArray.length) % productsArray.length)
@@ -97,8 +111,9 @@ const ProductSlideshow = () => {
                     {productsArray.map((_, i) => (
                         <span
                             key={i}
-                            className={`h-3 w-3 rounded-full bg-gray-300 ${slideIndex === i ? "bg-teal-600" : ""
-                                }`}
+                            className={`h-3 w-3 rounded-full bg-gray-300 ${
+                                slideIndex === i ? "bg-teal-600" : ""
+                            }`}
                         />
                     ))}
                 </div>
@@ -106,7 +121,7 @@ const ProductSlideshow = () => {
         );
     }
 
-    // Vista normal (desktop)
+    // Desktop
     return (
         <div className="w-full grid grid-cols-3 gap-8 overflow-x-auto lg:overflow-visible scroll-smooth px-4 mb-20">
             {productsArray.map((item) => (
@@ -115,7 +130,7 @@ const ProductSlideshow = () => {
                     className="bg-gradient-to-b to-white text-center justify-items-center text-teal-700 h-full group relative flex flex-col items-center p-6 transition-all duration-300 hover:cursor-pointer"
                 >
                     <a
-                        href={`/productos/details?id=${item.id}`}
+                        href={getLinkHref(item)}
                         className="w-full h-full font-extrabold text-xl flex flex-col items-center gap-6"
                     >
                         <img
@@ -124,10 +139,11 @@ const ProductSlideshow = () => {
                                     if (item.imagenes[0]?.url_imagen instanceof File) {
                                         return URL.createObjectURL(item.imagenes[0].url_imagen);
                                     }
-
                                     const url = item.imagenes[0]?.url_imagen;
                                     return typeof url === "string"
-                                        ? (url.startsWith("http") ? url : `${ApiUrl.replace(/\/$/, "")}${url}`)
+                                        ? url.startsWith("http")
+                                            ? url
+                                            : `${ApiUrl.replace(/\/$/, "")}${url}`
                                         : `https://placehold.co/300x300/orange/white?text=${encodeURIComponent(item.titulo)}`;
                                 })()
                             }

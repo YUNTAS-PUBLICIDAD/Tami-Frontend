@@ -9,7 +9,7 @@ export default interface Blog {
   video_id: string; // tiene espacios, cuidado en postman
   video_url: string;
   video_titulo: string;
-  imagen_principal: string;
+  miniatura: string;
   imagenes: {
     ruta_imagen: string;
     texto_alt: string | null;
