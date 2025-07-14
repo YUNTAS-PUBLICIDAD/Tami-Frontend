@@ -11,6 +11,7 @@ import React, { useState } from "react";
 interface NavLink {
   url: string;
   texto: string;
+  title?: string;
 }
 
 interface SideMenuProps {
@@ -61,14 +62,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           <ul className="text-xl mt-5">
             {links.map((item, index: number) => (
                 <li key={index}>
-                  <NavLink isForNavBar={false} to={item.url}>
+                  <NavLink isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
                     {item.texto}
                   </NavLink>
                 </li>
             ))}
           {/* Botón de Iniciar Sesión */}
             <li>
-              <NavLink isForNavBar={false} to="/auth/sign-in">
+              <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
                 INICIAR SESIÓN
               </NavLink>
             </li>

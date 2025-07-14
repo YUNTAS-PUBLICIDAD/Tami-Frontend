@@ -31,22 +31,23 @@ import CopyText from "./CopyText.astro";
     <div class="w-full lg:w-1/6">
       <ul class="space-y-4 font-bold text-sm text-center lg:text-left">
         <li>
-          <a href="/" class="text-white hover:underline"> INICIO </a>
+          <a href="/" title="Ir a la seccion de inicio" class="text-white hover:underline"> INICIO </a>
         </li>
         <li>
-          <a href="/about" class="text-white hover:underline">NOSOTROS</a>
+          <a href="/about" title="Ir a la seccion de nosotros" class="text-white hover:underline">NOSOTROS</a>
         </li>
         <li>
-          <a href="/productos" class="text-white hover:underline">PRODUCTOS</a>
+          <a href="/productos" title="Ir a la seccion de productos" class="text-white hover:underline">PRODUCTOS</a>
         </li>
         <li>
           <a
             href="/src/pages/politicas-de-envio"
+            title="Ir a la seccion de politicas de envio"
             class="text-white hover:underline">POLÍTICAS DE ENVÍOS</a
           >
         </li>
         <li>
-          <a href="/blog" class="text-white hover:underline">BLOGS</a>
+          <a href="/blog" title="Ir a la seccion de blogs" class="text-white hover:underline">BLOGS</a>
         </li>
       </ul>
     </div>
@@ -69,8 +70,9 @@ import CopyText from "./CopyText.astro";
             <NavSocialMediaLink
               socialMediaName={item.socialMediaName}
               image={item.image.src}
-              link={item.url}
+              url={item.url}
               imageTitle={item.imageTitle}
+              linkTitle={item.linkTitle}
             />
           ))
         }
@@ -91,6 +93,7 @@ import CopyText from "./CopyText.astro";
       />
       <a
         href="https://api.whatsapp.com/send?phone=51978883199"
+        title="Contáctanos por WhatsApp"
         target="_blank"
         class="bg-teal-700 hover:bg-teal-900 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
       >
@@ -127,8 +130,9 @@ import CopyText from "./CopyText.astro";
                 <NavSocialMediaLink
                     socialMediaName={item.socialMediaName}
                     image={item.image.src}
-                    link={item.url}
+                    url={item.url}
                     imageTitle={item.imageTitle}
+                    linkTitle={item.linkTitle}
                 />
             ))
           }

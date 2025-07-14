@@ -53,6 +53,7 @@ const SignIn: React.FC = () => {
     >
       <a
         href="/"
+        title="Regresar a la página de inicio"
         className="absolute top-2 left-2 bg-red-700 text-white font-semibold rounded-2xl px-5 py-2 hover:bg-red-900 transition-colors duration-200 drop-shadow-lg opacity-70 hover:opacity-100"
       >
         Regresar
