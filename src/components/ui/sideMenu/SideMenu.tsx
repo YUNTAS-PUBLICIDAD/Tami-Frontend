@@ -86,9 +86,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                   <NavSocialMediaLink
                       key={index}
                       image={item.image.src}
-                      link={item.url}
+                      url={item.url}
                       socialMediaName={item.socialMediaName}
                       imageTitle={item.imageTitle}
+                      linkTitle={item.linkTitle}
                   />
               ))}
             </div>

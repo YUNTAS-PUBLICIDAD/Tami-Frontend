@@ -118,6 +118,7 @@ function ProductCard({ producto }: Props) {
   return (
     <a
       href={`/productos/detalle?link=${producto.link}`}
+      title={`Ver detalles de ${producto.nombre}`}
       className="my-4 sm:my-6 md:my-10 flex flex-col items-center group hover:cursor-pointer w-full"
     >
       <div className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden">
