@@ -30,6 +30,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
   return (
       <a
           href={`/blog/details?id=${blog.id}`}
+          title="Ver detalles del blog"
           className="my-5 flex flex-col lg:flex-row items-center transition-transform duration-300 ease-in-out hover:scale-105 bg-teal-800 text-white shadow-md overflow-hidden"
       >
         <figure className="lg:w-1/3 w-full">
