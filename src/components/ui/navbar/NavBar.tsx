@@ -85,7 +85,7 @@ function NavBar() {
             <img
                 src={whatsappIcon.src}
                 alt="WhatsApp"
-                className="w-7 h-7"
+                className="w-7 h-7 transition duration-200 ease-in-out transform hover:scale-125"
             />
           </a>
           <a
