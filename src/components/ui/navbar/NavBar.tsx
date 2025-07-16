@@ -67,7 +67,6 @@ function NavBar() {
               height="50"
               loading="eager"
               style={{ paddingLeft: '5rem' }}
-              style={{ paddingLeft: "5rem" }}
           />
           <img
               src={logoTami.src}
