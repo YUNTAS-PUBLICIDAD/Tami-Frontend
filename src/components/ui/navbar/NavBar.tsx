@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, useLayoutEffect} from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
 import logoTami from "@images/logos/logo-estatico.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
@@ -9,7 +9,7 @@ import navLinks from "@data/navlinks.data";
 function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let ticking = false;
 
     const handleScroll = () => {
@@ -29,6 +29,7 @@ function NavBar() {
 
     // Agregar listener con passive para mejor rendimiento
     window.addEventListener("scroll", handleScroll, { passive: true });
+    initialCheck();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
