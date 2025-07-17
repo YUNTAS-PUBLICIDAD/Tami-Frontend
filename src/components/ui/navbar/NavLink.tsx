@@ -4,9 +4,10 @@ interface NavLinkProps {
     isForNavBar: boolean;
     to: string;
     children: React.ReactNode;
+    title: string; 
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ isForNavBar, to, children }) => (
+const NavLink: React.FC<NavLinkProps> = ({ isForNavBar, to, children, title }) => (
     <>
         <a
             href={to}
@@ -15,6 +16,7 @@ const NavLink: React.FC<NavLinkProps> = ({ isForNavBar, to, children }) => (
                     ? "hover:text-teal-300 transition-colors duration-500 text-xl relative group"
                     : "hover:underline underline-offset-4 text-xl sm:text-2xl block py-1 my-4 hover:bg-gradient-to-r hover:from-teal-950 hover:from-5% transition-colors duration-500 pl-4 rounded-l-xl"
             }`}
+            title={title} 
         >
             {children}
             {isForNavBar && (

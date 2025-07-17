@@ -13,6 +13,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                     src={logo.src}
                     alt="Logo de Tami"
                     className="w-full h-14"
+                    title = "Logo de Tami"
                 />
             </div>
         </header>

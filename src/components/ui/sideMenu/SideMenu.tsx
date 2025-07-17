@@ -11,6 +11,7 @@ import React, { useState } from "react";
 interface NavLink {
   url: string;
   texto: string;
+  title?: string;
 }
 
 interface SideMenuProps {
@@ -48,6 +49,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                 loading="lazy"
                 className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                 alt="Icono de usuario"
+                title = "Icono de usuario"
             />
             <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
               Bienvenido
@@ -60,14 +62,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           <ul className="text-xl mt-5">
             {links.map((item, index: number) => (
                 <li key={index}>
-                  <NavLink isForNavBar={false} to={item.url}>
+                  <NavLink isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
                     {item.texto}
                   </NavLink>
                 </li>
             ))}
           {/* Botón de Iniciar Sesión */}
             <li>
-              <NavLink isForNavBar={false} to="/auth/sign-in">
+              <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
                 INICIAR SESIÓN
               </NavLink>
             </li>
@@ -84,8 +86,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                   <NavSocialMediaLink
                       key={index}
                       image={item.image.src}
-                      link={item.url}
+                      url={item.url}
                       socialMediaName={item.socialMediaName}
+                      imageTitle={item.imageTitle}
+                      linkTitle={item.linkTitle}
                   />
               ))}
             </div>

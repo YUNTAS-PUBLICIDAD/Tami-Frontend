@@ -19,7 +19,7 @@ import Layout from "../layouts/Layout.astro";
   >
     <!-- Bloque: icono + título -->
     <div class="flex flex-row items-center mb-4 lg:mb-6">
-      <img src={iconCamion.src} alt="Icono de Camión" class="h-16 2xl:h-36 mr-4 lg:mr-8" />
+      <img src={iconCamion.src} alt="Icono de Camión" class="h-16 2xl:h-36 mr-4 lg:mr-8" title="Icono de Camión" />
       <h1
           style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
           class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold"
@@ -41,7 +41,7 @@ import Layout from "../layouts/Layout.astro";
       class="w-full grid grid-cols-1 grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 py-5"
   >
     <div class="w-full flex justify-center items-center">
-      <img src={mapaPeru.src} alt="Mapa apuntando Lima" class="w-3/4 md:w-1/2 lg:w-1/2" />
+      <img src={mapaPeru.src} alt="Mapa apuntando Lima" class="w-3/4 md:w-1/2 lg:w-1/2" title="Mapa apuntando Lima"/>
     </div>
     <div class="flex flex-col px-3 sm:pr-4">
       <h2
@@ -127,6 +127,7 @@ import Layout from "../layouts/Layout.astro";
             src={iconUbicacionVerde.src}
             alt = "Signo de ubicación"
             class="hidden sm:block w-3 lg:w-5 2xl:w-8 ms-1 me-3 mt-1 lg:me-5"
+            title="Signo de ubicación"
         />
         <div>
           <h2

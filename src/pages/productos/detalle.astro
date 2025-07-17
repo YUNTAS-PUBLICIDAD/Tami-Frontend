@@ -315,6 +315,7 @@ const productosUrl = config.endpoints.productos;
       const a = document.createElement("a");
       a.href = `/productos/detalle?link=${encodeURIComponent(prod.link)}`;
       a.className = "group cursor-pointer";
+      a.title = `Ver detalles de ${prod.titulo}`;
 
       const div = document.createElement("div");
       div.className =
