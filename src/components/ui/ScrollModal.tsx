@@ -123,6 +123,7 @@ const ScrollModal = () => {
                                 href="https://api.whatsapp.com/send?phone=51978883199&text=Hola%2C%20quiero%20recibir%20mi%20asesor%C3%ADa%20gratis."
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                title="Iniciar chat de WhatsApp para asesoría"
                                 className="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center"
                             >
                                 ¡HABLEMOS!

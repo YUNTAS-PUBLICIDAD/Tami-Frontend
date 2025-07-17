@@ -36,6 +36,7 @@ export interface ProductFormularioPOST {
 interface Imagen {
   url_imagen: File | string | null;
   texto_alt_SEO: string;
+  imageTitle: string;
 }
 
 export default interface Producto {

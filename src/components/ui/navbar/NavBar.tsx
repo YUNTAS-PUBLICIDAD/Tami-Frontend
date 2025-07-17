@@ -45,6 +45,7 @@ function NavBar() {
         <SideMenu links={navLinks} />
         <a
             href="/"
+            title="Ir a la seccion de inicio"
             className="place-self-end lg:place-self-auto content-center h-14 mr-4"
         >
         <img
@@ -55,6 +56,7 @@ function NavBar() {
               height="50"
               loading="eager"
               style={{ paddingLeft: '5rem' }}
+              title="Logo de Tami con letras"
           />
           <img
               src={logoTami.src}
@@ -64,6 +66,7 @@ function NavBar() {
               height="86"
               loading="eager"
               style={{maxHeight: '60px' }} // Limita la altura máxima
+              title="logo de Tami sin letras"
           />
         </a>
 
@@ -80,15 +83,17 @@ function NavBar() {
         </nav>
 
         <div className="hidden lg:flex h-full content-center text-end col-span-4 w-full items-center justify-end gap-4">
-          <a href="https://api.whatsapp.com/send?phone=51978883199" target="_blank" rel="noopener noreferrer">
+          <a href="https://api.whatsapp.com/send?phone=51978883199" title="Contáctanos por WhatsApp" target="_blank" rel="noopener noreferrer">
             <img
                 src={whatsappIcon.src}
                 alt="WhatsApp"
+                title="Conéctate con nosotros por WhatsApp"
                 className="w-7 h-7"
             />
           </a>
           <a
               href="/auth/sign-in"
+              title="Ir a la sección de inicio de sesión"
               target="_blank"
               className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-300 font-bold"
           >
