@@ -1,7 +1,7 @@
 export default interface Blog {
   id: number;
   titulo: string;
-  producto_id: number | null;
+  nombre_producto?: string | null;
   link: string; // nuevo video_id
   subtitulo1: string; // antes: parrafo
   subtitulo2: string; // antes: descripcion
