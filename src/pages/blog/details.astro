@@ -241,15 +241,17 @@ const blogsUrl = config.endpoints.blogs;
         }
 
 
-        const blogProductLinkElement = document.getElementById("blog-product-link");
+        // Mostrar nombre del producto relacionado (si existe)
+        /*if (blog.nombre_producto) {
+          const productNameTag = document.createElement("p");
+          productNameTag.textContent = `Producto relacionado: ${blog.nombre_producto}`;
+          productNameTag.className = "text-lg font-semibold text-teal-700 mb-4";
 
-        // Verificar si existe un producto_id en el blog
-        if (blog.producto_id && blogProductLinkElement) {
-          if (blog.producto_id && blogProductLinkElement) {
-            blogProductLinkElement.href = `/productos/detalle.html?id=${blog.producto_id}`;
-            blogProductLinkElement.classList.remove("hidden");
+          if (blogSectionsElement) {
+            blogSectionsElement.prepend(productNameTag);
           }
-        }
+        }*/
+
 
         // MOSTRAR VIDEO CON IFRAME
         if (blogVideoSectionElement && blog.video_id) {

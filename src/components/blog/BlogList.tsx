@@ -3,67 +3,43 @@ import CardBlog from "./CardBlog";
 import type Blog from "src/models/Blog";
 import { getApiUrl, config } from "config";
 
-interface BlogWithProduct extends Blog {
-  producto_titulo?: string;
-}
-
 const BlogList = ({ searchTerm }: { searchTerm: string }) => {
-  const [blogs, setBlogs] = useState<BlogWithProduct[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const apiUrlBlogs = getApiUrl(config.endpoints.blogs.list);
-    const apiUrlProductos = `${config.apiUrl}${config.endpoints.productos.list}`;
 
-    const fetchBlogsAndAllProducts = async () => {
+    const fetchBlogs = async () => {
       try {
-        //Fetch blogs
-        const blogsRes = await fetch(apiUrlBlogs);
-        if (!blogsRes.ok) throw new Error(`HTTP error blogs!`);
-        const blogsData = await blogsRes.json();
+        const res = await fetch(apiUrlBlogs);
+        if (!res.ok) throw new Error("HTTP error blogs!");
 
-        if (!blogsData.success && !Array.isArray(blogsData.data)) {
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.data)) {
           throw new Error("No se pudieron obtener los blogs");
         }
-        const blogsFetched: Blog[] = blogsData.data;
 
-        //Fetch all products (paginated)
-        const productosRes = await fetch(`${apiUrlProductos}?per_page=100`); // Ajusta per_page si backend lo soporta
-        if (!productosRes.ok) throw new Error(`HTTP error productos!`);
-        const productosData = await productosRes.json();
-        
-        if (!Array.isArray(productosData.data)) {
-          throw new Error("No se pudieron obtener los productos");
-        }
-
-        const productosMap: Record<number, string> = {};
-        for (const p of productosData.data) {
-          productosMap[Number(p.id)] = p.titulo || p.nombre || "Sin título";
-        }
-
-        //Combinar cada blog con el nombre del producto
-        const blogsWithProducts: BlogWithProduct[] = blogsFetched.map((blog) => ({
-          ...blog,
-          producto_titulo: blog.producto_id
-              ? productosMap[Number(blog.producto_id)] || "Producto no disponible"
-              : "Producto no disponible",
-        }));
-
-        setBlogs(blogsWithProducts);
+        setBlogs(data.data);
       } catch (err) {
         setError(
-            "Error al obtener blogs/productos: " +
+            "Error al obtener blogs: " +
             (err instanceof Error ? err.message : "Error desconocido")
         );
       }
     };
 
-    fetchBlogsAndAllProducts();
+    fetchBlogs();
   }, []);
 
-  const filteredBlogs = blogs.filter((blog) =>
-      blog.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBlogs = blogs.filter((blog) => {
+    const search = searchTerm.toLowerCase();
+    return (
+        blog.titulo.toLowerCase().includes(search) ||
+        blog.nombre_producto?.toLowerCase().includes(search)
+    );
+  });
+
 
   return (
       <>
