@@ -87,7 +87,11 @@ function NavBar() {
           <ul className="flex gap-10 w-full h-full items-center place-content-center">
             {navLinks.map((item, index) => (
                 <li key={index}>
-                  <NavLink to={item.url} isForNavBar={true}>
+                  <NavLink
+                      to={item.url}
+                      isForNavBar={true}
+                      title={`Ir a la sección de ${item.texto}`}
+                  >
                     {item.texto}
                   </NavLink>
                 </li>
