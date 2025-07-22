@@ -1,0 +1,47 @@
+---
+import Footer from "../components/ui/footer/Footer.astro";
+import NavBar from "../components/ui/navbar/NavBar";
+import ScrollModal from "../components/ui/ScrollModal.tsx";
+import WhatsApp from "../components/ui/whatsapp.astro";
+import "@styles/global.css";
+
+interface Props {
+    title: string;
+    description?: string;
+    canonicalUrl?: string;
+}
+const { title, description, canonicalUrl } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" href="/logo.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+        body {
+            font-family: "Montserrat", system-ui, sans-serif;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body class="font-montserrat scroll-smooth w-full">
+<NavBar client:idle />
+<slot />
+<Footer />
+<ScrollModal client:visible />
+<WhatsApp />
+</body>
+</html>
+
