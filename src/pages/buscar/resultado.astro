@@ -1,11 +1,12 @@
 ---
 import type Producto from "../../models/Product";
-
+import type Blog from "../../models/Blog";
 interface Props {
     productos: Producto[];
+    blogs: Blog[];
 }
 const apiUrl = import.meta.env.PUBLIC_API_URL;
-const { productos } = Astro.props;
+const { productos, blogs } = Astro.props;
 
 // Función para construir la URL completa de imagen
 const getImageUrl = (url: unknown): string => {
@@ -18,6 +19,11 @@ const getImageUrl = (url: unknown): string => {
 };
 ---
 
+{productos.length === 0 && blogs.length === 0 ? (
+<div class="col-span-full text-center text-gray-600 text-lg py-12">
+    No se encontraron resultados para tu búsqueda.
+</div>
+    ) : (
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 py-6">
     {productos.map(producto => {
         const imagen = producto.imagenes?.[0]?.url_imagen ?? null;
@@ -25,20 +31,44 @@ const getImageUrl = (url: unknown): string => {
         const imageUrl = getImageUrl(imagen);
 
         return (
-            <a
-                href={`/productos/detalle?link=${encodeURIComponent(producto.link)}`}
-                class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
-            >
-                <img
-                    src={imageUrl}
-                    alt={textoAlt}
-                    class="w-full h-36 sm:h-40 object-cover"
-                />
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-900">{producto.titulo}</h3>
-                    <p class="text-sm text-gray-600">{producto.subtitulo}</p>
-                </div>
-            </a>
+                <a
+                        href={`/productos/detalle?link=${encodeURIComponent(producto.link)}`}
+                        class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+                >
+                    <img
+                            src={imageUrl}
+                            alt={textoAlt}
+                            class="w-full h-36 sm:h-40 object-cover"
+                    />
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{producto.titulo}</h3>
+                        <p class="text-sm text-gray-600">{producto.subtitulo}</p>
+                    </div>
+                </a>
+        );
+    })}
+
+    {blogs.map(blog => {
+        const imagen = blog.miniatura ?? blog.imagenes?.[0]?.ruta_imagen ?? null;
+        const textoAlt = blog.imagenes?.[0]?.texto_alt ?? blog.titulo;
+        const imageUrl = getImageUrl(imagen);
+
+        return (
+                <a
+                        href={`/blog/${encodeURIComponent(blog.link)}`}
+                        class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+                >
+                    <img
+                            src={imageUrl}
+                            alt={textoAlt}
+                            class="w-full h-36 sm:h-40 object-cover"
+                    />
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{blog.titulo}</h3>
+                        <p class="text-sm text-gray-600">{blog.subtitulo1}</p>
+                    </div>
+                </a>
         );
     })}
 </div>
+    )}

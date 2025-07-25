@@ -1,32 +1,50 @@
 ---
 export const prerender = false;
+
 import { config } from "config";
 import heroFondo from "../assets/images/index/hero/impulso-negocios-tecnologia.webp";
 import Resultado from "./buscar/resultado.astro";
 import BuscarLayout from "../layouts/BuscarLayout.astro";
 import type Producto from "../models/Product";
+import type Blog from "../models/Blog";
 
 const { searchParams } = Astro.url;
-const query = searchParams.get("q")?.trim() ?? "";
+const rawQuery = searchParams.get("q")?.trim() ?? "";
+const query = rawQuery.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 let productos: Producto[] = [];
+let blogs: Blog[] = [];
+
+function normalizar(texto: string) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
 if (query) {
     try {
-        const res = await fetch(`${config.apiUrl}${config.endpoints.productos.list}`);
-        if (res.ok) {
-            const json = await res.json();
+        // 🔍 Fetch productos
+        const resProductos = await fetch(`${config.apiUrl}${config.endpoints.productos.list}`);
+        if (resProductos.ok) {
+            const json = await resProductos.json();
             const todos = json.data ?? [];
 
-            productos = todos.filter((producto: Producto) => {
-                const q = query.toLowerCase();
-                return (
-                    producto.nombre?.toLowerCase().includes(q) ||
-                    producto.titulo?.toLowerCase().includes(q) ||
-                    producto.subtitulo?.toLowerCase().includes(q)
-                );
-            });
+            productos = todos.filter((producto: Producto) =>
+                [producto.nombre, producto.titulo, producto.subtitulo, producto.descripcion]
+                    .some(campo => campo && normalizar(campo).includes(query))
+            );
         }
+
+        // 🔍 Fetch blogs
+        const resBlogs = await fetch(`${config.apiUrl}${config.endpoints.blogs.list}`);
+        if (resBlogs.ok) {
+            const json = await resBlogs.json();
+            const todos = json.data ?? [];
+
+            blogs = todos.filter((blog: Blog) =>
+                [blog.titulo, blog.subtitulo1, blog.nombre_producto, blog.subtitulo2]
+                    .some(campo => campo && normalizar(campo).includes(query))
+            );
+        }
+
     } catch (error) {
         console.error("Error en fetch:", error);
     }
@@ -55,7 +73,7 @@ if (query) {
 
         <!-- RESULTADOS -->
         <main class="relative z-10 max-w-7xl mx-auto px-6 py-12 bg-white rounded-xl shadow-2xl mb-10 -mt-32 md:-mt-40 border-4 border-teal-500">
-            <Resultado productos={productos} />
+            <Resultado productos={productos} blogs={blogs} />
         </main>
 
     </div>
