@@ -1,44 +1,36 @@
 ---
-interface Imagen {
-    url_imagen: string;
-    texto_alt_SEO: string;
+import type Producto from "../../models/Product";
+export interface Props {
+    productos: Producto[];
 }
-
-interface Producto {
-    id: number;
-    titulo: string;
-    subtitulo: string;
-    link: string;
-    imagenes: Imagen[];
-}
-
-const props = Astro.props;
-const productos: Producto[] = Array.isArray(props.productos) ? props.productos : [];
+const { productos } = Astro.props;
 ---
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     {productos.length === 0 ? (
-            <Fragment>
-                <p class="col-span-full text-center text-gray-600">No se encontraron productos.</p>
-            </Fragment>
+            <p class="col-span-full text-center text-gray-600">No se encontraron productos.</p>
     ) : (
-            <Fragment>
+            <>
                 {productos.map((producto) => (
                         <a
                                 href={`/productos/detalle?link=${producto.link}`}
                                 class="block bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
                         >
                             <img
-                                    src={producto.imagenes[0]?.url_imagen ?? "/placeholder.jpg"}
+                                    src={
+                                        typeof producto.imagenes[0]?.url_imagen === "string"
+                                            ? producto.imagenes[0]?.url_imagen
+                                            : "/placeholder.jpg"
+                                    }
                                     alt={producto.imagenes[0]?.texto_alt_SEO ?? producto.titulo}
-                                    class="w-full h-48 object-cover"
+                                    class="w-full h-36 sm:h-40 object-cover"
                             />
-                            <div class="p-4">
-                                <h2 class="font-bold text-lg">{producto.titulo}</h2>
-                                <p class="text-sm text-gray-600">{producto.subtitulo}</p>
+                            <div class="p-3">
+                                <h2 class="font-bold text-base line-clamp-2">{producto.titulo}</h2>
+                                <p class="text-sm text-gray-600 line-clamp-2">{producto.subtitulo}</p>
                             </div>
                         </a>
                 ))}
-            </Fragment>
+            </>
     )}
 </div>

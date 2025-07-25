@@ -1,33 +1,62 @@
 ---
-
+export const prerender = false;
 import { config } from "config";
-import { slugify } from "../utils/slugify";
+import heroFondo from "../assets/images/index/hero/impulso-negocios-tecnologia.webp";
 import Resultado from "./buscar/resultado.astro";
 import BuscarLayout from "../layouts/BuscarLayout.astro";
+import type Producto from "../models/Product";
 
 const { searchParams } = Astro.url;
 const query = searchParams.get("q")?.trim() ?? "";
 
-let productos = [];
+let productos: Producto[] = [];
 
 if (query) {
     try {
-        const res = await fetch(`${config.apiUrl}${config.endpoints.productos.list}?search=${query}`);
+        const res = await fetch(`${config.apiUrl}${config.endpoints.productos.list}`);
         if (res.ok) {
-            const data = await res.json();
-            productos = data.data ?? [];
-            console.log("Productos encontrados:", productos);
-            console.log(`${config.apiUrl}${config.endpoints.productos.list}?search=${query}`);
-        } else {
-            console.warn("La respuesta no fue OK:", res.status);
+            const json = await res.json();
+            const todos = json.data ?? [];
+
+            productos = todos.filter((producto: Producto) => {
+                const q = query.toLowerCase();
+                return (
+                    producto.nombre?.toLowerCase().includes(q) ||
+                    producto.titulo?.toLowerCase().includes(q) ||
+                    producto.subtitulo?.toLowerCase().includes(q)
+                );
+            });
         }
-    } catch (e) {
-        console.error("Error fetching productos:", e);
+    } catch (error) {
+        console.error("Error en fetch:", error);
     }
 }
 ---
+
 <BuscarLayout title="Buscar Productos" description="Resultados de tu búsqueda">
-    <div class="px-4 pt-4 min-h-screen bg-gray-50">
-        <Resultado productos={productos} />
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="bg-teal-500 flex flex-col min-h-screen">
+
+        <!-- HERO CON FONDO Y DEGRADADO -->
+        <header class="relative w-full h-[400px] md:h-[500px]">
+            <img
+                    src={heroFondo.src}
+                    alt="Fondo búsqueda"
+                    title="Fondo búsqueda"
+                    class="w-full h-full object-cover filter brightness-50"
+            />
+            <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-b from-teal-700/65 to-85%" />
+            <div class="absolute inset-0 flex items-center justify-center">
+                <h1 class="text-white text-3xl sm:text-4xl font-bold text-center px-4 drop-shadow-lg">
+                    Resultados de tu búsqueda
+                </h1>
+            </div>
+        </header>
+
+        <!-- RESULTADOS -->
+        <main class="relative z-10 max-w-7xl mx-auto px-6 py-12 bg-white rounded-xl shadow-2xl mb-10 -mt-32 md:-mt-40 border-4 border-teal-500">
+            <Resultado productos={productos} />
+        </main>
+
     </div>
 </BuscarLayout>

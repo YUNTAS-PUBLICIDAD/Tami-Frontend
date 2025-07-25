@@ -10,4 +10,3 @@ export const GET: APIRoute = async ({ redirect, params }) => {
     const query = Array.isArray(slug) ? slug.join(" ") : slug;
     return redirect(`/buscar?q=${encodeURIComponent(query)}`, 302);
 };
-
