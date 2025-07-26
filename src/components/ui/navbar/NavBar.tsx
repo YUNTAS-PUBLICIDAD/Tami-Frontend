@@ -1,4 +1,4 @@
-import {useState, useEffect, useLayoutEffect} from "react";
+import {useState, useEffect} from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
 import logoTami from "@images/logos/logo-estatico.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
@@ -10,7 +10,7 @@ function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [search, setSearch] = useState("");
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let ticking = false;
 
     const handleScroll = () => {
@@ -129,6 +129,8 @@ function NavBar() {
             <button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 text-teal-600 hover:text-teal-800"
+                aria-label="Buscar"
+                title="Botón de búsqueda"
             >
               <svg
                   className="w-5 h-5"
