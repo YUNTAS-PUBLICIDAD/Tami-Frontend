@@ -7,6 +7,8 @@ import { FaEdit } from "react-icons/fa";
 import type Product from "src/models/Product";
 import {IoMdCloseCircle} from "react-icons/io";
 import Swal from "sweetalert2";
+import { slugify } from "../../../utils/slugify";
+
 
 interface EditProductProps {
     product: Product;
@@ -26,7 +28,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         nombre: "",
         titulo: "",
         subtitulo: "",
-        lema: "",
+        link: "",
         descripcion: "",
         stock: 100,
         precio: 199.99,
@@ -147,7 +149,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             nombre: "",
             titulo: "",
             subtitulo: "",
-            lema: "",
+            link: "",
             descripcion: "",
             stock: 100,
             precio: 199.99,
@@ -229,7 +231,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             !formData.nombre ||
             !formData.titulo ||
             !formData.subtitulo ||
-            !formData.lema ||
             !formData.descripcion ||
             !formData.seccion ||
             !formData.especificaciones.color ||
@@ -255,8 +256,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("nombre", formData.nombre);
             formDataToSend.append("titulo", formData.titulo);
             formDataToSend.append("subtitulo", formData.subtitulo);
-            formDataToSend.append("lema", formData.lema);
-            formDataToSend.append("link", formData.lema);
+            const nuevoLink = slugify(formData.titulo || formData.nombre);
+            formDataToSend.append("link", nuevoLink);
             formDataToSend.append("descripcion", formData.descripcion);
             formDataToSend.append("stock", formData.stock.toString());
             formDataToSend.append("precio", formData.precio.toString());
@@ -350,7 +351,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 nombre: product.nombre,
                 titulo: product.titulo,
                 subtitulo: product.subtitulo,
-                lema: product.lema,
+                link: product.link,
                 descripcion: product.descripcion,
                 stock: product.stock,
                 precio: product.precio,
@@ -458,18 +459,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         type="text"
                                         name="subtitulo"
                                         placeholder="Subtitulo..."
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                                    />
-                                </div>
-                                <div className="form-input">
-                                    <label className="block !text-gray-700 text-sm font-medium mb-1">Lema:</label>
-                                    <input
-                                        required
-                                        value={formData.lema}
-                                        onChange={handleChange}
-                                        type="text"
-                                        name="lema"
-                                        placeholder="Lema..."
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                     />
                                 </div>
