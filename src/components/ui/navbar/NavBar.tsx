@@ -152,7 +152,6 @@ function NavBar() {
           <a
               href="/auth/sign-in"
               title="Ir a la sección de inicio de sesión"
-              target="_blank"
               className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-300 font-bold"
           >
             LOGIN
