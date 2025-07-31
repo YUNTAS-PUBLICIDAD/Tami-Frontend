@@ -264,7 +264,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
 
       // Solo si hay nueva imagen principal
       if (formData.imagenPrincipal) {
-        formDataToSend.append("imagen_principal", formData.imagenPrincipal);
+        formDataToSend.append("miniatura", formData.imagenPrincipal);
       }
 
       formData.imagenes.forEach((item) => {
