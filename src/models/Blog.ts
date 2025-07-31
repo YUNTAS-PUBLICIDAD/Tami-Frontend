@@ -1,12 +1,12 @@
 export default interface Blog {
   id: number;
   titulo: string;
-  producto_id: number | null;
-  link: string; // nuevo video_id
-  subtitulo1: string; // antes: parrafo
-  subtitulo2: string; // antes: descripcion
-  subtitulo3: string; // antes: subititulo_beneficio
-  video_id: string; // tiene espacios, cuidado en postman
+  nombre_producto?: string | null;
+  link: string;
+  subtitulo1: string;
+  subtitulo2: string;
+  subtitulo3: string;
+  video_id: string;
   video_url: string;
   video_titulo: string;
   miniatura: string;

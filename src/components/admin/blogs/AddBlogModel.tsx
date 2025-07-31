@@ -12,11 +12,10 @@ interface BlogPOST {
   link: string;
   subtitulo1: string;
   subtitulo2: string;
-  //subtitulo3: string;
   video_titulo: string;
   video_url:string;
-  producto_id: number;
-  imagenPrincipal: File | null;
+  nombre_producto: string;
+  miniatura: File | null;
   imagenes: ImagenAdicional[];
 }
 
@@ -37,11 +36,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     link: "",
     subtitulo1: "",
     subtitulo2: "",
-    //subtitulo3: "",
     video_url: "",
     video_titulo: "",
-    producto_id: 0,
-    imagenPrincipal: null,
+    nombre_producto: "",
+    miniatura: null,
     imagenes: [
       { imagen: null, parrafo: "" },
       { imagen: null, parrafo: "" },
@@ -118,8 +116,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           //subtitulo3: blogToEdit.subtitulo3 || "",
           video_url: blogToEdit.video_url || "",
           video_titulo: blogToEdit.video_titulo || "",
-          producto_id: blogToEdit.producto_id || 0,
-          imagenPrincipal: null,
+          nombre_producto: blogToEdit.producto_id || "",
+          miniatura: null,
           imagenes: blogToEdit.imagenes?.map((img: any) => ({
             imagen: null,
             parrafo: img.parrafo || "",
@@ -138,8 +136,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           //subtitulo3: "",
           video_url: "",
           video_titulo: "",
-          producto_id: 0,
-          imagenPrincipal: null,
+          nombre_producto: "",
+          miniatura: null,
           imagenes: [
             { imagen: null, parrafo: "" },
             { imagen: null, parrafo: "" },
@@ -175,7 +173,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, imagenPrincipal: e.target.files[0] });
+      setFormData({ ...formData, miniatura: e.target.files[0] });
     }
   };
   const handleFileChangeAdicional = (
@@ -214,8 +212,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       //subtitulo3: "",
       video_url: "",
       video_titulo: "",
-      producto_id: 0,
-      imagenPrincipal: null,
+      nombre_producto: "",
+      miniatura: null,
       imagenes: [
         { imagen: null, parrafo: "" },
         { imagen: null, parrafo: "" },
@@ -236,8 +234,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         //!formData.subtitulo3 ||
         !formData.video_url ||
         !formData.video_titulo ||
-        !formData.producto_id ||
-        (!blogToEdit && !formData.imagenPrincipal) || // Solo obligatorio si es nuevo
+        !formData.nombre_producto ||
+        (!blogToEdit && !formData.miniatura) || // Solo obligatorio si es nuevo
         formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)
     ) {
       Swal.fire({
@@ -257,11 +255,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
-      //formDataToSend.append("subtitulo3", formData.subtitulo3);
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
-      formDataToSend.append("producto_id", formData.producto_id.toString());
-
+      formDataToSend.append("nombre_producto", formData.nombre_producto);
       // Solo si hay nueva imagen principal
       if (formData.imagenPrincipal) {
         formDataToSend.append("miniatura", formData.imagenPrincipal);
@@ -433,22 +429,22 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Producto*</label>
                     <select
-                        name="producto_id"
-                        value={formData.producto_id}
+                        name="nombre_producto"
+                        value={formData.nombre_producto}
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     >
                       <option value="">Selecciona un producto</option>
                       {productos.map((producto) => (
-                          <option key={producto.id} value={producto.id}>
+                          <option key={producto.id} value={producto.nombre}>
                             {producto.nombre}
                           </option>
                       ))}
                     </select>
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
+                    <label className="block text-sm font-medium text-gray-700">Miniatura*</label>
                     <input
                         type="file"
                         accept="image/*"

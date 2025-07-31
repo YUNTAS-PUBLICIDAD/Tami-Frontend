@@ -19,6 +19,7 @@ const blogsUrl = config.endpoints.blogs;
           width={blogHeroImage.width}
           height={blogHeroImage.height}
           alt="Fondo Hero"
+          title="Fondo Hero"
           class="w-full h-full object-cover filter brightness-50"
       />
       <div
@@ -226,8 +227,8 @@ const blogsUrl = config.endpoints.blogs;
 
         <!-- Párrafo -->
         <div class="md:w-1/2 px-4 flex flex-col justify-center">
-          <article>
-            <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
+          <article class="prose prose-sm md:prose-lg text-gray-700 mb-4">
+            <p>
               ${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}
             </p>
           </article>
@@ -240,21 +241,23 @@ const blogsUrl = config.endpoints.blogs;
         }
 
 
-        const blogProductLinkElement = document.getElementById("blog-product-link");
+        // Mostrar nombre del producto relacionado (si existe)
+        /*if (blog.nombre_producto) {
+          const productNameTag = document.createElement("p");
+          productNameTag.textContent = `Producto relacionado: ${blog.nombre_producto}`;
+          productNameTag.className = "text-lg font-semibold text-teal-700 mb-4";
 
-        // Verificar si existe un producto_id en el blog
-        if (blog.producto_id && blogProductLinkElement) {
-          if (blog.producto_id && blogProductLinkElement) {
-            blogProductLinkElement.href = `/productos/detalle.html?id=${blog.producto_id}`;
-            blogProductLinkElement.classList.remove("hidden");
+          if (blogSectionsElement) {
+            blogSectionsElement.prepend(productNameTag);
           }
-        }
+        }*/
+
 
         // MOSTRAR VIDEO CON IFRAME
         if (blogVideoSectionElement && blog.video_id) {
           blogVideoSectionElement.innerHTML = `
             <section class="bg-teal-700 p-6 rounded-lg">
-              <h1 class="text-white md:text-xl font-bold mb-4">${blog.video_titulo}</h1>
+              <h1 class="text-2xl text-white md:text-xl font-bold mb-4">${blog.video_titulo}</h1>
               <div class="relative w-full h-[30rem]">
                 <iframe
                   width="100%"

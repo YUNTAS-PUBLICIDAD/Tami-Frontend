@@ -8,23 +8,23 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const apiUrl = getApiUrl(config.endpoints.blogs.list);
+    const apiUrlBlogs = getApiUrl(config.endpoints.blogs.list);
 
     const fetchBlogs = async () => {
       try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        const data = await response.json();
-        if (data.success) {
-          setBlogs(data.data);
-        } else {
-          setError("No se pudieron obtener los blogs");
+        const res = await fetch(apiUrlBlogs);
+        if (!res.ok) throw new Error("HTTP error blogs!");
+
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.data)) {
+          throw new Error("No se pudieron obtener los blogs");
         }
+
+        setBlogs(data.data);
       } catch (err) {
         setError(
-          "Error al obtener los blogs: " +
-          (err instanceof Error ? err.message : "Error desconocido")
+            "Error al obtener blogs: " +
+            (err instanceof Error ? err.message : "Error desconocido")
         );
       }
     };
@@ -32,20 +32,25 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
     fetchBlogs();
   }, []);
 
-  const filteredBlogs = blogs.filter((blog) =>
-    blog.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBlogs = blogs.filter((blog) => {
+    const search = searchTerm.toLowerCase();
+    return (
+        blog.titulo.toLowerCase().includes(search) ||
+        blog.nombre_producto?.toLowerCase().includes(search)
+    );
+  });
+
 
   return (
-    <>
-      {error ? (
-        <p className="text-center text-red-600">{error}</p>
-      ) : filteredBlogs.length > 0 ? (
-        filteredBlogs.map((blog) => <CardBlog key={blog.id} blog={blog} />)
-      ) : (
-        <p className="text-center text-teal-800">No se encontraron resultados.</p>
-      )}
-    </>
+      <>
+        {error ? (
+            <p className="text-center text-red-600">{error}</p>
+        ) : filteredBlogs.length > 0 ? (
+            filteredBlogs.map((blog) => <CardBlog key={blog.id} blog={blog} />)
+        ) : (
+            <p className="text-center text-teal-800">No se encontraron resultados.</p>
+        )}
+      </>
   );
 };
 
