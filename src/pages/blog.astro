@@ -7,13 +7,14 @@ import BlogPage from "../components/blog/BlogPage.tsx";
 
 <Layout title="Consejos y Guías sobre Maquinaria para Negocios | Aprende y Mejora tus Procesos - Consejos, Ideas y Guías sobre Maquinaria y Tecnología para Negocios  Guías, Consejos y Casos de Uso"
         description="Blog, consejos, maquinaria, negocios, tecnología, innovación, productividad, mantenimiento, tutoriales, guías, LED, industria, maquinaria eficiente, tips, artículos, soluciones, mejoras, experiencia, crecimiento, asesoría."
+        canonicalUrl="https://tamimaquinarias.com/blog/"
 >
-  <!-- Sección principal con imagen de fondo y descripción -->
+
   <section
       class="relative bg-cover bg-center h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
       style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
   >
-    <img src={paleta.src} alt="Paleta" class="w-52 wid mb-2 pl-4 sm:pl-12 md:pl-16 lg:pl-28" />
+    <img src={paleta.src} alt="Paleta" class="w-52 wid mb-2 pl-4 sm:pl-12 md:pl-16 lg:pl-28" title="Paleta" />
 
     <h2 class="text-5xl sm:text-4xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 sm:mb-4">
       BLOG TAMI
@@ -32,7 +33,6 @@ import BlogPage from "../components/blog/BlogPage.tsx";
     </div>
   </section>
 
-  <!-- Monta el componente funcional del blog con búsqueda -->
   <BlogPage client:load />
 </Layout>
 
