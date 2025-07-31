@@ -12,7 +12,6 @@ interface BlogPOST {
   link: string;
   subtitulo1: string;
   subtitulo2: string;
-  //subtitulo3: string;
   video_titulo: string;
   video_url:string;
   nombre_producto: string;
@@ -37,7 +36,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     link: "",
     subtitulo1: "",
     subtitulo2: "",
-    //subtitulo3: "",
     video_url: "",
     video_titulo: "",
     nombre_producto: "",
@@ -257,14 +255,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
-      //formDataToSend.append("subtitulo3", formData.subtitulo3);
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("nombre_producto", formData.nombre_producto);
 
-      // Solo si hay nueva imagen principal
+
       if (formData.miniatura) {
-        formDataToSend.append("imagen_principal", formData.miniatura);
+        formDataToSend.append("miniatura", formData.miniatura);
       }
 
       formData.imagenes.forEach((item) => {
@@ -448,7 +445,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                     </select>
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
+                    <label className="block text-sm font-medium text-gray-700">Miniatura*</label>
                     <input
                         type="file"
                         accept="image/*"
