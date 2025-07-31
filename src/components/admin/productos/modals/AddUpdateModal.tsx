@@ -149,7 +149,7 @@ const AddUpdateProducto = ({
                                 accept="image/png, image/jpeg, image/jpg"
                                 onChange={handleFileChange}
                                 type="file"
-                                name="imagen_principal"
+                                name="miniatura"
                             />
                         </div>
                         <div className="form-input">

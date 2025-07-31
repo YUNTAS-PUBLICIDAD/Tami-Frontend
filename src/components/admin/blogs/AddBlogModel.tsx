@@ -258,10 +258,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("nombre_producto", formData.nombre_producto);
-
-
-      if (formData.miniatura) {
-        formDataToSend.append("miniatura", formData.miniatura);
+      // Solo si hay nueva imagen principal
+      if (formData.imagenPrincipal) {
+        formDataToSend.append("miniatura", formData.imagenPrincipal);
       }
 
       formData.imagenes.forEach((item) => {

@@ -1,6 +1,5 @@
 ---
 import logoTami from "@images/logos/logo-blanco-tami.gif";
-import { Image } from "astro:assets";
 import socialMediaLinks from "@data/socialMedia.data";
 import NavSocialMediaLink from "../sideMenu/NavSocialMediaLink";
 import mascotaTami from "@images/logos/tami-mascota.webp";
@@ -13,8 +12,8 @@ import CopyText from "./CopyText.astro";
     class="hidden lg:flex container mx-auto px-4 mb-8 flex-col lg:flex-row justify-evenly items-start space-y-8 lg:space-y-0 lg:space-x-4"
   >
     {/* Logo */}
-    <Image
-      src={logoTami}
+    <img
+      src={logoTami.src}
       alt="Logo de Tami"
       title="Logo de Tami"
       class="self-center w-1/12 sm:w-1/16 lg:w-1/16 2xl:w-1/12"
@@ -47,7 +46,7 @@ import CopyText from "./CopyText.astro";
           >
         </li>
         <li>
-          <a href="/blog" title="Ir a la seccion de blogs" class="text-white hover:underline">BLOGS</a>
+          <a href="/blog" class="hover:underline">BLOGS</a>
         </li>
       </ul>
     </div>
@@ -81,8 +80,8 @@ import CopyText from "./CopyText.astro";
 
     {/* Mascota y botón */}
     <div class="w-full lg:w-1/6 flex flex-col self-center items-center">
-      <Image
-        src={mascotaTami}
+      <img
+        src={mascotaTami.src}
         alt="Mascota de Tami"
         title="Mascota de Tami"
         class="w-2/5 sm:w-1/4 lg:w-3/4 2xl:w-4/6 mb-4"
@@ -107,7 +106,7 @@ import CopyText from "./CopyText.astro";
     <div
       class="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:space-x-10 space-y-6 sm:space-y-0"
     >
-      <Image
+      <img
         src={logoTami}
         alt="logo-tami"
         title="Logo de Tami"
