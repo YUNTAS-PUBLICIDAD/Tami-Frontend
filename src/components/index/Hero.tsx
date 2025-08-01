@@ -33,6 +33,7 @@ const Hero = () => {
           className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
+          loading={index === 0 ? "eager" : "lazy"}
         />
       ))}
 
