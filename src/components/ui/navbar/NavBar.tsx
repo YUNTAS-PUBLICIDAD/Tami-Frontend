@@ -50,7 +50,7 @@ function NavBar() {
           alt="Logo de Tami con letras"
           width={135}
           height={55}
-          loading="eager"
+          fetchPriority="high"
           className="h-full lg:hidden"
         />
         <img
