@@ -1,3 +1,4 @@
+
 /* @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap'); */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -6,16 +7,17 @@
     --font-montserrat: "Montserrat", sans-serif;
     --color-sunset: #ffc68a;
 }
+
 .pagination-btn {
     @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-600 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
 }
 
-.admin-act-btn{
-    @apply bg-teal-800 hover:bg-teal-950 transition-colors hover:cursor-pointer text-white text-lg px-10 py-1.5 rounded-full
+.admin-act-btn {
+    @apply bg-teal-800 hover:bg-teal-950 transition-colors hover:cursor-pointer text-white text-lg px-10 py-1.5 rounded-full;
 }
 
-.cancel-btn{
-    @apply bg-red-700 hover:bg-red-900 transition-colors hover:cursor-pointer rounded-full px-8
+.cancel-btn {
+    @apply bg-red-700 hover:bg-red-900 transition-colors hover:cursor-pointer rounded-full px-8;
 }
 
 @keyframes slideIn {
@@ -23,6 +25,7 @@
         opacity: 0;
         transform: translateY(50px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -34,6 +37,7 @@
         opacity: 1;
         transform: translateY(0);
     }
+
     to {
         opacity: 0;
         transform: translateY(50px);
@@ -48,6 +52,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -61,47 +66,91 @@
     animation: slideOut 0.3s ease-in-out;
 }
 
-.form-input>input[type="text"]{
-    @apply w-full border-2 bg-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 transition-colors duration-200 placeholder:text-gray-500 placeholder:italic;
+.form-input > input[type="text"] {
+    @apply w-full border-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic;
 }
 
-.form-input>input[type="number"]{
-    @apply w-full border-2 bg-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 transition-colors duration-200 placeholder:text-gray-500 placeholder:italic;
+.form-input > input[type="number"] {
+    @apply w-full border-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic;
 }
 
-.form-input>label{
+.form-input > label {
     @apply text-white font-semibold mb-2 block;
 }
 
-.form-input>input[type="file"]{
-    @apply w-full border-2 bg-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 transition-colors duration-200 placeholder:text-gray-500 placeholder:italic;
+.form-input > input[type="file"] {
+    @apply w-full border-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic;
 }
 
-.form-input>select{
-    @apply w-full border-2 bg-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 transition-colors duration-200 placeholder:text-gray-500 placeholder:italic;
+.form-input > select {
+    @apply w-full border-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic;
 }
 
-.form-input{
+.form-input {
     @apply mb-3;
 }
 
-.form-input>textarea{
-    @apply w-full border-2 bg-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 transition-colors duration-200 placeholder:text-gray-500 placeholder:italic;
+.form-input > textarea {
+    @apply w-full border-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic;
 }
 
-.form-input>select>option{
-    @apply text-gray-500;
+.form-input > select > option {
+    @apply text-gray-500 dark:text-gray-300;
 }
 
-.group-form{
+.group-form {
     @apply grid auto-cols-auto grid-flow-col gap-4;
 }
 
-.neutral-btn{
-    @apply bg-transparent border text-white border-gray-300 hover:bg-white hover:text-black transition-colors hover:cursor-pointer  text-lg px-10 py-1.5 rounded-full
+.neutral-btn {
+    @apply bg-transparent border text-white border-gray-300 hover:bg-white hover:text-black dark:hover:bg-gray-700 dark:hover:text-white transition-colors hover:cursor-pointer text-lg px-10 py-1.5 rounded-full;
 }
 
 input[type="checkbox"]:checked + label {
     color: whitesmoke;
     font-weight: bold;
+}
+
+/* CSS para mejorar rendimiento de index */
+.gradient-hero {
+    min-height: 500px;
+    contain: layout style paint;
+    transform: translateZ(0);
+
+    @media (max-width: 768px) {
+        /* En lugar de visibility: hidden, usa display: none */
+        display: none !important;
+    }
+
+    @media (min-width: 769px) {
+        /* Asegura que se muestre correctamente en desktop */
+        display: block;
+        height: 100%;
+        min-height: 100vh;
+    }
+}
+
+.hero-section {
+    min-height: 100vh;
+    min-height: 100dvh;
+    contain: layout style paint;
+    overflow: hidden;
+
+    @supports not (height: 100dvh) {
+        min-height: 100vh;
+    }
+}
+
+/* CODIGO CSS PARA OPTIMIZACION DE NAVBAR */
+
+.navbar-transparent {
+  background-color: transparent;
+  border-bottom: 1px solid white;
+  box-shadow: none;
+}
+
+.navbar-scrolled {
+  background-color: rgb(15 118 110); /* teal-700 */
+  border-bottom: none;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }

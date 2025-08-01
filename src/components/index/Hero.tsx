@@ -23,7 +23,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative h-screen">
+    <section className="hero-section relative ">
       {heroArray.map((slide, index) => (
         <img
           key={index}
@@ -44,7 +44,7 @@ const Hero = () => {
       ))}
 
       {/* Desktop + Tablet */}
-      <div className="hidden md:block relative pt-20 px-8 lg:pl-32 z-10 bg-gradient-to-b from-teal-700/75 to-black/75 h-full content-center">
+      <div className="gradient-hero md:block relative pt-20 px-8 lg:pl-32 z-10 bg-gradient-to-b from-teal-700/75 to-black/75 h-full content-center">
         <h1
           className={`mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-7xl lg:leading-22 2xl:leading-24 font-extrabold whitespace-pre-line transition-all duration-1000 ${
             isTextVisible

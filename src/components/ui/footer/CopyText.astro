@@ -1,43 +1,44 @@
 ---
-const text = Astro.slots.render("default");
+const text = await Astro.slots.render("default");
 ---
+<div
+    id="copy-notification"
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-teal-950 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10"
+></div>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const textArray = document.querySelectorAll("[data-copy]");
-    const notification = document.getElementById("copy-notification");
+    const textArray = document.querySelectorAll("[data-copy]") as NodeListOf<HTMLElement>;
+    const notification = document.getElementById("copy-notification") as HTMLElement | null;
+
+    if (!notification) {
+      console.error("No se encontró el elemento de notificación");
+      return;
+    }
+
     textArray.forEach((element) => {
       element.addEventListener("click", () => {
-        const textToCopy = element.innerHTML.trim();
-        let matchingElement = null;
-        textArray.forEach((el) => {
-          if (el.innerHTML.trim() === textToCopy) {
-            matchingElement = el;
-          }
-        });
-        if (matchingElement) {
-          navigator.clipboard
+        const textToCopy = element.innerText.trim();
+
+        navigator.clipboard
             .writeText(textToCopy)
             .then(() => {
-              // Mostrar la notificación
-              notification!.innerText = `Copiado: ${textToCopy}`;
-              notification!.classList.remove("translate-y-10", "opacity-0");
-              notification!.classList.add("translate-y-0", "opacity-100");
-              // Ocultar después de 2.5 segundos
+              notification.innerText = `Copiado: ${textToCopy}`;
+              notification.classList.remove("translate-y-10", "opacity-0");
+              notification.classList.add("translate-y-0", "opacity-100");
               setTimeout(() => {
-                notification!.classList.remove("translate-y-0", "opacity-100");
-                notification!.classList.add("translate-y-10", "opacity-0");
+                notification.classList.remove("translate-y-0", "opacity-100");
+                notification.classList.add("translate-y-10", "opacity-0");
               }, 2500);
             })
             .catch((err) => console.error("Error al copiar:", err));
-        }
       });
     });
   });
 </script>
 <p
   data-copy
-  class="cursor-pointer hover:underline underline-offset-2 text-sm md:text-base"
+  class="cursor-pointer text-white hover:underline underline-offset-2 text-sm md:text-base"
 >
   {text}
 </p>

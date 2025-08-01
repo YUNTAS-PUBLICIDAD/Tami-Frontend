@@ -4,6 +4,7 @@ interface Testimonial {
   avatar: string;
   name: string;
   alt: string;
+  title: string;
   rating: number;
   text: string;
 }
@@ -15,6 +16,7 @@ const testimonials: Testimonial[] = [
     alt:"Adulto sonriente",
     rating: 5,
     text: "¡Este servicio es increíble! Muy recomendable.",
+    title: "Testimonio de Carlos Pérez",
   },
   {
     avatar: "/images/chica-guiño-ojo.webp",
@@ -22,6 +24,7 @@ const testimonials: Testimonial[] = [
     alt:"Chica guiñando ojo",
     rating: 4,
     text: "Buena experiencia en general, pero hay margen de mejora.",
+    title: "Testimonio de María López",
   },
   {
     avatar: "/images/persona-camisa-risa.webp",
@@ -29,6 +32,7 @@ const testimonials: Testimonial[] = [
     alt:"Personas riendo",
     rating: 5,
     text: "¡Absolutamente fantástico! Lo usaré de nuevo.",
+    title: "Testimonio de Javier Gómez",
   },
 ];
 

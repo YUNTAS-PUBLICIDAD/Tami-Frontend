@@ -19,6 +19,10 @@ import CopyText from "./CopyText.astro";
       width={60}
       height={60}
       class="self-center w-1/12 sm:w-1/16 lg:w-1/16 2xl:w-1/12"
+      width={120}
+      height={60}
+      loading="lazy"
+      format="webp"
     />
 
     {/* Línea vertical (visible solo en pantallas grandes) */}
@@ -28,17 +32,19 @@ import CopyText from "./CopyText.astro";
     <div class="w-full lg:w-1/6">
       <ul class="space-y-4 font-bold text-sm text-center lg:text-left">
         <li>
-          <a href="/" class="hover:underline"> INICIO </a>
+          <a href="/" title="Ir a la seccion de inicio" class="text-white hover:underline"> INICIO </a>
         </li>
         <li>
-          <a href="/about" class="hover:underline">NOSOTROS</a>
+          <a href="/about" title="Ir a la seccion de nosotros" class="text-white hover:underline">NOSOTROS</a>
         </li>
         <li>
-          <a href="/productos" class="hover:underline">PRODUCTOS</a>
+          <a href="/productos" title="Ir a la seccion de productos" class="text-white hover:underline">PRODUCTOS</a>
         </li>
         <li>
-          <a href="/src/pages/politicas-de-envio" class="hover:underline"
-            >POLÍTICAS DE ENVÍOS</a
+          <a
+            href="/src/pages/politicas-de-envio"
+            title="Ir a la seccion de politicas de envio"
+            class="text-white hover:underline">POLÍTICAS DE ENVÍOS</a
           >
         </li>
         <li>
@@ -49,14 +55,14 @@ import CopyText from "./CopyText.astro";
 
     {/* Información */}
     <div class="w-full lg:w-2/6 text-center lg:text-left">
-      <h3 class="font-bold mb-1 text-yellow-300">Horario de atención</h3>
-      <p>
+      <p class="font-bold mb-1 text-white">Horario de atención</p>
+      <p
+        aria-label="Horario de atención: lunes a viernes, de 9:00 a 21:00 horas."
+      >
         Lunes a Viernes<br />
         9:00 am a 9:00 pm
       </p>
-      <h3 class="font-bold mt-3 mb-1 text-yellow-300">
-        Para mayor información
-      </h3>
+      <h3 class="font-bold mt-3 mb-1 text-white">Para mayor información</h3>
       <CopyText>informestami01@gmail.com</CopyText>
       <CopyText>+51978883199</CopyText>
       <div class="mt-3 flex justify-center lg:justify-start space-x-4">
@@ -65,7 +71,9 @@ import CopyText from "./CopyText.astro";
             <NavSocialMediaLink
               socialMediaName={item.socialMediaName}
               image={item.image.src}
-              link={item.url}
+              url={item.url}
+              imageTitle={item.imageTitle}
+              linkTitle={item.linkTitle}
             />
           ))
         }
@@ -77,10 +85,16 @@ import CopyText from "./CopyText.astro";
       <img
         src={mascotaTami.src}
         alt="Mascota de Tami"
+        title="Mascota de Tami"
         class="w-2/5 sm:w-1/4 lg:w-3/4 2xl:w-4/6 mb-4"
+        width={150}
+        height={150}
+        loading="lazy"
+        format="webp"
       />
       <a
         href="https://api.whatsapp.com/send?phone=51978883199"
+        title="Contáctanos por WhatsApp"
         target="_blank"
         class="bg-teal-700 hover:bg-teal-900 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
       >
@@ -92,7 +106,7 @@ import CopyText from "./CopyText.astro";
 
   <div class="block lg:hidden bg-teal-600 text-white py-4">
     <div
-      class="container mx-auto px-4 flex items-center justify-center space-x-10"
+      class="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:space-x-10 space-y-6 sm:space-y-0"
     >
       <img src={logoTami.src} alt="logo-tami" loading="lazy" width={60} height={60} class="w-[80px] h-auto" />
       <div class="text-left">
@@ -101,6 +115,20 @@ import CopyText from "./CopyText.astro";
         </h3>
         <CopyText>informestami01@gmail.com</CopyText>
         <CopyText>+51978883199</CopyText>
+        <!-- Redes sociales en mobile -->
+        <div class="mt-3 flex justify-start space-x-4">
+          {
+            socialMediaLinks.map((item) => (
+                <NavSocialMediaLink
+                    socialMediaName={item.socialMediaName}
+                    image={item.image.src}
+                    url={item.url}
+                    imageTitle={item.imageTitle}
+                    linkTitle={item.linkTitle}
+                />
+            ))
+          }
+        </div>
       </div>
     </div>
   </div>

@@ -52,11 +52,15 @@ const HeroProducts = () => {
               </h3>
             </div>
             {heroProductsArray[currentSlide].subTitulo2 &&
-              currentSlide !== 0 && (
-                <button className="sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-4xl mt-8 xl:mt-16 2xl:mt-20 px-6 xl:px-10 2xl:px-20 py-2 xl:py-4 2xl:py-6 bg-white text-teal-700 font-bold rounded-full shadow-md hover:text-white hover:bg-teal-900 transition-all duration-300">
-                  Saber más
-                </button>
-              )}
+                currentSlide !== 0 &&
+                heroProductsArray[currentSlide].link && (
+                    <a
+                        href={`https://tamimaquinarias.com/productos/detalle/?link=${heroProductsArray[currentSlide].link}`}
+                        className="sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-4xl mt-8 xl:mt-16 2xl:mt-20 px-6 xl:px-10 2xl:px-20 py-2 xl:py-4 2xl:py-6 bg-white text-teal-700 font-bold rounded-full shadow-md hover:text-white hover:bg-teal-900 transition-all duration-300 inline-block"
+                    >
+                      Saber más
+                    </a>
+                )}
           </div>
           <img
             src={`${heroProductsArray[currentSlide].image}`}
@@ -64,6 +68,7 @@ const HeroProducts = () => {
             className={`${
               currentSlide === 0 ? "hidden" : ""
             } place-self-center pl-24 pt-12 h-1/2 sm:h-full col-span-5`}
+            title={`${heroProductsArray[currentSlide].imageTitle}`}
           />
           <button
             onClick={handleNext}

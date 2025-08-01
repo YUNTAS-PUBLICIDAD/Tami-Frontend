@@ -29,7 +29,7 @@ const useProductForm = (
         subtitulo: "",
         lema: "",
         descripcion: "",
-        imagen_principal: null,
+        miniatura: null,
         stock: 100,
         precioProducto: 199.99,
         seccion: "Trabajo",
@@ -64,7 +64,7 @@ const useProductForm = (
                 subtitulo: producto.subtitle,
                 lema: producto.tagline,
                 descripcion: producto.description,
-                imagen_principal: null, // Resetear la imagen principal
+                miniatura: null, // Resetear la imagen principal
                 stock: producto.stockProducto,
                 precioProducto: producto.precioProducto,
                 seccion: producto.seccion,
@@ -108,7 +108,7 @@ const useProductForm = (
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setFormData((prev) => ({ ...prev, imagen_principal: file }));
+            setFormData((prev) => ({ ...prev, miniatura: file }));
         }
     };
 
@@ -151,7 +151,7 @@ const useProductForm = (
             subtitulo,
             lema,
             descripcion,
-            imagen_principal,
+            miniatura,
             stock,
             precioProducto,
             seccion,
@@ -170,7 +170,7 @@ const useProductForm = (
             !subtitulo.trim() ||
             !lema.trim() ||
             !descripcion.trim() ||
-            !(imagen_principal instanceof File) ||
+            !(miniatura instanceof File) ||
             stock <= 0 ||
             precioProducto <= 0 ||
             !seccion.trim() ||
@@ -218,8 +218,8 @@ const useProductForm = (
             );
             formToSend.append("relacionados", JSON.stringify(formData.relacionados));
 
-            if (formData.imagen_principal) {
-                formToSend.append("imagen_principal", formData.imagen_principal);
+            if (formData.miniatura) {
+                formToSend.append("miniatura", formData.miniatura);
             }
 
             formData.imagenes.forEach((img, i) => {
@@ -234,8 +234,8 @@ const useProductForm = (
                 subtitle: formData.subtitulo,
                 tagline: formData.lema,
                 description: formData.descripcion,
-                image: formData.imagen_principal
-                    ? URL.createObjectURL(formData.imagen_principal) // Convierte el archivo a una URL
+                image: formData.miniatura
+                    ? URL.createObjectURL(formData.miniatura) // Convierte el archivo a una URL
                     : "", // Si es null, asigna un string vacío
                 stockProducto: formData.stock,
                 precioProducto: formData.precioProducto,
@@ -288,7 +288,7 @@ const useProductForm = (
             subtitulo: "",
             lema: "",
             descripcion: "",
-            imagen_principal: null,
+            miniatura: null,
             stock: 100,
             precioProducto: 199.99,
             seccion: "Trabajo",

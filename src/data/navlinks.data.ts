@@ -1,16 +1,28 @@
 const navLinks = [
-  { url: "/", texto: "Inicio" },
+
+  { url: "/", 
+    texto: "INICIO" ,
+    title: "Ir a la página de inicio"
+  },
   {
     url: "/about",
-    texto: "Nosotros",
+    texto: "NOSOTROS",
+    title: "Ir a la sección de nosotros"
   },
   {
     url: "/productos",
-    texto: "Productos",
+    texto: "PRODUCTOS",
+    title: "Ir a la sección de productos"
   },
   {
     url: "/politicas-de-envio",
-    texto: "Politicas de Envio",
+    texto: "POLÍTICAS DE ENVÍO",
+    title: "Ir a la sección de políticas de envío"
   },
+  {
+    url: "/blog",
+    texto: "BLOGS",
+    title: "Ir a la sección de blogs"
+  }
 ];
 export default navLinks;
