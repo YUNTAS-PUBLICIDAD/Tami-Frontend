@@ -44,12 +44,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           <div className="border-b-2 border-white pb-5 flex items-center gap-4 pl-2">
             <img
                 src={userIcon.src}
-                width="48"
-                height="48"
-                loading="lazy"
+                width={48}
+                height={48}
                 className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                 alt="Icono de usuario"
-                title = "Icono de usuario"
+                loading="lazy"
             />
             <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
               Bienvenido

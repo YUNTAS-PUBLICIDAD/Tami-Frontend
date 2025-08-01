@@ -63,8 +63,10 @@ const Testimonials: React.FC = () => {
               <img
                 src={testimonial.avatar || "https://placehold.co/64x64"}
                 alt="Avatar"
+                width={64}
+                height={64}
                 className="w-16 h-16 rounded-full object-cover"
-                title={testimonial.title}
+                loading="lazy"
               />
               <div>
                 <h3 className="text-xl font-bold text-teal-600 tracking-widest">
@@ -127,8 +129,10 @@ const Testimonials: React.FC = () => {
             <img
               src={testimonial.avatar || "https://via.placeholder.com/64"}
               alt="Avatar"
+              width={64}
+              height={64}
               className="w-16 h-16 rounded-full object-cover"
-              title={testimonial.title}
+              loading="lazy"
             />
             <div>
               <h3 className="text-xl font-bold text-teal-600 tracking-widest">

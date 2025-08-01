@@ -15,7 +15,9 @@ import CopyText from "./CopyText.astro";
     <img
       src={logoTami.src}
       alt="Logo de Tami"
-      title="Logo de Tami"
+      loading="lazy"
+      width={60}
+      height={60}
       class="self-center w-1/12 sm:w-1/16 lg:w-1/16 2xl:w-1/12"
       width={120}
       height={60}
@@ -106,16 +108,7 @@ import CopyText from "./CopyText.astro";
     <div
       class="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:space-x-10 space-y-6 sm:space-y-0"
     >
-      <img
-        src={logoTami}
-        alt="logo-tami"
-        title="Logo de Tami"
-        class="w-[80px] h-auto"
-        width={80}
-        height={40}
-        loading="lazy"
-        format="webp"
-      />
+      <img src={logoTami.src} alt="logo-tami" loading="lazy" width={60} height={60} class="w-[80px] h-auto" />
       <div class="text-left">
         <h3 class="font-bold text-yellow-300 text-sm md:text-base">
           Para mayor información

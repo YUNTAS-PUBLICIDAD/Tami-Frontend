@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
 import manoRobotica from "@images/index/robot-gris-señalar.webp";
@@ -28,17 +29,19 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       class="w-full md:w-1/2 flex justify-center items-center order-2 md:order-1"
     >
       <div class="relative">
-        <img
-          src={manoRobotica.src}
+        <Image
+          src={manoRobotica}
           alt="Mano robótica apuntando"
           class="relative z-10 w-11/12 sm:w-full lg:max-w-10/12"
-          title="Mano robótica apuntando"
+          width={600}
+          height={400}
+          loading={'lazy'}
         />
-        <img
-          src={circuitos.src}
-          alt="Líneas verdes rectas"
+        <Image
+          src={circuitos}
+          alt={"Circuitos electrónicos"}
           class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-0 hidden md:block"
-          title="Fondo de circuitos verdes"
+          loading={'lazy'}
         />
       </div>
     </div>
@@ -141,8 +144,10 @@ import ProductContainer from "../components/index/ProductContainer.astro";
           <img
             src={iconGarantia.src}
             alt="Garantía"
+            width="48"
+            height="48"
             class="ml-2 w-10 sm:w-12 lg:w-24"
-            title="Icono de garantía"
+            loading="lazy"
           />
         </span>
         ELEGIR TAMI?
@@ -175,7 +180,7 @@ import ProductContainer from "../components/index/ProductContainer.astro";
     </div>
 
     {/* Imagen */}
-    <img src={trabajo.src} alt="Personal hablando" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
+    <img src={trabajo.src} alt="Personal hablando" width="600" height="600" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
   </section>
 
   <section

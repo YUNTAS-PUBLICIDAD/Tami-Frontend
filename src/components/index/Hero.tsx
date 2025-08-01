@@ -27,12 +27,19 @@ const Hero = () => {
       {heroArray.map((slide, index) => (
         <img
           key={index}
-          src={slide.image}
+          src={slide.image.desktop}
+          srcSet={`
+            ${slide.image.desktop} 1200w,
+            ${slide.image.mobile} 750w
+          `}
+          sizes="(max-width: 768px) 100vw, 100vw"
           title={slide.title}
           alt={slide.alt}
           className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
+          decoding="async"
+          loading={index === 0 ? "eager" : "lazy"}
         />
       ))}
 
