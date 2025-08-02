@@ -51,63 +51,16 @@ function NavBar() {
           }`}
           style={{ maxWidth: '100vw', minHeight: '60px' }}
       >
-        <img
-          src={logoMovil.src}
-          alt="Logo de Tami con letras"
-          width={135}
-          height={55}
-          fetchPriority="high"
-          className="h-full lg:hidden"
-        />
-        <img
-          src={logoTami.src}
-          alt="logo de Tami sin letras"
-          width={872}
-          height={312}
-          loading="eager"
-          className="hidden lg:block"
-        />
-      </a>
-      <nav className="hidden lg:block col-span-9 w-full h-full">
-        <ul className="flex gap-10 w-full h-full items-center place-content-center">
-          {navLinks.map((item, index) => (
-            <li key={index}>
-              <NavLink to={item.url} isForNavBar={true}>
-                {item.texto}
-              </NavLink>
-            </li>
-          ))}
-          <li className="relative group text-white hover:text-teal-300 transition-colors duration-500 text-lg sm:text-xl font-bold cursor-pointer">
-            Más
-            <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-teal-300 transition-all duration-500 group-hover:w-full group-hover:left-0"></span>
-            <ul className="absolute w-24 hidden group-hover:block bg-teal-800 text-white shadow-2xl rounded-ss-none rounded-md font-bold top-7">
-              <li>
-                <a
-                  href="/blog"
-                  className="block px-4 py-2 hover:bg-teal-900 hover:rounded-tr-md text-base sm:text-lg"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/auth/sign-in"
-                  className="block px-4 py-2 hover:bg-teal-900 hover:rounded-b-md text-base sm:text-lg"
-                >
-                  Iniciar Sesión
-                </a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-      <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
+        {/* Menú lateral en móviles */}
+        <SideMenu links={navLinks} />
+
+        {/* Logo */}
         <a
             href="/"
             title="Ir a la seccion de inicio"
             className="place-self-end lg:place-self-auto content-center h-14 mr-4"
         >
-        <img
+          <img
               src={logoTami.src}
               alt="Logo de Tami con letras"
               className="h-full lg:hidden object-contain"
