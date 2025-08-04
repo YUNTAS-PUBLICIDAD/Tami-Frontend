@@ -1,10 +1,11 @@
 ---
 import Layout from "src/layouts/Layout.astro";
 import boxSize from "@icons/box-size.svg";
+import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
-const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
+const getApiUrl = config.apiUrl; // Obtener la URL de la API
 const productosUrl = config.endpoints.productos;
 ---
 
@@ -15,11 +16,9 @@ const productosUrl = config.endpoints.productos;
         class="pt-16 md:pt-40 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden"
     >
       <div class="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
-        <div class="flex items-center gap-2 mb-4">
+        <div class="flex items-center gap-6 mb-4">
           <div class="w-5 md:w-6 h-5 md:h-6">
-            <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
+            <img src={ArrowProducts.src} alt="Flecha" class="w-full h-full" />
           </div>
           <h2
               class="text-xl uppercase md:text-3xl font-bold"
@@ -28,24 +27,29 @@ const productosUrl = config.endpoints.productos;
             Título Producto
           </h2>
         </div>
+
         <h1
             class="text-2xl md:text-5xl/14 uppercase font-bold mb-6 md:mb-8"
             id="product-subtitle"
         >
           Subtitulo Producto
         </h1>
+
         <h3
             class="text-2xl md:text-2xl uppercase font-bold mb-6 md:mb-8"
             id="product-tagline"
         >
           Lema Producto
         </h3>
-        <button id="btnQuotationHero"
-                class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition hover:cursor-pointer"
+
+        <button
+            id="btnQuotationHero"
+            class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition hover:cursor-pointer"
         >
           ¡COTÍZALO!
         </button>
       </div>
+
       <div
           class="hidden md:block absolute right-0 top-32 w-full md:w-1/2 h-full bg-white rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%] rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
       >
@@ -189,7 +193,7 @@ const productosUrl = config.endpoints.productos;
 
     if (!productTitle || !productSubtitle || !productTagline || !productImg ||
         !productViewer || !imagesList || !infoTitle || !infoDescription ||
-        !specsList || !productDimension) {
+        !specsList) {
       console.error("One or more elements not found");
       return;
     }
@@ -247,20 +251,22 @@ const productosUrl = config.endpoints.productos;
     });
 
     // Actualizar dimensiones
-    productDimension.innerHTML = '';
-    const dimensions = product.especificaciones;
-    Object.entries(dimensions).forEach(([key, value]) => {
-      const li = document.createElement("li");
-      li.className = "flex items-center gap-2";
-      const span = document.createElement("span");
-      span.className =
-          "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-      span.textContent = key.charAt(0).toUpperCase();
-      const text = document.createTextNode(`${key}: ${value}`);
-      li.appendChild(span);
-      li.appendChild(text);
-      productDimension.appendChild(li);
-    });
+    if (productDimension) {
+      productDimension.innerHTML = '';
+      Object.entries(dimensions).forEach(([key, value]) => {
+        const li = document.createElement("li");
+        li.className = "flex items-center gap-2";
+        const span = document.createElement("span");
+        span.className =
+            "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+        span.textContent = key.charAt(0).toUpperCase();
+        const text = document.createTextNode(`${key}: ${value}`);
+        li.appendChild(span);
+        li.appendChild(text);
+        productDimension.appendChild(li);
+      });
+    }
+
 
     // Actualizar título de la página
     document.title = `${product.titulo} - Detalles del Producto`;
@@ -309,6 +315,7 @@ const productosUrl = config.endpoints.productos;
       const a = document.createElement("a");
       a.href = `/productos/detalle?link=${encodeURIComponent(prod.link)}`;
       a.className = "group cursor-pointer";
+      a.title = `Ver detalles de ${prod.titulo}`;
 
       const div = document.createElement("div");
       div.className =

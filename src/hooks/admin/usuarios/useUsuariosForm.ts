@@ -12,7 +12,7 @@ import Swal from "sweetalert2";
  * Funcion para manejar el formulario de Usuario
  */
 const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
-  type UsuarioFormData = Pick<Usuario, "name" | "celular" | "email" | "rol">;
+  type UsuarioFormData = Pick<Usuario, "name" | "celular" | "email" /* | "rol" */ >;
 
   /**
    * Estado para manejar los datos del formulario.
@@ -22,7 +22,7 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
     name: "",
     celular: "",
     email: "",
-    rol: "USER", // Se establece un rol por defecto
+    // rol: "USER", // Se establece un rol por defecto
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -42,7 +42,7 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
         name: usuario.name,
         celular: usuario.celular,
         email: usuario.email,
-        rol: usuario.rol,
+        // rol: usuario.rol,
       });
       setIsEditing(true);
     } else {
@@ -138,7 +138,11 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
    * Limpia los datos del formulario y establece el estado de edición en falso.
    */
   const resetForm = () => {
-    setFormData({ name: "", celular: "", email: "" , rol: "USER" });
+    setFormData({ name: "",
+      celular: "",
+      email: "" ,
+      //rol: "USER"
+    });
     setIsEditing(false);
   };
 

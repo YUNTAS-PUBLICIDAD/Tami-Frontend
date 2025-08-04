@@ -11,6 +11,7 @@ import React, { useState } from "react";
 interface NavLink {
   url: string;
   texto: string;
+  title?: string;
 }
 
 interface SideMenuProps {
@@ -26,7 +27,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
 
   return (
       <>
-        <button className="w-9 h-9 lg:hidden" onClick={changeSideBarStatus}>
+        <button className="w-9 h-9 lg:hidden" title="Abrir Menú" onClick={changeSideBarStatus}>
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 18L20 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M4 12L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -43,8 +44,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           <div className="border-b-2 border-white pb-5 flex items-center gap-4 pl-2">
             <img
                 src={userIcon.src}
+                width="48"
+                height="48"
+                loading="lazy"
                 className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                 alt="Icono de usuario"
+                title = "Icono de usuario"
             />
             <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
               Bienvenido
@@ -57,20 +62,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           <ul className="text-xl mt-5">
             {links.map((item, index: number) => (
                 <li key={index}>
-                  <NavLink isForNavBar={false} to={item.url}>
+                  <NavLink isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
                     {item.texto}
                   </NavLink>
                 </li>
             ))}
-            <li>
-              <NavLink isForNavBar={false} to="/blog">
-                Blog
-              </NavLink>
-            </li>
           {/* Botón de Iniciar Sesión */}
             <li>
-              <NavLink isForNavBar={false} to="/auth/sign-in">
-                Iniciar Sesión
+              <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
+                INICIAR SESIÓN
               </NavLink>
             </li>
 
@@ -86,8 +86,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
                   <NavSocialMediaLink
                       key={index}
                       image={item.image.src}
-                      link={item.url}
+                      url={item.url}
                       socialMediaName={item.socialMediaName}
+                      imageTitle={item.imageTitle}
+                      linkTitle={item.linkTitle}
                   />
               ))}
             </div>

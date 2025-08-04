@@ -64,6 +64,7 @@ const HeroProducts = () => {
             className={`${
               currentSlide === 0 ? "hidden" : ""
             } place-self-center pl-24 pt-12 h-1/2 sm:h-full col-span-5`}
+            title={`${heroProductsArray[currentSlide].imageTitle}`}
           />
           <button
             onClick={handleNext}

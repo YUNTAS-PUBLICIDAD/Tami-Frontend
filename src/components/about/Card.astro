@@ -3,27 +3,33 @@ interface Props {
   image: string;
   title: string;
   paragraph: string;
+  imageTitle: string;
 }
 
-const { image, title, paragraph } = Astro.props;
+const { image, title, paragraph, imageTitle } = Astro.props;
 ---
 
 <div
-  class="relative w-[240px] sm:w-9/12 h-65 sm:h-60 md:h-80 lg:h-full lg:w-full rounded-3xl overflow-hidden my-2 sm:my-4"
+    class="relative w-[180px] sm:w-[220px] md:w-[240px] lg:w-[260px] xl:w-[280px] 2xl:w-[300px] h-48 sm:h-52 md:h-60 lg:h-64 xl:h-72 rounded-3xl overflow-hidden my-2 sm:my-4"
 >
   <img
     src={image}
     alt={`Card del Valor de ${title}`}
+    title={imageTitle}
     class="absolute z-0 w-full h-full object-cover object-center"
+    width="300"
+    height="300"
+    loading="lazy"
+    decoding="async"
   />
   <div
-    class="relative flex flex-col justify-end place-content-start bg-gradient-to-t from-teal-700 from-0% via-20% via-teal-600/90 w-full h-full text-white text-center pb-4 2xl:pb-8 2xl:px-2"
+      class="relative flex flex-col justify-end bg-gradient-to-t from-teal-700 via-teal-600/90 w-full h-full text-white text-center pb-3 px-2"
   >
-    <span class="h-1/4 grid grid-rows-[auto_1fr]">
-      <h3 class="text-lg sm:text-base md:text-lg 2xl:text-4xl font-bold mt-8 sm:mt-0">
+    <span class="grid grid-rows-[auto_1fr] gap-1">
+      <h3 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold mt-4">
         {title}
       </h3>
-      <p class="text-xs sm:text-sm hidden md:block md:text-base 2xl:text-3xl sm:font-semibold">
+      <p class="hidden md:block text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg font-medium">
         {paragraph}
       </p>
     </span>

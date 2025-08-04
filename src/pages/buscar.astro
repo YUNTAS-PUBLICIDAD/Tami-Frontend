@@ -1,0 +1,33 @@
+---
+
+import { config } from "config";
+import { slugify } from "../utils/slugify";
+import Resultado from "./buscar/resultado.astro";
+import BuscarLayout from "../layouts/BuscarLayout.astro";
+
+const { searchParams } = Astro.url;
+const query = searchParams.get("q")?.trim() ?? "";
+
+let productos = [];
+
+if (query) {
+    try {
+        const res = await fetch(`${config.apiUrl}${config.endpoints.productos.list}?search=${query}`);
+        if (res.ok) {
+            const data = await res.json();
+            productos = data.data ?? [];
+            console.log("Productos encontrados:", productos);
+            console.log(`${config.apiUrl}${config.endpoints.productos.list}?search=${query}`);
+        } else {
+            console.warn("La respuesta no fue OK:", res.status);
+        }
+    } catch (e) {
+        console.error("Error fetching productos:", e);
+    }
+}
+---
+<BuscarLayout title="Buscar Productos" description="Resultados de tu búsqueda">
+    <div class="px-4 pt-4 min-h-screen bg-gray-50">
+        <Resultado productos={productos} />
+    </div>
+</BuscarLayout>

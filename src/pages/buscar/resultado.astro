@@ -1,0 +1,44 @@
+---
+interface Imagen {
+    url_imagen: string;
+    texto_alt_SEO: string;
+}
+
+interface Producto {
+    id: number;
+    titulo: string;
+    subtitulo: string;
+    link: string;
+    imagenes: Imagen[];
+}
+
+const props = Astro.props;
+const productos: Producto[] = Array.isArray(props.productos) ? props.productos : [];
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+    {productos.length === 0 ? (
+            <Fragment>
+                <p class="col-span-full text-center text-gray-600">No se encontraron productos.</p>
+            </Fragment>
+    ) : (
+            <Fragment>
+                {productos.map((producto) => (
+                        <a
+                                href={`/productos/detalle?link=${producto.link}`}
+                                class="block bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
+                        >
+                            <img
+                                    src={producto.imagenes[0]?.url_imagen ?? "/placeholder.jpg"}
+                                    alt={producto.imagenes[0]?.texto_alt_SEO ?? producto.titulo}
+                                    class="w-full h-48 object-cover"
+                            />
+                            <div class="p-4">
+                                <h2 class="font-bold text-lg">{producto.titulo}</h2>
+                                <p class="text-sm text-gray-600">{producto.subtitulo}</p>
+                            </div>
+                        </a>
+                ))}
+            </Fragment>
+    )}
+</div>
