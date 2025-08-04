@@ -7,6 +7,7 @@ const sectionCards = [
     id: "Negocio",
     title: "NEGOCIO",
     alt:"Personas con chalecos hablando en ambiente de negocios",
+
     paragraph:
       "Equipos diseñados para\noptimizar y agilizar tus\nprocesos laborales.",
     image: bg_card1,
@@ -25,6 +26,7 @@ const sectionCards = [
     id: "Maquinaria",
     title: "MAQUINARIA",
     alt:"Sillas de madera organizadas en comedor",
+
     paragraph:
       "Herramientas innovadoras\nque impulsan el crecimiento\nde tu negocio.",
     image: bg_card3,
