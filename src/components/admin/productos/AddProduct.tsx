@@ -32,6 +32,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       largo: "",
       ancho: "",
     },
+    meta_data: {
+      meta_titulo: "",
+      meta_descripcion: "",
+    },
     relacionados: [],
     imagenes: [
       {
@@ -155,6 +159,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
         largo: "",
         ancho: "",
       },
+      meta_data: {
+        meta_titulo: "",
+        meta_descripcion: "",
+      },
       relacionados: [],
       imagenes: [
       {
@@ -240,6 +248,35 @@ const AddProduct = ({ onProductAdded }: Props) => {
       setIsLoading(false);
       return;
     }
+    // Validación de metadatos
+    if (
+        !formData.meta_data.meta_titulo.trim() ||
+        formData.meta_data.meta_titulo.length < 10 ||
+        formData.meta_data.meta_titulo.length > 70
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Meta título inválido",
+        text: "⚠️ El meta título debe tener entre 10 y 70 caracteres.",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (
+        !formData.meta_data.meta_descripcion.trim() ||
+        formData.meta_data.meta_descripcion.length < 50 ||
+        formData.meta_data.meta_descripcion.length > 200
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Meta descripción inválida",
+        text: "⚠️ La meta descripción debe tener entre 50 y 200 caracteres.",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
@@ -397,6 +434,58 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             placeholder="Descripción del producto..."
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px]"
                         />
+                      </div>
+                      {/* METADATOS SEO */}
+                      <div className="mb-4">
+                        <label htmlFor="meta_titulo" className="block font-medium text-sm text-gray-700">
+                          Meta título <span className="text-gray-500">(recomendado: 50-60 caracteres)</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="meta_titulo"
+                            name="meta_titulo"
+                            value={formData.meta_data.meta_titulo}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  meta_data: {
+                                    ...prev.meta_data,
+                                    meta_titulo: e.target.value,
+                                  },
+                                }))
+                            }
+                            maxLength={70}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formData.meta_data.meta_titulo.length} / 70 caracteres
+                        </p>
+                      </div>
+
+                      <div className="mb-4">
+                        <label htmlFor="meta_descripcion" className="block font-medium text-sm text-gray-700">
+                          Meta descripción <span className="text-gray-500">(recomendado: 140-160 caracteres)</span>
+                        </label>
+                        <textarea
+                            id="meta_descripcion"
+                            name="meta_descripcion"
+                            value={formData.meta_data.meta_descripcion}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  meta_data: {
+                                    ...prev.meta_data,
+                                    meta_descripcion: e.target.value,
+                                  },
+                                }))
+                            }
+                            maxLength={200}
+                            rows={3}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formData.meta_data.meta_descripcion.length} / 200 caracteres
+                        </p>
                       </div>
                       <div className="form-input">
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Título:</label>
