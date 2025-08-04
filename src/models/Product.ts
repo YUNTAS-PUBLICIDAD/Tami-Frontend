@@ -5,7 +5,6 @@ export interface ProductApiPOST {
   nombre: string;
   titulo: string;
   subtitulo: string;
-  lema: string;
   link: string;
   descripcion: string;
   stock: number;
@@ -15,6 +14,10 @@ export interface ProductApiPOST {
   imagenes: File[];
   textos_alt: string[];
   relacionados: number[];
+  meta_data: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  };
 }
 
 export interface ProductFormularioPOST {
@@ -31,6 +34,10 @@ export interface ProductFormularioPOST {
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
+  meta_data: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  };
 }
 
 // Usado en la base de datos o en el GET
@@ -54,7 +61,6 @@ export default interface Producto {
   link: string;
   titulo: string;
   subtitulo: string;
-  lema: string;
   descripcion: string;
   especificaciones: { [clave: string]: string };
   productos_relacionados: object[] | null;
@@ -62,4 +68,8 @@ export default interface Producto {
   stock: number;
   precio: number;
   createdAt: string | null;
+  meta_data: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  };
 }

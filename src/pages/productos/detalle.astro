@@ -34,13 +34,6 @@ const productosUrl = config.endpoints.productos;
         >
           Subtitulo Producto
         </h1>
-
-        <h3
-            class="text-2xl md:text-2xl uppercase font-bold mb-6 md:mb-8"
-            id="product-tagline"
-        >
-          Lema Producto
-        </h3>
         <button id="btnQuotationHero"
                 class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition hover:cursor-pointer"
         >
@@ -180,7 +173,6 @@ const productosUrl = config.endpoints.productos;
   function displayProductDetails(product) {
     const productTitle = document.getElementById("product-title");
     const productSubtitle = document.getElementById("product-subtitle");
-    const productTagline = document.getElementById("product-tagline");
     const productImg = document.getElementById("product-img");
     const productViewer = document.getElementById("product-viewer");
     const imagesList = document.getElementById("images-list");
@@ -189,7 +181,7 @@ const productosUrl = config.endpoints.productos;
     const specsList = document.getElementById("specs-list");
     const productDimension = document.getElementById("product-dimensions");
 
-    if (!productTitle || !productSubtitle || !productTagline || !productImg ||
+    if (!productTitle || !productSubtitle || !productImg ||
         !productViewer || !imagesList || !infoTitle || !infoDescription ||
         !specsList) {
       console.error("One or more elements not found");
@@ -199,7 +191,6 @@ const productosUrl = config.endpoints.productos;
     // Actualizar elementos básicos
     productTitle.innerHTML = product.titulo;
     productSubtitle.innerHTML = product.subtitulo;
-    productTagline.innerHTML = product.lema;
     productImg.src = `${getApiUrl}`+product.imagenes[0].url_imagen;
     //console.log(productImg.src);
     productImg.alt = product.titulo;
