@@ -18,11 +18,11 @@ export default function ListadoDeProductos() {
 
   const obtenerDatos = async () => {
     try {
-      const response = await fetch(getApiUrl(config.endpoints.productos.list));
+      const response = await fetch(getApiUrl(config.endpoints.productos.all));
       if (!response.ok) throw new Error("Error al obtener productos");
 
       const data = await response.json();
-      const productos = data.data; // Accedemos al array de productos en `data`
+      const productos = data; // Accedemos al array de productos en `data`
 
       // Mapeamos los datos del backend al modelo `Product`
       const productosMapeados: Producto[] = productos.map((producto: any) => {
