@@ -265,7 +265,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
     if (
         !formData.meta_data.meta_descripcion.trim() ||
-        formData.meta_data.meta_descripcion.length < 50 ||
+        formData.meta_data.meta_descripcion.length < 40 ||
         formData.meta_data.meta_descripcion.length > 200
     ) {
       Swal.fire({
@@ -464,7 +464,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                       <div className="mb-4">
                         <label htmlFor="meta_descripcion" className="block font-medium text-sm text-gray-700">
-                          Meta descripción <span className="text-gray-500">(recomendado: 140-160 caracteres)</span>
+                          Meta descripción <span className="text-gray-500">(recomendado: 40-160 caracteres)</span>
                         </label>
                         <textarea
                             id="meta_descripcion"

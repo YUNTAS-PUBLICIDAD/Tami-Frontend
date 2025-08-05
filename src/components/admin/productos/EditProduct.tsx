@@ -40,6 +40,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             largo: "",
             ancho: "",
         },
+        meta_data: {
+            meta_titulo: "",
+            meta_descripcion: "",
+        },
         relacionados: [],
         imagenes: [
             {
@@ -161,6 +165,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 largo: "",
                 ancho: "",
             },
+            meta_data: {
+            meta_titulo: "",
+                meta_descripcion: "",
+            },
             relacionados: [],
             imagenes: [
                 {
@@ -227,20 +235,41 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true); // Cambia el estado de carga a verdadero
+
+        // Validación de campos requeridos
         if (
             !formData.nombre ||
             !formData.titulo ||
             !formData.subtitulo ||
             !formData.descripcion ||
             !formData.seccion ||
+            /*
             !formData.especificaciones.color ||
             !formData.especificaciones.material ||
             !formData.especificaciones.alto ||
             !formData.especificaciones.largo ||
-            !formData.especificaciones.ancho ||
+            !formData.especificaciones.ancho ||*/
             !formData.imagenes ||
-            formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
+            formData.imagenes.some((imagen) => !imagen.url_imagen)
         ) {
+            console.log("⚠️ Validación fallida. Campos faltantes:");
+            if (!formData.nombre) console.log("→ Falta: nombre");
+            if (!formData.titulo) console.log("→ Falta: titulo");
+            if (!formData.subtitulo) console.log("→ Falta: subtitulo");
+            if (!formData.descripcion) console.log("→ Falta: descripcion");
+            if (!formData.seccion) console.log("→ Falta: seccion");
+
+            const { color, material, alto, largo, ancho } = formData.especificaciones;
+            if (!color) console.log("→ Falta: especificaciones.color");
+            if (!material) console.log("→ Falta: especificaciones.material");
+            if (!alto) console.log("→ Falta: especificaciones.alto");
+            if (!largo) console.log("→ Falta: especificaciones.largo");
+            if (!ancho) console.log("→ Falta: especificaciones.ancho");
+
+            formData.imagenes.forEach((img, i) => {
+                if (!img.url_imagen) console.log(`→ Falta: imagen[${i}]`);
+            });
+
             Swal.fire({
                 icon: "warning",
                 title: "Campos obligatorios",
@@ -249,6 +278,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             setIsLoading(false);
             return;
         }
+
         try {
             const token = localStorage.getItem("token");
             const formDataToSend = new FormData();
@@ -263,6 +293,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("precio", formData.precio.toString());
             formDataToSend.append("seccion", formData.seccion);
             formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
+            formDataToSend.append("meta_data[meta_titulo]", formData.meta_data.meta_titulo);
+            formDataToSend.append("meta_data[meta_descripcion]", formData.meta_data.meta_descripcion);
+
 
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
@@ -276,16 +309,17 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formData.relacionados.forEach((item, index) => {
                 formDataToSend.append(`relacionados[${index}]`, item.toString());
             });
+
             formDataToSend.append("_method", "PUT");
 
             const response = await fetch(
-                getApiUrl(config.endpoints.productos.update(product.id)), // ← usa el ID del producto
+                getApiUrl(config.endpoints.productos.update(product.id)),
                 {
                     method: "POST",
-                    body: formDataToSend, // FormData
+                    body: formDataToSend,
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        Accept: "application/json"
+                        Accept: "application/json",
                     },
                 }
             );
@@ -298,18 +332,17 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     icon: "success",
                     title: "Producto actualizado exitosamente",
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 1500,
                 });
-                closeModal(); // Cerrar modal
-                setIsLoading(false); // Cambia el estado de carga a falso
-                // onProductAdded?.(); // Actualiza los productos
+                closeModal();
+                setIsLoading(false);
             } else {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
                     text: data.message,
                 });
-                setIsLoading(false); // Cambia el estado de carga a falso
+                setIsLoading(false);
             }
         } catch (error) {
             console.error("Error al enviar los datos:", error);
@@ -318,7 +351,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 title: "Error",
                 text: `❌ Error: ${error}`,
             });
-            setIsLoading(false); // Cambia el estado de carga a falso
+            setIsLoading(false);
         }
     };
 
@@ -353,12 +386,19 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 subtitulo: product.subtitulo,
                 link: product.link,
                 descripcion: product.descripcion,
+                meta_data: {
+                    meta_titulo: product.meta_data?.meta_titulo || "",
+                    meta_descripcion: product.meta_data?.meta_descripcion || "",
+                },
                 stock: product.stock,
                 precio: product.precio,
                 seccion: product.seccion,
                 especificaciones: product.especificaciones || {
                     color: "",
                     material: "",
+                    alto: "",
+                    largo: "",
+                    ancho: "",
                 },
                 relacionados: relacionadosIds,
                 imagenes: imagenesTransformadas.length > 0
@@ -437,6 +477,57 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         placeholder="Descripción del producto..."
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px]"
                                     />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="meta_titulo" className="block font-medium text-sm text-gray-700">
+                                        Meta título <span className="text-gray-500">(recomendado: 50-60 caracteres)</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="meta_titulo"
+                                        name="meta_titulo"
+                                        value={formData.meta_data.meta_titulo}
+                                        onChange={(e) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                meta_data: {
+                                                    ...prev.meta_data,
+                                                    meta_titulo: e.target.value,
+                                                },
+                                            }))
+                                        }
+                                        maxLength={70}
+                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        {formData.meta_data.meta_titulo.length} / 70 caracteres
+                                    </p>
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="meta_descripcion" className="block font-medium text-sm text-gray-700">
+                                        Meta descripción <span className="text-gray-500">(recomendado: 40-160 caracteres)</span>
+                                    </label>
+                                    <textarea
+                                        id="meta_descripcion"
+                                        name="meta_descripcion"
+                                        value={formData.meta_data.meta_descripcion}
+                                        onChange={(e) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                meta_data: {
+                                                    ...prev.meta_data,
+                                                    meta_descripcion: e.target.value,
+                                                },
+                                            }))
+                                        }
+                                        maxLength={200}
+                                        rows={3}
+                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        {formData.meta_data.meta_descripcion.length} / 200 caracteres
+                                    </p>
                                 </div>
                                 <div className="form-input">
                                     <label className="block !text-gray-700 text-sm font-medium mb-1">Título:</label>
