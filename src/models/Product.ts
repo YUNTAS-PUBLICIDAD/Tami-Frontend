@@ -51,7 +51,7 @@ export interface ImagenBack {
 export interface ImagenForm {
   url_imagen: File | string | null;
   texto_alt_SEO: string;
-  imageTitle?: string; // si lo necesitas
+  imageTitle: string;
 }
 
 export default interface Producto {

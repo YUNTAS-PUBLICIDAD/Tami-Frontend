@@ -33,7 +33,7 @@ export const config = {
       // Endpoints de productos
       // Cambiar a v2 cuando sea necesario
       list: "/api/v1/productos",
-      all: "/api/v1/productos/all",
+      all: "/api/v1/productos/all", // Endpoint específico para productos tipo 'a'
       detail: (id: number | string) => `/api/v1/productos/${id}`,
       create: "/api/v1/productos",
       update: (id: number | string) => `/api/v1/productos/${id}`,

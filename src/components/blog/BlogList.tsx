@@ -31,7 +31,6 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
 
     fetchBlogs();
   }, []);
-
   const filteredBlogs = blogs.filter((blog) => {
     const search = searchTerm.toLowerCase();
     return (
@@ -39,7 +38,6 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
         blog.nombre_producto?.toLowerCase().includes(search)
     );
   });
-
 
   return (
       <>

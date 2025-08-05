@@ -19,7 +19,7 @@ function normalizar(texto: string) {
 
 if (query) {
     try {
-        // 🔍 Fetch productos
+        // Fetch productos
         const resProductos = await fetch(`${config.apiUrl}${config.endpoints.productos.list}`);
         if (resProductos.ok) {
             const json = await resProductos.json();
@@ -31,7 +31,7 @@ if (query) {
             );
         }
 
-        // 🔍 Fetch blogs
+        // Fetch blogs
         const resBlogs = await fetch(`${config.apiUrl}${config.endpoints.blogs.list}`);
         if (resBlogs.ok) {
             const json = await resBlogs.json();
