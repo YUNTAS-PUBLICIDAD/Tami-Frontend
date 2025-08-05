@@ -6,7 +6,7 @@ interface Props {
     blogs: Blog[];
 }
 const apiUrl = import.meta.env.PUBLIC_API_URL;
-const { productos, blogs } = Astro.props;
+const { productos = [], blogs = [] } = Astro.props;
 
 // Función para construir la URL completa de imagen
 const getImageUrl = (url: unknown): string => {
