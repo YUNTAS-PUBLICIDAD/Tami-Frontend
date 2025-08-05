@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets"; // ¡Añade esta línea!
+import { Image } from 'astro:assets';
 const props = Astro.props;
 ---
 
@@ -11,10 +11,12 @@ const props = Astro.props;
     class="relative rounded-3xl overflow-hidden w-full h-full flex"
     title="Cards de productos"
   >
-    <img
+    <Image
       src={props.image}
-      alt={props.alt}
-      title={props.imageTitle}
+      alt={props.title}
+      loading={'lazy'}
+      width={400}
+      height={300}
       class="absolute z-0 w-full h-full object-cover object-center"
       width="485px"
       height="728px"

@@ -39,7 +39,6 @@ const BlogList = ({ searchTerm }: { searchTerm: string }) => {
     );
   });
 
-
   return (
       <>
         {error ? (

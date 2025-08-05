@@ -12,10 +12,9 @@ interface BlogPOST {
   link: string;
   subtitulo1: string;
   subtitulo2: string;
-  //subtitulo3: string;
   video_titulo: string;
   video_url:string;
-  nombre_producto: string;
+  producto_id: number | string; // Changed from nombre_producto
   miniatura: File | null;
   imagenes: ImagenAdicional[];
 }
@@ -37,10 +36,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     link: "",
     subtitulo1: "",
     subtitulo2: "",
-    //subtitulo3: "",
     video_url: "",
     video_titulo: "",
-    nombre_producto: "",
+    producto_id: "", // Changed from nombre_producto
     miniatura: null,
     imagenes: [
       { imagen: null, parrafo: "" },
@@ -118,7 +116,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           //subtitulo3: blogToEdit.subtitulo3 || "",
           video_url: blogToEdit.video_url || "",
           video_titulo: blogToEdit.video_titulo || "",
-          nombre_producto: blogToEdit.producto_id || "",
+          producto_id: blogToEdit.producto_id || "", // Changed from nombre_producto
           miniatura: null,
           imagenes: blogToEdit.imagenes?.map((img: any) => ({
             imagen: null,
@@ -138,7 +136,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           //subtitulo3: "",
           video_url: "",
           video_titulo: "",
-          nombre_producto: "",
+          producto_id: "", // Changed from nombre_producto
           miniatura: null,
           imagenes: [
             { imagen: null, parrafo: "" },
@@ -165,7 +163,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         ...prev,
         link: sanitized,
       }));
-    } else {
+    } else if (name === "producto_id") { // Handle product ID change
+      setFormData((prev) => ({
+        ...prev,
+        producto_id: value,
+      }));
+    }
+    else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -214,7 +218,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       //subtitulo3: "",
       video_url: "",
       video_titulo: "",
-      nombre_producto: "",
+      producto_id: "", // Changed from nombre_producto
       miniatura: null,
       imagenes: [
         { imagen: null, parrafo: "" },
@@ -236,7 +240,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         //!formData.subtitulo3 ||
         !formData.video_url ||
         !formData.video_titulo ||
-        !formData.nombre_producto ||
+        !formData.producto_id || // Changed from nombre_producto
         (!blogToEdit && !formData.miniatura) || // Solo obligatorio si es nuevo
         formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)
     ) {
@@ -257,14 +261,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
-      //formDataToSend.append("subtitulo3", formData.subtitulo3);
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
-      formDataToSend.append("nombre_producto", formData.nombre_producto);
-
+      formDataToSend.append("producto_id", formData.producto_id.toString()); // Changed to producto_id and converted to string
       // Solo si hay nueva imagen principal
       if (formData.miniatura) {
-        formDataToSend.append("imagen_principal", formData.miniatura);
+        formDataToSend.append("miniatura", formData.miniatura);
       }
 
       formData.imagenes.forEach((item) => {
@@ -433,22 +435,22 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Producto*</label>
                     <select
-                        name="nombre_producto"
-                        value={formData.nombre_producto}
+                        name="producto_id" // Changed name to producto_id
+                        value={formData.producto_id}
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     >
                       <option value="">Selecciona un producto</option>
                       {productos.map((producto) => (
-                          <option key={producto.id} value={producto.nombre}>
+                          <option key={producto.id} value={producto.id}> {/* Changed value to producto.id */}
                             {producto.nombre}
                           </option>
                       ))}
                     </select>
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Imagen Principal*</label>
+                    <label className="block text-sm font-medium text-gray-700">Miniatura*</label>
                     <input
                         type="file"
                         accept="image/*"

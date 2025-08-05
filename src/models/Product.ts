@@ -5,7 +5,6 @@ export interface ProductApiPOST {
   nombre: string;
   titulo: string;
   subtitulo: string;
-  lema: string;
   link: string;
   descripcion: string;
   stock: number;
@@ -15,25 +14,41 @@ export interface ProductApiPOST {
   imagenes: File[];
   textos_alt: string[];
   relacionados: number[];
+  meta_data: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  };
 }
 
 export interface ProductFormularioPOST {
   nombre: string;
   titulo: string;
   subtitulo: string;
-  lema: string;
+  link: string;
   descripcion: string;
   stock: number;
   precio: number;
   seccion: string;
   especificaciones: Record<string, string>;
   // dimensiones: Dimensions;
-  imagenes: Imagen[];
+  imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
+  meta_data: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  };
 }
 
-interface Imagen {
+// Usado en la base de datos o en el GET
+export interface ImagenBack {
+  url_imagen: string;
+  texto_alt_SEO: string;
+  imageTitle?: string;
+}
+
+// Usado para el formulario de creación/edición
+export interface ImagenForm {
   url_imagen: File | string | null;
   texto_alt_SEO: string;
   imageTitle: string;
@@ -46,12 +61,15 @@ export default interface Producto {
   link: string;
   titulo: string;
   subtitulo: string;
-  lema: string;
   descripcion: string;
   especificaciones: { [clave: string]: string };
   productos_relacionados: object[] | null;
-  imagenes: Imagen[]; // las adicionales
+  imagenes: ImagenBack[]; // las adicionales
   stock: number;
   precio: number;
   createdAt: string | null;
+  meta_data: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  };
 }

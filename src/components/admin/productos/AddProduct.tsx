@@ -5,6 +5,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { config, getApiUrl } from "../../../../config.ts";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
+import { slugify } from "../../../utils/slugify";
 type Props = {
   onProductAdded?: () => void;
 };
@@ -19,8 +20,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
     nombre: "",
     titulo: "",
     subtitulo: "",
-    lema: "",
     descripcion: "",
+    link: "",
     stock: 100,
     precio: 199.99,
     seccion: "Negocio",
@@ -30,6 +31,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       alto: "",
       largo: "",
       ancho: "",
+    },
+    meta_data: {
+      meta_titulo: "",
+      meta_descripcion: "",
     },
     relacionados: [],
     imagenes: [
@@ -142,8 +147,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       nombre: "",
       titulo: "",
       subtitulo: "",
-      lema: "",
       descripcion: "",
+      link: "",
       stock: 100,
       precio: 199.99,
       seccion: "Negocio",
@@ -153,6 +158,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
         alto: "",
         largo: "",
         ancho: "",
+      },
+      meta_data: {
+        meta_titulo: "",
+        meta_descripcion: "",
       },
       relacionados: [],
       imagenes: [
@@ -224,7 +233,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.nombre ||
       !formData.titulo ||
       !formData.subtitulo ||
-      !formData.lema ||
       !formData.descripcion ||
       !formData.seccion ||
       !formData.especificaciones.color ||
@@ -240,6 +248,35 @@ const AddProduct = ({ onProductAdded }: Props) => {
       setIsLoading(false);
       return;
     }
+    // Validación de metadatos
+    if (
+        !formData.meta_data.meta_titulo.trim() ||
+        formData.meta_data.meta_titulo.length < 10 ||
+        formData.meta_data.meta_titulo.length > 70
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Meta título inválido",
+        text: "⚠️ El meta título debe tener entre 10 y 70 caracteres.",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (
+        !formData.meta_data.meta_descripcion.trim() ||
+        formData.meta_data.meta_descripcion.length < 40 ||
+        formData.meta_data.meta_descripcion.length > 200
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Meta descripción inválida",
+        text: "⚠️ La meta descripción debe tener entre 50 y 200 caracteres.",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
@@ -247,13 +284,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("nombre", formData.nombre);
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("subtitulo", formData.subtitulo);
-      formDataToSend.append("lema", formData.lema);
-      formDataToSend.append("link", formData.lema);
       formDataToSend.append("descripcion", formData.descripcion);
+      formDataToSend.append("link", formData.link);
       formDataToSend.append("stock", formData.stock.toString());
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
+
+      const link = slugify(formData.titulo || formData.nombre);
+      formDataToSend.append("link", link);
 
       formData.imagenes.forEach((imagen, index) => {
         if (imagen.url_imagen) {
@@ -396,6 +435,58 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px]"
                         />
                       </div>
+                      {/* METADATOS SEO */}
+                      <div className="mb-4">
+                        <label htmlFor="meta_titulo" className="block font-medium text-sm text-gray-700">
+                          Meta título <span className="text-gray-500">(recomendado: 50-60 caracteres)</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="meta_titulo"
+                            name="meta_titulo"
+                            value={formData.meta_data.meta_titulo}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  meta_data: {
+                                    ...prev.meta_data,
+                                    meta_titulo: e.target.value,
+                                  },
+                                }))
+                            }
+                            maxLength={70}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formData.meta_data.meta_titulo.length} / 70 caracteres
+                        </p>
+                      </div>
+
+                      <div className="mb-4">
+                        <label htmlFor="meta_descripcion" className="block font-medium text-sm text-gray-700">
+                          Meta descripción <span className="text-gray-500">(recomendado: 40-160 caracteres)</span>
+                        </label>
+                        <textarea
+                            id="meta_descripcion"
+                            name="meta_descripcion"
+                            value={formData.meta_data.meta_descripcion}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  meta_data: {
+                                    ...prev.meta_data,
+                                    meta_descripcion: e.target.value,
+                                  },
+                                }))
+                            }
+                            maxLength={200}
+                            rows={3}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formData.meta_data.meta_descripcion.length} / 200 caracteres
+                        </p>
+                      </div>
                       <div className="form-input">
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Título:</label>
                         <input
@@ -420,18 +511,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                         />
                       </div>
-                      <div className="form-input">
-                        <label className="block !text-gray-700 text-sm font-medium mb-1">Lema:</label>
-                        <input
-                            required
-                            value={formData.lema}
-                            onChange={handleChange}
-                            type="text"
-                            name="lema"
-                            placeholder="Lema..."
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                        />
-                      </div>
                       {/*<div className="form-input">*/}
                       {/*  <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>*/}
                       {/*  <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">*/}
@@ -439,7 +518,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       {/*        required*/}
                       {/*        accept="image/png, image/jpeg, image/jpg"*/}
                       {/*        type="file"*/}
-                      {/*        name="imagen_principal"*/}
+                      {/*        name="miniatura"*/}
                       {/*        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"*/}
                       {/*    />*/}
                       {/*  </div>*/}

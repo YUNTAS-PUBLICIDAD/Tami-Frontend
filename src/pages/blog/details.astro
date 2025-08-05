@@ -191,12 +191,12 @@ const blogsUrl = config.endpoints.blogs;
           if (updatedAt) {
             const date = new Date(updatedAt);
 
-            const day = String(date.getUTCDate()).padStart(2, "0");
-            const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-            const year = date.getUTCFullYear();
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const year = date.getFullYear();
 
-            const hours = String(date.getUTCHours()).padStart(2, "0");
-            const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
 
             blogDateElement.innerHTML = `${day}-${month}-${year} / ${hours}:${minutes}`;
           } else {
@@ -227,8 +227,8 @@ const blogsUrl = config.endpoints.blogs;
 
         <!-- Párrafo -->
         <div class="md:w-1/2 px-4 flex flex-col justify-center">
-          <article>
-            <p class="text-gray-700 text-lg md:text-xl mb-4 text-justify">
+          <article class="prose prose-sm md:prose-lg text-gray-700 text-justify mb-4">
+            <p>
               ${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}
             </p>
           </article>
@@ -257,7 +257,7 @@ const blogsUrl = config.endpoints.blogs;
         if (blogVideoSectionElement && blog.video_id) {
           blogVideoSectionElement.innerHTML = `
             <section class="bg-teal-700 p-6 rounded-lg">
-              <h1 class="text-white md:text-xl font-bold mb-4">${blog.video_titulo}</h1>
+              <h1 class="text-2xl text-white md:text-xl font-bold mb-4">${blog.video_titulo}</h1>
               <div class="relative w-full h-[30rem]">
                 <iframe
                   width="100%"
