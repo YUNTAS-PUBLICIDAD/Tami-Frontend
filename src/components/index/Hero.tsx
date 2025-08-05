@@ -28,11 +28,13 @@ const Hero = () => {
         <img
           key={index}
           src={slide.image}
+          srcSet={`${slide.imageMobile} 750w, ${slide.image} 1200w`}
+          sizes="(max-width: 768px) 100vw, 100vw"
           title={slide.title}
           alt={slide.alt}
           width="1920"
           height="1080"
-          loading="lazy"
+          loading={index === 0 ? "eager" : "lazy"}
           className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
