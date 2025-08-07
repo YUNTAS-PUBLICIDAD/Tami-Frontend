@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import asesoriaImg from "../../assets/images/Diseno.webp";
 import Logo from "../../assets/images/logos/logo-blanco-tami.gif";
+import { config, getApiUrl } from "../../../config";
 
 const MODAL_STORAGE_KEY = "asesoriaModalLastClosed";
-const MODAL_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutos de cooldown
+const MODAL_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutos
 
 const ScrollModal = () => {
     const [showModal, setShowModal] = useState(false);
@@ -13,6 +14,8 @@ const ScrollModal = () => {
     const [telefono, setTelefono] = useState("");
     const [correo, setCorreo] = useState("");
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
     const lastScrollRef = useRef(0);
     const hasReachedBottomRef = useRef(false);
@@ -24,7 +27,8 @@ const ScrollModal = () => {
         setCorreo("");
         setErrors({});
     };
-    //Abierto manualmente por el botón del footer
+
+    // Abierto manualmente por el botón del footer
     useEffect(() => {
         const handleOpenEvent = () => {
             setShowModal(true);
@@ -34,28 +38,18 @@ const ScrollModal = () => {
         window.addEventListener("open-scroll-modal", handleOpenEvent);
         return () => window.removeEventListener("open-scroll-modal", handleOpenEvent);
     }, []);
-    //Abierto automaticamente por el scroll
+
+    // Abierto automáticamente por scroll
     useEffect(() => {
         const handleScroll = () => {
-            const lastClosed = Number(localStorage.getItem(MODAL_STORAGE_KEY)) || 0;
-            const now = Date.now();
-            const diff = now - lastClosed;
-
-            console.log(`[ScrollModal] Cooldown: ${diff} ms desde último cierre. Permitido: ${diff >= MODAL_COOLDOWN_MS}`);
-            if (diff < MODAL_COOLDOWN_MS) return;
 
             const currentScroll = window.scrollY;
-            const scrollDirection =
-                currentScroll < lastScrollRef.current ? "up" : "down";
-
+            const scrollDirection = currentScroll < lastScrollRef.current ? "up" : "down";
             lastScrollRef.current = currentScroll;
 
-            const atBottom =
-                window.innerHeight + window.scrollY >= document.body.offsetHeight;
+            const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
 
-            if (atBottom) {
-                hasReachedBottomRef.current = true;
-            }
+            if (atBottom) hasReachedBottomRef.current = true;
 
             if (
                 hasReachedBottomRef.current &&
@@ -83,12 +77,11 @@ const ScrollModal = () => {
         }, 300);
     };
 
-
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
 
         if (nombre.trim().length < 3 || nombre.trim().length > 75) {
-            newErrors.nombre = "El nombre debe tener entre 3 y 50 caracteres.";
+            newErrors.nombre = "El nombre debe tener entre 3 y 75 caracteres.";
         }
 
         if (!/^\d{7,15}$/.test(telefono.trim())) {
@@ -103,11 +96,53 @@ const ScrollModal = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateForm()) {
-            console.log("Formulario válido:", { nombre, telefono, correo });
-            closeModal();
+        if (!validateForm()) return;
+
+        setIsSubmitting(true);
+        try {
+            const formData = new FormData();
+            formData.append("name", nombre);
+            formData.append("email", correo);
+            formData.append("celular", telefono);
+
+            const response = await fetch(getApiUrl(config.endpoints.clientes.create), {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                console.error("[ScrollModal] Error al enviar:", errorData);
+
+                if (errorData?.errors) {
+                    const newErrors: { [key: string]: string } = {};
+                    if (errorData.errors.name) newErrors.nombre = errorData.errors.name.join(" ");
+                    if (errorData.errors.celular) newErrors.telefono = errorData.errors.celular.join(" ");
+                    if (errorData.errors.email) newErrors.correo = errorData.errors.email.join(" ");
+                    setErrors(newErrors);
+                } else {
+                    setErrors({ general: "No se pudo enviar la información. Intenta nuevamente." });
+                }
+                return; // Evita que continúe como éxito
+            }
+
+            console.log("[ScrollModal] Enviado exitosamente:", { nombre, telefono, correo });
+
+            // Mostrar mensaje de éxito antes de cerrar
+            setErrors({ general: "✅ Información enviada con éxito ✅" });
+            setTimeout(() => {
+                closeModal();
+                setErrors({});
+            }, 1500);
+
+        } catch (err: any) {
+            console.error("[ScrollModal] Error al enviar:", err);
+            setErrors({ general: err.message || "Error desconocido." });
+        }
+        finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -128,8 +163,8 @@ const ScrollModal = () => {
 
                 {/* Contenido */}
                 <div className="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative">
-                    <div className="py-6 sm:py-10 mx-2 sm:mx-8">
-                        <button
+                    <div className="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
+                    <button
                             onClick={closeModal}
                             aria-label="Cerrar modal"
                             className="absolute top-4 right-5 text-md text-white hover:text-gray-300"
@@ -139,6 +174,7 @@ const ScrollModal = () => {
                         <h2 className="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
                             ¡RECIBE UNA ASESORÍA GRATIS!
                         </h2>
+
                         <form onSubmit={handleSubmit} className="flex flex-col gap-1">
                             <h3 className="text-base sm:text-lg font-bold">Nombre</h3>
                             <input
@@ -172,12 +208,18 @@ const ScrollModal = () => {
                             <p className="text-sm text-yellow-100 mb-4 h-5">
                                 {errors.correo || "\u00A0"}
                             </p>
-
+                            <p className="text-red-100 text-sm text-center mb-3 h-5">
+                                {errors.general || "\u00A0"}
+                            </p>
+                            <p className="text-green-100 text-sm text-center mb-3 h-5">
+                                {successMessage || "\u00A0"}
+                            </p>
                             <button
                                 type="submit"
+                                disabled={isSubmitting}
                                 className="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center"
                             >
-                                ¡HABLEMOS!
+                                {isSubmitting ? "Enviando..." : "¡HABLEMOS!"}
                             </button>
                         </form>
                     </div>
