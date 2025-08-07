@@ -96,7 +96,7 @@ const { title, description, canonicalUrl } = Astro.props;
     <NavBar client:idle />
     <slot />
     <Footer />
-    <ScrollModal client:visible />
+    <ScrollModal client:idle  />
     <WhatsApp />
   </body>
 </html>
