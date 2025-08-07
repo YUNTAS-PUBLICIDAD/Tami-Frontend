@@ -205,14 +205,16 @@ const ScrollModal = () => {
                                 onChange={(e) => setCorreo(e.target.value)}
                                 className="p-2 rounded-lg bg-white text-black outline-none mb-1"
                             />
-                            <p className="text-sm text-yellow-100 mb-4 h-5">
-                                {errors.correo || "\u00A0"}
-                            </p>
-                            <p className="text-red-100 text-sm text-center mb-3 h-5">
-                                {errors.general || "\u00A0"}
-                            </p>
-                            <p className="text-green-100 text-sm text-center mb-3 h-5">
-                                {successMessage || "\u00A0"}
+                            <p
+                                className={`text-sm text-center mb-3 h-5 ${
+                                    errors.correo || errors.general
+                                        ? "text-red-100"
+                                        : successMessage
+                                            ? "text-green-100"
+                                            : "text-yellow-100"
+                                }`}
+                            >
+                                {errors.correo || errors.general || successMessage || "\u00A0"}
                             </p>
                             <button
                                 type="submit"
