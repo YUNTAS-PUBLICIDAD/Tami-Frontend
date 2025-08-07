@@ -18,11 +18,11 @@ export default function ListadoDeProductos() {
 
   const obtenerDatos = async () => {
     try {
-      const response = await fetch(getApiUrl(config.endpoints.productos.list));
+      const response = await fetch(getApiUrl(config.endpoints.productos.all));
       if (!response.ok) throw new Error("Error al obtener productos");
 
       const data = await response.json();
-      const productos = data.data; // Accedemos al array de productos en `data`
+      const productos = data; // Accedemos al array de productos en `data`
 
       // Mapeamos los datos del backend al modelo `Product`
       const productosMapeados: Producto[] = productos.map((producto: any) => {
@@ -163,8 +163,8 @@ function ProductCard({ producto }: Props) {
         transform="translate(5, 0)"
           ></path>
         </svg>
-        <div className="flex-grow text-center group max-w-[80px] mx-auto sm:max-w-[200px] md:max-w-[200px]">
-          <h3 className="w-full truncate overflow-hidden whitespace-nowrap text-lg font-bold text-teal-700 transition-transform duration-300 ease-in-out group-hover:scale-110">
+        <div className="flex-grow text-center group w-full px-2">
+          <h3 className="text-base sm:text-lg font-bold text-teal-700 leading-snug break-words whitespace-normal group-hover:scale-105 transition-transform duration-300 ease-in-out">
             {producto.nombre}
           </h3>
         </div>

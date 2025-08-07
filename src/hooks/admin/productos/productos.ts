@@ -4,7 +4,7 @@ import type { ProductApiPOST } from "src/models/Product";
 export async function getProducts() {
   try {
     const token = localStorage.getItem("token");
-    const url = getApiUrl(config.endpoints.productos.list);
+    const url = getApiUrl(config.endpoints.productos.all);
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -16,8 +16,7 @@ export async function getProducts() {
     if (!response.ok) throw new Error("Error al obtener productos");
 
     const result = await response.json();
-    const data = result.data;
-    return data;
+    return result;
   } catch (error) {
     console.error("Error al obtener productos:", error);
   }

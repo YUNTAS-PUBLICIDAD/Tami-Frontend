@@ -4,7 +4,16 @@ export default {
     darkMode: 'class',
     content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
     theme: {
-        extend: {},
+        extend: {
+            typography: (theme) => ({
+                DEFAULT: {
+                    css: {
+                        'text-align': 'justify',
+                        'text-justify': 'inter-word',
+                    },
+                },
+            }),
+        },
     },
     plugins: [typography],
 }

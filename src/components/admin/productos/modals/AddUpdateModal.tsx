@@ -143,24 +143,13 @@ const AddUpdateProducto = ({
                             />
                         </div>
                         <div className="form-input">
-                            <label>Lema:</label>
-                            <input
-                                required
-                                value={formData.lema}
-                                onChange={handleChange}
-                                type="text"
-                                name="lema"
-                                placeholder="Lema..."
-                            />
-                        </div>
-                        <div className="form-input">
                             <label>Imagen Principal del Producto:</label>
                             <input
                                 required
                                 accept="image/png, image/jpeg, image/jpg"
                                 onChange={handleFileChange}
                                 type="file"
-                                name="imagen_principal"
+                                name="miniatura"
                             />
                         </div>
                         <div className="form-input">

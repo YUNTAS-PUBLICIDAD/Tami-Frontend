@@ -1,4 +1,4 @@
-import {useState, useEffect, useLayoutEffect} from "react";
+import {useState, useEffect} from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
 import logoTami from "@images/logos/logo-estatico.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
@@ -10,7 +10,7 @@ function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [search, setSearch] = useState("");
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let ticking = false;
 
     const handleScroll = () => {
@@ -60,7 +60,7 @@ function NavBar() {
             title="Ir a la seccion de inicio"
             className="place-self-end lg:place-self-auto content-center h-14 mr-4"
         >
-        <img
+          <img
               src={logoTami.src}
               alt="Logo de Tami con letras"
               className="h-full lg:hidden object-contain"
@@ -129,6 +129,8 @@ function NavBar() {
             <button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 text-teal-600 hover:text-teal-800"
+                aria-label="Buscar"
+                title="Botón de búsqueda"
             >
               <svg
                   className="w-5 h-5"
@@ -150,7 +152,6 @@ function NavBar() {
           <a
               href="/auth/sign-in"
               title="Ir a la sección de inicio de sesión"
-              target="_blank"
               className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 text-base sm:text-lg hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-300 font-bold"
           >
             LOGIN
