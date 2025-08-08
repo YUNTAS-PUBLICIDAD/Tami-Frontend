@@ -115,7 +115,7 @@ const { title, description, canonicalUrl } = Astro.props;
     <NavBar client:idle />
     <slot />
     <Footer />
-    <ScrollModal client:visible />
-    <WhatsApp />
+    <ScrollModal client:load /> {/* Activado con el atributo `client:load`.*/}
+    {/* <WhatsApp /> */}  {/*Ya hay un botón en la navbar con ello. Se dejaría ese o este?*/}
   </body>
 </html>

@@ -22,7 +22,6 @@ import CopyText from "./CopyText.astro";
       width={120}
       height={60}
       loading="lazy"
-      format="webp"
     />
 
     {/* Línea vertical (visible solo en pantallas grandes) */}
@@ -90,16 +89,21 @@ import CopyText from "./CopyText.astro";
         width={150}
         height={150}
         loading="lazy"
-        format="webp"
-      />
-      <a
-        href="https://api.whatsapp.com/send?phone=51978883199"
-        title="Contáctanos por WhatsApp"
-        target="_blank"
+      /><button
+        type="button"
+        title="Abrir formulario de asesoría"
         class="bg-teal-700 hover:bg-teal-900 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
-      >
-        ¡CONTÁCTANOS!
-      </a>
+        id="open-scroll-btn"
+    >
+      ¡CONTÁCTANOS!
+    </button>
+
+      <script is:inline>
+        document.getElementById("open-scroll-btn")?.addEventListener("click", () => {
+          window.dispatchEvent(new Event("open-scroll-modal"));
+        });
+      </script>
+
     </div>
   </div>
   {/* Diseño para resoluciones menores a 1024px */}
