@@ -24,10 +24,10 @@ const useClienteAcciones = () => {
    */
 
   const addCliente = async (
-    clienteData: Partial<Clients>
+      clienteData: Partial<Clients>
   ): Promise<Clients> => {
-    const token = getValidToken(); 
-    const url = getApiUrl(config.endpoints.clientes.create); 
+    const token = getValidToken();
+    const url = getApiUrl(config.endpoints.clientes.create);
 
     const response = await fetch(url, {
       method: "POST",
@@ -38,7 +38,21 @@ const useClienteAcciones = () => {
       body: JSON.stringify(clienteData),
     });
 
-    if (!response.ok) throw new Error("Error al agregar cliente");
+    if (!response.ok) {
+      let errorData = null;
+      try {
+        errorData = await response.json();
+      } catch {
+        // no hacemos nada si no se puede parsear el body
+      }
+
+      if (errorData) {
+        // Lanza un error con el contenido completo para que se procese en el hook
+        throw new Error(JSON.stringify(errorData));
+      } else {
+        throw new Error("Error al agregar cliente");
+      }
+    }
 
     const result: { data: Clients } = await response.json();
     return result.data;
