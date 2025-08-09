@@ -24,7 +24,7 @@ const AddUpdateDataModal = ({
                               cliente,
                               onRefetch,
                             }: AddDataModalProps) => {
-  const { formData, handleChange, handleSubmit } = useClienteForm(
+  const { formData, handleChange, handleSubmit, errors,resetForm } = useClienteForm(
       cliente,
       () => {
         onRefetch();
@@ -32,6 +32,10 @@ const AddUpdateDataModal = ({
       }
   );
 
+    const handleClose = () => {
+        setIsOpen(false);
+        resetForm();  // limpia el formulario
+    };
   if (!isOpen) return null;
 
     return (
@@ -56,9 +60,16 @@ const AddUpdateDataModal = ({
                             value={formData.name}
                             onChange={handleChange}
                             required
-                            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 placeholder:text-gray-400"
+                            className={`p-3 rounded-lg focus:outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
+                                errors.name
+                                    ? "border-red-500 focus:ring-red-500"
+                                    : "border-gray-300 focus:ring-teal-500"
+                            }`}
                             placeholder="Ej. Juan Pérez"
                         />
+                        <p className="text-red-600 text-sm mt-1 min-h-[1.25rem]">
+                            {errors.name || "\u00A0"}
+                        </p>
                     </div>
 
                     <div className="flex flex-col">
@@ -72,9 +83,16 @@ const AddUpdateDataModal = ({
                             value={formData.celular}
                             onChange={handleChange}
                             required
-                            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 placeholder:text-gray-400"
+                            className={`p-3 rounded-lg focus:outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
+                                errors.celular
+                                    ? "border-red-500 focus:ring-red-500"
+                                    : "border-gray-300 focus:ring-teal-500"
+                            }`}
                             placeholder="Ej. 987654321"
                         />
+                        <p className="text-red-600 text-sm mt-1 min-h-[1.25rem]">
+                            {errors.celular || "\u00A0"}
+                        </p>
                     </div>
 
                     <div className="flex flex-col sm:col-span-2">
@@ -88,9 +106,16 @@ const AddUpdateDataModal = ({
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 placeholder:text-gray-400"
+                            className={`p-3 rounded-lg focus:outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
+                                errors.email
+                                    ? "border-red-500 focus:ring-red-500"
+                                    : "border-gray-300 focus:ring-teal-500"
+                            }`}
                             placeholder="Ej. cliente@gmail.com"
                         />
+                        <p className="text-red-600 text-sm mt-1 min-h-[1.25rem]">
+                            {errors.email || "\u00A0"}
+                        </p>
                     </div>
 
                     <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end items-center gap-3 mt-4">
@@ -102,7 +127,10 @@ const AddUpdateDataModal = ({
                         </button>
                         <button
                             type="button"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setIsOpen(false);
+                                resetForm();
+                            }}
                             className="w-full sm:w-auto bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition"
                         >
                             Cancelar

@@ -4,5 +4,5 @@ export default interface Cliente {
     email: string;
     celular: string;
     // seccion: string;
-    created_at?: string;
+    //created_at?: string;
   }
