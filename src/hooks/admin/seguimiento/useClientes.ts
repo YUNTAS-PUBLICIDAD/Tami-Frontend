@@ -1,41 +1,28 @@
 /**
  * @file useClientes.ts
- * @description Este archivo contiene el hook para obtener la lista de clientes.
- * @returns {Object} Un objeto que contiene la lista de clientes, un estado de carga y un mensaje de error.
+ * @description Hook personalizado para obtener la lista paginada de clientes desde la API.
  */
 
 import { useState, useEffect } from "react";
 import { getApiUrl, config } from "config";
-import type Cliente from "../../../models/Clients.ts";
+import type Cliente from "../../../models/Clients";
 
-const useClientes = (trigger: boolean, page: number = 1) => {
-  const [clientes, setClientes] = useState<Cliente[]>([]); // Cambia el tipo a Cliente[] para reflejar la estructura de datos
-  const [totalPages, setTotalPages] = useState<number>(1); // Número total de páginas
-  const [loading, setLoading] = useState<boolean>(true); // Estado de carga
-  const [error, setError] = useState<string | null>(null); // Mensaje de error
+const useClientes = (trigger: boolean) => {
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    /**
-     * Función para obtener la lista de clientes desde la API.
-     * Maneja el estado de carga y errores.
-     */
     const fetchClientes = async () => {
       setLoading(true);
       setError(null);
 
-      /**
-       * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
-       * Si no se encuentra el token, lanza un error.
-       */
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No se encontró el token de autenticación");
 
-        /**
-         * Realiza la solicitud a la API para obtener la lista de clientes.
-         */
-        const url = `${getApiUrl(config.endpoints.clientes.list)}?page=${page}`;
-        console.log(url);
+        // Traemos todos los clientes (sin paginar en el backend)
+        const url = `${getApiUrl(config.endpoints.clientes.list)}`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -44,44 +31,32 @@ const useClientes = (trigger: boolean, page: number = 1) => {
           },
         });
 
-        if (!response.ok)
+        if (!response.ok) {
           throw new Error(`Error al obtener clientes: ${response.statusText}`);
+        }
 
-        /**
-         * Convierte la respuesta a JSON y maneja los datos.
-         */
         const data = await response.json();
 
-        /**
-         * Extrae la lista de clientes y el número total de páginas de la respuesta.
-         * Si no hay datos, establece un array vacío y una página total de 1.
-         */
-        const clientesArray = data.data?.data || [];
-        const totalPages = Math.ceil(data.data?.total / 10) || 1;
-        setClientes(clientesArray);
-        setTotalPages(totalPages);
+        const clientesArray: Cliente[] = Array.isArray(data.data)
+            ? data.data
+            : data.data?.data || [];
 
-        /**
-         * Manejo de errores en la solicitud y respuesta.
-         */
+        setClientes(clientesArray);
       } catch (err) {
-        console.error("🚨 Error en fetchClientes:", err);
-        setError(
-          err instanceof Error ? err.message : "Ocurrió un error desconocido"
-        );
+        console.error("Error en fetchClientes:", err);
+        setError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
       } finally {
         setLoading(false);
       }
     };
 
     fetchClientes();
-  }, [trigger, page]); //
+  }, [trigger]);
 
   return {
-    clientes, // Lista de clientes
-    totalPages, // Número total de páginas
-    loading, // Estado de carga
-    error, // Mensaje de error
+    clientes,
+    loading,
+    error,
   };
 };
 

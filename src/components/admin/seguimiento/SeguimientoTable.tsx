@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers } from "react-icons/fa";
 import AddDataModal from "./modals/AddUpdateModal.tsx";
 import DeleteClienteModal from "./modals/DeleteModal.tsx";
@@ -11,14 +11,20 @@ import type Cliente from "../../../models/Clients.ts";
 const ClientesTable = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const { clientes, totalPages, loading, error } = useClientes(refetchTrigger, currentPage);
+  const { clientes, loading, error } = useClientes(refetchTrigger);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+  
+  const ITEMS_PER_PAGE = 5;
 
-  // Filtrar clientes basado en el término de búsqueda
+  // Primero filtramos los clientes según búsqueda
   const filteredClientes = clientes.filter(cliente =>
       cliente.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -26,7 +32,17 @@ const ClientesTable = () => {
       cliente.id.toString().includes(searchTerm)
   );
 
-  const handleRefetch = () => setRefetchTrigger((prev) => !prev);
+  const totalFiltered = filteredClientes.length;
+  const totalPages = Math.ceil(totalFiltered / ITEMS_PER_PAGE);
+
+  // Ahora, aplicamos paginación con slice sobre los clientes filtrados
+  const displayedClientes = filteredClientes.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
+  );
+
+
+  const handleRefetch = () => setRefetchTrigger(prev => !prev);
 
   const openModalForEdit = (cliente: Cliente) => {
     setSelectedCliente(cliente);
@@ -43,14 +59,15 @@ const ClientesTable = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleClienteFormSuccess = () => {
-    setRefetchTrigger((prev) => !prev);
+  // Ahora recibe opcionalmente el mensaje del backend
+  const handleClienteFormSuccess = (msg?: string) => {
+    setRefetchTrigger(prev => !prev);
     setIsModalOpen(false);
     Swal.fire({
       icon: "success",
       title: "Operación exitosa",
-      text: "El cliente se ha guardado correctamente",
-      confirmButtonColor: "#14b8a6", // teal-500
+      text: msg || "El cliente se ha guardado correctamente",
+      confirmButtonColor: "#14b8a6",
     });
   };
 
@@ -77,7 +94,6 @@ const ClientesTable = () => {
         </div>
       </div>
   );
-
   return (
       <div className="container mx-auto p-4">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
@@ -128,9 +144,9 @@ const ClientesTable = () => {
             <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
               <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
-                {filteredClientes.length}
+               {totalFiltered}
               </span>
-                {filteredClientes.length === 1 ? "cliente" : "clientes"} encontrados
+                {totalFiltered === 1 ? "cliente" : "clientes"} encontrados
               </div>
             </div>
           </div>
@@ -140,7 +156,7 @@ const ClientesTable = () => {
             <table className="w-full text-sm">
               <thead className="bg-teal-50 text-teal-800">
               <tr>
-                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "FECHA REGISTRO", "ACCIÓN"].map((header, index) => (
+                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "ACCIÓN"].map((header, index) => (
                     <th key={index} className="px-6 py-4 text-left font-bold tracking-wide uppercase text-xs whitespace-nowrap">
                       {header}
                     </th>
@@ -148,7 +164,7 @@ const ClientesTable = () => {
               </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-              {filteredClientes.length === 0 ? (
+              {displayedClientes.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-16 text-gray-500">
                       <div className="flex flex-col items-center justify-center gap-2">
@@ -156,67 +172,71 @@ const ClientesTable = () => {
                           <FaUsers className="h-10 w-10 text-teal-300" />
                         </div>
                         <p className="text-xl font-medium text-gray-600 mt-4">
-                          {searchTerm ? "No se encontraron clientes que coincidan con tu búsqueda" : "No hay clientes registrados"}
+                          {searchTerm
+                              ? "No se encontraron clientes que coincidan con tu búsqueda"
+                              : "No hay clientes registrados"}
                         </p>
                         <p className="text-gray-400 max-w-md mx-auto">
-                          {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
+                          {searchTerm
+                              ? "Intenta con otros términos de búsqueda"
+                              : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
                         </p>
                       </div>
                     </td>
                   </tr>
               ) : (
-                  // Filas de la tabla
-                  filteredClientes.map((item) => (
-                      <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200">
-                        <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
-                          #{item.id}
-                        </td>
-                        <td className="px-6 py-4 font-medium">{item.name}</td>
-                        <td className="px-6 py-4 text-blue-600">{item.email}</td>
-                        <td className="px-6 py-4">
-                          {item.celular ||
-                              <span className="text-gray-400 italic text-xs">No disponible</span>
-                          }
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="bg-gray-100 py-1 px-3 rounded-full text-xs text-gray-700">
-                              {item.created_at ? new Date(item.created_at).toLocaleDateString("es-ES", {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit"
-                              }) : "Fecha no disponible"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex gap-3 items-center">
-                            <button
-                                className="p-2 rounded-full hover:bg-green-100 text-green-600 transition-colors duration-200 border border-transparent hover:border-green-200"
-                                title="Editar"
-                                onClick={() => openModalForEdit(item)}
-                            >
-                              <FaEdit size={18} />
-                            </button>
-                            <button
-                                className="p-2 rounded-full text-red-500 border border-transparent transition-colors duration-200 hover:bg-red-100 hover:border-red-200"
-                                title="Eliminar"
-                                onClick={() => openDeleteModal(item.id)}
-                            >
-                              <FaTrash size={18} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                  ))
+                  <>
+                    {/* Filas reales */}
+                    {displayedClientes.map((item) => (
+                        <tr key={item.id} className="hover:bg-teal-50/50 transition-colors duration-200 h-17">
+                          <td className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
+                            #{item.id}
+                          </td>
+                          <td className="px-6 py-4 font-medium">{item.name}</td>
+                          <td className="px-6 py-4 text-blue-600">{item.email}</td>
+                          <td className="px-6 py-4">
+                            {item.celular || (
+                                <span className="text-gray-400 italic text-xs">No disponible</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex gap-3 items-center">
+                              <button
+                                  className="p-2 rounded-full hover:bg-green-100 text-green-600 transition-colors duration-200 border border-transparent hover:border-green-200"
+                                  title="Editar"
+                                  onClick={() => openModalForEdit(item)}
+                              >
+                                <FaEdit size={18} />
+                              </button>
+                              <button
+                                  className="p-2 rounded-full text-red-500 border border-transparent transition-colors duration-200 hover:bg-red-100 hover:border-red-200"
+                                  title="Eliminar"
+                                  onClick={() => openDeleteModal(item.id)}
+                              >
+                                <FaTrash size={18} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                    ))}
+                    {/* Filas vacías para mantener altura */}
+                    {Array.from({ length: ITEMS_PER_PAGE - displayedClientes.length }).map((_, idx) => (
+                        <tr key={`empty-${idx}`} className="h-17"> {/* altura fija */}
+                          <td colSpan={5} className="px-6 py-4">&nbsp;</td>
+                        </tr>
+                    ))}
+                  </>
               )}
               </tbody>
             </table>
           </div>
 
           {/* Paginación: falta corregir Mostrando */}
-          {filteredClientes.length > 0 && (
+          {displayedClientes.length > 0 && (
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 bg-gray-50 border-t border-gray-200">
                 <div className="text-sm text-gray-600">
-                  Mostrando {(currentPage - 1) * 5 + 1}-{Math.min(currentPage * 5, filteredClientes.length)} de {filteredClientes.length} clientes
+                  Mostrando {(currentPage - 1) * ITEMS_PER_PAGE + 1} -{" "}
+                  {Math.min(currentPage * ITEMS_PER_PAGE, totalFiltered)} de {totalFiltered} clientes
                 </div>
                 <Paginator
                     currentPage={currentPage}
@@ -245,6 +265,7 @@ const ClientesTable = () => {
         )}
       </div>
   );
+
 };
 
 export default ClientesTable;
