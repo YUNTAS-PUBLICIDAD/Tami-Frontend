@@ -42,13 +42,11 @@ const ScrollModal = () => {
     // Abierto automáticamente por scroll
     useEffect(() => {
         const handleScroll = () => {
-
             const currentScroll = window.scrollY;
             const scrollDirection = currentScroll < lastScrollRef.current ? "up" : "down";
             lastScrollRef.current = currentScroll;
 
             const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
-
             if (atBottom) hasReachedBottomRef.current = true;
 
             if (
@@ -56,6 +54,13 @@ const ScrollModal = () => {
                 scrollDirection === "up" &&
                 !hasShownRef.current
             ) {
+                // Verificar cooldown antes de mostrar
+                const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
+                const now = Date.now();
+                if (now - lastClosed < MODAL_COOLDOWN_MS) {
+                    return; // Todavía dentro del tiempo de enfriamiento
+                }
+
                 setShowModal(true);
                 hasShownRef.current = true;
                 hasReachedBottomRef.current = false;
