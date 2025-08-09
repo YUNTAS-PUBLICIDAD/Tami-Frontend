@@ -7,100 +7,98 @@ import { getApiUrl, config } from "config"; // importa la configuración de la A
 import type Producto from "../../../models/Product.ts"; // importa el modelo de producto
 
 const useProductoAcciones = () => {
+  /**
+   * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
+   * Si no se encuentra el token, lanza un error.
+   */
 
-    /**
-     * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
-     * Si no se encuentra el token, lanza un error.
-     */
+  const getValidToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No se encontró el token");
+    return token;
+  };
 
-    const getValidToken = () => {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No se encontró el token");
-        return token;
-    };
+  /**
+   * Funcion para añadir un producto usando FormData
+   */
+  const addProducto = async (productoData: FormData): Promise<Producto> => {
+    const token = getValidToken();
+    const url = getApiUrl(config.endpoints.productos.create);
 
-    /**
-     * Funcion para añadir un producto
-     */
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      body: productoData,
+    });
 
-    const addProducto = async (
-        productoData: Partial<Producto>
-    ): Promise<Producto> => {
-        const token = getValidToken();
-        const url = getApiUrl(config.endpoints.productos.create);
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error en la respuesta:", errorData);
+      throw new Error("Error al agregar producto");
+    }
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(productoData),
-        });
+    const result: { data: Producto } = await response.json();
+    return result.data;
+  };
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Error en la respuesta:", errorData);
-            throw new Error("Error al agregar producto");
-        }
+  /**
+   * Función para actualizar un producto usando FormData
+   */
+  const updateProducto = async (
+    id: number,
+    updatedData: FormData
+  ): Promise<Producto> => {
+    const token = getValidToken();
+    const url = getApiUrl(config.endpoints.productos.update(id));
 
-        const result: { data: Producto } = await response.json();
-        return result.data;
-    };
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      body: updatedData,
+    });
 
-    /**
-     * Función para actualizar un producto, usando los tipos
-     */
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error al actualizar producto:", errorData);
+      throw new Error("Error al actualizar producto");
+    }
 
-    const updateProducto = async (
-        id: number,
-        updatedData: Partial<Producto>
-    ): Promise<Producto> => {
-        const token = getValidToken();
-        const url = getApiUrl(config.endpoints.productos.update(id));
+    const result: { data: Producto } = await response.json();
+    return result.data;
+  };
 
-        const response = await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(updatedData),
-        });
+  /**
+   * Función para eliminar un producto, usando los tipos
+   */
 
-        if (!response.ok) throw new Error("Error al actualizar producto");
+  const deleteProducto = async (id: number): Promise<{ message: string }> => {
+    const token = getValidToken();
+    const url = getApiUrl(config.endpoints.productos.delete(id));
 
-        const result: { data: Producto } = await response.json();
-        return result.data;
-    };
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    /**
-     * Función para eliminar un producto, usando los tipos
-     */
+    if (!response.ok) throw new Error("Error al eliminar producto");
 
-    const deleteProducto = async (id: number): Promise<{ message: string }> => {
-        const token = getValidToken();
-        const url = getApiUrl(config.endpoints.productos.delete(id));
+    const result: { message: string } = await response.json();
+    return result;
+  };
 
-        const response = await fetch(url, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        if (!response.ok) throw new Error("Error al eliminar producto");
-
-        const result: { message: string } = await response.json();
-        return result;
-    };
-
-    return {
-        addProducto,
-        updateProducto,
-        deleteProducto,
-    };
+  return {
+    addProducto,
+    updateProducto,
+    deleteProducto,
+  };
 };
 
 export default useProductoAcciones;
