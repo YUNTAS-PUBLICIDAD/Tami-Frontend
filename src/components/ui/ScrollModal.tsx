@@ -4,7 +4,7 @@ import Logo from "../../assets/images/logos/logo-blanco-tami.gif";
 import { config, getApiUrl } from "../../../config";
 
 const MODAL_STORAGE_KEY = "asesoriaModalLastClosed";
-const MODAL_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutos
+const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
 
 const ScrollModal = () => {
     const [showModal, setShowModal] = useState(false);
@@ -20,7 +20,21 @@ const ScrollModal = () => {
     const lastScrollRef = useRef(0);
     const hasReachedBottomRef = useRef(false);
     const hasShownRef = useRef(false);
+    // Abierto automáticamente después de 2 segundos al cargar la página
+    useEffect(() => {
+        const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
+        const now = Date.now();
 
+        // Solo mostrar si ha pasado el cooldown y aún no se ha mostrado
+        if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current) {
+            const timer = setTimeout(() => {
+                setShowModal(true);
+                hasShownRef.current = true;
+            }, 2000); // 2 segundos
+
+            return () => clearTimeout(timer);
+        }
+    }, []);
     const resetForm = () => {
         setNombre("");
         setTelefono("");
