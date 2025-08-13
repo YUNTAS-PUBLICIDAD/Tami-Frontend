@@ -300,10 +300,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
-                if (imagen.url_imagen) {
+                // Solo agregar la imagen si es un File, no si es string (URL)
+                if (imagen.url_imagen instanceof File) {
                     formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
-                    formDataToSend.append(`textos_alt[${index}]`, altText);
                 }
+
+                // El alt text sí lo enviamos siempre
+                formDataToSend.append(`textos_alt[${index}]`, altText);
             });
 
             formData.relacionados.forEach((item, index) => {
@@ -335,6 +338,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     timer: 1500,
                 });
                 closeModal();
+                await onProductUpdated?.();
                 setIsLoading(false);
             } else {
                 Swal.fire({
@@ -545,7 +549,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <label className="block !text-gray-700 text-sm font-medium mb-1">Subtitulo:</label>
                                     <input
                                         required
-                                        value={formData.subtitulo}
+                                        value={formData.subtitulo ?? ""}
                                         onChange={handleChange}
                                         type="text"
                                         name="subtitulo"

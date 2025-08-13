@@ -265,7 +265,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
     if (
         !formData.meta_data.meta_descripcion.trim() ||
-        formData.meta_data.meta_descripcion.length < 40 ||
+        formData.meta_data.meta_descripcion.length < 50 ||
         formData.meta_data.meta_descripcion.length > 200
     ) {
       Swal.fire({
