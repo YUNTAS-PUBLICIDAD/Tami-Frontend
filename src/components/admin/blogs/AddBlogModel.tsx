@@ -52,98 +52,69 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
   }, [propIsOpen]);
 
   useEffect(() => {
-    if (isOpen) {
-      console.log("✅ useEffect ACTIVADO para PRODUCTOS");
+    if (!isOpen) return;
 
-      const url = getApiUrl(config.endpoints.productos.list);
-      console.log("🔗 URL de productos:", url);
-
-      fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          Accept: "application/json",
-        },
-      })
-          .then((res) => {
-            console.log("📦 Respuesta FETCH cruda:", res);
-            return res.json();
-          })
-          .then((data) => {
-            console.log("📦 JSON de productos:", data);
-
-            if (Array.isArray(data?.data)) {
-              console.log("✅ Es un array:", data.data);
-              setProductos(data.data);
-            } else {
-              console.error("❌ NO es un array:", data);
-              setProductos([]); // fallback
-            }
-          })
-          .catch((err) => {
-            console.error("🚫 Error en FETCH productos:", err);
-          });
-    }
-  }, [isOpen]);
-  useEffect(() => {
-    if (isOpen) {
-      fetch(getApiUrl(config.endpoints.productos.list), {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          Accept: "application/json",
-        },
-      })
-          .then((res) => res.json())
-          .then((data) => {
-            if (Array.isArray(data?.data)) {
-              setProductos(data.data);
-            } else {
-              console.error("❌ El formato de productos no es un array:", data);
-              setProductos([]); // fallback
-            }
-          })
-          .catch((err) => console.error("Error al obtener productos:", err));
-    }
-  }, [isOpen]);
-  useEffect(() => {
-    if (isOpen) {
-      if (blogToEdit) {
-        // Si hay blogToEdit: llenar
-        setFormData({
-          titulo: blogToEdit.titulo || "",
-          link: blogToEdit.link || "",
-          subtitulo1: blogToEdit.subtitulo1 || "",
-          subtitulo2: blogToEdit.subtitulo2 || "",
-          //subtitulo3: blogToEdit.subtitulo3 || "",
-          video_url: blogToEdit.video_url || "",
-          video_titulo: blogToEdit.video_titulo || "",
-          producto_id: blogToEdit.producto_id || "", // Changed from nombre_producto
-          miniatura: null,
-          imagenes: blogToEdit.imagenes?.map((img: any) => ({
-            imagen: null,
-            parrafo: img.parrafo || "",
-          })) || [
-            { imagen: null, parrafo: "" },
-            { imagen: null, parrafo: "" },
-          ],
+    const fetchProductos = async () => {
+      try {
+        const url = getApiUrl(config.endpoints.productos.list);
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Accept: "application/json",
+          },
         });
-      } else {
-        // Si NO hay blogToEdit: limpiar
-        setFormData({
-          titulo: "",
-          link: "",
-          subtitulo1: "",
-          subtitulo2: "",
-          //subtitulo3: "",
-          video_url: "",
-          video_titulo: "",
-          producto_id: "", // Changed from nombre_producto
-          miniatura: null,
-          imagenes: [
-            { imagen: null, parrafo: "" },
-            { imagen: null, parrafo: "" },
-          ],
-        });
+        const data = await res.json();
+
+        let lista: any[] = [];
+        if (Array.isArray(data)) lista = data;
+        else if (Array.isArray(data?.data)) lista = data.data;
+        else if (Array.isArray(data?.data?.productos)) lista = data.data.productos;
+
+        setProductos(lista);
+      } catch (err) {
+        console.error("🚫 Error en FETCH productos:", err);
+        setProductos([]);
       }
+    };
+
+    fetchProductos();
+
+    if (blogToEdit) {
+      // Modo edición → rellenamos datos
+      setFormData({
+        titulo: blogToEdit.titulo || "",
+        link: blogToEdit.link || "",
+        subtitulo1: blogToEdit.subtitulo1 || "",
+        subtitulo2: blogToEdit.subtitulo2 || "",
+        video_url: blogToEdit.video_url || "",
+        video_titulo: blogToEdit.video_titulo || "",
+        producto_id: blogToEdit.producto_id || "",
+        miniatura: null, // No cargamos archivo aquí, solo preview si quieres
+        imagenes: blogToEdit.imagenes?.map((img: any) => ({
+          imagen: null,
+          parrafo: img.parrafo || "",
+          url: img.url || "" // Para mostrar la previa
+        })) || [
+          { imagen: null, parrafo: "" },
+          { imagen: null, parrafo: "" },
+        ]
+      });
+    } else {
+      // Modo crear → formulario vacío
+      setFormData({
+        titulo: "",
+        link: "",
+        subtitulo1: "",
+        subtitulo2: "",
+        video_url: "",
+        video_titulo: "",
+        producto_id: "",
+        miniatura: null,
+        imagenes: [
+          { imagen: null, parrafo: "" },
+          { imagen: null, parrafo: "" },
+        ],
+      });
     }
   }, [isOpen, blogToEdit]);
 
@@ -470,7 +441,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                                   type="file"
                                   accept="image/*"
                                   onChange={(e) => handleFileChangeAdicional(e, index)}
-                                  //required
                                   className="hidden"
                               />
                               <p className="text-center text-gray-500">
@@ -484,12 +454,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         <textarea
                             onChange={(e) => handleParrafoChange(e, index)}
                             value={imagen.parrafo}
-                            //required
                             placeholder="Descripción de la imagen..."
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition min-h-24"
                         />
                       </div>
                   ))}
+
 
                   <div className="md:col-span-2 flex justify-end gap-4">
                     <button
