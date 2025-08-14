@@ -18,7 +18,7 @@ export default function ListadoDeProductos() {
 
   const obtenerDatos = async () => {
     try {
-      const response = await fetch(getApiUrl(config.endpoints.productos.all));
+      const response = await fetch(getApiUrl(config.endpoints.productos.list));
       if (!response.ok) throw new Error("Error al obtener productos");
 
       const data = await response.json();

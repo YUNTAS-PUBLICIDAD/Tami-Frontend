@@ -32,7 +32,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       largo: "",
       ancho: "",
     },
-    meta_data: {
+    etiqueta: {
       meta_titulo: "",
       meta_descripcion: "",
     },
@@ -159,7 +159,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
         largo: "",
         ancho: "",
       },
-      meta_data: {
+      etiqueta: {
         meta_titulo: "",
         meta_descripcion: "",
       },
@@ -250,9 +250,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
     // Validación de metadatos
     if (
-        !formData.meta_data.meta_titulo.trim() ||
-        formData.meta_data.meta_titulo.length < 10 ||
-        formData.meta_data.meta_titulo.length > 70
+        !formData.etiqueta.meta_titulo.trim() ||
+        formData.etiqueta.meta_titulo.length < 10 ||
+        formData.etiqueta.meta_titulo.length > 70
     ) {
       Swal.fire({
         icon: "warning",
@@ -264,9 +264,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
 
     if (
-        !formData.meta_data.meta_descripcion.trim() ||
-        formData.meta_data.meta_descripcion.length < 50 ||
-        formData.meta_data.meta_descripcion.length > 200
+        !formData.etiqueta.meta_descripcion.trim() ||
+        formData.etiqueta.meta_descripcion.length < 50 ||
+        formData.etiqueta.meta_descripcion.length > 200
     ) {
       Swal.fire({
         icon: "warning",
@@ -290,8 +290,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
-      formDataToSend.append("meta_data[meta_titulo]", formData.meta_data.meta_titulo);
-      formDataToSend.append("meta_data[meta_descripcion]", formData.meta_data.meta_descripcion);
+      formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
+      formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
 
       const link = slugify(formData.titulo || formData.nombre);
       formDataToSend.append("link", link);
@@ -446,12 +446,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             type="text"
                             id="meta_titulo"
                             name="meta_titulo"
-                            value={formData.meta_data.meta_titulo}
+                            value={formData.etiqueta.meta_titulo}
                             onChange={(e) =>
                                 setFormData((prev) => ({
                                   ...prev,
-                                  meta_data: {
-                                    ...prev.meta_data,
+                                  etiqueta: {
+                                    ...prev.etiqueta,
                                     meta_titulo: e.target.value,
                                   },
                                 }))
@@ -460,7 +460,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
                         />
                         <p className="text-xs text-gray-500 mt-1">
-                          {formData.meta_data.meta_titulo.length} / 70 caracteres
+                          {formData.etiqueta.meta_titulo.length} / 70 caracteres
                         </p>
                       </div>
 
@@ -471,12 +471,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <textarea
                             id="meta_descripcion"
                             name="meta_descripcion"
-                            value={formData.meta_data.meta_descripcion}
+                            value={formData.etiqueta.meta_descripcion}
                             onChange={(e) =>
                                 setFormData((prev) => ({
                                   ...prev,
-                                  meta_data: {
-                                    ...prev.meta_data,
+                                  etiqueta: {
+                                    ...prev.etiqueta,
                                     meta_descripcion: e.target.value,
                                   },
                                 }))
@@ -486,7 +486,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
                         />
                         <p className="text-xs text-gray-500 mt-1">
-                          {formData.meta_data.meta_descripcion.length} / 200 caracteres
+                          {formData.etiqueta.meta_descripcion.length} / 200 caracteres
+
                         </p>
                       </div>
                       <div className="form-input">

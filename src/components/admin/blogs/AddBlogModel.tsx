@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
+  url?: string;
 }
 
 interface BlogPOST {
@@ -17,6 +18,10 @@ interface BlogPOST {
   producto_id: number | string; // Changed from nombre_producto
   miniatura: File | null;
   imagenes: ImagenAdicional[];
+  etiqueta: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  }
 }
 
 interface AddBlogModalProps {
@@ -44,6 +49,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       { imagen: null, parrafo: "" },
       { imagen: null, parrafo: "" },
     ],
+    etiqueta: {
+      meta_titulo: "",
+      meta_descripcion: ""
+    }
   });
   useEffect(() => {
     if (propIsOpen !== undefined) {
@@ -80,7 +89,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     fetchProductos();
 
     if (blogToEdit) {
-      // Modo edición → rellenamos datos
+      // Modo edición
+      //console.log("blogToEdit.imagenes recibido del backend:", blogToEdit.imagenes);
+      const productoEncontrado = productos.find(
+          (p) => p.nombre === blogToEdit.nombre_producto
+      );
+      //console.log(productoEncontrado);
       setFormData({
         titulo: blogToEdit.titulo || "",
         link: blogToEdit.link || "",
@@ -88,16 +102,27 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         subtitulo2: blogToEdit.subtitulo2 || "",
         video_url: blogToEdit.video_url || "",
         video_titulo: blogToEdit.video_titulo || "",
-        producto_id: blogToEdit.producto_id || "",
-        miniatura: null, // No cargamos archivo aquí, solo preview si quieres
-        imagenes: blogToEdit.imagenes?.map((img: any) => ({
-          imagen: null,
-          parrafo: img.parrafo || "",
-          url: img.url || "" // Para mostrar la previa
-        })) || [
-          { imagen: null, parrafo: "" },
-          { imagen: null, parrafo: "" },
-        ]
+        producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
+        miniatura: blogToEdit.miniatura || null,
+        imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
+          const raw = img.ruta_imagen || "";
+          return {
+            imagen: null,
+            parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
+            url: raw
+                ? raw.startsWith("http")
+                    ? raw
+                    : `${import.meta.env.PUBLIC_API_URL}${raw}`
+                : ""
+          };
+        }) || [
+          { imagen: null, parrafo: "", url: "" },
+          { imagen: null, parrafo: "", url: "" },
+        ],
+        etiqueta: {
+          meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
+          meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || ""
+        }
       });
     } else {
       // Modo crear → formulario vacío
@@ -114,6 +139,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           { imagen: null, parrafo: "" },
           { imagen: null, parrafo: "" },
         ],
+        etiqueta: {
+          meta_titulo: "",
+          meta_descripcion: ""
+        }
       });
     }
   }, [isOpen, blogToEdit]);
@@ -195,6 +224,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         { imagen: null, parrafo: "" },
         { imagen: null, parrafo: "" },
       ],
+      etiqueta: {
+        meta_titulo: "",
+        meta_descripcion: ""
+      }
     });
   };
 
@@ -208,10 +241,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         !formData.link ||
         !formData.subtitulo1 ||
         !formData.subtitulo2 ||
-        //!formData.subtitulo3 ||
         !formData.video_url ||
         !formData.video_titulo ||
-        !formData.producto_id || // Changed from nombre_producto
+        !formData.producto_id ||
         (!blogToEdit && !formData.miniatura) || // Solo obligatorio si es nuevo
         formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)
     ) {
@@ -236,7 +268,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("producto_id", formData.producto_id.toString()); // Changed to producto_id and converted to string
       // Solo si hay nueva imagen principal
-      if (formData.miniatura) {
+      if (formData.miniatura instanceof File) {
         formDataToSend.append("miniatura", formData.miniatura);
       }
 
@@ -247,6 +279,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
+      formDataToSend.append(
+          "etiqueta",
+          JSON.stringify({
+            meta_titulo: formData.etiqueta.meta_titulo,
+            meta_descripcion: formData.etiqueta.meta_descripcion
+          })
+      );
 
       // Si es edición, agrega _method=PUT
       if (blogToEdit) {
@@ -295,7 +334,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
     }
   };
 
-
   return (
       <>
         {(isOpen || propIsOpen) && (
@@ -329,7 +367,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
-
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Link*</label>
                     <input
@@ -341,8 +378,42 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Meta título</label>
+                    <input
+                        type="text"
+                        name="meta_titulo"
+                        value={formData.etiqueta.meta_titulo}
+                        onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              etiqueta: {
+                                ...formData.etiqueta,
+                                meta_titulo: e.target.value
+                              }
+                            })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
 
-
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Meta descripción</label>
+                    <textarea
+                        name="meta_descripcion"
+                        value={formData.etiqueta.meta_descripcion}
+                        onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              etiqueta: {
+                                ...formData.etiqueta,
+                                meta_descripcion: e.target.value
+                              }
+                            })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Párrafo*</label>
                     <input
@@ -355,7 +426,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
-
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Descripción*</label>
                     <input
@@ -368,19 +438,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     />
                   </div>
-
-                  {/*
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Subtítulo Beneficio*</label>
-                    <input
-                      type="text"
-                      name="subtitulo3"
-                      value={formData.subtitulo3}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                    />
-                  </div>
-                  */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Título Video*</label>
                     <input
@@ -414,7 +471,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                     >
                       <option value="">Selecciona un producto</option>
                       {productos.map((producto) => (
-                          <option key={producto.id} value={producto.id}> {/* Changed value to producto.id */}
+                          <option key={producto.id} value={String(producto.id)}>
                             {producto.nombre}
                           </option>
                       ))}
@@ -422,6 +479,25 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                   </div>
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Miniatura*</label>
+
+                    {formData.miniatura instanceof File ? (
+                        <img
+                            src={URL.createObjectURL(formData.miniatura)}
+                            alt="Vista previa miniatura"
+                            className="w-32 h-32 object-cover rounded-md border mb-2"
+                        />
+                    ) : typeof formData.miniatura === "string" && formData.miniatura ? (
+                        <img
+                            src={
+                              String(formData.miniatura).startsWith("http")
+                                  ? String(formData.miniatura)
+                                  : `${import.meta.env.PUBLIC_API_URL}${formData.miniatura}`
+                            }
+                            alt="Miniatura actual"
+                            className="w-32 h-32 object-cover rounded-md border mb-2"
+                        />
+                    ) : null}
+
                     <input
                         type="file"
                         accept="image/*"
@@ -434,6 +510,25 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         <label className="block text-sm font-medium text-gray-700">
                           Imagen Adicional {index + 1}*
                         </label>
+
+                        {imagen.imagen instanceof File ? (
+                            <img
+                                src={URL.createObjectURL(imagen.imagen)}
+                                alt={`Vista previa imagen ${index + 1}`}
+                                className="w-32 h-32 object-cover rounded-md border mb-2"
+                            />
+                        ) : imagen.url ? (
+                            <img
+                                src={
+                                  imagen.url.startsWith("http")
+                                      ? imagen.url
+                                      : `${import.meta.env.PUBLIC_API_URL}${imagen.url}`
+                                }
+                                alt={`Imagen adicional ${index + 1}`}
+                                className="w-32 h-32 object-cover rounded-md border mb-2"
+                            />
+                        ) : null}
+
                         <div className="flex items-center gap-4 mb-2">
                           <label className="flex-1 cursor-pointer">
                             <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-500 transition">
@@ -444,13 +539,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                                   className="hidden"
                               />
                               <p className="text-center text-gray-500">
-                                {imagen.imagen
+                                {imagen.imagen instanceof File
                                     ? imagen.imagen.name
                                     : "Seleccionar archivo"}
                               </p>
                             </div>
                           </label>
                         </div>
+
                         <textarea
                             onChange={(e) => handleParrafoChange(e, index)}
                             value={imagen.parrafo}
@@ -459,8 +555,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         />
                       </div>
                   ))}
-
-
                   <div className="md:col-span-2 flex justify-end gap-4">
                     <button
                         type="button"

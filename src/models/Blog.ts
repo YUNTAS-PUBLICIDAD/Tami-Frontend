@@ -17,4 +17,8 @@ export default interface Blog {
   parrafos: {
     parrafo: string;
   }[];
+  etiqueta: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  }
 }
