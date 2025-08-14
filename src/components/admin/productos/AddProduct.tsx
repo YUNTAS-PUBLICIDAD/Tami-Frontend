@@ -487,6 +487,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         />
                         <p className="text-xs text-gray-500 mt-1">
                           {formData.etiqueta.meta_descripcion.length} / 200 caracteres
+
                         </p>
                       </div>
                       <div className="form-input">
