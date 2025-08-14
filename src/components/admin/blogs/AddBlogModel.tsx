@@ -18,6 +18,10 @@ interface BlogPOST {
   producto_id: number | string; // Changed from nombre_producto
   miniatura: File | null;
   imagenes: ImagenAdicional[];
+  etiqueta: {
+    meta_titulo: string;
+    meta_descripcion: string;
+  }
 }
 
 interface AddBlogModalProps {
@@ -45,6 +49,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
       { imagen: null, parrafo: "" },
       { imagen: null, parrafo: "" },
     ],
+    etiqueta: {
+      meta_titulo: "",
+      meta_descripcion: ""
+    }
   });
   useEffect(() => {
     if (propIsOpen !== undefined) {
@@ -110,7 +118,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         }) || [
           { imagen: null, parrafo: "", url: "" },
           { imagen: null, parrafo: "", url: "" },
-        ]
+        ],
+        etiqueta: {
+          meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
+          meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || ""
+        }
       });
     } else {
       // Modo crear → formulario vacío
@@ -127,6 +139,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
           { imagen: null, parrafo: "" },
           { imagen: null, parrafo: "" },
         ],
+        etiqueta: {
+          meta_titulo: "",
+          meta_descripcion: ""
+        }
       });
     }
   }, [isOpen, blogToEdit]);
@@ -208,6 +224,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         { imagen: null, parrafo: "" },
         { imagen: null, parrafo: "" },
       ],
+      etiqueta: {
+        meta_titulo: "",
+        meta_descripcion: ""
+      }
     });
   };
 
@@ -259,6 +279,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
+      formDataToSend.append(
+          "etiqueta",
+          JSON.stringify({
+            meta_titulo: formData.etiqueta.meta_titulo,
+            meta_descripcion: formData.etiqueta.meta_descripcion
+          })
+      );
 
       // Si es edición, agrega _method=PUT
       if (blogToEdit) {
@@ -349,6 +376,42 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({ onBlogAdded, isOpen: propIs
                         onChange={handleChange}
 
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Meta título</label>
+                    <input
+                        type="text"
+                        name="meta_titulo"
+                        value={formData.etiqueta.meta_titulo}
+                        onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              etiqueta: {
+                                ...formData.etiqueta,
+                                meta_titulo: e.target.value
+                              }
+                            })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Meta descripción</label>
+                    <textarea
+                        name="meta_descripcion"
+                        value={formData.etiqueta.meta_descripcion}
+                        onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              etiqueta: {
+                                ...formData.etiqueta,
+                                meta_descripcion: e.target.value
+                              }
+                            })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div className="space-y-2">
