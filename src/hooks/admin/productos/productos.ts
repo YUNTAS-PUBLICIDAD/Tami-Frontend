@@ -4,7 +4,7 @@ import type { ProductApiPOST } from "src/models/Product";
 export async function getProducts() {
   try {
     const token = localStorage.getItem("token");
-    const url = getApiUrl(config.endpoints.productos.all);
+    const url = getApiUrl(config.endpoints.productos.list);
     const response = await fetch(url, {
       method: "GET",
       headers: {

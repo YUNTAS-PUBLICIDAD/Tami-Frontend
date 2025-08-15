@@ -14,7 +14,7 @@ export interface ProductApiPOST {
   imagenes: File[];
   textos_alt: string[];
   relacionados: number[];
-  meta_data: {
+  etiquetas: {
     meta_titulo: string;
     meta_descripcion: string;
   };
@@ -34,7 +34,7 @@ export interface ProductFormularioPOST {
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
-  meta_data: {
+  etiqueta: {
     meta_titulo: string;
     meta_descripcion: string;
   };
@@ -68,7 +68,7 @@ export default interface Producto {
   stock: number;
   precio: number;
   createdAt: string | null;
-  meta_data: {
+  etiqueta: {
     meta_titulo: string;
     meta_descripcion: string;
   };
