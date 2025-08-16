@@ -35,6 +35,9 @@ const productosUrl = config.endpoints.productos;
           Subtitulo Producto
         </h1
         >
+        <button id="btnQuotationHero"
+                class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition hover:cursor-pointer"
+        >
           ¡COTÍZALO!
         </button>
       </div>
@@ -82,34 +85,22 @@ const productosUrl = config.endpoints.productos;
               {/* Información del producto: */}
             </h3>
             <h1 class="font-bold mb-2 text-lg">Información del producto:</h1>
-            <p class="text-gray-700" id="info-description"></p>
+            <p class="text-gray-700 text-justify break-words" id="info-description"></p>
           </div>
 
           <div class="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
             <h3 class="font-bold mb-2 text-lg">Detalles del producto</h3>
-            <h3 class="font-bold mb-2">Descripción:</h3>
+            <h3 class="font-bold mb-2">Especificaciones técnicas:</h3>
             <!-- lista de especificaciones -->
-            <ul class="space-y-2 text-gray-700" id="specs-list"></ul>
+            <ul class="list-disc pl-5 space-y-2 text-gray-700" id="specs-list"></ul>
             <h3 class="font-bold mt-4 mb-4">Dimensiones:</h3>
             <div class="flex items-start gap-4 md:gap-12">
               <div class="w-24 md:w-32">
                 <img src={boxSize.src} alt="Box Size" class="w-full h-auto" />
               </div>
               <!-- dimensiones del producto -->
-              <!-- dimensiones del producto (temporales, hardcoded) -->
-              <ul class="space-y-2 md:space-y-4">
-                <li class="flex items-center gap-2">
-                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">H</span>
-                  <span>Altura:</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">L</span>
-                  <span>Longitud:</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">A</span>
-                  <span>Ancho:</span>
-                </li>
+              <ul class="space-y-2 md:space-y-4" id="product-dimensions">
+                <!-- Las dimensiones se llenarán dinámicamente -->
               </ul>
             </div>
           </div>
@@ -153,6 +144,62 @@ const productosUrl = config.endpoints.productos;
   // Función para mapear nombres de productos a IDs
   const productNameToIdMap = {};
 
+  function displaySpecsAndDimensions(specs) {
+    const specsList = document.getElementById("specs-list");
+    const dimensionsList = document.getElementById("product-dimensions");
+
+    if (!specsList || !dimensionsList) return;
+
+    specsList.innerHTML = '';
+    dimensionsList.innerHTML = '';
+
+    const dimensionKeys = ["Altura", "Longitud", "Ancho"];
+    const dimensions = {};
+    const otherSpecs = {};
+
+    // Normalizar specs: array de {clave, valor} → objeto plano
+    let normalizedSpecs = {};
+    if (Array.isArray(specs)) {
+      specs.forEach(spec => {
+        if (spec.clave && spec.valor) {
+          normalizedSpecs[spec.clave] = spec.valor;
+        }
+      });
+    } else if (typeof specs === "object" && specs !== null) {
+      normalizedSpecs = specs;
+    }
+
+    // Separar dimensiones de otras especificaciones
+    Object.entries(normalizedSpecs).forEach(([key, value]) => {
+      if (dimensionKeys.includes(key)) dimensions[key] = value;
+      else otherSpecs[key] = value;
+    });
+
+    // Renderizar otras especificaciones
+    Object.entries(otherSpecs).forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.className = "text-gray-700";
+      li.textContent = `${key}: ${value}`;
+      specsList.appendChild(li);
+    });
+
+    // Renderizar dimensiones
+    Object.entries(dimensions).forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.className = "flex items-center gap-2";
+
+      const span = document.createElement("span");
+      span.className =
+          "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+      span.textContent = key.charAt(0).toUpperCase();
+
+      const text = document.createTextNode(`${key}: ${value}`);
+
+      li.appendChild(span);
+      li.appendChild(text);
+      dimensionsList.appendChild(li);
+    });
+  }
   // Función para mostrar mensajes de error
   function showErrorMessage(message) {
     const container = document.createElement("div");
@@ -176,12 +223,9 @@ const productosUrl = config.endpoints.productos;
     const imagesList = document.getElementById("images-list");
     const infoTitle = document.getElementById("info-title");
     const infoDescription = document.getElementById("info-description");
-    const specsList = document.getElementById("specs-list");
-    const productDimension = document.getElementById("product-dimensions");
 
     if (!productTitle || !productSubtitle || !productImg ||
-        !productViewer || !imagesList || !infoTitle || !infoDescription ||
-        !specsList) {
+        !productViewer || !imagesList || !infoTitle || !infoDescription) {
       console.error("One or more elements not found");
       return;
     }
@@ -229,31 +273,7 @@ const productosUrl = config.endpoints.productos;
     }
 
     // Actualizar especificaciones
-    specsList.innerHTML = '';
-    const specs = product.especificaciones;
-    Object.entries(specs).forEach(([key, value]) => {
-      const li = document.createElement("li");
-      li.textContent = `${key}: ${value}`;
-      specsList.appendChild(li);
-    });
-
-    // Actualizar dimensiones
-    if (productDimension) {
-      productDimension.innerHTML = '';
-      Object.entries(dimensions).forEach(([key, value]) => {
-        const li = document.createElement("li");
-        li.className = "flex items-center gap-2";
-        const span = document.createElement("span");
-        span.className =
-            "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-        span.textContent = key.charAt(0).toUpperCase();
-        const text = document.createTextNode(`${key}: ${value}`);
-        li.appendChild(span);
-        li.appendChild(text);
-        productDimension.appendChild(li);
-      });
-    }
-
+    displaySpecsAndDimensions(product.especificaciones);
 
     // Actualizar título de la página
     document.title = `${product.titulo} - Detalles del Producto`;
