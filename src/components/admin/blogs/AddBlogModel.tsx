@@ -412,6 +412,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("subtitulo2", formData.subtitulo2);
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
+      formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
+      formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       formDataToSend.append("producto_id", formData.producto_id.toString()); // Changed to producto_id and converted to string
       // Solo si hay nueva imagen principal
       if (formData.miniatura instanceof File) {
