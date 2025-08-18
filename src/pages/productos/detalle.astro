@@ -186,7 +186,9 @@ const productosUrl = config.endpoints.productos;
     // Renderizar otras especificaciones
     Object.entries(otherSpecs).forEach(([key, value]) => {
       const li = document.createElement("li");
-      li.className = "text-gray-700";
+      li.className = "text-gray-700 mb-2 break-words";
+      li.style.wordBreak = "break-word";
+
       li.textContent = `${key}: ${value}`;
       specsList.appendChild(li);
     });
