@@ -34,11 +34,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         precio: 199.99,
         seccion: "Trabajo",
         especificaciones: {
-            color: "",
-            material: "",
-            alto: "",
-            largo: "",
-            ancho: "",
+            Alto: "",
+            Largo: "",
+            Ancho: "",
         },
         etiqueta: {
             meta_titulo: "",
@@ -159,14 +157,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             precio: 199.99,
             seccion: "Trabajo",
             especificaciones: {
-                color: "",
-                material: "",
-                alto: "",
-                largo: "",
-                ancho: "",
+                Alto: "",
+                Largo: "",
+                Ancho: "",
             },
             etiqueta: {
-            meta_titulo: "",
+                meta_titulo: "",
                 meta_descripcion: "",
             },
             relacionados: [],
@@ -218,17 +214,24 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             });
         }
     }
-
+    // Normaliza clave: primera letra mayúscula, resto minúsculas
+    function normalizeKey(key: string): string {
+        if (!key) return "";
+        return key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+    }
     const addNewSpecification = () => {
         const newKey = prompt("Nombre de la nueva especificación:");
-        if (newKey && !formData.especificaciones[newKey]) {
-            setFormData((prev) => ({
-                ...prev,
-                especificaciones: {
-                    ...prev.especificaciones,
-                    [newKey]: "",
-                },
-            }));
+        if (newKey) {
+            const normalizedKey = normalizeKey(newKey.trim());
+            if (!formData.especificaciones[normalizedKey]) {
+                setFormData((prev) => ({
+                    ...prev,
+                    especificaciones: {
+                        ...prev.especificaciones,
+                        [normalizedKey]: "",
+                    },
+                }));
+            }
         }
     };
 
@@ -236,21 +239,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         e.preventDefault();
         setIsLoading(true); // Cambia el estado de carga a verdadero
 
-        // Validación de campos requeridos
+        // Validación general
         if (
             !formData.nombre ||
             !formData.titulo ||
             !formData.subtitulo ||
             !formData.descripcion ||
             !formData.seccion ||
-            /*
-            !formData.especificaciones.color ||
-            !formData.especificaciones.material ||
-            !formData.especificaciones.alto ||
-            !formData.especificaciones.largo ||
-            !formData.especificaciones.ancho ||*/
             !formData.imagenes ||
-            formData.imagenes.some((imagen) => !imagen.url_imagen)
+            formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
         ) {
             console.log("⚠️ Validación fallida. Campos faltantes:");
             if (!formData.nombre) console.log("→ Falta: nombre");
@@ -259,13 +256,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             if (!formData.descripcion) console.log("→ Falta: descripcion");
             if (!formData.seccion) console.log("→ Falta: seccion");
 
-            const { color, material, alto, largo, ancho } = formData.especificaciones;
-            if (!color) console.log("→ Falta: especificaciones.color");
-            if (!material) console.log("→ Falta: especificaciones.material");
-            if (!alto) console.log("→ Falta: especificaciones.alto");
-            if (!largo) console.log("→ Falta: especificaciones.largo");
-            if (!ancho) console.log("→ Falta: especificaciones.ancho");
-
             formData.imagenes.forEach((img, i) => {
                 if (!img.url_imagen) console.log(`→ Falta: imagen[${i}]`);
             });
@@ -273,7 +263,51 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             Swal.fire({
                 icon: "warning",
                 title: "Campos obligatorios",
-                text: "⚠️ Todos los campos son obligatorios.",
+                text: "⚠️ Todos los campos generales son obligatorios.",
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        // Validación de dimensiones: Ancho, Alto y Largo
+        if (
+            !formData.especificaciones?.Ancho?.trim() ||
+            !formData.especificaciones?.Alto?.trim() ||
+            !formData.especificaciones?.Largo?.trim()
+        ) {
+            Swal.fire({
+                icon: "warning",
+                title: "Dimensiones incompletas",
+                text: "⚠️ Debes completar las dimensiones: Ancho, Alto y Largo.",
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        // Validación de metadatos
+        if (
+            !formData.etiqueta.meta_titulo.trim() ||
+            formData.etiqueta.meta_titulo.length < 10 ||
+            formData.etiqueta.meta_titulo.length > 70
+        ) {
+            Swal.fire({
+                icon: "warning",
+                title: "Meta título inválido",
+                text: "⚠️ El meta título debe tener entre 10 y 70 caracteres.",
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        if (
+            !formData.etiqueta.meta_descripcion.trim() ||
+            formData.etiqueta.meta_descripcion.length < 50 ||
+            formData.etiqueta.meta_descripcion.length > 200
+        ) {
+            Swal.fire({
+                icon: "warning",
+                title: "Meta descripción inválida",
+                text: "⚠️ La meta descripción debe tener entre 50 y 200 caracteres.",
             });
             setIsLoading(false);
             return;
@@ -295,7 +329,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
             formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
             formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
-
 
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
@@ -398,11 +431,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 precio: product.precio,
                 seccion: product.seccion,
                 especificaciones: product.especificaciones || {
-                    color: "",
-                    material: "",
-                    alto: "",
-                    largo: "",
-                    ancho: "",
+                    Alto: "",
+                    Largo: "",
+                    Ancho: "",
                 },
                 relacionados: relacionadosIds,
                 imagenes: imagenesTransformadas.length > 0
@@ -584,94 +615,95 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </select>
                                 </div>
 
-                                {/* Especificaciones */}
-                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                    <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
+                                {/* Dimensiones */}
+                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-4">
+                                    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
                                     <div className="space-y-3">
-                                        {Object.entries(formData.especificaciones).map(([key, value]) => (
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-2" key={key}>
-                                                <label className="text-sm text-gray-600 sm:w-1/4">{key}:</label>
+                                        {["Alto", "Largo", "Ancho"].map((dim) => (
+                                            <div
+                                                className="flex flex-col sm:flex-row sm:items-center gap-2"
+                                                key={dim}
+                                            >
+                                                <label className="text-sm text-gray-600 sm:w-1/4">{dim}:</label>
                                                 <input
                                                     type="text"
-                                                    name={key}
-                                                    value={value}
+                                                    name={dim}
+                                                    value={formData.especificaciones[dim] || ""}
                                                     onChange={(e) =>
                                                         setFormData((prev) => ({
                                                             ...prev,
                                                             especificaciones: {
                                                                 ...prev.especificaciones,
-                                                                [key]: e.target.value,
+                                                                [dim]: e.target.value,
                                                             },
                                                         }))
                                                     }
-                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition text-sm"
+                                                    required
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg
+           focus:ring-2 focus:ring-teal-500 focus:border-transparent
+           outline-none transition text-sm"
                                                 />
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+
+                                {/* Especificaciones adicionales */}
+                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                    <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
+                                    <div className="space-y-3">
+                                        {Object.entries(formData.especificaciones)
+                                            .filter(([key]) => !["Alto", "Largo", "Ancho"].includes(key)) // excluimos las dimensiones
+                                            .map(([key, value]) => (
+                                                <div
+                                                    className="flex flex-col sm:flex-row sm:items-center gap-2"
+                                                    key={key}
+                                                >
+                                                    <label className="text-sm text-gray-600 sm:w-1/4">{key}:</label>
+                                                    <input
+                                                        type="text"
+                                                        name={key}
+                                                        value={value}
+                                                        onChange={(e) =>
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                especificaciones: {
+                                                                    ...prev.especificaciones,
+                                                                    [key]: e.target.value,
+                                                                },
+                                                            }))
+                                                        }
+                                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg
+             focus:ring-2 focus:ring-teal-500 focus:border-transparent
+             outline-none transition text-sm"
+                                                    />
+                                                </div>
+                                            ))}
+                                    </div>
                                     <button
                                         type="button"
                                         onClick={addNewSpecification}
-                                        className="mt-3 inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                                        className="mt-3 inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100
+     text-teal-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                            />
                                         </svg>
                                         Añadir Especificación
                                     </button>
                                 </div>
 
-                                {/* Dimensiones */}
-                                {/*<div className="bg-gray-50 p-4 rounded-lg border border-gray-100">*/}
-                                {/*    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>*/}
-                                {/*    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">*/}
-                                {/*        <div className="form-input">*/}
-                                {/*            <label className="block text-sm text-gray-600 mb-1">Alto:</label>*/}
-                                {/*            <div className="relative">*/}
-                                {/*                <input*/}
-                                {/*                    required*/}
-                                {/*                    value={formData.dimensiones.alto}*/}
-                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
-                                {/*                    name="alto"*/}
-                                {/*                    type="number"*/}
-                                {/*                    placeholder="0"*/}
-                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
-                                {/*                />*/}
-                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="form-input">*/}
-                                {/*            <label className="block text-sm text-gray-600 mb-1">Ancho:</label>*/}
-                                {/*            <div className="relative">*/}
-                                {/*                <input*/}
-                                {/*                    required*/}
-                                {/*                    value={formData.dimensiones.ancho}*/}
-                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
-                                {/*                    name="ancho"*/}
-                                {/*                    type="number"*/}
-                                {/*                    placeholder="0"*/}
-                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
-                                {/*                />*/}
-                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="form-input">*/}
-                                {/*            <label className="block text-sm text-gray-600 mb-1">Largo:</label>*/}
-                                {/*            <div className="relative">*/}
-                                {/*                <input*/}
-                                {/*                    required*/}
-                                {/*                    value={formData.dimensiones.largo}*/}
-                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
-                                {/*                    name="largo"*/}
-                                {/*                    type="number"*/}
-                                {/*                    placeholder="0"*/}
-                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
-                                {/*                />*/}
-                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
                             </div>
                             <button
                                 onClick={goNextForm}
