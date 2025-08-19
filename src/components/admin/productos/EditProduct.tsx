@@ -64,6 +64,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             },
         ],
         textos_alt: [],
+        dimensiones: {
+            largo: "",
+            alto: "",
+            ancho: ""
+        }
     });
 
     const handleChange = (
@@ -73,6 +78,17 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     ) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      dimensiones: {
+        ...prev.dimensiones,
+        [name]: value
+      }
+    }));
+  };
 
     const handleSpecificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -189,6 +205,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 },
             ],
             textos_alt: [],
+            dimensiones: {
+                largo: "",
+                alto: "",
+                ancho: ""
+            }
         });
     }
 
@@ -295,7 +316,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
             formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
             formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
-
+            formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto)
+            formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo)
+            formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho)
 
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
@@ -414,6 +437,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                         { url_imagen: null, texto_alt_SEO: "" },
                     ],
                 textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
+                dimensiones: {
+                    largo: product.dimensiones?.largo || "",
+                    alto: product.dimensiones?.alto || "",
+                    ancho: product.dimensiones?.ancho || ""
+                }
             });
         }
     }, [showModal, product]);
@@ -622,56 +650,59 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                 </div>
 
                                 {/* Dimensiones */}
-                                {/*<div className="bg-gray-50 p-4 rounded-lg border border-gray-100">*/}
-                                {/*    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>*/}
-                                {/*    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">*/}
-                                {/*        <div className="form-input">*/}
-                                {/*            <label className="block text-sm text-gray-600 mb-1">Alto:</label>*/}
-                                {/*            <div className="relative">*/}
-                                {/*                <input*/}
-                                {/*                    required*/}
-                                {/*                    value={formData.dimensiones.alto}*/}
-                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
-                                {/*                    name="alto"*/}
-                                {/*                    type="number"*/}
-                                {/*                    placeholder="0"*/}
-                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
-                                {/*                />*/}
-                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="form-input">*/}
-                                {/*            <label className="block text-sm text-gray-600 mb-1">Ancho:</label>*/}
-                                {/*            <div className="relative">*/}
-                                {/*                <input*/}
-                                {/*                    required*/}
-                                {/*                    value={formData.dimensiones.ancho}*/}
-                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
-                                {/*                    name="ancho"*/}
-                                {/*                    type="number"*/}
-                                {/*                    placeholder="0"*/}
-                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
-                                {/*                />*/}
-                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="form-input">*/}
-                                {/*            <label className="block text-sm text-gray-600 mb-1">Largo:</label>*/}
-                                {/*            <div className="relative">*/}
-                                {/*                <input*/}
-                                {/*                    required*/}
-                                {/*                    value={formData.dimensiones.largo}*/}
-                                {/*                    onChange={(e) => handleNestedChange(e, "dimensiones")}*/}
-                                {/*                    name="largo"*/}
-                                {/*                    type="number"*/}
-                                {/*                    placeholder="0"*/}
-                                {/*                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"*/}
-                                {/*                />*/}
-                                {/*                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
+                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div className="form-input">
+                                            <label className="block text-sm text-gray-600 mb-1">Alto:</label>
+                                            <div className="relative">
+                                                <input
+                                                    required
+                                                    title="alto"
+                                                    value={formData.dimensiones.alto}
+                                                    onChange={handleDimensionChange}
+                                                    name="alto"
+                                                    type="number"
+                                                    placeholder="0"
+                                                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                                />
+                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
+                                            </div>
+                                        </div>
+                                        <div className="form-input">
+                                            <label className="block text-sm text-gray-600 mb-1">Ancho:</label>
+                                            <div className="relative">
+                                                <input
+                                                title="ancho"
+                                                    required
+                                                    value={formData.dimensiones.ancho}
+                                                    onChange={handleDimensionChange}
+                                                    name="ancho"
+                                                    type="number"
+                                                    placeholder="0"
+                                                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                                />
+                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
+                                            </div>
+                                        </div>
+                                        <div className="form-input">
+                                            <label className="block text-sm text-gray-600 mb-1">Largo:</label>
+                                            <div className="relative">
+                                                <input
+                                                    required
+                                                    title="largo"
+                                                    value={formData.dimensiones.largo}
+                                                    onChange={handleDimensionChange}
+                                                    name="largo"
+                                                    type="number"
+                                                    placeholder="0"
+                                                    className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                                />
+                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <button
                                 onClick={goNextForm}

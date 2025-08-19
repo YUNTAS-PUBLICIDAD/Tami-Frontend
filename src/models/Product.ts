@@ -20,6 +20,7 @@ export interface ProductApiPOST {
   };
 }
 
+// Interface para el formulario de producto
 export interface ProductFormularioPOST {
   nombre: string;
   titulo: string;
@@ -30,7 +31,11 @@ export interface ProductFormularioPOST {
   precio: number;
   seccion: string;
   especificaciones: Record<string, string>;
-  // dimensiones: Dimensions;
+  dimensiones: {
+    alto: string;
+    largo: string;
+    ancho: string; 
+  }
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
@@ -72,4 +77,9 @@ export default interface Producto {
     meta_titulo: string;
     meta_descripcion: string;
   };
+  dimensiones: {
+    largo: string;
+    alto: string;
+    ancho: string;
+  }
 }
