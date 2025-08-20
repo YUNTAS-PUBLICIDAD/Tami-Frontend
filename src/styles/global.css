@@ -81,7 +81,7 @@ div {
     @apply w-full border-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-teal-900 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic;
 }
 
-.form-input > label { @apply text-white font-semibold mb-2 block; }
+.form-input > label { @apply font-semibold mb-2 block; }
 .form-input { @apply mb-3; }
 .form-input > select > option { @apply text-gray-500 dark:text-gray-300; }
 .group-form { @apply grid auto-cols-auto grid-flow-col gap-4; }
