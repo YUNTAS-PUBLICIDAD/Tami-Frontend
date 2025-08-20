@@ -194,6 +194,12 @@ const productosUrl = config.endpoints.productos;
     });
 
     // Renderizar dimensiones
+    const abbreviations = {
+      Alto: "H", // Height
+      Largo: "L", // Length
+      Ancho: "A", // Width
+    };
+
     Object.entries(dimensions).forEach(([key, value]) => {
       const li = document.createElement("li");
       li.className = "flex items-center gap-2";
@@ -201,7 +207,9 @@ const productosUrl = config.endpoints.productos;
       const span = document.createElement("span");
       span.className =
         "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-      span.textContent = key.charAt(0).toUpperCase();
+
+      // Usar el mapa, si no existe usar la primera letra
+      span.textContent = abbreviations[key] || key.charAt(0).toUpperCase();
 
       const text = document.createTextNode(`${key}: ${value}`);
 
