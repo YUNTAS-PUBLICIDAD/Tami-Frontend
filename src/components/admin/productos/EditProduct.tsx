@@ -58,6 +58,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 url_imagen: null,
                 texto_alt_SEO: "",
             },
+            {
+                url_imagen: null,
+                texto_alt_SEO: "",
+            },
         ],
         textos_alt: [],
         dimensiones: {
@@ -193,6 +197,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     url_imagen: null,
                     texto_alt_SEO: "",
                 },
+                {
+                    url_imagen: null,
+                    texto_alt_SEO: "",
+                },
             ],
             textos_alt: [],
             dimensiones: {
@@ -268,42 +276,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true); // Cambia el estado de carga a verdadero
+        setIsLoading(true);
 
-        // Validación de campos requeridos
+        // Validación
         if (
             !formData.nombre ||
             !formData.titulo ||
             !formData.subtitulo ||
             !formData.descripcion ||
             !formData.seccion ||
-            /*
-            !formData.especificaciones.color ||
-            !formData.especificaciones.material ||
-            !formData.especificaciones.alto ||
-            !formData.especificaciones.largo ||
-            !formData.especificaciones.ancho ||*/
             !formData.imagenes ||
-            formData.imagenes.some((imagen) => !imagen.url_imagen)
+            formData.imagenes.every((imagen) => !imagen.url_imagen)
         ) {
-            console.log("⚠️ Validación fallida. Campos faltantes:");
-            if (!formData.nombre) console.log("→ Falta: nombre");
-            if (!formData.titulo) console.log("→ Falta: titulo");
-            if (!formData.subtitulo) console.log("→ Falta: subtitulo");
-            if (!formData.descripcion) console.log("→ Falta: descripcion");
-            if (!formData.seccion) console.log("→ Falta: seccion");
-
-            //const { color, material, alto, largo, ancho } = formData.especificaciones;
-            //if (!color) console.log("→ Falta: especificaciones.color");
-            //if (!material) console.log("→ Falta: especificaciones.material");
-            //if (!alto) console.log("→ Falta: especificaciones.alto");
-            //if (!largo) console.log("→ Falta: especificaciones.largo");
-            //if (!ancho) console.log("→ Falta: especificaciones.ancho");
-
-            formData.imagenes.forEach((img, i) => {
-                if (!img.url_imagen) console.log(`→ Falta: imagen[${i}]`);
-            });
-
             Swal.fire({
                 icon: "warning",
                 title: "Campos obligatorios",
@@ -326,23 +310,36 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("stock", formData.stock.toString());
             formDataToSend.append("precio", formData.precio.toString());
             formDataToSend.append("seccion", formData.seccion);
-            formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
-            formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
-            formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
-            formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto)
-            formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo)
-            formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho)
+            formDataToSend.append(
+                "especificaciones",
+                JSON.stringify(formData.especificaciones)
+            );
+            formDataToSend.append(
+                "etiqueta[meta_titulo]",
+                formData.etiqueta.meta_titulo
+            );
+            formDataToSend.append(
+                "etiqueta[meta_descripcion]",
+                formData.etiqueta.meta_descripcion
+            );
+            formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
+            formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
+            formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
 
+            // Manejo de imágenes: conservar existentes + añadir nuevas
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
-                // Solo agregar la imagen si es un File, no si es string (URL)
                 if (imagen.url_imagen instanceof File) {
+                    // Nueva imagen subida
                     formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
+                    formDataToSend.append(`textos_alt[${index}]`, altText);
+                } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen) {
+                    // Imagen existente (URL) → la mandamos también
+                    formDataToSend.append(`imagenes_existentes[${index}]`, imagen.url_imagen);
+                    formDataToSend.append(`textos_alt[${index}]`, altText);
                 }
-
-                // El alt text sí lo enviamos siempre
-                formDataToSend.append(`textos_alt[${index}]`, altText);
+                // Si es null no se envía nada en ese índice
             });
 
             formData.relacionados.forEach((item, index) => {
@@ -412,15 +409,21 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
     useEffect(() => {
         if (showModal && product) {
-            const imagenesTransformadas = product.imagenes?.map((img) => ({
-                url_imagen: `https://apitami.tamimaquinarias.com${img.url_imagen}`,
-                texto_alt_SEO: img.texto_alt_SEO,
-            })) || [];
+            // Transformar imágenes existentes
+            let imagenesTransformadas =
+                product.imagenes?.map((img) => ({
+                    url_imagen: `https://apitami.tamimaquinarias.com${img.url_imagen}`,
+                    texto_alt_SEO: img.texto_alt_SEO || "",
+                })) || [];
+
+            while (imagenesTransformadas.length < 5) {
+                imagenesTransformadas.push({ url_imagen: "", texto_alt_SEO: "" });
+            }
 
             const relacionadosIds =
                 product.productos_relacionados?.map((rel) => (rel as { id: number }).id) || [];
 
-            console.log("producto: ", product)
+            console.log("producto: ", product);
 
             setFormData({
                 nombre: product.nombre,
@@ -435,28 +438,21 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 stock: product.stock,
                 precio: product.precio,
                 seccion: product.seccion,
-                especificaciones:
-                    Array.isArray(product.especificaciones)
-                        ? product.especificaciones.map((e: any) => e.valor)
-                        : [],
+                especificaciones: Array.isArray(product.especificaciones)
+                    ? product.especificaciones.map((e: any) => e.valor)
+                    : [],
                 relacionados: relacionadosIds,
-                imagenes: imagenesTransformadas.length > 0
-                    ? imagenesTransformadas
-                    : [
-                        { url_imagen: null, texto_alt_SEO: "" },
-                        { url_imagen: null, texto_alt_SEO: "" },
-                        { url_imagen: null, texto_alt_SEO: "" },
-                        { url_imagen: null, texto_alt_SEO: "" },
-                    ],
+                imagenes: imagenesTransformadas,
                 textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
                 dimensiones: {
                     largo: product.dimensiones?.largo || "",
                     alto: product.dimensiones?.alto || "",
-                    ancho: product.dimensiones?.ancho || ""
-                }
+                    ancho: product.dimensiones?.ancho || "",
+                },
             });
         }
     }, [showModal, product]);
+
 
     return (
         <>
@@ -789,6 +785,16 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                             >
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
                                     <h5 className="font-medium !text-gray-700 mb-4">Galería de Imágenes</h5>
+                                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-800">
+                                        <p className="font-medium">⚠️ Importante:</p>
+                                        <ul className="list-disc list-inside space-y-1 mt-1">
+                                            <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
+                                            <li>Las imágenes que ves abajo son solo de referencia.</li>
+                                            <li>Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
+                                            <li>Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
+                                            <li>Si es que no quieres cambiar nada conforme a las imágenes, ignorar esta página. </li>
+                                        </ul>
+                                    </div>
                                     <div className="space-y-4">
                                         {formData.imagenes.map((img, index) => (
                                             <div key={index} className="form-input">
@@ -824,7 +830,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         </div>
                                                     ) : (
                                                         <input
-                                                            required
                                                             type="file"
                                                             accept="image/*"
                                                             onChange={(e) => handleImagesChange(e, index)}
@@ -835,7 +840,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 <label className="block !text-gray-700 text-sm font-medium mb-1">Texto SEO Imagen {index + 1}:</label>
                                                 <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
                                                     <input
-                                                        required
                                                         type="text"
                                                         onChange={(e) => handleImagesTextoSEOChange(e, index)}
                                                         value={img.texto_alt_SEO ? img.texto_alt_SEO : ""}
