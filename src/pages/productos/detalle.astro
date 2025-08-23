@@ -146,7 +146,80 @@ const productosUrl = config.endpoints.productos;
   // Función para mapear nombres de productos a IDs
   const productNameToIdMap = {};
 
-  function displaySpecsAndDimensions(specs) {
+  // function displaySpecsAndDimensions(specs) {
+  //   const specsList = document.getElementById("specs-list");
+  //   const dimensionsList = document.getElementById("product-dimensions");
+
+  //   if (!specsList || !dimensionsList) return;
+
+  //   specsList.innerHTML = "";
+  //   dimensionsList.innerHTML = "";
+
+  //   // Definir las claves que corresponden a dimensiones
+  //   const dimensionKeys = ["alto", "largo", "ancho"];
+  //   const dimensions = {};
+  //   const otherSpecs = {};
+
+  //   // Normalizar specs: array de {clave, valor} → objeto plano
+  //   let normalizedSpecs = {};
+  //   if (Array.isArray(specs)) {
+  //     specs.forEach((spec) => {
+  //       if (spec.clave && spec.valor) {
+  //         normalizedSpecs[spec.clave.toLowerCase()] = spec.valor;
+  //       }
+  //     });
+  //   } else if (typeof specs === "object" && specs !== null) {
+  //     normalizedSpecs = specs;
+  //   }
+
+  //   // Separar dimensiones de otras especificaciones
+  //   Object.entries(normalizedSpecs).forEach(([key, value]) => {
+  //     if (dimensionKeys.includes(key.toLowerCase())) {
+  //       // Capitalizar la primera letra para mostrarlo mejor
+  //       const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+  //       dimensions[formattedKey] = value;
+  //     } else {
+  //       otherSpecs[key] = value;
+  //     }
+  //   });
+
+  //   // Renderizar otras especificaciones
+  //   Object.entries(otherSpecs).forEach(([key, value]) => {
+  //     const li = document.createElement("li");
+  //     li.className = "text-gray-700 mb-2 break-words";
+  //     li.style.wordBreak = "break-word";
+
+  //     li.textContent = `${key}: ${value}`;
+  //     specsList.appendChild(li);
+  //   });
+
+  //   // Renderizar dimensiones
+  //   const abbreviations = {
+  //     Alto: "H", // Height
+  //     Largo: "L", // Length
+  //     Ancho: "A", // Width
+  //   };
+
+  //   Object.entries(dimensions).forEach(([key, value]) => {
+  //     const li = document.createElement("li");
+  //     li.className = "flex items-center gap-2";
+
+  //     const span = document.createElement("span");
+  //     span.className =
+  //       "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+
+  //     // Usar el mapa, si no existe usar la primera letra
+  //     span.textContent = abbreviations[key] || key.charAt(0).toUpperCase();
+
+  //     const text = document.createTextNode(`${key}: ${value}`);
+
+  //     li.appendChild(span);
+  //     li.appendChild(text);
+  //     dimensionsList.appendChild(li);
+  //   });
+  // }
+
+  function displaySpecsAndDimensions(specs, dimensiones) {
     const specsList = document.getElementById("specs-list");
     const dimensionsList = document.getElementById("product-dimensions");
 
@@ -155,69 +228,46 @@ const productosUrl = config.endpoints.productos;
     specsList.innerHTML = "";
     dimensionsList.innerHTML = "";
 
-    // Definir las claves que corresponden a dimensiones
-    const dimensionKeys = ["alto", "largo", "ancho"];
-    const dimensions = {};
-    const otherSpecs = {};
-
-    // Normalizar specs: array de {clave, valor} → objeto plano
-    let normalizedSpecs = {};
+    // RENDER: Especificaciones (de tipo array)
     if (Array.isArray(specs)) {
       specs.forEach((spec) => {
-        if (spec.clave && spec.valor) {
-          normalizedSpecs[spec.clave.toLowerCase()] = spec.valor;
-        }
+        const li = document.createElement("li");
+        li.className = "text-gray-700 mb-2 break-words";
+        li.textContent = `${spec.valor}`;
+        specsList.appendChild(li);
       });
-    } else if (typeof specs === "object" && specs !== null) {
-      normalizedSpecs = specs;
     }
 
-    // Separar dimensiones de otras especificaciones
-    Object.entries(normalizedSpecs).forEach(([key, value]) => {
-      if (dimensionKeys.includes(key.toLowerCase())) {
-        // Capitalizar la primera letra para mostrarlo mejor
-        const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
-        dimensions[formattedKey] = value;
-      } else {
-        otherSpecs[key] = value;
-      }
-    });
+    // RENDER: Dimensiones (de objeto separado)
+    if (dimensiones && typeof dimensiones === "object") {
+      const dimensionLabels = {
+        alto: "H", // Height
+        largo: "L", // Length
+        ancho: "A", // Width
+      };
 
-    // Renderizar otras especificaciones
-    Object.entries(otherSpecs).forEach(([key, value]) => {
-      const li = document.createElement("li");
-      li.className = "text-gray-700 mb-2 break-words";
-      li.style.wordBreak = "break-word";
+      Object.entries(dimensionLabels).forEach(([key, abbreviation]) => {
+        if (dimensiones[key]) {
+          const li = document.createElement("li");
+          li.className = "flex items-center gap-2";
 
-      li.textContent = `${key}: ${value}`;
-      specsList.appendChild(li);
-    });
+          const span = document.createElement("span");
+          span.className =
+            "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
+          span.textContent = abbreviation;
 
-    // Renderizar dimensiones
-    const abbreviations = {
-      Alto: "H", // Height
-      Largo: "L", // Length
-      Ancho: "A", // Width
-    };
+          const text = document.createTextNode(
+            `${key.charAt(0).toUpperCase() + key.slice(1)}: ${dimensiones[key]} cm`
+          );
 
-    Object.entries(dimensions).forEach(([key, value]) => {
-      const li = document.createElement("li");
-      li.className = "flex items-center gap-2";
-
-      const span = document.createElement("span");
-      span.className =
-        "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-
-      // Usar el mapa, si no existe usar la primera letra
-      span.textContent = abbreviations[key] || key.charAt(0).toUpperCase();
-
-      const text = document.createTextNode(`${key}: ${value}`);
-
-      li.appendChild(span);
-      li.appendChild(text);
-      dimensionsList.appendChild(li);
-    });
+          li.appendChild(span);
+          li.appendChild(text);
+          dimensionsList.appendChild(li);
+        }
+      });
+    }
   }
+
   // Función para mostrar mensajes de error
   function showErrorMessage(message) {
     const container = document.createElement("div");
@@ -298,7 +348,7 @@ const productosUrl = config.endpoints.productos;
     }
 
     // Actualizar especificaciones
-    displaySpecsAndDimensions(product.especificaciones);
+    displaySpecsAndDimensions(product.especificaciones, product.dimensiones);
 
     // Actualizar título de la página
     document.title = `${product.titulo} - Detalles del Producto`;
