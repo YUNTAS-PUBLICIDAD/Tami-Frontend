@@ -51,6 +51,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
         url_imagen: null,
         texto_alt_SEO: "",
       },
+      {
+        url_imagen: null,
+        texto_alt_SEO: "",
+      },
     ],
     textos_alt: [],
     dimensiones: {
@@ -189,6 +193,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
           url_imagen: null,
           texto_alt_SEO: "",
         },
+        {
+          url_imagen: null,
+          texto_alt_SEO: "",
+        },
       ],
       textos_alt: [],
       dimensiones: {
@@ -272,9 +280,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       !formData.descripcion ||
       !formData.seccion ||
       !formData.especificaciones ||
-      //!formData.especificaciones.material ||
       !formData.imagenes ||
-      formData.imagenes.some((imagen) => !imagen.url_imagen) // Verifica si alguna imagen es null
+      formData.imagenes.every((imagen) => !imagen.url_imagen) //  Verifica si alguna imagen es null
     ) {
       Swal.fire({
         icon: "warning",
@@ -325,7 +332,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("stock", formData.stock.toString());
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
-      //formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
@@ -336,18 +342,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
       const link = slugify(formData.titulo || formData.nombre);
       formDataToSend.append("link", link);
 
-      formData.imagenes.forEach((imagen, index) => {
+      let imageIndex = 0;
+      formData.imagenes.forEach((imagen) => {
         if (imagen.url_imagen) {
-          formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
-        }
-      });
-
-      formData.imagenes.forEach((imagen, index) => {
-        const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
-
-        if (imagen.url_imagen) {
-          formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
-          formDataToSend.append(`textos_alt[${index}]`, altText);
+          const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
+          formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
+          formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
+          imageIndex++;
         }
       });
 
@@ -630,44 +631,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       )}
                     </div>
                   </div>
-
-
-                  {/* <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                    <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
-                    <div className="space-y-3">
-                      {Object.entries(formData.especificaciones).map(([key, value]) => (
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2" key={key}>
-                          <label className="text-sm text-gray-600 sm:w-1/4">{key}:</label>
-                          <input
-                            type="text"
-                            name={key}
-                            value={value}
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                especificaciones: {
-                                  ...prev.especificaciones,
-                                  [key]: e.target.value,
-                                },
-                              }))
-                            }
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition text-sm"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={addNewSpecification}
-                      className="mt-3 inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      Añadir Especificación
-                    </button>
-                  </div> */}
-
                   {/* Dimensiones */}
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                     <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
@@ -744,13 +707,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
               >
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
                   <h5 className="font-medium !text-gray-700 mb-4">Galería de Imágenes</h5>
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
+                    <p className="font-medium">ℹ️ Instrucciones:</p>
+                    <ul className="list-disc list-inside space-y-1 mt-1">
+                      <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
+                      <li>Al menos <strong>1 imagen es obligatoria</strong>.</li>
+                      <li>Cada imagen debe tener un <strong>Texto SEO</strong> descriptivo (importante para buscadores).</li>
+                      <li>Las imágenes deben ser en formato <code>JPG</code> o <code>PNG</code>.</li>
+                      <li>Si es un producto de 4 imágenes no subir nada en los campos de la 5ta imagen</li>
+                    </ul>
+                  </div>
                   <div className="space-y-4">
                     {formData.imagenes.map((_, index) => (
                       <div key={index} className="form-input">
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
                           <input
-                            required
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleImagesChange(e, index)}
@@ -760,7 +732,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <label className="block !text-gray-700 text-sm font-medium mb-1">Texto SEO Imagen {index + 1}:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
                           <input
-                            required
                             type="text"
                             onChange={(e) => handleImagesTextoSEOChange(e, index)}
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"

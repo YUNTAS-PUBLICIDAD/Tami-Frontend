@@ -11,7 +11,7 @@ export interface ProductApiPOST {
   precio: number;
   seccion: string;
   especificaciones: string[];
-  imagenes: File[];
+  imagenes: ImagenForm[];
   textos_alt: string[];
   relacionados: number[];
   etiquetas: {

@@ -1,9 +1,12 @@
 ---
 import Layout2 from "src/layouts/Layout2.astro";
 import SignIns from "./sign-in.tsx";
+import RedirectIfAuthenticated from "src/components/RedirectIfAuthenticated";
 ---
 
 <Layout2 title="Accede a Tu Cuenta y Revisa tus Pedidos o Compras | Tami Maquinaria - Accede a tu Cuenta en Tami Maquinarias"
         description="Cuenta, sesión, pedidos, historial, compras, seguimiento, usuario, cliente, acceso, datos, perfil, seguridad, cuenta activa, control, atención, soporte, pedidos online, maquinaria, productos, Perú.">
-    <SignIns client:load/>
+    <RedirectIfAuthenticated client:only>
+        <SignIns client:load/>
+    </RedirectIfAuthenticated> 
 </Layout2>
