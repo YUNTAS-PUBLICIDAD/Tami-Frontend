@@ -6,6 +6,7 @@ import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
 
 const SignIn: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
@@ -17,6 +18,7 @@ const SignIn: React.FC = () => {
 
     console.log("Intentando iniciar sesión con:", email, password);
 
+    setIsLoading(true);
     try {
       const response = await fetch(getApiUrl(config.endpoints.auth.login), {
         method: "POST",
@@ -43,6 +45,9 @@ const SignIn: React.FC = () => {
         title: "Error",
         text: "Error de conexión con el servidor.",
       });
+    } finally {
+      setIsLoading(false);
+      setError(null); // Limpiar error al finalizar
     }
   };
 
@@ -97,10 +102,20 @@ const SignIn: React.FC = () => {
         <div className="flex justify-center">
           <button
             type="submit"
-            className="w-3/5 md:w-2/5 bg-teal-600 text-white p-2 rounded-3xl text-base font-bold hover:bg-teal-700 transition hover:cursor-pointer"
+            disabled={isLoading}
+            aria-busy={isLoading}
+            className="w-3/5 md:w-2/5 bg-teal-600 text-white p-2 rounded-3xl text-base font-bold hover:bg-teal-700 transition hover:cursor-pointer disabled:opacity-50 disabled:hover:cursor-not-allowed flex items-center justify-center"
           >
-            INGRESAR
+            {isLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-blue-100 border-t-transparent rounded-full animate-spin"></div>
+                <span className="ml-2">CARGANDO</span>
+              </>
+            ) : (
+              "INGRESAR"
+            )}
           </button>
+
         </div>
       </form>
     </div>
