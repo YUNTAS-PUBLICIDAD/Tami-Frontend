@@ -5,7 +5,7 @@ import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
-const getApiUrl = config.apiUrl; // Obtener la URL de la API
+const getApiUrl = config.apiUrl; 
 const productosUrl = config.endpoints.productos;
 ---
 
@@ -128,6 +128,73 @@ const productosUrl = config.endpoints.productos;
       </div>
     </div>
   </div>
+
+  <!-- Modal de Cotización Personalizado -->
+  <div
+    id="modal-cotizacion-producto"
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay hidden"
+  >
+    <div
+      class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn"
+    >
+      <!-- Imagen general par todos los productos -->
+      <div class="hidden sm:block w-2/5 relative">
+        <img
+          id="modal-product-img"
+          src=""
+          alt="Producto"
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <!-- Contenido -->
+      <div
+        class="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative"
+      >
+        <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
+          <button
+            id="close-modal-cotizacion"
+            aria-label="Cerrar modal"
+            class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+          >
+            X
+          </button>
+          <h2 class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
+            ¡RECIBE UNA ASESORÍA GRATIS!
+          </h2>
+          <form id="form-cotizacion-producto" class="flex flex-col gap-1">
+            <h3 class="text-base sm:text-lg font-bold">Nombre</h3>
+            <input
+              type="text"
+              name="nombre"
+              class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+              required
+            />
+            <h3 class="text-base sm:text-lg font-bold">Teléfono</h3>
+            <input
+              type="tel"
+              name="telefono"
+              class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+              required
+            />
+            <h3 class="text-base sm:text-lg font-bold">Correo</h3>
+            <input
+              type="email"
+              name="correo"
+              class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+              required
+            />
+            <button
+              type="submit"
+              class="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
+            >
+              ¡HABLEMOS!
+            </button>
+          </form>
+          <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script
@@ -140,6 +207,11 @@ const productosUrl = config.endpoints.productos;
 >
   eval(showLoaderString);
   eval(removeLoaderString);
+
+  const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
+  const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
+  let modalTimeout = null;
+  let modalMostrado = false;
 
   // Función para slugificar el nombre del producto
 
@@ -502,6 +574,8 @@ const productosUrl = config.endpoints.productos;
       const data = await response.json();
       const product = data.data;
 
+      window.__detalleProducto = product;
+
       // Si llegamos desde una URL antigua, actualizar a la nueva estructura
       const currentProductSlug = product.link;
       const desiredPath = `/productos/${currentProductSlug}`;
@@ -519,7 +593,7 @@ const productosUrl = config.endpoints.productos;
       [btnQuotationHero, btnQuotationDetail].forEach((btn) => {
         if (btn) {
           btn.addEventListener("click", () => {
-            sendWhatsAppQuoteRequest(product);
+            showCotizacionModal(product);
           });
         }
       });
@@ -535,6 +609,20 @@ const productosUrl = config.endpoints.productos;
       showErrorMessage(`Error: ${error.message}`);
     }
   });
+
+  // Escuchar el evento del footer para abrir el modal personalizado
+  window.addEventListener("open-scroll-modal", function () {
+    if (typeof showCotizacionModal === "function") {
+      showCotizacionModal();
+    }
+  });
+  window.addEventListener("scroll", () => {
+    const atBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
+    if (atBottom) {
+      programarModal();
+    }
+  });
   //Función para envitar cotización por whatsapp
   function sendWhatsAppQuoteRequest(product) {
     const numero = "51978883199";
@@ -542,4 +630,64 @@ const productosUrl = config.endpoints.productos;
     const url = `https://wa.me/${numero}?text=${mensaje}`;
     window.open(url, "_blank");
   }
+
+  // --- INICIO: Lógica para el modal personalizado de cotización ---
+  function showCotizacionModal(product) {
+    const modal = document.getElementById("modal-cotizacion-producto");
+    const mensaje = document.getElementById("modal-cotizacion-mensaje");
+    mensaje.textContent = "";
+    modal.classList.remove("hidden");
+    modalMostrado = true;
+  }
+
+  function puedeMostrarModal() {
+    const lastClosed = parseInt(
+      localStorage.getItem(MODAL_STORAGE_KEY) || "0",
+      10
+    );
+    const now = Date.now();
+    return now - lastClosed >= MODAL_COOLDOWN_MS;
+  }
+
+  function programarModal() {
+    if (modalTimeout) clearTimeout(modalTimeout);
+    if (puedeMostrarModal() && !modalMostrado) {
+      modalTimeout = setTimeout(() => {
+        showCotizacionModal();
+      }, 2000); // 2 segundos después de llegar abajo
+    }
+  }
+
+  document.getElementById("close-modal-cotizacion").onclick = function () {
+    document
+      .getElementById("modal-cotizacion-producto")
+      .classList.add("hidden");
+    localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+    modalMostrado = false;
+  };
+
+  document.getElementById("form-cotizacion-producto").onsubmit =
+    async function (e) {
+      e.preventDefault();
+      const nombre = this.nombre.value.trim();
+      const telefono = this.telefono.value.trim();
+      const correo = this.correo.value.trim();
+      const mensaje = document.getElementById("modal-cotizacion-mensaje");
+
+      if (!nombre || !telefono || !correo) {
+        mensaje.textContent = "Completa todos los campos.";
+        return;
+      }
+
+      mensaje.textContent = "¡Enviado correctamente! Pronto te contactaremos.";
+      setTimeout(() => {
+        document
+          .getElementById("modal-cotizacion-producto")
+          .classList.add("hidden");
+        this.reset();
+        mensaje.textContent = "";
+        localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+        modalMostrado = false;
+      }, 2000);
+    };
 </script>
