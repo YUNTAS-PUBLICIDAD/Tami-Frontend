@@ -5,20 +5,25 @@ import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
-const getApiUrl = config.apiUrl; 
+const getApiUrl = config.apiUrl;
 const productosUrl = config.endpoints.productos;
 ---
 
 <Layout title="Product Details">
   <div class="w-full">
-    {/* Hero Banner */}
+    {/* -------------------- HERO -------------------- */}
     <div
       class="pt-16 md:pt-40 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden"
     >
       <div class="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
         <div class="flex items-center gap-6 mb-4">
           <div class="w-5 md:w-6 h-5 md:h-6">
-            <img src={ArrowProducts.src} alt="Flecha" class="w-full h-full" />
+            <img
+              src={ArrowProducts.src}
+              alt="Flecha"
+              class="w-full h-full"
+              loading="lazy"
+            />
           </div>
           <h2
             class="text-xl uppercase md:text-3xl font-bold"
@@ -34,30 +39,35 @@ const productosUrl = config.endpoints.productos;
         >
           Subtitulo Producto
         </h1>
+
         <button
           id="btnQuotationHero"
-          class="bg-white text-teal-600 px-8 w-full md:px-12 py-2 md:py-3 rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition hover:cursor-pointer"
+          class="bg-white text-teal-600 px-8 md:px-12 py-2 md:py-3 w-full rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition cursor-pointer"
         >
           ¡COTÍZALO!
         </button>
       </div>
 
+      {/* Imagen decorativa derecha */}
       <div
-        class="hidden md:block absolute right-0 top-32 w-full md:w-1/2 h-full bg-white rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%] rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
+        class="hidden md:flex absolute right-0 top-32 w-full md:w-1/2 h-full bg-white
+                  rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%]
+                  rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
       >
         <img
           id="product-img"
           src=""
           alt=""
-          class="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto my-auto"
+          class="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto"
+          loading="lazy"
         />
       </div>
     </div>
 
-    {/* Main Content */}
+    {/* -------------------- MAIN CONTENT -------------------- */}
     <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        {/* Left Column - Gallery */}
+        {/* Galería izquierda */}
         <div class="space-y-4 w-full max-w-[440px]">
           {/* Imagen principal */}
           <div
@@ -68,17 +78,17 @@ const productosUrl = config.endpoints.productos;
               src=""
               alt=""
               class="w-full h-full object-contain"
+              loading="lazy"
             />
           </div>
-
-          {/* Grid de miniaturas */}
+          {/* Miniaturas */}
           <div class="grid grid-cols-4 gap-2 w-full" id="images-list"></div>
         </div>
-        {/* Right Column - Product Info */}
+
+        {/* Información producto */}
         <div>
           <div class="mb-6">
             <h3 class="text-3xl font-black mb-2 text-teal-800" id="info-title">
-              {/* Información del producto: */}
             </h3>
             <h1 class="font-bold mb-2 text-lg">Información del producto:</h1>
             <p
@@ -88,34 +98,37 @@ const productosUrl = config.endpoints.productos;
             </p>
           </div>
 
+          {/* Especificaciones */}
           <div class="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
             <h3 class="font-bold mb-2 text-lg">Detalles del producto</h3>
             <h3 class="font-bold mb-2">Especificaciones técnicas:</h3>
-            <!-- lista de especificaciones -->
             <ul class="list-disc pl-5 space-y-2 text-gray-700" id="specs-list">
             </ul>
+
             <h3 class="font-bold mt-4 mb-4">Dimensiones:</h3>
             <div class="flex items-start gap-4 md:gap-12">
               <div class="w-24 md:w-32">
-                <img src={boxSize.src} alt="Box Size" class="w-full h-auto" />
+                <img
+                  src={boxSize.src}
+                  alt="Box Size"
+                  class="w-full h-auto"
+                  loading="lazy"
+                />
               </div>
-              <!-- dimensiones del producto -->
-              <ul class="space-y-2 md:space-y-4" id="product-dimensions">
-                <!-- Las dimensiones se llenarán dinámicamente -->
-              </ul>
+              <ul class="space-y-2 md:space-y-4" id="product-dimensions"></ul>
             </div>
           </div>
 
           <button
             id="btnQuotationDetail"
-            class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition hover:cursor-pointer"
+            class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition cursor-pointer"
           >
             COTIZACIÓN
           </button>
         </div>
       </div>
 
-      {/* Similar Products */}
+      {/* -------------------- PRODUCTOS SIMILARES -------------------- */}
       <div class="mt-8 md:mt-12">
         <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-teal-500">
           PRODUCTOS SIMILARES
@@ -129,24 +142,25 @@ const productosUrl = config.endpoints.productos;
     </div>
   </div>
 
-  <!-- Modal de Cotización Personalizado -->
+  {/* -------------------- MODAL DE COTIZACIÓN -------------------- */}
   <div
     id="modal-cotizacion-producto"
-    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay hidden"
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
   >
     <div
       class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn"
     >
-      <!-- Imagen general par todos los productos -->
+      {/* Imagen */}
       <div class="hidden sm:block w-2/5 relative">
         <img
           id="modal-product-img"
           src=""
           alt="Producto"
           class="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
-      <!-- Contenido -->
+      {/* Formulario */}
       <div
         class="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative"
       >
@@ -155,37 +169,41 @@ const productosUrl = config.endpoints.productos;
             id="close-modal-cotizacion"
             aria-label="Cerrar modal"
             class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+            >X</button
           >
-            X
-          </button>
           <h2 class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
             ¡RECIBE UNA ASESORÍA GRATIS!
           </h2>
+
           <form id="form-cotizacion-producto" class="flex flex-col gap-1">
-            <h3 class="text-base sm:text-lg font-bold">Nombre</h3>
+            <label class="text-base sm:text-lg font-bold">Nombre</label>
             <input
               type="text"
               name="nombre"
               class="p-2 rounded-lg bg-white text-black outline-none mb-1"
               required
             />
-            <h3 class="text-base sm:text-lg font-bold">Teléfono</h3>
+
+            <label class="text-base sm:text-lg font-bold">Teléfono</label>
             <input
               type="tel"
               name="telefono"
               class="p-2 rounded-lg bg-white text-black outline-none mb-1"
               required
             />
-            <h3 class="text-base sm:text-lg font-bold">Correo</h3>
+
+            <label class="text-base sm:text-lg font-bold">Correo</label>
             <input
               type="email"
               name="correo"
               class="p-2 rounded-lg bg-white text-black outline-none mb-1"
               required
             />
+
             <button
               type="submit"
-              class="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
+              class="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4
+                     text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
             >
               ¡HABLEMOS!
             </button>
@@ -197,6 +215,7 @@ const productosUrl = config.endpoints.productos;
   </div>
 </Layout>
 
+{/* -------------------- JAVASCRIPT -------------------- */}
 <script
   define:vars={{
     getApiUrl,
@@ -212,149 +231,61 @@ const productosUrl = config.endpoints.productos;
   const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
   let modalTimeout = null;
   let modalMostrado = false;
-
-  // Función para slugificar el nombre del producto
-
-  // Función para mapear nombres de productos a IDs
   const productNameToIdMap = {};
 
-  // function displaySpecsAndDimensions(specs) {
-  //   const specsList = document.getElementById("specs-list");
-  //   const dimensionsList = document.getElementById("product-dimensions");
-
-  //   if (!specsList || !dimensionsList) return;
-
-  //   specsList.innerHTML = "";
-  //   dimensionsList.innerHTML = "";
-
-  //   // Definir las claves que corresponden a dimensiones
-  //   const dimensionKeys = ["alto", "largo", "ancho"];
-  //   const dimensions = {};
-  //   const otherSpecs = {};
-
-  //   // Normalizar specs: array de {clave, valor} → objeto plano
-  //   let normalizedSpecs = {};
-  //   if (Array.isArray(specs)) {
-  //     specs.forEach((spec) => {
-  //       if (spec.clave && spec.valor) {
-  //         normalizedSpecs[spec.clave.toLowerCase()] = spec.valor;
-  //       }
-  //     });
-  //   } else if (typeof specs === "object" && specs !== null) {
-  //     normalizedSpecs = specs;
-  //   }
-
-  //   // Separar dimensiones de otras especificaciones
-  //   Object.entries(normalizedSpecs).forEach(([key, value]) => {
-  //     if (dimensionKeys.includes(key.toLowerCase())) {
-  //       // Capitalizar la primera letra para mostrarlo mejor
-  //       const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
-  //       dimensions[formattedKey] = value;
-  //     } else {
-  //       otherSpecs[key] = value;
-  //     }
-  //   });
-
-  //   // Renderizar otras especificaciones
-  //   Object.entries(otherSpecs).forEach(([key, value]) => {
-  //     const li = document.createElement("li");
-  //     li.className = "text-gray-700 mb-2 break-words";
-  //     li.style.wordBreak = "break-word";
-
-  //     li.textContent = `${key}: ${value}`;
-  //     specsList.appendChild(li);
-  //   });
-
-  //   // Renderizar dimensiones
-  //   const abbreviations = {
-  //     Alto: "H", // Height
-  //     Largo: "L", // Length
-  //     Ancho: "A", // Width
-  //   };
-
-  //   Object.entries(dimensions).forEach(([key, value]) => {
-  //     const li = document.createElement("li");
-  //     li.className = "flex items-center gap-2";
-
-  //     const span = document.createElement("span");
-  //     span.className =
-  //       "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-
-  //     // Usar el mapa, si no existe usar la primera letra
-  //     span.textContent = abbreviations[key] || key.charAt(0).toUpperCase();
-
-  //     const text = document.createTextNode(`${key}: ${value}`);
-
-  //     li.appendChild(span);
-  //     li.appendChild(text);
-  //     dimensionsList.appendChild(li);
-  //   });
-  // }
-
+  // Mostrar especificaciones y dimensiones
   function displaySpecsAndDimensions(specs, dimensiones) {
     const specsList = document.getElementById("specs-list");
     const dimensionsList = document.getElementById("product-dimensions");
-
     if (!specsList || !dimensionsList) return;
 
     specsList.innerHTML = "";
     dimensionsList.innerHTML = "";
 
-    // RENDER: Especificaciones (de tipo array)
     if (Array.isArray(specs)) {
       specs.forEach((spec) => {
         const li = document.createElement("li");
         li.className = "text-gray-700 mb-2 break-words";
-        li.textContent = `${spec.valor}`;
+        li.textContent = spec.valor;
         specsList.appendChild(li);
       });
     }
 
-    // RENDER: Dimensiones (de objeto separado)
     if (dimensiones && typeof dimensiones === "object") {
-      const dimensionLabels = {
-        alto: "H", // Height
-        largo: "L", // Length
-        ancho: "A", // Width
-      };
-
-      Object.entries(dimensionLabels).forEach(([key, abbreviation]) => {
+      const labels = { alto: "H", largo: "L", ancho: "A" };
+      Object.entries(labels).forEach(([key, abbr]) => {
         if (dimensiones[key]) {
           const li = document.createElement("li");
           li.className = "flex items-center gap-2";
-
           const span = document.createElement("span");
           span.className =
             "w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold";
-          span.textContent = abbreviation;
-
-          const text = document.createTextNode(
-            `${key.charAt(0).toUpperCase() + key.slice(1)}: ${dimensiones[key]} cm`
-          );
-
+          span.textContent = abbr;
           li.appendChild(span);
-          li.appendChild(text);
+          li.appendChild(
+            document.createTextNode(
+              `${key[0].toUpperCase() + key.slice(1)}: ${dimensiones[key]} cm`
+            )
+          );
           dimensionsList.appendChild(li);
         }
       });
     }
   }
 
-  // Función para mostrar mensajes de error
+  // Mostrar error en pantalla
   function showErrorMessage(message) {
     const container = document.createElement("div");
     container.className =
       "fixed z-50 inset-0 text-center bg-gradient-to-b from-teal-700 to-teal-400 flex items-center justify-center";
-
     const messageEl = document.createElement("p");
     messageEl.className = "text-white font-extrabold text-5xl";
     messageEl.textContent = message;
-
     container.appendChild(messageEl);
     document.body.appendChild(container);
   }
 
-  // Función para mostrar detalles del producto
+  // Mostrar detalles del producto
   function displayProductDetails(product) {
     const productTitle = document.getElementById("product-title");
     const productSubtitle = document.getElementById("product-subtitle");
@@ -377,266 +308,94 @@ const productosUrl = config.endpoints.productos;
       return;
     }
 
-    // Actualizar elementos básicos
-    productTitle.innerHTML = product.titulo;
-    productSubtitle.innerHTML = product.subtitulo;
-    productImg.src = `${getApiUrl}` + product.imagenes[0].url_imagen;
-    //console.log(productImg.src);
+    productTitle.textContent = product.titulo;
+    productSubtitle.textContent = product.subtitulo;
+    productImg.src = `${getApiUrl}${product.imagenes[0].url_imagen}`;
     productImg.alt = product.titulo;
-    infoTitle.innerHTML = product.titulo;
-    infoDescription.innerHTML = product.descripcion;
+    infoTitle.textContent = product.titulo;
+    infoDescription.textContent = product.descripcion;
 
-    // Actualizar visor de imágenes
-    const images = product.imagenes;
-    if (images && images.length > 0) {
-      productViewer.src = `${getApiUrl}${images[0].url_imagen}`;
-      //console.log(productViewer.src);
+    if (product.imagenes?.length) {
+      productViewer.src = `${getApiUrl}${product.imagenes[0].url_imagen}`;
       productViewer.alt = `${product.titulo} - Vista 1`;
-
-      // Limpiar lista de imágenes previa
       imagesList.innerHTML = "";
-
-      // Añadir miniaturas
-      images.slice(0, 4).forEach((image, index) => {
-        const alt = `${product.titulo} - Vista ${index + 1}`;
+      product.imagenes.slice(0, 4).forEach((image, index) => {
         const div = document.createElement("div");
         div.className =
-          "aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ease-in-out hover:cursor-pointer";
-
+          "aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300";
         const img = document.createElement("img");
         img.src = `${getApiUrl}${image.url_imagen}`;
-        //console.log(img.src);
-        img.alt = alt;
+        img.alt = `${product.titulo} - Vista ${index + 1}`;
         img.className = "w-full h-full object-cover";
-
         div.appendChild(img);
-        imagesList.appendChild(div);
-
         div.onclick = () => {
-          productViewer.src = `${getApiUrl}${image.url_imagen}`;
-          productViewer.alt = alt;
+          productViewer.src = img.src;
+          productViewer.alt = img.alt;
         };
+        imagesList.appendChild(div);
       });
     }
 
-    // Actualizar especificaciones
     displaySpecsAndDimensions(product.especificaciones, product.dimensiones);
-
-    // Actualizar título de la página
     document.title = `${product.titulo} - Detalles del Producto`;
-
-    // Guardar la asociación nombre-id para futuras referencias
-    const productSlug = product.link;
-    productNameToIdMap[productSlug] = product.id;
-    localStorage.setItem(`product_${productSlug}`, product.link);
+    productNameToIdMap[product.link] = product.id;
+    localStorage.setItem(`product_${product.link}`, product.link);
   }
 
-  // Función para cargar productos relacionados
-  async function loadRelatedProducts(relatedProductIds) {
-    const relatedProductsContainer = document.getElementById(
-      "related-products-container"
-    );
-    if (!relatedProductsContainer) return;
-
-    // Limpiar contenedor
-    relatedProductsContainer.innerHTML = "";
-
-    // Obtener detalles de productos relacionados
-    const relatedProducts = await Promise.all(
-      relatedProductIds.map(async (id) => {
+  // Cargar productos relacionados
+  async function loadRelatedProducts(ids) {
+    const container = document.getElementById("related-products-container");
+    if (!container) return;
+    container.innerHTML = "";
+    const related = await Promise.all(
+      ids.map(async (id) => {
         try {
           const res = await fetch(`${getApiUrl}${productosUrl.list}/${id}`);
           if (!res.ok) return null;
-          const data = await res.json();
-          return data.data;
-        } catch (error) {
-          console.error(`Error fetching related product ${id}:`, error);
+          return (await res.json()).data;
+        } catch {
           return null;
         }
       })
-    ).then((results) => results.filter((p) => p !== null));
+    ).then((r) => r.filter(Boolean));
 
-    // Añadir productos relacionados al contenedor
-    relatedProducts.forEach((prod) => {
-      const productSlug = prod.link;
-      // Guardar la asociación nombre-id para futuras referencias
-      productNameToIdMap[productSlug] = prod.id;
-      localStorage.setItem(`product_${productSlug}`, prod.link);
-      const imagenPrincipal =
-        prod.imagenes && prod.imagenes.length > 0
-          ? prod.imagenes[0].url_imagen
-          : "/placeholder.png"; // ruta por defecto si no hay imagen
-
+    related.forEach((prod) => {
       const a = document.createElement("a");
       a.href = `/productos/detalle?link=${encodeURIComponent(prod.link)}`;
       a.className = "group cursor-pointer";
       a.title = `Ver detalles de ${prod.titulo}`;
-
       const div = document.createElement("div");
       div.className =
         "aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2";
-
       const img = document.createElement("img");
-      img.src = `${getApiUrl}${imagenPrincipal}`;
+      img.src = `${getApiUrl}${prod.imagenes?.[0]?.url_imagen || "/placeholder.png"}`;
       img.alt = prod.titulo;
+      img.loading = "lazy";
       img.className =
         "w-full h-full object-cover group-hover:scale-105 transition";
-
       const h3 = document.createElement("h3");
       h3.className = "text-center font-bold text-xs md:text-sm";
       h3.textContent = prod.titulo;
-
       div.appendChild(img);
       a.appendChild(div);
       a.appendChild(h3);
-
-      relatedProductsContainer.appendChild(a);
+      container.appendChild(a);
     });
   }
 
-  // Función principal que se ejecuta al cargar la página
-  document.addEventListener("DOMContentLoaded", async () => {
-    showLoader();
-
-    // Extraemos el nombre del producto de la URL
-    const pathParts = window.location.pathname.split("/");
-    const productSlug = pathParts[pathParts.length - 1];
-
-    // Si no hay slug en la URL, verificamos si hay un ID en los parámetros
-    const params = new URLSearchParams(window.location.search);
-    const idFromParams = params.get("link")?.trim();
-
-    let productId = null;
-
-    // Prioridad 1: ID de los parámetros (para compatibilidad con enlaces antiguos)
-    if (idFromParams) {
-      productId = idFromParams;
-    }
-    // Prioridad 2: Buscar ID asociado al slug en localStorage
-    else if (productSlug && productSlug !== "productos") {
-      const storedId = localStorage.getItem(`product_${productSlug}`);
-      if (storedId) {
-        productId = storedId;
-      }
-      // Prioridad 3: Intentar obtener todos los productos y buscar el que coincida con el slug
-      else {
-        try {
-          // Obtener lista de productos (esto podría ser optimizado con una API dedicada)
-          const allProductsResponse = await fetch(
-            `${getApiUrl}${productosUrl.list}`
-          );
-
-          if (!allProductsResponse.ok) {
-            removeLoader();
-            showErrorMessage(
-              `Error ${allProductsResponse.status}: ${allProductsResponse.statusText}`
-            );
-            return;
-          }
-
-          const allProductsData = await allProductsResponse.json();
-
-          // Buscar el producto por slug
-          const matchingProduct = allProductsData.data.find(
-            (product) => product.link === productSlug
-          );
-
-          if (matchingProduct) {
-            productId = matchingProduct.id;
-            // Guardar para futuras referencias
-            localStorage.setItem(`product_${productSlug}`, product.link);
-          }
-        } catch (error) {
-          console.error("Error fetching all products:", error);
-        }
-      }
-    }
-
-    // Si no se ha encontrado un ID, mostrar error
-    if (!productId) {
-      removeLoader();
-      showErrorMessage("No se encontró el producto");
-      return;
-    }
-
-    try {
-      // Obtener el producto por ID
-      const response = await fetch(
-        `${getApiUrl}${productosUrl.list}/link/${productId}`
-      );
-
-      if (!response.ok) {
-        removeLoader();
-        showErrorMessage(`Error ${response.status}: ${response.statusText}`);
-        return;
-      }
-
-      const data = await response.json();
-      const product = data.data;
-
-      window.__detalleProducto = product;
-
-      // Si llegamos desde una URL antigua, actualizar a la nueva estructura
-      const currentProductSlug = product.link;
-      const desiredPath = `/productos/${currentProductSlug}`;
-
-      /*if (window.location.pathname !== desiredPath) {
-        window.history.replaceState(null, '', desiredPath);
-      }*/
-
-      removeLoader();
-      displayProductDetails(product);
-      // Constantes para los botones de cotización
-      const btnQuotationHero = document.getElementById("btnQuotationHero");
-      const btnQuotationDetail = document.getElementById("btnQuotationDetail");
-
-      [btnQuotationHero, btnQuotationDetail].forEach((btn) => {
-        if (btn) {
-          btn.addEventListener("click", () => {
-            showCotizacionModal(product);
-          });
-        }
-      });
-
-      //console.log("Productos relacionados:", product.productos_relacionados);
-      // Cargar productos relacionados
-      await loadRelatedProducts(
-        product.productos_relacionados.map((p) => p.id)
-      );
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      removeLoader();
-      showErrorMessage(`Error: ${error.message}`);
-    }
-  });
-
-  // Escuchar el evento del footer para abrir el modal personalizado
-  window.addEventListener("open-scroll-modal", function () {
-    if (typeof showCotizacionModal === "function") {
-      showCotizacionModal();
-    }
-  });
-  window.addEventListener("scroll", () => {
-    const atBottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
-    if (atBottom) {
-      programarModal();
-    }
-  });
-  //Función para envitar cotización por whatsapp
+  // Enviar cotización a WhatsApp
   function sendWhatsAppQuoteRequest(product) {
     const numero = "51978883199";
     const mensaje = `Hola, quiero cotizar el producto: ${encodeURIComponent(product.titulo)}`;
-    const url = `https://wa.me/${numero}?text=${mensaje}`;
-    window.open(url, "_blank");
+    window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
   }
 
-  // --- INICIO: Lógica para el modal personalizado de cotización ---
-  function showCotizacionModal(product) {
-    const modal = document.getElementById("modal-cotizacion-producto");
-    const mensaje = document.getElementById("modal-cotizacion-mensaje");
-    mensaje.textContent = "";
-    modal.classList.remove("hidden");
+  // Mostrar modal
+  function showCotizacionModal() {
+    document
+      .getElementById("modal-cotizacion-producto")
+      .classList.remove("hidden");
+    document.getElementById("modal-cotizacion-mensaje").textContent = "";
     modalMostrado = true;
   }
 
@@ -645,20 +404,66 @@ const productosUrl = config.endpoints.productos;
       localStorage.getItem(MODAL_STORAGE_KEY) || "0",
       10
     );
-    const now = Date.now();
-    return now - lastClosed >= MODAL_COOLDOWN_MS;
+    return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
 
   function programarModal() {
     if (modalTimeout) clearTimeout(modalTimeout);
     if (puedeMostrarModal() && !modalMostrado) {
-      modalTimeout = setTimeout(() => {
-        showCotizacionModal();
-      }, 2000); // 2 segundos después de llegar abajo
+      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
     }
   }
 
-  document.getElementById("close-modal-cotizacion").onclick = function () {
+  // -------------------- EVENTOS --------------------
+  document.addEventListener("DOMContentLoaded", async () => {
+    showLoader();
+
+    const params = new URLSearchParams(window.location.search);
+    let productId = params.get("link")?.trim();
+
+    if (!productId) {
+      const slug = window.location.pathname.split("/").pop();
+      productId = localStorage.getItem(`product_${slug}`);
+    }
+
+    if (!productId) {
+      removeLoader();
+      showErrorMessage("No se encontró el producto");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${getApiUrl}${productosUrl.list}/link/${productId}`
+      );
+      if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+      const product = (await res.json()).data;
+      window.__detalleProducto = product;
+
+      removeLoader();
+      displayProductDetails(product);
+
+      // Botones cotización → WhatsApp
+      ["btnQuotationHero", "btnQuotationDetail"].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.onclick = () => sendWhatsAppQuoteRequest(product);
+      });
+
+      // Productos relacionados
+      if (product.productos_relacionados) {
+        await loadRelatedProducts(
+          product.productos_relacionados.map((p) => p.id)
+        );
+      }
+    } catch (e) {
+      console.error("Error fetching product:", e);
+      removeLoader();
+      showErrorMessage(`Error: ${e.message}`);
+    }
+  });
+
+  // Modal eventos
+  document.getElementById("close-modal-cotizacion").onclick = () => {
     document
       .getElementById("modal-cotizacion-producto")
       .classList.add("hidden");
@@ -666,28 +471,34 @@ const productosUrl = config.endpoints.productos;
     modalMostrado = false;
   };
 
-  document.getElementById("form-cotizacion-producto").onsubmit =
-    async function (e) {
-      e.preventDefault();
-      const nombre = this.nombre.value.trim();
-      const telefono = this.telefono.value.trim();
-      const correo = this.correo.value.trim();
-      const mensaje = document.getElementById("modal-cotizacion-mensaje");
+  document.getElementById("form-cotizacion-producto").onsubmit = function (e) {
+    e.preventDefault();
+    const { nombre, telefono, correo } = this;
+    const mensaje = document.getElementById("modal-cotizacion-mensaje");
+    if (
+      !nombre.value.trim() ||
+      !telefono.value.trim() ||
+      !correo.value.trim()
+    ) {
+      mensaje.textContent = "Completa todos los campos.";
+      return;
+    }
+    mensaje.textContent = "¡Enviado correctamente! Pronto te contactaremos.";
+    setTimeout(() => {
+      document
+        .getElementById("modal-cotizacion-producto")
+        .classList.add("hidden");
+      this.reset();
+      mensaje.textContent = "";
+      localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+      modalMostrado = false;
+    }, 2000);
+  };
 
-      if (!nombre || !telefono || !correo) {
-        mensaje.textContent = "Completa todos los campos.";
-        return;
-      }
-
-      mensaje.textContent = "¡Enviado correctamente! Pronto te contactaremos.";
-      setTimeout(() => {
-        document
-          .getElementById("modal-cotizacion-producto")
-          .classList.add("hidden");
-        this.reset();
-        mensaje.textContent = "";
-        localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-        modalMostrado = false;
-      }, 2000);
-    };
+  window.addEventListener("open-scroll-modal", showCotizacionModal);
+  window.addEventListener("scroll", () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
+      programarModal();
+    }
+  });
 </script>

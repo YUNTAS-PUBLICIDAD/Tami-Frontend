@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
 import manoRobotica from "@images/index/robot-gris-señalar.webp";
@@ -19,7 +19,10 @@ import ProductContainer from "../components/index/ProductContainer.astro";
   description="Selladoras, mesas LED, sillas LED, ventiladores holográficos, máquinas de empaque, equipos industriales, maquinaria comercial, maquinaria para negocios, Perú, embalaje, selladora industrial, eventos, productos innovadores, equipos LED, máquinas automáticas, negocio propio, artículos para empresas, atención nacional, máquinas modernas, iluminación LED."
   canonicalUrl="https://tamimaquinarias.com/"
 >
+  {/* Hero principal con CTA */}
   <Hero client:load />
+
+  {/* Sección de bienvenida con imágenes y texto */}
   <section
     id="bienvenida"
     class="scroll-mt-16 h-96 sm:h-[calc(100dvh-10rem)] md:h-[calc(90dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col md:flex-row justify-between max-w-screen-2xl mx-auto"
@@ -35,24 +38,25 @@ import ProductContainer from "../components/index/ProductContainer.astro";
           class="relative z-10 w-11/12 sm:w-full lg:max-w-10/12"
           width={600}
           height={400}
-          loading={'lazy'}
+          loading="lazy"
         />
         <Image
           src={circuitos}
-          alt={"Circuitos electrónicos"}
+          alt="Circuitos electrónicos"
           class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-0 hidden md:block"
-          loading={'lazy'}
+          loading="lazy"
         />
       </div>
     </div>
 
     {/* Contenedor de texto */}
     <div
-      class="w-full md:w-1/2 flex flex-col justify-center content-center p-3 md:py-0 md:px-6 lg:p-0 xl:px-16 2xl:px-20 order-1 md:order-2"
+      class="w-full md:w-1/2 flex flex-col justify-center p-3 md:px-6 xl:px-16 2xl:px-20 order-1 md:order-2"
     >
       <h2
         class="flex items-center gap-2 text-orange-700 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
       >
+        {/* Flecha decorativa */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -69,7 +73,7 @@ import ProductContainer from "../components/index/ProductContainer.astro";
         BIENVENIDO A TAMI
       </h2>
       <h3
-        class="text-teal-700 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold py-2 tracking-wider lg:leading-16 2xl:leading-24"
+        class="text-teal-700 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold py-2 tracking-wider leading-tight"
       >
         TECNOLOGÍA E INNOVACIÓN PARA TI
       </h3>
@@ -81,28 +85,35 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       </p>
     </div>
   </section>
+
+  {/* Botón flotante para bajar a sección de productos destacados */}
   <div class="flex justify-center items-center pt-12 md:pt-0">
     <BtnGoToSectionCards client:load />
   </div>
-  <!-- Arreglar ancho y alto para que se vea como en vimeo :like: -->
+
+  {/* Sección de productos destacados en cartas */}
   <section
-    class="w-full my-8 place-items-center scroll-mt-20 max-w-screen-2xl mx-auto"
     id="sectionCards"
+    class="w-full my-8 scroll-mt-20 max-w-screen-2xl mx-auto"
   >
-    {/* Contenedor de cartas */}
     <SectionCardsContainer />
   </section>
+
+  {/* Carrusel de productos con gradiente de fondo */}
   <section
-    class="flex flex-col justify-between align-center pt-6 px-16 lg:px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white max-w-screen-2xl mx-auto"
+    class="flex flex-col pt-6 px-6 lg:px-16 bg-gradient-to-b from-teal-700 via-teal-500 to-white max-w-screen-2xl mx-auto"
   >
     <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
     <ProductSlideshow client:load />
   </section>
+
+  {/* Llamado a acción hacia la sección de productos */}
   <h3
-    class="text-xs py-2 md:text-2xl 2xl:text-4xl font-bold text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r from-teal-700 to-sunset gap-2"
+    class="text-xs py-2 md:text-2xl 2xl:text-4xl font-bold text-center text-white flex items-center justify-center bg-gradient-to-r from-teal-700 to-sunset gap-2"
   >
+    {/* Flechas decorativas */}
     <svg
       width="100"
       height="50"
@@ -131,10 +142,12 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       class="underline underline-offset-3">PRODUCTOS</a
     >
   </h3>
+
+  {/* Sección ¿Por qué elegir TAMI? */}
   <section
     class="w-full flex flex-col lg:flex-row items-center justify-center py-6 px-2 lg:px-16"
   >
-    {/* Texto */}
+    {/* Texto con iconos y etiquetas */}
     <div class="lg:w-1/2 text-center lg:text-left">
       <h2
         class="flex-col text-teal-700 font-extrabold text-3xl sm:text-4xl lg:text-6xl 2xl:text-7xl flex lg:justify-start gap-2"
@@ -152,37 +165,39 @@ import ProductContainer from "../components/index/ProductContainer.astro";
         </span>
         ELEGIR TAMI?
       </h2>
-      <p class="text-gray-600 text-xl 2xl:text-4xl xl:text-3xl mt-4">
+      <p class="text-gray-600 text-xl xl:text-3xl 2xl:text-4xl mt-4">
         Calidad respaldada por nuestra garantía, mostrando nuestro compromiso
         con la satisfacción de nuestros clientes.
       </p>
 
-      {/* Etiquetas */}
+      {/* Etiquetas destacadas */}
       <div
-        class="flex flex-wrap gap-4 my-6 justify-center text-white lg:justify-start 2xl:text-2xl xl:text-lg"
+        class="flex flex-wrap gap-4 my-6 justify-center lg:justify-start text-white"
       >
-        <div
-          class="bg-teal-700 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full"
-        >
+        <div class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
           CALIDAD
         </div>
-        <div
-          class="bg-teal-600 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full"
-        >
+        <div class="bg-teal-600 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
           INNOVACIÓN
         </div>
-        <div
-          class="bg-teal-500 text-white px-4 2xl:px-7 py-2 2xl:py-3 rounded-full"
-        >
+        <div class="bg-teal-500 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
           NEGOCIO PROPIO
         </div>
       </div>
     </div>
 
-    {/* Imagen */}
-    <img src={trabajo.src} alt="Personal hablando" width="600" height="600" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
+    {/* Imagen lateral */}
+    <img
+      src={trabajo.src}
+      alt="Personal hablando"
+      width="600"
+      height="600"
+      class="w-5/6 lg:w-1/2 2xl:w-1/4"
+      loading="lazy"
+    />
   </section>
 
+  {/* Testimonios de clientes */}
   <section
     class="w-full pt-12 flex flex-col relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200"
   >
@@ -198,11 +213,15 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       TI.
     </h3>
     <Testimonials client:load />
+
+    {/* Franja inferior con lema */}
     <div
       class="relative w-full py-12 h-20 bg-gradient-to-r from-orange-300 from-30% to-teal-500 flex items-center justify-center"
     >
       <div class="w-full max-w-screen-xl px-4 md:px-12 text-center">
-        <h2 class="text-white font-black text-2xl md:tracking-[.5em]">TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI</h2>
+        <h2 class="text-white font-black text-2xl md:tracking-[.5em]">
+          TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI
+        </h2>
       </div>
     </div>
   </section>
