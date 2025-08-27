@@ -249,7 +249,7 @@ const useProductForm = (
             };
 
             if (isEditing && producto) {
-                await updateProducto(producto!.id, productoData);
+                await updateProducto(producto!.id, formToSend);
                 await Swal.fire({
                     icon: "success",
                     title: "Producto actualizado correctamente",
@@ -257,8 +257,8 @@ const useProductForm = (
                     timer: 1500,
                 });
             } else {
-                console.log(productoData);
-                await addProducto(productoData);
+
+                await addProducto(formToSend);
                 await Swal.fire({
                     icon: "success",
                     title: "Producto creado exitosamente",

@@ -32,7 +32,7 @@ const HeroProducts = () => {
             onClick={handlePrev}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit cursor-pointer"
           >
-            <FlechaButton direccion="left" />
+            {/* <FlechaButton direccion="left" /> */}
           </button>
 
           <div
@@ -74,10 +74,10 @@ const HeroProducts = () => {
             onClick={handleNext}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit justify-self-end"
           >
-            <FlechaButton direccion="right" />
+            {/* <FlechaButton direccion="right" /> */}
           </button>
         </div>
-        <div className="flex gap-5 h-1/12 items-center justify-center">
+        {/* <div className="flex gap-5 h-1/12 items-center justify-center">
           {heroProductsArray.map((_, index) => (
             <button
               key={index}
@@ -86,7 +86,7 @@ const HeroProducts = () => {
               disabled={index === currentSlide}
             />
           ))}
-        </div>
+        </div> */}
       </section>
     </>
   );

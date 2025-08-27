@@ -10,16 +10,17 @@ export interface ProductApiPOST {
   stock: number;
   precio: number;
   seccion: string;
-  especificaciones: Object
-  imagenes: File[];
+  especificaciones: string[];
+  imagenes: ImagenForm[];
   textos_alt: string[];
   relacionados: number[];
-  meta_data: {
+  etiquetas: {
     meta_titulo: string;
     meta_descripcion: string;
   };
 }
 
+// Interface para el formulario de producto
 export interface ProductFormularioPOST {
   nombre: string;
   titulo: string;
@@ -29,12 +30,16 @@ export interface ProductFormularioPOST {
   stock: number;
   precio: number;
   seccion: string;
-  especificaciones: Record<string, string>;
-  // dimensiones: Dimensions;
+  especificaciones: string[];
+  dimensiones: {
+    alto: string;
+    largo: string;
+    ancho: string; 
+  }
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
-  meta_data: {
+  etiqueta: {
     meta_titulo: string;
     meta_descripcion: string;
   };
@@ -62,14 +67,19 @@ export default interface Producto {
   titulo: string;
   subtitulo: string;
   descripcion: string;
-  especificaciones: { [clave: string]: string };
+  especificaciones: {valor: string}[];
   productos_relacionados: object[] | null;
   imagenes: ImagenBack[]; // las adicionales
   stock: number;
   precio: number;
   createdAt: string | null;
-  meta_data: {
+  etiqueta: {
     meta_titulo: string;
     meta_descripcion: string;
   };
+  dimensiones: {
+    largo: string;
+    alto: string;
+    ancho: string;
+  }
 }
