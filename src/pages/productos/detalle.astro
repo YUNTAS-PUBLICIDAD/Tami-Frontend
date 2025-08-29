@@ -2,6 +2,7 @@
 import Layout from "src/layouts/Layout.astro";
 import boxSize from "@icons/box-size.svg";
 import ArrowProducts from "../../assets/icons/flecha-product.svg";
+import ModalDetalles from "./ModalDetalles.astro";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
@@ -140,78 +141,7 @@ const productosUrl = config.endpoints.productos;
         </div>
       </div>
     </div>
-  </div>
-
-  {/* -------------------- MODAL DE COTIZACIÓN -------------------- */}
-  <div
-    id="modal-cotizacion-producto"
-    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
-  >
-    <div
-      class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn"
-    >
-      {/* Imagen */}
-      <div class="hidden sm:block w-2/5 relative">
-        <img
-          id="modal-product-img"
-          src=""
-          alt="Producto"
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
-      </div>
-      {/* Formulario */}
-      <div
-        class="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative"
-      >
-        <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
-          <button
-            id="close-modal-cotizacion"
-            aria-label="Cerrar modal"
-            class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
-            >X</button
-          >
-          <h2 class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
-            ¡RECIBE UNA ASESORÍA GRATIS!
-          </h2>
-
-          <form id="form-cotizacion-producto" class="flex flex-col gap-1">
-            <label class="text-base sm:text-lg font-bold">Nombre</label>
-            <input
-              type="text"
-              name="nombre"
-              class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-              required
-            />
-
-            <label class="text-base sm:text-lg font-bold">Teléfono</label>
-            <input
-              type="tel"
-              name="telefono"
-              class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-              required
-            />
-
-            <label class="text-base sm:text-lg font-bold">Correo</label>
-            <input
-              type="email"
-              name="correo"
-              class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-              required
-            />
-
-            <button
-              type="submit"
-              class="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4
-                     text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
-            >
-              ¡HABLEMOS!
-            </button>
-          </form>
-          <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
-        </div>
-      </div>
-    </div>
+    <ModalDetalles />
   </div>
 </Layout>
 
@@ -227,10 +157,6 @@ const productosUrl = config.endpoints.productos;
   eval(showLoaderString);
   eval(removeLoaderString);
 
-  const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
-  const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
-  let modalTimeout = null;
-  let modalMostrado = false;
   const productNameToIdMap = {};
 
   // Mostrar especificaciones y dimensiones
@@ -390,30 +316,6 @@ const productosUrl = config.endpoints.productos;
     window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
   }
 
-  // Mostrar modal
-  function showCotizacionModal() {
-    document
-      .getElementById("modal-cotizacion-producto")
-      .classList.remove("hidden");
-    document.getElementById("modal-cotizacion-mensaje").textContent = "";
-    modalMostrado = true;
-  }
-
-  function puedeMostrarModal() {
-    const lastClosed = parseInt(
-      localStorage.getItem(MODAL_STORAGE_KEY) || "0",
-      10
-    );
-    return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
-  }
-
-  function programarModal() {
-    if (modalTimeout) clearTimeout(modalTimeout);
-    if (puedeMostrarModal() && !modalMostrado) {
-      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
-    }
-  }
-
   // -------------------- EVENTOS --------------------
   document.addEventListener("DOMContentLoaded", async () => {
     showLoader();
@@ -459,46 +361,6 @@ const productosUrl = config.endpoints.productos;
       console.error("Error fetching product:", e);
       removeLoader();
       showErrorMessage(`Error: ${e.message}`);
-    }
-  });
-
-  // Modal eventos
-  document.getElementById("close-modal-cotizacion").onclick = () => {
-    document
-      .getElementById("modal-cotizacion-producto")
-      .classList.add("hidden");
-    localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-    modalMostrado = false;
-  };
-
-  document.getElementById("form-cotizacion-producto").onsubmit = function (e) {
-    e.preventDefault();
-    const { nombre, telefono, correo } = this;
-    const mensaje = document.getElementById("modal-cotizacion-mensaje");
-    if (
-      !nombre.value.trim() ||
-      !telefono.value.trim() ||
-      !correo.value.trim()
-    ) {
-      mensaje.textContent = "Completa todos los campos.";
-      return;
-    }
-    mensaje.textContent = "¡Enviado correctamente! Pronto te contactaremos.";
-    setTimeout(() => {
-      document
-        .getElementById("modal-cotizacion-producto")
-        .classList.add("hidden");
-      this.reset();
-      mensaje.textContent = "";
-      localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      modalMostrado = false;
-    }, 2000);
-  };
-
-  window.addEventListener("open-scroll-modal", showCotizacionModal);
-  window.addEventListener("scroll", () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
-      programarModal();
     }
   });
 </script>

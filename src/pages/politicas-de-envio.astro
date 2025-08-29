@@ -10,50 +10,54 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
 ---
 
 <Layout
-    title="Envíos Rápidos y Seguros a Todo el Perú | Condiciones, Cobertura y Tiempos, Cobertura y Condiciones de Envío a Nivel Nacional | Tami Perú - Políticas de Envío - Entregas Seguras y Rápidas con Tami Maquinarias"
-    description="Envíos, cobertura, entrega, condiciones, tiempos, logística, Perú, tarifas, productos, máquinas, embalaje, garantía, seguridad, rapidez, atención, servicio nacional, maquinaria, confianza, transporte, seguimiento."
-    canonicalUrl="https://tamimaquinarias.com/politicas-de-envio/"
+  title="Envíos Rápidos y Seguros a Todo el Perú | Condiciones, Cobertura y Tiempos, Cobertura y Condiciones de Envío a Nivel Nacional | Tami Perú - Políticas de Envío - Entregas Seguras y Rápidas con Tami Maquinarias"
+  description="Envíos, cobertura, entrega, condiciones, tiempos, logística, Perú, tarifas, productos, máquinas, embalaje, garantía, seguridad, rapidez, atención, servicio nacional, maquinaria, confianza, transporte, seguimiento."
+  canonicalUrl="https://tamimaquinarias.com/politicas-de-envio/"
 >
+  <!-- Hero -->
   <section
-      class="relative bg-cover bg-center h-screen lg:h-dvh 2xl:h-[90dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
-      style={{
-        backgroundImage: `linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
-      }}
+    class="relative flex flex-col justify-center items-center lg:items-start text-white bg-cover bg-center h-screen lg:h-dvh 2xl:h-[90dvh] pt-16 lg:pt-20 lg:ps-20"
+    style={{
+      backgroundImage: `linear-gradient(to bottom, rgba(0,120,111,.75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
+    }}
   >
-    <!-- Bloque: icono + título -->
-    <div class="flex flex-row items-center mb-6 lg:mb-8">
-      <img src={iconCamion.src} alt="Icono de Camión" class="h-20 2xl:h-36 mr-4 lg:mr-8" title="Icono de Camión" />
+    <!-- Icono + título -->
+    <div class="flex items-center mb-6 lg:mb-8">
+      <img src={iconCamion.src} alt="Icono de Camión" title="Icono de Camión" class="h-20 2xl:h-36 mr-4 lg:mr-8" />
       <h2
-          style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
-          class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-[96px] font-extrabold leading-tight"
+        class="font-extrabold leading-tight text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-[96px]"
+        style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
       >
         POLÍTICA<br />DE ENVÍOS
       </h2>
     </div>
 
-    <!-- Bloque: párrafo debajo -->
-    <p class="text-base sm:text-lg lg:text-2xl 2xl:text-4xl font-bold leading-relaxed mt-4 max-w-3xl">
+    <!-- Párrafo debajo -->
+    <p class="mt-4 max-w-3xl font-bold leading-relaxed text-base sm:text-lg lg:text-2xl 2xl:text-4xl">
       Descubre nuestras políticas de envío,<br />
       pensadas para garantizar una experiencia<br />
       confiable y segura en cada pedido.
     </p>
   </section>
 
-  <section class="w-full grid grid-cols-1 grid-rows-2 sm:grid-rows-1 sm:grid-cols-2 py-8 gap-6 lg:gap-10">
-    <div class="w-full flex justify-center items-center">
-      <img src={mapaPeru.src} alt="Mapa apuntando Lima" class="w-3/4 md:w-1/2 lg:w-1/2" title="Mapa apuntando Lima"/>
+  <!-- Contenido -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-10 py-8">
+    <!-- Mapa -->
+    <div class="flex justify-center items-center">
+      <img src={mapaPeru.src} alt="Mapa apuntando Lima" title="Mapa apuntando Lima" class="w-3/4 md:w-1/2" />
     </div>
 
+    <!-- Texto -->
     <div class="flex flex-col px-4 sm:pr-6 space-y-6">
       <h2 class="text-teal-700 font-extrabold text-xl sm:text-2xl lg:text-3xl 2xl:text-5xl lg:mb-2">
         ENVÍOS A LIMA Y PROVINCIAS
       </h2>
 
-      <div class="flex place-content-center sm:place-content-start sm:items-start my-1 sm:my-3">
+      <div class="flex flex-col sm:items-start space-y-5">
         <div class="text-sm sm:text-base lg:text-lg 2xl:text-2xl leading-relaxed">
+          <!-- Lima Metropolitana -->
           <h3 class="font-bold text-lg sm:text-xl lg:text-2xl">EN LIMA METROPOLITANA</h3>
-
-          <ul class="list-disc font-normal ml-5 2xl:ml-9 mt-2 space-y-1 text-sm lg:text-base 2xl:text-xl">
+          <ul class="list-disc ml-5 2xl:ml-9 mt-2 space-y-1 text-sm lg:text-base 2xl:text-xl">
             <li>Santa Anita</li>
             <li>Centro de Lima</li>
             <li>Lince</li>
@@ -61,25 +65,25 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
             <li>La Victoria</li>
           </ul>
 
-          <!-- BOTÓN WhatsApp 15 soles -->
+          <!-- Botón WhatsApp 15 soles -->
           <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-3 bg-orange-600 hover:bg-orange-700 transition text-white rounded-full px-4 sm:px-6 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl my-5 cursor-pointer"
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-3 bg-orange-600 hover:bg-orange-700 transition text-white rounded-full px-4 sm:px-6 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl my-5"
           >
             <svg
-                viewBox="0 0 24 24"
-                class="scale-x-[-1] w-8 h-8"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
+              viewBox="0 0 24 24"
+              class="scale-x-[-1] w-8 h-8"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
               <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M2.678 11.422a2.5 2.5 0 0 0 0 3.536l6.364 6.364a2.5 2.5 0 0 0 3.536 0l7.69-7.69A2.5 2.5 0 0 0 21 11.864V4.5A1.5 1.5 0 0 0 19.5 3h-7.365a2.5 2.5 0 0 0-1.768.732l-7.69 7.69zM14.988 7C13.878 7 13 7.832 13 8.988c0 1.157.878 2.012 1.988 2.012C16.121 11 17 10.145 17 8.988 17 7.832 16.12 7 14.988 7z"
-                  fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M2.678 11.422a2.5 2.5 0 0 0 0 3.536l6.364 6.364a2.5 2.5 0 0 0 3.536 0l7.69-7.69A2.5 2.5 0 0 0 21 11.864V4.5A1.5 1.5 0 0 0 19.5 3h-7.365a2.5 2.5 0 0 0-1.768.732l-7.69 7.69zM14.988 7C13.878 7 13 7.832 13 8.988c0 1.157.878 2.012 1.988 2.012C16.121 11 17 10.145 17 8.988 17 7.832 16.12 7 14.988 7z"
+                fill="currentColor"
               ></path>
             </svg>
 
@@ -87,18 +91,18 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
               <p class="mb-1">
                 Precio de envío <span class="font-extrabold">15 soles</span>
               </p>
-              <ul class="list-disc text-xs lg:text-sm 2xl:text-xl ml-4 2xl:ml-6">
+              <ul class="list-disc ml-4 2xl:ml-6 text-xs lg:text-sm 2xl:text-xl">
                 <li>Otros productos a cotizar</li>
               </ul>
             </div>
           </a>
 
-          <!-- BOTÓN WhatsApp 20 soles -->
+          <!-- Botón WhatsApp 20 soles -->
           <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-start gap-3 text-teal-700 hover:text-teal-900 transition font-bold lg:font-semibold text-sm lg:text-base 2xl:text-2xl cursor-pointer"
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-start gap-3 text-teal-700 hover:text-teal-900 transition font-bold text-sm lg:text-base 2xl:text-2xl"
           >
             <img src={iconUbicacionRojo.src} alt="Ubicación" class="w-8 h-8" />
             <div class="leading-relaxed">
@@ -106,7 +110,7 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
                 Los demás distritos de Lima Metropolitana<br />
                 Precio de envío <span class="font-extrabold text-lg lg:text-xl 2xl:text-4xl">20 soles</span>
               </p>
-              <ul class="list-disc text-xs lg:text-sm 2xl:text-2xl ml-4 2xl:ml-6">
+              <ul class="list-disc ml-4 2xl:ml-6 text-xs lg:text-sm 2xl:text-2xl">
                 <li>Otros productos a cotizar</li>
               </ul>
             </div>
@@ -114,24 +118,24 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
         </div>
       </div>
 
-      <!-- BOTÓN WhatsApp PROVINCIAS -->
+      <!-- Provincias -->
       <a
-          href={whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-start my-2 md:my-10 cursor-pointer hover:text-teal-900 transition"
+        href={whatsappLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-start my-2 md:my-10 hover:text-teal-900 transition"
       >
         <img
-            src={iconUbicacionVerde.src}
-            alt="Signo de ubicación"
-            class="hidden sm:block w-4 lg:w-6 2xl:w-8 ms-1 me-3 mt-1 lg:me-5"
-            title="Signo de ubicación"
+          src={iconUbicacionVerde.src}
+          alt="Signo de ubicación"
+          title="Signo de ubicación"
+          class="hidden sm:block w-4 lg:w-6 2xl:w-8 ms-1 me-3 mt-1 lg:me-5"
         />
         <div>
           <h2 class="text-teal-700 font-extrabold mb-2 text-lg sm:text-2xl lg:text-3xl 2xl:text-5xl">
             PROVINCIAS
           </h2>
-          <p class="font-semibold text-sm sm:text-base lg:text-lg 2xl:text-3xl text-justify max-w-xl leading-relaxed">
+          <p class="font-semibold text-justify max-w-xl leading-relaxed text-sm sm:text-base lg:text-lg 2xl:text-3xl">
             El cliente elegirá la empresa por la cual desea el envío y pagará lo
             que la empresa cotice al momento de la entrega.
           </p>
