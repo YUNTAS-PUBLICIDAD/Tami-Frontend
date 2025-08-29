@@ -1,71 +1,63 @@
 ---
 const numeroWhatsApp = "51978883199";
+
+const producto = {
+  nombre: "Máquina selladora",
+  seccion: "NEGOCIOS", // puede ser "NEGOCIOS" | "MAQUINARIA" | "DECORACIÓN"
+};
 ---
 
+<!-- Modal -->
 <div
-  id="modal-cotizacion-producto"
-  class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
+    id="modal-cotizacion-producto"
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn"
+      class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn"
   >
     <!-- Imagen -->
     <div class="hidden sm:block w-2/5 relative">
       <img
-        id="modal-product-img"
-        src=""
-        alt="Producto"
-        class="w-full h-full object-cover"
-        loading="lazy"
+          id="modal-product-img"
+          src=""
+          alt="Producto"
+          class="w-full h-full object-cover"
+          loading="lazy"
       />
     </div>
 
-    <!-- Formulario -->
+    <!-- Formulario dinámico -->
     <div
-      class="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative"
+        id="modal-form-container"
+        class="w-full sm:w-3/5 p-6 text-white relative"
+        data-seccion={producto.seccion}
+        data-whatsapp={numeroWhatsApp}
     >
-      <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
+    <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
         <button
-          id="close-modal-cotizacion"
-          aria-label="Cerrar modal"
-          class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+            id="close-modal-cotizacion"
+            aria-label="Cerrar modal"
+            class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
         >
           X
         </button>
 
-        <h2 class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
-          ¡RECIBE UNA ASESORÍA GRATIS!
-        </h2>
+        <h2 id="modal-title" class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4"></h2>
 
         <form id="form-cotizacion-producto" class="flex flex-col gap-1">
           <label class="text-base sm:text-lg font-bold">Nombre</label>
-          <input
-            type="text"
-            name="nombre"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-            required
-          />
+          <input type="text" name="nombre" class="p-2 rounded-lg bg-white text-black outline-none mb-1" required />
 
           <label class="text-base sm:text-lg font-bold">Teléfono</label>
-          <input
-            type="tel"
-            name="telefono"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-            required
-          />
+          <input type="tel" name="telefono" class="p-2 rounded-lg bg-white text-black outline-none mb-1" required />
 
           <label class="text-base sm:text-lg font-bold">Correo</label>
-          <input
-            type="email"
-            name="correo"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-            required
-          />
+          <input type="email" name="correo" class="p-2 rounded-lg bg-white text-black outline-none mb-1" required />
 
           <button
-            type="submit"
-            class="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4
-                   text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
+              id="modal-submit-btn"
+              type="submit"
+              class="w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
           >
             ¡HABLEMOS!
           </button>
@@ -77,12 +69,45 @@ const numeroWhatsApp = "51978883199";
 </div>
 
 <script>
+  // --- CONFIGURACIÓN POR SECCIÓN ---
+  const secciones = {
+    NEGOCIOS: {
+      gradient: "from-sky-400 to-sky-600",
+      title: "¡DESCARGA LA INFORMACIÓN SOBRE TUS HERRAMIENTAS GRATIS!",
+      btn: "bg-sky-400 hover:bg-sky-500",
+    },
+    MAQUINARIA: {
+      gradient: "from-emerald-400 to-teal-600",
+      title: "¡DESCARGA LA GUÍA TÉCNICA CON ESPECIFICACIONES GRATIS!",
+      btn: "bg-emerald-400 hover:bg-emerald-500",
+    },
+    DECORACIÓN: {
+      gradient: "from-violet-500 to-indigo-700",
+      title: "¡RECIBE GRATIS TU GUÍA SOBRE NUESTRA DECORACIÓN EXCLUSIVA!",
+      btn: "bg-violet-500 hover:bg-violet-600",
+    },
+  };
+
+  // leer atributos pasados desde el HTML
+  const container = document.getElementById("modal-form-container");
+  const rawSection = container?.dataset.seccion ?? "NEGOCIOS";
+  const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
+
+  // normaliza acentos (DECORACIÓN → DECORACION)
+  const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+  const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
+
+  const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
+  let config = secciones[productoSeccion] || secciones.NEGOCIOS;
+
+  // --- LÓGICA DE MOSTRAR / CERRAR ---
   const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
   const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
   let modalTimeout: ReturnType<typeof setTimeout> | null = null;
   let modalMostrado = false;
 
   function showCotizacionModal() {
+    aplicarConfig();
     const modal = document.getElementById("modal-cotizacion-producto");
     const mensaje = document.getElementById("modal-cotizacion-mensaje");
     if (modal && mensaje) {
@@ -93,10 +118,7 @@ const numeroWhatsApp = "51978883199";
   }
 
   function puedeMostrarModal() {
-    const lastClosed = parseInt(
-      localStorage.getItem(MODAL_STORAGE_KEY) || "0",
-      10
-    );
+    const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
 
@@ -117,31 +139,55 @@ const numeroWhatsApp = "51978883199";
     };
   }
 
-  const form = document.getElementById(
-    "form-cotizacion-producto"
-  ) as HTMLFormElement | null;
+  // --- FORMULARIO (con FormData limpio) ---
+  const form = document.getElementById("form-cotizacion-producto") as HTMLFormElement | null;
   if (form) {
-    form.onsubmit = function (e) {
+    form.onsubmit = (e) => {
       e.preventDefault();
-      const nombre = (this.elements.namedItem("nombre") as HTMLInputElement)
-        ?.value;
-      const telefono = (this.elements.namedItem("telefono") as HTMLInputElement)
-        ?.value;
-      const correo = (this.elements.namedItem("correo") as HTMLInputElement)
-        ?.value;
+      const data = new FormData(form);
+      const nombre = data.get("nombre");
+      const telefono = data.get("telefono");
+      const correo = data.get("correo");
 
       const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-      window.open(
-        `https://wa.me/51978883199?text=${encodeURIComponent(mensaje)}`,
-        "_blank"
-      );
+      window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, "_blank");
 
       const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
       if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
       form.reset();
     };
   }
+  function aplicarConfig() {
+    const formContainer = document.getElementById("modal-form-container");
+    const title = document.getElementById("modal-title");
+    const btn = document.getElementById("modal-submit-btn");
 
+    if (formContainer) {
+      // limpia gradientes previos
+      formContainer.classList.remove(
+          "from-sky-400","to-sky-600",
+          "from-emerald-400","to-teal-600",
+          "from-violet-500","to-indigo-700"
+      );
+      formContainer.classList.add("bg-gradient-to-b", ...config.gradient.split(" "));
+    }
+
+    if (title) {
+      title.textContent = config.title;
+    }
+
+    if (btn) {
+      // limpia estilos previos
+      btn.classList.remove(
+          "bg-sky-400","hover:bg-sky-500",
+          "bg-emerald-400","hover:bg-emerald-500",
+          "bg-violet-500","hover:bg-violet-600"
+      );
+      btn.classList.add(...config.btn.split(" "), "text-white");
+    }
+  }
+
+  // --- MOSTRAR EN SCROLL ---
   window.addEventListener("open-scroll-modal", showCotizacionModal);
   window.addEventListener("scroll", () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
