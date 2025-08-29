@@ -232,7 +232,7 @@ const ScrollModal = () => {
         </div>
 
         {/* Contenido */}
-        <div className="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative">
+        <div className="w-full sm:w-3/5 bg-gradient-to-b from-[#01A09E] to-[#00D6D3] text-white relative">
           <div className="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
             <button
               onClick={closeModal}
@@ -249,6 +249,7 @@ const ScrollModal = () => {
               <h3 className="text-base sm:text-lg font-bold">Nombre</h3>
               <input
                 type="text"
+                placeholder="Nombres y Apellidos"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 className="p-2 rounded-lg bg-white text-black outline-none mb-1"
@@ -260,6 +261,7 @@ const ScrollModal = () => {
               <h3 className="text-base sm:text-lg font-bold">Teléfono</h3>
               <input
                 type="tel"
+                placeholder="Teléfono: 905 876 524"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
                 className="p-2 rounded-lg bg-white text-black outline-none mb-1"
@@ -271,6 +273,7 @@ const ScrollModal = () => {
               <h3 className="text-base sm:text-lg font-bold">Correo</h3>
               <input
                 type="email"
+                placeholder="Correo@gmail.com"
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
                 className="p-2 rounded-lg bg-white text-black outline-none mb-1"
@@ -289,9 +292,9 @@ const ScrollModal = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center"
+                className="bg-[#01A09E] text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center shadow-[0_4px_10px_rgba(255,255,255,0.6)]"
               >
-                {isSubmitting ? "Enviando..." : "¡HABLEMOS!"}
+                {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
             </form>
           </div>

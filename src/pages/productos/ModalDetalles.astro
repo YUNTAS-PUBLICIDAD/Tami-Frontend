@@ -1,0 +1,151 @@
+---
+const numeroWhatsApp = "51978883199";
+---
+
+<div
+  id="modal-cotizacion-producto"
+  class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
+>
+  <div
+    class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-lg w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn"
+  >
+    <!-- Imagen -->
+    <div class="hidden sm:block w-2/5 relative">
+      <img
+        id="modal-product-img"
+        src=""
+        alt="Producto"
+        class="w-full h-full object-cover"
+        loading="lazy"
+      />
+    </div>
+
+    <!-- Formulario -->
+    <div
+      class="w-full sm:w-3/5 bg-gradient-to-b from-orange-300 to-teal-600 p-6 text-white relative"
+    >
+      <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
+        <button
+          id="close-modal-cotizacion"
+          aria-label="Cerrar modal"
+          class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+        >
+          X
+        </button>
+
+        <h2 class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
+          ¡RECIBE UNA ASESORÍA GRATIS!
+        </h2>
+
+        <form id="form-cotizacion-producto" class="flex flex-col gap-1">
+          <label class="text-base sm:text-lg font-bold">Nombre</label>
+          <input
+            type="text"
+            name="nombre"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            required
+          />
+
+          <label class="text-base sm:text-lg font-bold">Teléfono</label>
+          <input
+            type="tel"
+            name="telefono"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            required
+          />
+
+          <label class="text-base sm:text-lg font-bold">Correo</label>
+          <input
+            type="email"
+            name="correo"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            required
+          />
+
+          <button
+            type="submit"
+            class="bg-orange-300 hover:bg-orange-400 text-white w-full sm:max-w-fit p-3 sm:p-4
+                   text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
+          >
+            ¡HABLEMOS!
+          </button>
+        </form>
+        <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
+  const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
+  let modalTimeout: ReturnType<typeof setTimeout> | null = null;
+  let modalMostrado = false;
+
+  function showCotizacionModal() {
+    const modal = document.getElementById("modal-cotizacion-producto");
+    const mensaje = document.getElementById("modal-cotizacion-mensaje");
+    if (modal && mensaje) {
+      modal.classList.remove("hidden");
+      mensaje.textContent = "";
+      modalMostrado = true;
+    }
+  }
+
+  function puedeMostrarModal() {
+    const lastClosed = parseInt(
+      localStorage.getItem(MODAL_STORAGE_KEY) || "0",
+      10
+    );
+    return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
+  }
+
+  function programarModal() {
+    if (modalTimeout) clearTimeout(modalTimeout);
+    if (puedeMostrarModal() && !modalMostrado) {
+      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
+    }
+  }
+
+  const closeBtn = document.getElementById("close-modal-cotizacion");
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      const modal = document.getElementById("modal-cotizacion-producto");
+      if (modal) modal.classList.add("hidden");
+      localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+      modalMostrado = false;
+    };
+  }
+
+  const form = document.getElementById(
+    "form-cotizacion-producto"
+  ) as HTMLFormElement | null;
+  if (form) {
+    form.onsubmit = function (e) {
+      e.preventDefault();
+      const nombre = (this.elements.namedItem("nombre") as HTMLInputElement)
+        ?.value;
+      const telefono = (this.elements.namedItem("telefono") as HTMLInputElement)
+        ?.value;
+      const correo = (this.elements.namedItem("correo") as HTMLInputElement)
+        ?.value;
+
+      const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
+      window.open(
+        `https://wa.me/51978883199?text=${encodeURIComponent(mensaje)}`,
+        "_blank"
+      );
+
+      const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+      if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
+      form.reset();
+    };
+  }
+
+  window.addEventListener("open-scroll-modal", showCotizacionModal);
+  window.addEventListener("scroll", () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
+      programarModal();
+    }
+  });
+</script>
