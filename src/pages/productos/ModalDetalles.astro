@@ -75,20 +75,21 @@ const numeroWhatsApp = "51978883199";
     const secciones = {
         NEGOCIOS: {
             gradient: "from-sky-400 to-sky-600",
-            title: "¡DESCARGA LA INFORMACIÓN SOBRE TUS HERRAMIENTAS GRATIS!",
+            title: "¡DESCARGA LA <span class='scrollmodal-title'>INFORMACIÓN</span> SOBRE TUS HERRAMIENTAS <span class='scrollmodal-title'>GRATIS!</span>",
             btn: "bg-sky-400 hover:bg-sky-500",
         },
         MAQUINARIA: {
             gradient: "from-emerald-400 to-teal-600",
-            title: "¡DESCARGA LA GUÍA TÉCNICA CON ESPECIFICACIONES GRATIS!",
+            title: "¡DESCARGA LA <span class='scrollmodal-title'>GUÍA TÉCNICA</span> CON ESPECIFICACIONES <span class='scrollmodal-title'>GRATIS!</span>",
             btn: "bg-emerald-400 hover:bg-emerald-500",
         },
         DECORACIÓN: {
             gradient: "from-violet-500 to-indigo-700",
-            title: "¡RECIBE GRATIS TU GUÍA SOBRE NUESTRA DECORACIÓN EXCLUSIVA!",
+            title: "¡RECIBE <span class='scrollmodal-title'>GRATIS</span> TU GUÍA SOBRE NUESTRA <span class='scrollmodal-title'>DECORACIÓN EXCLUSIVA!</span>",
             btn: "bg-violet-500 hover:bg-violet-600",
         },
     };
+
 
     const container = document.getElementById("modal-form-container");
     const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
@@ -168,7 +169,7 @@ const numeroWhatsApp = "51978883199";
         }
 
         if (title) {
-            title.textContent = config.title;
+            title.innerHTML = config.title;
         }
 
         if (btn) {
