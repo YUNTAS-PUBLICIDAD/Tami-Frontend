@@ -5,7 +5,6 @@ import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import ModalDetalles from "./ModalDetalles.astro";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
-
 const getApiUrl = config.apiUrl;
 const productosUrl = config.endpoints.productos;
 ---
@@ -141,7 +140,7 @@ const productosUrl = config.endpoints.productos;
         </div>
       </div>
     </div>
-    <ModalDetalles />
+    <ModalDetalles/>
   </div>
 </Layout>
 
@@ -220,7 +219,12 @@ const productosUrl = config.endpoints.productos;
     const imagesList = document.getElementById("images-list");
     const infoTitle = document.getElementById("info-title");
     const infoDescription = document.getElementById("info-description");
-
+    const modalContainer = document.getElementById("modal-form-container");
+    if (modalContainer && product.seccion) {
+      modalContainer.dataset.seccion = product.seccion;
+      window.__detalleProductoSeccion = product.seccion;
+      console.log("Sección actualizada:", product.seccion);
+    }
     if (
       !productTitle ||
       !productSubtitle ||
@@ -341,7 +345,8 @@ const productosUrl = config.endpoints.productos;
       if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
       const product = (await res.json()).data;
       window.__detalleProducto = product;
-
+      window.__detalleProductoSeccion = product.seccion;
+      //console.log(window.__detalleProductoSeccion);
       removeLoader();
       displayProductDetails(product);
 
