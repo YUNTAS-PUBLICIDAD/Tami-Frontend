@@ -133,3 +133,31 @@ input[type="checkbox"]:checked + label {
   border-bottom: none;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
+
+/* Scroll Modal */
+.scrollmodal-title {
+    font-weight: bold;
+    color: white;
+    font-size: 2.2rem;
+    display: inline-block;
+    word-break: break-word;
+}
+
+.scrollmodal-body {
+    font-size: 1.8rem;
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 15px;
+}
+
+/* Versión responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .scrollmodal-title {
+        font-size: 1.6rem;
+    }
+    .scrollmodal-body {
+        font-size: 1.4rem;
+    }
+}

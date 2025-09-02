@@ -241,8 +241,8 @@ const ScrollModal = () => {
             >
               X
             </button>
-            <h2 className="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4">
-              ¡RECIBE UNA ASESORÍA GRATIS!
+            <h2 className="scrollmodal-body">
+              DESCARGA <span className="scrollmodal-title">GRATIS</span> NUESTRO <span className="scrollmodal-title">CATÁLOGO</span> PARA TU PROYECTO
             </h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-1">
