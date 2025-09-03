@@ -1,6 +1,6 @@
 export default interface HeroSlide {
-  image: string;
-  imageMobile?: string;
+  imageDesktop: string;
+  imageMobile: string;
   title: string;
   alt: string;
   items?: string[];

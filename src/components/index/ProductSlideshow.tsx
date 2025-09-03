@@ -15,21 +15,25 @@ function slugify(text: string): string {
 
 const ProductSlideshow = () => {
     const [productsArray, setProductsArray] = useState<Producto[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [slideIndex, setSlideIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setIsLoading(true);
             try {
                 const response = await fetch(getApiUrl(config.endpoints.productos.list));
                 if (!response.ok) {
                     throw new Error(`Error en la petición: ${response.status}`);
                 }
                 const data = await response.json();
-                setProductsArray(data.data.slice(-3));
+                setProductsArray(data.slice(-3));
             } catch (error) {
                 console.error("Error al obtener los productos:", error);
                 setProductsArray([]);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -46,17 +50,26 @@ const ProductSlideshow = () => {
     const getLinkHref = (item: Producto) =>
         `/productos/detalle?link=${item.link ?? slugify(item.titulo)}`;
 
+    
+
     if (isMobile) {
+        if (isLoading) {
+            return (
+                <div className="w-full flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-9 w-9 border-t-2 border-b-2 border-teal-500"></div>
+                    <span className="text-teal-500 font-medium">Cargando productos...</span>
+                </div>
+            );
+        }
         return (
             <div className="flex justify-center px-8 mb-20 relative min-h-[280px] h-[320px]">
                 {productsArray.map((item, index) => (
                     <div
                         key={item.id}
-                        className={`w-72 p-6 bg-gradient-to-b to-white flex flex-col items-center text-center transition-all duration-500 absolute ${
-                            slideIndex === index
+                        className={`w-72 p-6 bg-gradient-to-b to-white flex flex-col items-center text-center transition-all duration-500 absolute ${slideIndex === index
                                 ? "opacity-100 scale-100 relative"
                                 : "opacity-0 scale-95 pointer-events-none"
-                        }`}
+                            }`}
                     >
                         <img
                             src={
@@ -111,9 +124,8 @@ const ProductSlideshow = () => {
                     {productsArray.map((_, i) => (
                         <span
                             key={i}
-                            className={`h-3 w-3 rounded-full bg-gray-300 ${
-                                slideIndex === i ? "bg-teal-600" : ""
-                            }`}
+                            className={`h-3 w-3 rounded-full bg-gray-300 ${slideIndex === i ? "bg-teal-600" : ""
+                                }`}
                         />
                     ))}
                 </div>

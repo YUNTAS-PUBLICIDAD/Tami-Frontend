@@ -1,12 +1,15 @@
 import {useState, useEffect} from "react";
-import logoMovil from "@images/logos/logo_movil.webp";
+//import logoMovil from "@images/logos/logo_movil.webp";
 import logoTami from "@images/logos/logo-estatico.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
 import NavLink from "./NavLink";
+//const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
 import SideMenu from "../sideMenu/SideMenu";
 import navLinks from "@data/navlinks.data";
+import { IoClose, IoMenu } from "react-icons/io5";
 
 function NavBar() {
+  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -47,12 +50,17 @@ function NavBar() {
   return (
       <header
           className={`items-center justify-between text-white text-base lg:text-lg fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-300 grid grid-cols-2 lg:grid-cols-12 ${
-              isScrolled ? "bg-teal-700 shadow-lg" : "bg-teal-700e"
+              isScrolled ? "bg-teal-700 shadow-lg" : "bg-transparent"
           }`}
           style={{ maxWidth: '100vw', minHeight: '60px' }}
       >
-        {/* Menú lateral en móviles */}
-        <SideMenu links={navLinks} />
+
+        {/* Botón de menú para móviles */}
+        <div className="md:hidden">
+          <button className="w-[56px] h-[56px] lg:hidden cursor-pointer flex items-center justify-between" title="Abrir Menú" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <IoClose size={50} /> : <IoMenu size={50} />}
+          </button>
+        </div>
 
         {/* Logo */}
         <a
@@ -66,9 +74,10 @@ function NavBar() {
               className="h-full lg:hidden object-contain"
               width="120"
               height="50"
-              loading="eager"
               style={{ paddingLeft: '5rem' }}
               title="Logo de Tami con letras"
+              fetchPriority="high"
+              decoding="async"
           />
           <img
               src={logoTami.src}
@@ -79,6 +88,8 @@ function NavBar() {
               loading="eager"
               style={{maxHeight: '60px' }} // Limita la altura máxima
               title="logo de Tami sin letras"
+              fetchPriority="high"
+              decoding="async"
           />
         </a>
 
@@ -157,6 +168,9 @@ function NavBar() {
             LOGIN
           </a>
         </div>
+
+        {/* Menú lateral en móviles */}
+        <SideMenu links={navLinks} isOpen={isOpen} onClose={() => setIsOpen(false)}   /> 
       </header>
   );
 }

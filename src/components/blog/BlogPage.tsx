@@ -1,7 +1,7 @@
 import { useState } from "react";
 import BlogList from "./BlogList";
 import { FaSearch } from "react-icons/fa";
-import {IoIosArrowDown} from "react-icons/io";
+// import {IoIosArrowDown} from "react-icons/io";
 
 const BlogPage = () => {
     const [searchTerm, setSearchTerm] = useState("");
