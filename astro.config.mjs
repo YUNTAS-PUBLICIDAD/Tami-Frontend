@@ -2,7 +2,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import criticalCSS from 'astro-critical-css';
+// import criticalCSS from 'astro-critical-css';
 import sitemap from '@astrojs/sitemap';
 import path from 'path';
 
@@ -28,11 +28,18 @@ export default defineConfig({
                 !page.includes('/productos/detalle')
         }),
         react(),
-        criticalCSS({
-            dimensions: [
-                { width: 375, height: 812 },   // mobile
-                { width: 1440, height: 1024 }  // desktop
-            ]
-        })
+        // criticalCSS({
+        //     dimensions: [
+        //         { width: 375, height: 812 },  
+        //         { width: 1440, height: 1024 }  
+        //     ]
+        // })
+        // No usar critical CSS por ahora, causa algunos problemas con los styles CSS
     ],
+    build: {
+        format: 'directory',
+        inlineStylesheets: 'auto',
+    },
+    compressHTML: true,
+    scopedStyleStrategy: 'where'
 });

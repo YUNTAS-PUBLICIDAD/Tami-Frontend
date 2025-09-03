@@ -11,7 +11,7 @@ import SectionCardsContainer from "src/components/index/SectionCardsContainer.as
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
 import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
-import ProductContainer from "../components/index/ProductContainer.astro";
+//import ProductContainer from "../components/index/ProductContainer.astro";
 ---
 
 <Layout
@@ -88,7 +88,7 @@ import ProductContainer from "../components/index/ProductContainer.astro";
 
   {/* Botón flotante para bajar a sección de productos destacados */}
   <div class="flex justify-center items-center pt-12 md:pt-0">
-    <BtnGoToSectionCards client:load />
+    <BtnGoToSectionCards client:visible />
   </div>
 
   {/* Sección de productos destacados en cartas */}
@@ -154,8 +154,8 @@ import ProductContainer from "../components/index/ProductContainer.astro";
       >
         <span class="flex justify-center lg:justify-start items-end">
           ¿POR QUÉ
-          <img
-            src={iconGarantia.src}
+          <Image
+            src={iconGarantia}
             alt="Garantía"
             width="48"
             height="48"
@@ -187,11 +187,14 @@ import ProductContainer from "../components/index/ProductContainer.astro";
     </div>
 
     {/* Imagen lateral */}
-    <img
-      src={trabajo.src}
+    <Image
+      src={trabajo}
       alt="Personal hablando"
-      width="600"
-      height="600"
+      widths={[320, 640, 960, 1200]}
+      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 40vw"
+      width={500}
+      height={350}
+      quality={80}
       class="w-5/6 lg:w-1/2 2xl:w-1/4"
       loading="lazy"
     />

@@ -1,29 +1,26 @@
-import React from "react";
+import type { FC, ReactNode } from "react";
 
 interface NavLinkProps {
     isForNavBar: boolean;
     to: string;
-    children: React.ReactNode;
-    title: string; 
+    children: ReactNode;
+    title: string;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ isForNavBar, to, children, title }) => (
-    <>
-        <a
-            href={to}
-            className={`text-white font-bold ${
-                isForNavBar
-                    ? "hover:text-teal-300 transition-colors duration-500 text-xl relative group"
-                    : "hover:underline underline-offset-4 text-xl sm:text-2xl block py-1 my-4 hover:bg-gradient-to-r hover:from-teal-950 hover:from-5% transition-colors duration-500 pl-4 rounded-l-xl"
-            }`}
-            title={title} 
-        >
-            {children}
-            {isForNavBar && (
-                <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-teal-300 transition-all duration-500 group-hover:w-full group-hover:left-0"></span>
-            )}
-        </a>
-    </>
+const NavLink: FC<NavLinkProps> = ({ isForNavBar, to, children, title }) => (
+  <a
+    href={to}
+    className={`text-white font-bold ${
+      isForNavBar
+        ? "relative group hover:text-teal-300 transition-colors duration-500 text-xl"
+        : "hover:underline underline-offset-4 text-xl sm:text-2xl block py-1 my-4 hover:bg-gradient-to-r hover:from-teal-950 hover:from-5% transition-colors duration-500 pl-4 rounded-l-xl"
+    }`}
+    title={title}
+  >
+    {children}
+    {/* El efecto hover subrayado con ::after en CSS, no con span */}
+  </a>
 );
+
 
 export default NavLink;

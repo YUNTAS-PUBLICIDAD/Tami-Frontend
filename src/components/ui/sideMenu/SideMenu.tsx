@@ -2,11 +2,12 @@
  * @file SideMenu.tsx
  * @description Componente de menú lateral para la navegación en dispositivos móviles
  */
-import NavLink from "../navbar/NavLink";
+
+import { lazy, useEffect } from "react";
 import NavSocialMediaLink from "./NavSocialMediaLink";
 import socialMediaLinks from "@data/socialMedia.data";
 import userIcon from "@icons/icon_user.webp";
-import React, { useState } from "react";
+const NavLink = lazy(() => import("../navbar/NavLink"));
 
 interface NavLink {
   url: string;
@@ -15,104 +16,209 @@ interface NavLink {
 }
 
 interface SideMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
   links: NavLink[];
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
+  // Cerrar con la tecla Escape
+  useEffect(() => {
+    const handleEscape = (e: any) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
 
-  const changeSideBarStatus = () => {
-    setIsSidebarOpen((x) => !x);
-  };
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   return (
-      <>
-        <button className="w-9 h-9 lg:hidden" title="Abrir Menú" onClick={changeSideBarStatus}>
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 18L20 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M4 12L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M4 6L20 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </button>
+    <div className="md:hidden">
+      
+      <div className="fixed left-0 bottom-0 w-[80vw] sm:w-[65vw] md:w-[50vw] max-w-xs sm:max-w-sm shadow-xl z-50 overflow-y-auto rounded-r-[50px] h-[calc(100vh-72px)] bg-gradient-to-t from-teal-700 to-slate-600 transition-transform duration-700 ease-in-outp px-4">
+        <div className="py-5 flex items-center gap-4 border-b-2 border-white/50 ">
+          <img
+            src={userIcon.src} width={48} height={48}
+            className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+            alt="Icono de usuario"
+            loading="lazy"
+          />
+          <p className="text-3xl font-semibold leading-tight sm:text-4xl sm:font-bold">
+            Bienvenido
+            <br />
+            <span className="font-extrabold text-white drop-shadow-sm">Usuario</span>!
+          </p>
+        </div>
+        <nav className="pt-2 pb-4 space-y-1">
+          {links.map((item, index) => (
+            <NavLink key={index} isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
+              {item.texto}
+            </NavLink>
+          ))}
+          <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
+            INICIAR SESIÓN
+          </NavLink>
+        </nav>
 
-        <div
-            className={`fixed top-20 left-0 z-20 border-2 border-l-0 px-4 py-6 rounded-r-[50px] h-[calc(100vh-7rem)] overflow-y-auto bg-gradient-to-t from-teal-700 to-slate-600 transition-transform duration-700 ease-in-out 
-        w-[80vw] sm:w-[65vw] md:w-[50vw] max-w-xs sm:max-w-sm
-        lg:hidden ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          {/* Usuario */}
-          <div className="border-b-2 border-white pb-5 flex items-center gap-4 pl-2">
-            <img
-                src={userIcon.src}
-                width={48}
-                height={48}
-                className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-                alt="Icono de usuario"
-                loading="lazy"
-            />
-            <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
-              Bienvenido
-              <br />
-              <span className="font-extrabold text-white drop-shadow-sm">Usuario</span>!
-            </p>
-          </div>
-
-          {/* Navegación */}
-          <ul className="text-xl mt-5">
-            {links.map((item, index: number) => (
-                <li key={index}>
-                  <NavLink isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
-                    {item.texto}
-                  </NavLink>
-                </li>
+        {/* Redes sociales */}
+        <div className="border-y-2 border-white/50 py-4">
+          <p className="font-semibold text-center text-xl">
+            Síguenos en nuestras redes
+          </p>
+          <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between gap-3">
+            {socialMediaLinks.map((item, index) => (
+              <NavSocialMediaLink
+                key={index}
+                image={item.image.src}
+                url={item.url}
+                socialMediaName={item.socialMediaName}
+                imageTitle={item.imageTitle}
+                linkTitle={item.linkTitle}
+              />
             ))}
-          {/* Botón de Iniciar Sesión */}
-            <li>
-              <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
-                INICIAR SESIÓN
-              </NavLink>
-            </li>
-
-          </ul>
-
-          {/* Redes sociales */}
-          <div className="border-y-2 py-4 mt-6">
-            <p className="font-semibold text-center text-xl">
-              Síguenos en nuestras redes
-            </p>
-            <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between gap-3">
-              {socialMediaLinks.map((item, index) => (
-                  <NavSocialMediaLink
-                      key={index}
-                      image={item.image.src}
-                      url={item.url}
-                      socialMediaName={item.socialMediaName}
-                      imageTitle={item.imageTitle}
-                      linkTitle={item.linkTitle}
-                  />
-              ))}
-            </div>
-          </div>
-
-          {/* Información de contacto */}
-          <div className="pt-4">
-            <p className="font-semibold text-xl">Horario de atención</p>
-            <div className="text-xl mt-2">
-              <p>
-                Lunes a Viernes
-                <br />
-                de <span className="italic font-semibold">9:00 AM</span> a{" "}
-                <span className="italic font-semibold">9:00 PM</span>
-                <br />
-                informestami01@gmail.com
-                <br />
-                +51 978 883 199
-              </p>
-            </div>
           </div>
         </div>
-      </>
+
+        {/* Información de contacto */}
+        <div className="pt-4">
+          <p className="font-semibold text-lg">Horario de atención</p>
+          <div className="text-lg mt-2">
+            <p>
+              Lunes a Viernes
+              <br />
+              de <span className="italic font-semibold">9:00 AM</span> a{" "}
+              <span className="italic font-semibold">9:00 PM</span>
+              <br />
+              informestami01@gmail.com
+              <br />
+              +51 978 883 199
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default SideMenu;
+
+// import { lazy, useState } from "react";
+// const NavLink = lazy(() => import("../navbar/NavLink"));
+
+// interface NavLink {
+//   url: string;
+//   texto: string;
+//   title?: string;
+// }
+
+// interface SideMenuProps {
+//   links: NavLink[];
+// }
+
+// const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
+//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+//   const changeSideBarStatus = () => {
+//     setIsSidebarOpen((x) => !x);
+//   };
+
+//   return (
+//       <>
+//         <button className="w-9 h-9 lg:hidden" title="Abrir Menú" onClick={changeSideBarStatus}>
+//           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+//             <path d="M4 18L20 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+//             <path d="M4 12L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+//             <path d="M4 6L20 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+//           </svg>
+//         </button>
+
+//         <div
+//             className={`fixed top-20 left-0 z-20 border-2 border-l-0 px-4 py-6 rounded-r-[50px] h-[calc(100vh-7rem)] overflow-y-auto bg-gradient-to-t from-teal-700 to-slate-600 transition-transform duration-700 ease-in-out 
+//         w-[80vw] sm:w-[65vw] md:w-[50vw] max-w-xs sm:max-w-sm -translate-x-full
+//         lg:hidden ${isSidebarOpen ? "translate-x-0" : ""}`}
+//         >
+//           {/* Usuario */}
+//           <div className="border-b-2 border-white pb-5 flex items-center gap-4 pl-2">
+//             <img
+//                 src={userIcon.src}
+//                 width={48}
+//                 height={48}
+//                 className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+//                 alt="Icono de usuario"
+//                 loading="lazy"
+//             />
+//             <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
+//               Bienvenido
+//               <br />
+//               <span className="font-extrabold text-white drop-shadow-sm">Usuario</span>!
+//             </p>
+//           </div>
+
+//           {/* Navegación */}
+//           <ul className="text-xl mt-5">
+//             {links.map((item, index: number) => (
+//                 <li key={index}>
+//                   <NavLink isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
+//                     {item.texto}
+//                   </NavLink>
+//                 </li>
+//             ))}
+//           {/* Botón de Iniciar Sesión */}
+//             <li>
+//               <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
+//                 INICIAR SESIÓN
+//               </NavLink>
+//             </li>
+
+//           </ul>
+
+//           {/* Redes sociales */}
+//           <div className="border-y-2 py-4 mt-6">
+//             <p className="font-semibold text-center text-xl">
+//               Síguenos en nuestras redes
+//             </p>
+//             <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between gap-3">
+//               {socialMediaLinks.map((item, index) => (
+//                   <NavSocialMediaLink
+//                       key={index}
+//                       image={item.image.src}
+//                       url={item.url}
+//                       socialMediaName={item.socialMediaName}
+//                       imageTitle={item.imageTitle}
+//                       linkTitle={item.linkTitle}
+//                   />
+//               ))}
+//             </div>
+//           </div>
+
+//           {/* Información de contacto */}
+//           <div className="pt-4">
+//             <p className="font-semibold text-xl">Horario de atención</p>
+//             <div className="text-xl mt-2">
+//               <p>
+//                 Lunes a Viernes
+//                 <br />
+//                 de <span className="italic font-semibold">9:00 AM</span> a{" "}
+//                 <span className="italic font-semibold">9:00 PM</span>
+//                 <br />
+//                 informestami01@gmail.com
+//                 <br />
+//                 +51 978 883 199
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </>
+//   );
+// };
+
+// export default SideMenu;
