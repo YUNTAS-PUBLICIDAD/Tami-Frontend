@@ -1,10 +1,5 @@
 ---
 const numeroWhatsApp = "51978883199";
-
-const producto = {
-  nombre: "Máquina selladora",
-  seccion: "NEGOCIOS", // puede ser "NEGOCIOS" | "MAQUINARIA" | "DECORACIÓN"
-};
 ---
 
 <!-- Modal -->
@@ -30,7 +25,7 @@ const producto = {
     <div
         id="modal-form-container"
         class="w-full sm:w-3/5 p-6 text-white relative"
-        data-seccion={producto.seccion}
+        data-seccion={Astro.props.seccion}
         data-whatsapp={numeroWhatsApp}
     >
     <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
@@ -69,129 +64,153 @@ const producto = {
 </div>
 
 <script>
-  // --- CONFIGURACIÓN POR SECCIÓN ---
-  const secciones = {
-    NEGOCIOS: {
-      gradient: "from-sky-400 to-sky-600",
-      title: "¡DESCARGA LA INFORMACIÓN SOBRE TUS HERRAMIENTAS GRATIS!",
-      btn: "bg-sky-400 hover:bg-sky-500",
-    },
-    MAQUINARIA: {
-      gradient: "from-emerald-400 to-teal-600",
-      title: "¡DESCARGA LA GUÍA TÉCNICA CON ESPECIFICACIONES GRATIS!",
-      btn: "bg-emerald-400 hover:bg-emerald-500",
-    },
-    DECORACIÓN: {
-      gradient: "from-violet-500 to-indigo-700",
-      title: "¡RECIBE GRATIS TU GUÍA SOBRE NUESTRA DECORACIÓN EXCLUSIVA!",
-      btn: "bg-violet-500 hover:bg-violet-600",
-    },
-  };
-
-  // leer atributos pasados desde el HTML
-  const container = document.getElementById("modal-form-container");
-  const rawSection = container?.dataset.seccion ?? "NEGOCIOS";
-  const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
-
-  // normaliza acentos (DECORACIÓN → DECORACION)
-  const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-  const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
-
-  const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
-  let config = secciones[productoSeccion] || secciones.NEGOCIOS;
-
-  // --- LÓGICA DE MOSTRAR / CERRAR ---
-  const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
-  const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
-  let modalTimeout: ReturnType<typeof setTimeout> | null = null;
-  let modalMostrado = false;
-
-  function showCotizacionModal() {
-    aplicarConfig();
-    const modal = document.getElementById("modal-cotizacion-producto");
-    const mensaje = document.getElementById("modal-cotizacion-mensaje");
-    if (modal && mensaje) {
-      modal.classList.remove("hidden");
-      mensaje.textContent = "";
-      modalMostrado = true;
+    declare global {
+        interface Window {
+            __detalleProductoSeccion?: string;
+            __detalleProducto?: any;
+        }
     }
-  }
 
-  function puedeMostrarModal() {
-    const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
-    return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
-  }
-
-  function programarModal() {
-    if (modalTimeout) clearTimeout(modalTimeout);
-    if (puedeMostrarModal() && !modalMostrado) {
-      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
-    }
-  }
-
-  const closeBtn = document.getElementById("close-modal-cotizacion");
-  if (closeBtn) {
-    closeBtn.onclick = () => {
-      const modal = document.getElementById("modal-cotizacion-producto");
-      if (modal) modal.classList.add("hidden");
-      localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      modalMostrado = false;
+    // --- CONFIGURACIÓN POR SECCIÓN ---
+    const secciones = {
+        NEGOCIOS: {
+            gradient: "from-sky-400 to-sky-600",
+            title: "¡DESCARGA LA <span class='scrollmodal-title'>INFORMACIÓN</span> SOBRE TUS HERRAMIENTAS <span class='scrollmodal-title'>GRATIS!</span>",
+            btn: "bg-sky-400 hover:bg-sky-500",
+        },
+        MAQUINARIA: {
+            gradient: "from-emerald-400 to-teal-600",
+            title: "¡DESCARGA LA <span class='scrollmodal-title'>GUÍA TÉCNICA</span> CON ESPECIFICACIONES <span class='scrollmodal-title'>GRATIS!</span>",
+            btn: "bg-emerald-400 hover:bg-emerald-500",
+        },
+        DECORACIÓN: {
+            gradient: "from-violet-500 to-indigo-700",
+            title: "¡RECIBE <span class='scrollmodal-title'>GRATIS</span> TU GUÍA SOBRE NUESTRA <span class='scrollmodal-title'>DECORACIÓN EXCLUSIVA!</span>",
+            btn: "bg-violet-500 hover:bg-violet-600",
+        },
     };
-  }
 
-  // --- FORMULARIO (con FormData limpio) ---
-  const form = document.getElementById("form-cotizacion-producto") as HTMLFormElement | null;
-  if (form) {
-    form.onsubmit = (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
-      const nombre = data.get("nombre");
-      const telefono = data.get("telefono");
-      const correo = data.get("correo");
 
-      const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-      window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, "_blank");
+    const container = document.getElementById("modal-form-container");
+    const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
 
-      const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
-      if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
-      form.reset();
-    };
-  }
-  function aplicarConfig() {
-    const formContainer = document.getElementById("modal-form-container");
-    const title = document.getElementById("modal-title");
-    const btn = document.getElementById("modal-submit-btn");
+    let config = secciones.NEGOCIOS;
 
-    if (formContainer) {
-      // limpia gradientes previos
-      formContainer.classList.remove(
-          "from-sky-400","to-sky-600",
-          "from-emerald-400","to-teal-600",
-          "from-violet-500","to-indigo-700"
-      );
-      formContainer.classList.add("bg-gradient-to-b", ...config.gradient.split(" "));
+    // --- LÓGICA DE MOSTRAR / CERRAR ---
+    const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
+    const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
+    let modalTimeout: ReturnType<typeof setTimeout> | null = null;
+    let modalMostrado = false;
+
+    function showCotizacionModal() {
+        aplicarConfig();
+        const modal = document.getElementById("modal-cotizacion-producto");
+        const mensaje = document.getElementById("modal-cotizacion-mensaje");
+        if (modal && mensaje) {
+            modal.classList.remove("hidden");
+            mensaje.textContent = "";
+            modalMostrado = true;
+        }
     }
 
-    if (title) {
-      title.textContent = config.title;
+    function puedeMostrarModal() {
+        const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
+        return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
     }
 
-    if (btn) {
-      // limpia estilos previos
-      btn.classList.remove(
-          "bg-sky-400","hover:bg-sky-500",
-          "bg-emerald-400","hover:bg-emerald-500",
-          "bg-violet-500","hover:bg-violet-600"
-      );
-      btn.classList.add(...config.btn.split(" "), "text-white");
+    function programarModal() {
+        if (modalTimeout) clearTimeout(modalTimeout);
+        if (puedeMostrarModal() && !modalMostrado) {
+            modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
+        }
     }
-  }
 
-  // --- MOSTRAR EN SCROLL ---
-  window.addEventListener("open-scroll-modal", showCotizacionModal);
-  window.addEventListener("scroll", () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
-      programarModal();
+    const closeBtn = document.getElementById("close-modal-cotizacion");
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            const modal = document.getElementById("modal-cotizacion-producto");
+            if (modal) modal.classList.add("hidden");
+            localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+            modalMostrado = false;
+        };
     }
-  });
+
+    // --- FORMULARIO ---
+    const form = document.getElementById("form-cotizacion-producto") as HTMLFormElement | null;
+    if (form) {
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const data = new FormData(form);
+            const nombre = data.get("nombre");
+            const telefono = data.get("telefono");
+            const correo = data.get("correo");
+
+            const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
+            window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+            if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
+            form.reset();
+        };
+    }
+
+    function aplicarConfig() {
+        const formContainer = document.getElementById("modal-form-container");
+        const title = document.getElementById("modal-title");
+        const btn = document.getElementById("modal-submit-btn");
+
+        if (formContainer) {
+            formContainer.classList.remove(
+                "from-sky-400","to-sky-600",
+                "from-emerald-400","to-teal-600",
+                "from-violet-500","to-indigo-700"
+            );
+            formContainer.classList.add("bg-gradient-to-b", ...config.gradient.split(" "));
+        }
+
+        if (title) {
+            title.innerHTML = config.title;
+        }
+
+        if (btn) {
+            btn.classList.remove(
+                "bg-sky-400","hover:bg-sky-500",
+                "bg-emerald-400","hover:bg-emerald-500",
+                "bg-violet-500","hover:bg-violet-600"
+            );
+            btn.classList.add(...config.btn.split(" "), "text-white");
+        }
+    }
+
+    // --- MOSTRAR EN SCROLL ---
+    window.addEventListener("open-scroll-modal", showCotizacionModal);
+    window.addEventListener("scroll", () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
+            programarModal();
+        }
+    });
+
+    // --- ACTUALIZAR SECCIÓN DINÁMICAMENTE ---
+    function updateSectionFromDataset() {
+        const container = document.getElementById("modal-form-container");
+        if (!container) return;
+
+        const rawSection = container.dataset.seccion || "NEGOCIOS";
+        const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
+
+        const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
+        config = secciones[productoSeccion] || secciones.NEGOCIOS;
+
+        aplicarConfig();
+    }
+
+    // observar cambios en data-seccion
+    if (container) {
+        const observer = new MutationObserver(() => updateSectionFromDataset());
+        observer.observe(container, { attributes: true, attributeFilter: ["data-seccion"] });
+    }
+
+    // inicial
+    updateSectionFromDataset();
 </script>
