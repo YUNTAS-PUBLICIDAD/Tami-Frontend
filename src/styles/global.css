@@ -166,8 +166,8 @@ a.relative.group::after {
   bottom: 0;
   left: 50%;
   width: 0;
-  height: 2px; /* o 0.5 */
-  background-color: #4fd1c5; /* teal-300 */
+  height: 2px;
+  background-color: #4fd1c5;
   transition: all 0.5s;
 }
 
@@ -176,7 +176,7 @@ a.relative.group:hover::after {
   left: 0;
 }
 =======
-}
+}*/
 
 /* Scroll Modal */
 .scrollmodal-title {
