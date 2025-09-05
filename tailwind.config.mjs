@@ -13,6 +13,9 @@ export default {
                     },
                 },
             }),
+            fontFamily: {
+                montserrat: ['Montserrat', 'system-ui', 'sans-serif'],
+            },
         },
     },
     plugins: [typography],

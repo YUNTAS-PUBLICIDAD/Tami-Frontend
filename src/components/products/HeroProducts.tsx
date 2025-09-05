@@ -1,7 +1,7 @@
 import { useState } from "react";
 import fondoSlider from "@images/products/fondo_productos_slider.webp";
 import heroProductsArray from "@data/heroProducts.data";
-import FlechaButton from "./FlechaButton";
+// import FlechaButton from "./FlechaButton";
 
 const HeroProducts = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
