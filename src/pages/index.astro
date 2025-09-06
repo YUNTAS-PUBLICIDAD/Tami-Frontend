@@ -15,12 +15,12 @@ import Testimonials from "../components/index/Slideshow";
 ---
 
 <Layout
-  title="Maquinaria y Decoración para Negocios"
-  description="Descubre maquinaria y decoración ideal para tu negocio. Compra selladoras, equipos de acabado y productos para emprendedores en Perú."
+  title="Maquinaria para Negocios y Soluciones Comerciales Innovadoras en Perú | Venta a Nivel Nacional Tami Maquinaria Inicio"
+  description="Selladoras, mesas LED, sillas LED, ventiladores holográficos, máquinas de empaque, equipos industriales, maquinaria comercial, maquinaria para negocios, Perú, embalaje, selladora industrial, eventos, productos innovadores, equipos LED, máquinas automáticas, negocio propio, artículos para empresas, atención nacional, máquinas modernas, iluminación LED."
   canonicalUrl="https://tamimaquinarias.com/"
 >
   {/* Hero principal con CTA */}
-  <Hero client:load />
+  <Hero client:idle />
 
   {/* Sección de bienvenida con imágenes y texto */}
   <section
@@ -35,15 +35,18 @@ import Testimonials from "../components/index/Slideshow";
         <Image
           src={manoRobotica}
           alt="Mano robótica apuntando"
-          class="relative z-10 w-11/12 sm:w-full lg:max-w-10/12"
-          width={600}
-          height={400}
-          loading="lazy"
+          width={manoRobotica.width}
+          height={manoRobotica.height}
+          quality={70}
+          widths={[320, 540, 720, manoRobotica.width]}
+          sizes="(max-width: 420px) 320px, (max-width: 720px) 540px, (max-width: 1024px) 720px, 100vw"
+          
         />
+
         <Image
           src={circuitos}
           alt="Circuitos electrónicos"
-          class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-0 hidden md:block"
+          class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-[-10] hidden md:block"
           loading="lazy"
         />
       </div>
@@ -106,7 +109,7 @@ import Testimonials from "../components/index/Slideshow";
     <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
-    <ProductSlideshow client:load />
+    <ProductSlideshow client:idle />
   </section>
 
   {/* Llamado a acción hacia la sección de productos */}

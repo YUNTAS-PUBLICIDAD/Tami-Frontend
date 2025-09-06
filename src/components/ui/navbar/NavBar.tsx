@@ -1,10 +1,11 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, lazy} from "react";
 //import logoMovil from "@images/logos/logo_movil.webp";
-import logoTami from "@images/logos/logo-estatico.webp";
+import logoTami from "@images/logos/logo-estatico-100x116.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
-import NavLink from "./NavLink";
-//const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
-import SideMenu from "../sideMenu/SideMenu";
+//import NavLink from "./NavLink";
+const NavLink = lazy(() => import("./NavLink"));
+const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
+//import SideMenu from "../sideMenu/SideMenu";
 import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 
@@ -68,7 +69,17 @@ function NavBar() {
             title="Ir a la seccion de inicio"
             className="place-self-end lg:place-self-auto content-center h-14 mr-4"
         >
-          <img
+          {/* <img
+        src={logoTami.src}
+        srcSet={`${logoTami100.src} 100w, ${logoTami.src} 172w`}
+        sizes="100px"
+        alt="Logo de Tami"
+        title="Logo de Tami"
+        fetchPriority="high"
+        decoding="async"
+      /> */}
+
+           <img
               src={logoTami.src}
               alt="Logo de Tami con letras"
               className="h-full lg:hidden object-contain"
@@ -82,7 +93,7 @@ function NavBar() {
           <img
               src={logoTami.src}
               alt="logo de Tami sin letras"
-              className="hidden lg:block object-contain" // Agregado object-contain
+              className="hidden lg:block object-contain" 
               width="76"
               height="86"
               loading="eager"
@@ -90,7 +101,7 @@ function NavBar() {
               title="logo de Tami sin letras"
               fetchPriority="high"
               decoding="async"
-          />
+          /> 
         </a>
 
         {/* Enlaces principales */}
