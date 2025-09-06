@@ -2,9 +2,10 @@
 import { config } from "config";
 import heroFondo from "../assets/images/index/hero/impulso-negocios-tecnologia.webp";
 import Resultado from "./buscar/resultado.astro";
-import BuscarLayout from "../layouts/BuscarLayout.astro";
+// import BuscarLayout from "../layouts/BuscarLayout.astro";
 import type Producto from "../models/Product";
 import type Blog from "../models/Blog";
+import Layout from "src/layouts/Layout.astro";
 
 const { searchParams } = Astro.url;
 const rawQuery = searchParams.get("q")?.trim() ?? "";
@@ -49,7 +50,7 @@ if (query) {
 }
 ---
 
-<BuscarLayout title="Buscar Productos" description="Resultados de tu búsqueda">
+<Layout title="Buscar Productos" description="Resultados de tu búsqueda">
     <!-- CONTENEDOR PRINCIPAL -->
     <div class="bg-teal-500 flex flex-col min-h-screen">
 
@@ -75,4 +76,4 @@ if (query) {
         </main>
 
     </div>
-</BuscarLayout>
+</Layout>

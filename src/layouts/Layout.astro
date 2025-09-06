@@ -22,9 +22,6 @@ const { title, description, canonicalUrl } = Astro.props;
       content="jBfmNhIFybwKwy28N7G4Ynrp0giMsnb73k_m-XoPW74"
     />
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
-    <!-- Preload de imagenes importantes -->
-    <link rel="preload" as="image" href="/images/hero/zonas-comercial-urbano.webp" type="image/webp">
-    
     <!-- Preload de fuentes locales WOFF2 -->
     <link rel="preload" href="/fonts/montserrat-regular.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/montserrat-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -82,7 +79,8 @@ const { title, description, canonicalUrl } = Astro.props;
   </head>
 
   <body class="font-montserrat w-full">
-    <NavBar client:load />
+    
+    <NavBar client:idle />
     <slot />
     <Footer />
     <ScrollModal client:idle />
