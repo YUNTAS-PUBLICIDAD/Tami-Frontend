@@ -1,74 +1,112 @@
 ---
 interface ModalProps {
-    seccion?: string;
-    link?: string;
+  seccion?: string;
+  link?: string;
 }
 
 const numeroWhatsApp = "51978883199";
 
+// Objeto con las rutas de imágenes para cada producto
 const linkImages: Record<string, string> = {
-    'soldadora-lingba': '../../../public/images/popup/soldadora-lingba.webp',
-    'default': '../../../public/images/popup/default.webp'
+  "soldadora-lingba": "/images/popup/soldadora-lingba.webp",
+  "purificador-de-agua": "/images/popup/purificador-de-agua.webp",
+  "maquina-de-embalaje-de-te": "/images/popup/maquina-de-embalaje-de-te.webp",
+  "maquina-selladora-de-bolsas-para-solidos":"/images/popup/maquina-selladora-de-bolsas-para-solidos.webp",
+  "mesa-led-bar-alta-cuadrada": "/images/popup/mesa-led-bar-alta-cuadrada.webp",
+  "mesa-led-bar-alta": "/images/popup/mesa-led-bar-alta.webp",
+  "selladora-por-induccion": "/images/popup/selladora-por-induccion.webp",
+  "selladora-de-vaso-manual": "/images/popup/selladora-de-vaso-manual.webp",
+  "silla-bar-led-alta": "/images/popup/silla-bar-led-alta.webp",
+  "sillas-cuadradas-o-de-cubo": "/images/popup/sillas-cuadradas-o-de-cubo.webp",
+  "soldadora-spark-mig-250": "/images/popup/soldadora-spark-mig-250.webp",
+  "ventilador-holografico": "/images/popup/ventilador-holografico.webp",
+  "maquina-selladora-de-bolsas-para-liquidos":"/images/popup/maquina-selladora-de-bolsas-para-liquidos.webp",
+
+  // Agrega más productos aquí según necesites
+  default: "/images/popup/default.webp",
 };
 
-const { link = '' } = Astro.props as ModalProps;
-const modalImage = linkImages[link] || linkImages['default'];
+const { link = "" } = Astro.props as ModalProps;
+const modalImage = linkImages[link] || linkImages["default"];
 ---
+
 <!-- Modal -->
 <div
-    id="modal-cotizacion-producto"
-    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
+  id="modal-cotizacion-producto"
+  class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
+  <div
+    class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn rounded-xl"
+  >
+    <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
     <div
-            class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn rounded-xl"
+      class="hidden sm:flex w-2/4 relative justify-center items-center bg-gray-100 overflow-hidden"
     >
-        <div class="hidden sm:flex w-2/5 relative justify-center items-center bg-gray-100">
-            <div class="w-full h-full flex justify-center items-center p-4">
-                <img
-                        id="modal-product-img"
-                        src={modalImage}
-                        alt={`Imagen para ${link}`}
-                        class="max-h-full max-w-full object-contain"
-                        loading="lazy"
-                />
-            </div>
-        </div>
+      <div class="w-full h-full flex justify-center items-center p-0">
+        <img
+          id="modal-product-img"
+          src={modalImage}
+          alt={`Imagen para ${link}`}
+          class="h-full w-auto object-cover"
+          loading="lazy"
+          onError="this.onerror=null; this.src='/images/popup/default.webp'"
+        />
+      </div>
+    </div>
 
-        <!-- Formulario dinámico -->
+    <!-- Formulario dinámico -->
     <div
-        id="modal-form-container"
-        class="w-full sm:w-3/5 p-6 text-white relative"
-        data-product-link={link}
-        data-seccion={Astro.props.seccion}
-        data-whatsapp={numeroWhatsApp}
+      id="modal-form-container"
+      class="w-full sm:w-3/5 p-6 text-white relative"
+      data-product-link={link}
+      data-seccion={Astro.props.seccion}
+      data-whatsapp={numeroWhatsApp}
     >
-    <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
+      <div class="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
         <button
-            id="close-modal-cotizacion"
-            aria-label="Cerrar modal"
-            class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+          id="close-modal-cotizacion"
+          aria-label="Cerrar modal"
+          class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
         >
           X
         </button>
 
-        <h2 id="modal-title" class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4"></h2>
+        <h2
+          id="modal-title"
+          class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4"
+        >
+        </h2>
 
         <form id="form-cotizacion-producto" class="flex flex-col gap-1">
           <label class="text-base sm:text-lg font-bold">Nombre</label>
-          <input type="text" name="nombre" class="p-2 rounded-lg bg-white text-black outline-none mb-1" required />
+          <input
+            type="text"
+            name="nombre"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            required
+          />
 
           <label class="text-base sm:text-lg font-bold">Teléfono</label>
-          <input type="tel" name="telefono" class="p-2 rounded-lg bg-white text-black outline-none mb-1" required />
+          <input
+            type="tel"
+            name="telefono"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            required
+          />
 
           <label class="text-base sm:text-lg font-bold">Correo</label>
-          <input type="email" name="correo" class="p-2 rounded-lg bg-white text-black outline-none mb-1" required />
-
+          <input
+            type="email"
+            name="correo"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            required
+          />
           <button
-              id="modal-submit-btn"
-              type="submit"
-              class="w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center mt-4"
+            id="modal-submit-btn"
+            type="submit"
+            class="mt-4 py-2 rounded-lg text-white font-bold transition-colors"
           >
-            ¡HABLEMOS!
+            buttonText
           </button>
         </form>
         <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
@@ -78,204 +116,279 @@ const modalImage = linkImages[link] || linkImages['default'];
 </div>
 
 <script>
-    declare global {
-        interface Window {
-            __detalleProductoSeccion?: string;
-            __detalleProducto?: any;
-        }
+  declare global {
+    interface Window {
+      __detalleProductoSeccion?: string;
+      __detalleProducto?: any;
     }
+  }
 
-    // --- CONFIGURACIÓN POR SECCIÓN ---
-    const secciones = {
-        NEGOCIOS: {
-            gradient: "from-sky-400 to-sky-600",
-            title: "¡DESCARGA LA <span class='scrollmodal-title'>INFORMACIÓN</span> SOBRE TUS HERRAMIENTAS <span class='scrollmodal-title'>GRATIS!</span>",
-            btn: "bg-sky-400 hover:bg-sky-500",
-        },
-        MAQUINARIA: {
-            gradient: "from-emerald-400 to-teal-600",
-            title: "¡DESCARGA LA <span class='scrollmodal-title'>GUÍA TÉCNICA</span> CON ESPECIFICACIONES <span class='scrollmodal-title'>GRATIS!</span>",
-            btn: "bg-emerald-400 hover:bg-emerald-500",
-        },
-        DECORACIÓN: {
-            gradient: "from-violet-500 to-indigo-700",
-            title: "¡RECIBE <span class='scrollmodal-title'>GRATIS</span> TU GUÍA SOBRE NUESTRA <span class='scrollmodal-title'>DECORACIÓN EXCLUSIVA!</span>",
-            btn: "bg-violet-500 hover:bg-violet-600",
-        },
-    };
+  // --- CONFIGURACIÓN POR SECCIÓN ---
+  const secciones = {
+    NEGOCIOS: {
+      gradient: "from-sky-400 to-sky-600",
+      title:
+        "¡DESCARGA LA <span class='scrollmodal-title'>INFORMACIÓN</span> SOBRE TUS HERRAMIENTAS <span class='scrollmodal-title'>GRATIS!</span>",
+      btn: "bg-sky-400 hover:bg-sky-500",
+      buttonText: "¡SÍ QUIERO CRECER!",
+    },
+    MAQUINARIA: {
+      gradient: "from-emerald-400 to-teal-600",
+      title:
+        "¡DESCARGA LA <span class='scrollmodal-title'>GUÍA TÉCNICA</span> CON ESPECIFICACIONES <span class='scrollmodal-title'>GRATIS!</span>",
+      btn: "bg-emerald-400 hover:bg-emerald-500",
+      buttonText: "¡SÍ QUIERO MI GUIA!",
+    },
+    DECORACIÓN: {
+      gradient: "from-violet-500 to-indigo-700",
+      title:
+        "¡RECIBE <span class='scrollmodal-title'>GRATIS</span> TU GUÍA SOBRE NUESTRA <span class='scrollmodal-title'>DECORACIÓN EXCLUSIVA!</span>",
+      btn: "bg-violet-500 hover:bg-violet-600",
+      buttonText: "¡QUIERO CRECER!",
+    },
+  };
 
+  // Objeto con las rutas de imágenes para cada producto
+  const linkImages = {
+    "soldadora-lingba": "/images/popup/soldadora-lingba.webp",
+    "purificador-de-agua": "/images/popup/purificador-de-agua.webp",
+    "maquina-de-embalaje-de-te": "/images/popup/maquina-de-embalaje-de-te.webp",
+    "maquina-selladora-de-bolsas-para-solidos":"/images/popup/maquina-selladora-de-bolsas-para-solidos.webp",
+    "mesa-led-bar-alta-cuadrada":"/images/popup/mesa-led-bar-alta-cuadrada.webp",
+    "mesa-led-bar-alta": "/images/popup/mesa-led-bar-alta.webp",
+    "selladora-por-induccion": "/images/popup/selladora-por-induccion.webp",
+    "selladora-de-vaso-manual": "/images/popup/selladora-de-vaso-manual.webp",
+    "silla-bar-led-alta": "/images/popup/silla-bar-led-alta.webp",
+    "sillas-cuadradas-o-de-cubo": "/images/popup/sillas-cuadradas-o-de-cubo.webp",
+    "soldadora-spark-mig-250": "/images/popup/soldadora-spark-mig-250.webp",
+    "ventilador-holografico": "/images/popup/ventilador-holografico.webp",
+    "maquina-selladora-de-bolsas-para-liquidos":"/images/popup/maquina-selladora-de-bolsas-para-liquidos.webp",
 
+    // Agrega más productos aquí según necesites
+    default: "/images/popup/default.webp",
+  };
+
+  const container = document.getElementById("modal-form-container");
+  const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
+
+  let config = secciones.NEGOCIOS;
+
+  // --- LÓGICA DE MOSTRAR / CERRAR ---
+  const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
+  const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
+  let modalTimeout: ReturnType<typeof setTimeout> | null = null;
+  let modalMostrado = false;
+  let scrollActivado = false;
+
+  function showCotizacionModal() {
+    aplicarConfig();
+    actualizarImagenDesdeLink();
+    const modal = document.getElementById("modal-cotizacion-producto");
+    const mensaje = document.getElementById("modal-cotizacion-mensaje");
+    if (modal && mensaje) {
+      modal.classList.remove("hidden");
+      mensaje.textContent = "";
+      modalMostrado = true;
+    }
+  }
+
+  function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
-    const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
+    const modalImg = document.getElementById(
+      "modal-product-img"
+    ) as HTMLImageElement | null;
 
-    let config = secciones.NEGOCIOS;
+    if (!container || !modalImg) return;
 
-    // --- LÓGICA DE MOSTRAR / CERRAR ---
-    const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
-    const MODAL_COOLDOWN_MS = 3 * 60 * 1000;
-    let modalTimeout: ReturnType<typeof setTimeout> | null = null;
-    let modalMostrado = false;
+    const productLink = container.dataset.productLink || "";
+    console.log("Link del producto desde dataset:", productLink);
+    const imagen = linkImages[productLink] || linkImages["default"];
+    console.log("Imagen seleccionada:", imagen);
 
-    function showCotizacionModal() {
-        aplicarConfig();
-        actualizarImagenDesdeLink();
-        const modal = document.getElementById("modal-cotizacion-producto");
-        const mensaje = document.getElementById("modal-cotizacion-mensaje");
-        if (modal && mensaje) {
-            modal.classList.remove("hidden");
-            mensaje.textContent = "";
-            modalMostrado = true;
-        }
+    console.log("Imagen seleccionada:", imagen);
+
+    // Verificar si la imagen existe
+    const testImage = new Image();
+    testImage.onload = function () {
+      modalImg.src = imagen;
+      modalImg.alt = `Imagen para ${productLink}`;
+    };
+    testImage.onerror = function () {
+      console.error("Error al cargar la imagen:", imagen);
+      modalImg.src = linkImages["default"];
+      modalImg.alt = "Imagen por defecto";
+    };
+    testImage.src = imagen;
+  }
+
+  function puedeMostrarModal() {
+    const lastClosed = parseInt(
+      localStorage.getItem(MODAL_STORAGE_KEY) || "0",
+      10
+    );
+    return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
+  }
+
+  function programarModal() {
+    if (modalTimeout) clearTimeout(modalTimeout);
+    if (puedeMostrarModal() && !modalMostrado) {
+      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
     }
-    function actualizarImagenDesdeLink() {
-        const container = document.getElementById("modal-form-container");
-        const modalImg = document.getElementById("modal-product-img") as HTMLImageElement | null;
+  }
 
-        if (!container) {
-            console.error("No se encontró el container del modal");
-            return;
-        }
-        if (!modalImg) {
-            console.error("No se encontró la imagen del modal");
-            return;
-        }
+  const closeBtn = document.getElementById("close-modal-cotizacion");
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      const modal = document.getElementById("modal-cotizacion-producto");
+      if (modal) modal.classList.add("hidden");
+      localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+      modalMostrado = false;
+    };
+  }
 
-        const productLink = container.dataset.productLink || '';
-        console.log("Link del producto desde dataset:", productLink);
+  // --- FORMULARIO ---
+  const form = document.getElementById(
+    "form-cotizacion-producto"
+  ) as HTMLFormElement | null;
+  if (form) {
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const nombre = data.get("nombre");
+      const telefono = data.get("telefono");
+      const correo = data.get("correo");
 
-        const imagen = linkImages[productLink] || linkImages['default'];
-        console.log("Imagen seleccionada:", imagen);
+      const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
+      window.open(
+        `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`,
+        "_blank"
+      );
 
-        // Verificar si la imagen existe
-        const img = new Image();
-        img.onload = function() {
-            console.log("La imagen se cargó correctamente");
-        };
-        img.onerror = function() {
-            console.error("Error al cargar la imagen:", imagen);
-        };
-        img.src = imagen;
+      const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+      if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
+      form.reset();
+    };
+  }
 
-        modalImg.src = imagen;
-        modalImg.alt = `Imagen para ${productLink}`;
-        console.log("Imagen actualizada en el modal");
-    }
-    function puedeMostrarModal() {
-        const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
-        return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
-    }
+  function aplicarConfig() {
+    const formContainer = document.getElementById("modal-form-container");
+    const title = document.getElementById("modal-title");
+    const btn = document.getElementById("modal-submit-btn");
+    const buttonText = document.getElementById("modal-submit-btn");
 
-    function programarModal() {
-        if (modalTimeout) clearTimeout(modalTimeout);
-        if (puedeMostrarModal() && !modalMostrado) {
-            modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
-        }
-    }
-
-    const closeBtn = document.getElementById("close-modal-cotizacion");
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            const modal = document.getElementById("modal-cotizacion-producto");
-            if (modal) modal.classList.add("hidden");
-            localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-            modalMostrado = false;
-        };
-    }
-
-    // --- FORMULARIO ---
-    const form = document.getElementById("form-cotizacion-producto") as HTMLFormElement | null;
-    if (form) {
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            const data = new FormData(form);
-            const nombre = data.get("nombre");
-            const telefono = data.get("telefono");
-            const correo = data.get("correo");
-
-            const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-            window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`, "_blank");
-
-            const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
-            if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
-            form.reset();
-        };
-    }
-
-    function aplicarConfig() {
-        const formContainer = document.getElementById("modal-form-container");
-        const title = document.getElementById("modal-title");
-        const btn = document.getElementById("modal-submit-btn");
-
-        if (formContainer) {
-            formContainer.classList.remove(
-                "from-sky-400","to-sky-600",
-                "from-emerald-400","to-teal-600",
-                "from-violet-500","to-indigo-700"
-            );
-            formContainer.classList.add("bg-gradient-to-b", ...config.gradient.split(" "));
-        }
-
-        if (title) {
-            title.innerHTML = config.title;
-        }
-
-        if (btn) {
-            btn.classList.remove(
-                "bg-sky-400","hover:bg-sky-500",
-                "bg-emerald-400","hover:bg-emerald-500",
-                "bg-violet-500","hover:bg-violet-600"
-            );
-            btn.classList.add(...config.btn.split(" "), "text-white");
-        }
+    if (formContainer) {
+      formContainer.classList.remove(
+        "from-sky-400",
+        "to-sky-600",
+        "from-emerald-400",
+        "to-teal-600",
+        "from-violet-500",
+        "to-indigo-700"
+      );
+      formContainer.classList.add(
+        "bg-gradient-to-b",
+        ...config.gradient.split(" ")
+      );
     }
 
-    // --- MOSTRAR EN SCROLL ---
-    window.addEventListener("open-scroll-modal", showCotizacionModal);
-    window.addEventListener("scroll", () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
-            programarModal();
+    if (title) {
+      title.innerHTML = config.title;
+    }
+
+    if (btn) {
+      btn.classList.remove(
+        "bg-sky-400",
+        "hover:bg-sky-500",
+        "bg-emerald-400",
+        "hover:bg-emerald-500",
+        "bg-violet-500",
+        "hover:bg-violet-600"
+      );
+      btn.classList.add(...config.btn.split(" "), "text-white");
+    }
+    if (buttonText) {
+      buttonText.textContent = config.buttonText || "Enviar";
+      buttonText.classList.add("font-bold");
+    }
+  }
+
+  // --- MOSTRAR MODAL MANUALMENTE CON BOTÓN ---
+  // Configurar los botones de cotización para abrir el modal
+  function configurarBotonesCotizacion() {
+    const botones = document.querySelectorAll('[id^="btnQuotation"]');
+    botones.forEach((boton) => {
+      boton.addEventListener("click", () => {
+        showCotizacionModal();
+      });
+    });
+  }
+
+  // --- MOSTRAR EN SCROLL ---
+  window.addEventListener("open-scroll-modal", showCotizacionModal);
+  window.addEventListener("scroll", () => {
+    // Mostrar modal después de hacer scroll del 30% de la página
+    const scrollPercentage =
+      (window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight)) *
+      100;
+
+    if (
+      scrollPercentage > 30 &&
+      !scrollActivado &&
+      puedeMostrarModal() &&
+      !modalMostrado
+    ) {
+      scrollActivado = true;
+      showCotizacionModal();
+    }
+  });
+
+  // --- ACTUALIZAR SECCIÓN DINÁMICAMENTE ---
+  function updateSectionFromDataset() {
+    const container = document.getElementById("modal-form-container");
+    if (!container) return;
+
+    const rawSection = container.dataset.seccion || "NEGOCIOS";
+    const normalized = rawSection
+      .normalize?.("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+    const keyMap = {
+      NEGOCIOS: "NEGOCIOS",
+      MAQUINARIA: "MAQUINARIA",
+      DECORACION: "DECORACIÓN",
+    } as const;
+
+    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
+      "NEGOCIOS") as keyof typeof secciones;
+    config = secciones[productoSeccion] || secciones.NEGOCIOS;
+
+    aplicarConfig();
+  }
+
+  // observar cambios en data-seccion
+  if (container) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "data-seccion") {
+          updateSectionFromDataset();
         }
+        if (mutation.attributeName === "data-product-link") {
+          actualizarImagenDesdeLink();
+        }
+      });
     });
 
-    // --- ACTUALIZAR SECCIÓN DINÁMICAMENTE ---
-    function updateSectionFromDataset() {
-        const container = document.getElementById("modal-form-container");
-        if (!container) return;
+    observer.observe(container, {
+      attributes: true,
+      attributeFilter: ["data-seccion", "data-product-link"],
+    });
+  }
 
-        const rawSection = container.dataset.seccion || "NEGOCIOS";
-        const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-        const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
-
-        const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
-        config = secciones[productoSeccion] || secciones.NEGOCIOS;
-
-        aplicarConfig();
-    }
-    const linkImages: Record<string, string> = {
-        'soldadora-lingba': '../../../public/images/popup/soldadora-lingba.webp',
-        'default': '../../../public/images/popup/default.webp'
-    };
-    // observar cambios en data-seccion
-    if (container) {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-                if (mutation.attributeName === "data-seccion") {
-                    updateSectionFromDataset();
-                }
-                if (mutation.attributeName === "data-product-link") {
-                    actualizarImagenDesdeLink();
-                }
-            });
-        });
-
-        observer.observe(container, {
-            attributes: true,
-            attributeFilter: ["data-seccion", "data-product-link"]
-        });
-    }
-
-
-    // inicial
+  // Inicializar
+  document.addEventListener("DOMContentLoaded", function () {
     updateSectionFromDataset();
     actualizarImagenDesdeLink();
+    configurarBotonesCotizacion();
+  });
 </script>
