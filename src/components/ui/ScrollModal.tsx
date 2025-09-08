@@ -218,7 +218,7 @@ const ScrollModal = () => {
         }`}
       >
         {/* Imagen */}
-        <div className="hidden sm:block w-2/5 relative">
+        <div className="hidden sm:block w-2/4 relative">
           <img
             src={asesoriaImg.src}
             alt="Asesoría"
@@ -227,7 +227,7 @@ const ScrollModal = () => {
           <img
             src={Logo.src}
             alt="LogoTami"
-            className="absolute top-4 left-4 w-10 h-12"
+            className="absolute top-40 left-4 w-80 h-80 object-contain"
           />
         </div>
 
