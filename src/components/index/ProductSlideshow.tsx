@@ -94,7 +94,7 @@ const ProductSlideshow = () => {
                         </h3>
                         <a
                             href={getLinkHref(item)}
-                            className="mt-2 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full transition-all"
+                            className="mt-2 bg-teal-570 hover:bg-teal-800 text-white px-4 py-2 rounded-full transition-all"
                         >
                             Información
                         </a>
