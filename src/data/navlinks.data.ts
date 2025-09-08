@@ -5,7 +5,7 @@ const navLinks = [
     title: "Ir a la página de inicio"
   },
   {
-    url: "/about",
+    url: "/sobre-nosotros",
     texto: "NOSOTROS",
     title: "Ir a la sección de nosotros"
   },

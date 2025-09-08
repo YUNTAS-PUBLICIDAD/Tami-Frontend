@@ -146,12 +146,7 @@ const productosUrl = config.endpoints.productos;
 
 {/* -------------------- JAVASCRIPT -------------------- */}
 <script
-  define:vars={{
-    getApiUrl,
-    productosUrl,
-    showLoaderString,
-    removeLoaderString,
-  }}
+    define:vars={{ getApiUrl, productosUrl, showLoaderString, removeLoaderString }}
 >
   eval(showLoaderString);
   eval(removeLoaderString);
@@ -223,8 +218,10 @@ const productosUrl = config.endpoints.productos;
     if (modalContainer && product.seccion) {
       modalContainer.dataset.seccion = product.seccion;
       window.__detalleProductoSeccion = product.seccion;
-      console.log("Sección actualizada:", product.seccion);
+      modalContainer.dataset.productLink = product.link;
+      window.__detalleProductoLink = product.link;
     }
+
     if (
       !productTitle ||
       !productSubtitle ||
@@ -346,7 +343,8 @@ const productosUrl = config.endpoints.productos;
       const product = (await res.json()).data;
       window.__detalleProducto = product;
       window.__detalleProductoSeccion = product.seccion;
-      //console.log(window.__detalleProductoSeccion);
+      window.__detalleProductoLink = product.link;
+      console.log("Producto cargado - Link:", product.link);
       removeLoader();
       displayProductDetails(product);
 
