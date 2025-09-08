@@ -1,6 +1,20 @@
 User-agent: *
+
+Allow: /productos/
+Allow: /productos/*
+Allow: /blog/
+Allow: /blog/*
+Allow: /sobre-nosotros
+Allow: /politicas-de-envio/
+Allow: /
+
 Disallow: /admin/
 Disallow: /auth/
 Disallow: /api/
+Disallow: /search
+
+Disallow: /*?link=
+Disallow: /*?id=
+Disallow: /*?*
 
 Sitemap: https://tamimaquinarias.com/sitemap-index.xml
