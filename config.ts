@@ -47,6 +47,10 @@ export const config = {
       update: (id: number | string) => `/api/v1/blogs/${id}`,
       delete: (id: number | string) => `/api/v1/blogs/${id}`,
     },
+    email:{
+      //Endpoints de emails
+      sendEmailByProductLink: "/api/v1/emails/product-link",
+    }
   },
 };
 
