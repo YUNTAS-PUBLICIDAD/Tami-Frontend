@@ -116,6 +116,9 @@ const modalImage = linkImages[link] || linkImages["default"];
 </div>
 
 <script>
+
+  import { config } from "config";
+
   declare global {
     interface Window {
       __detalleProductoSeccion?: string;
@@ -171,7 +174,7 @@ const modalImage = linkImages[link] || linkImages["default"];
   const container = document.getElementById("modal-form-container");
   const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
 
-  let config = secciones.NEGOCIOS;
+  let sectionConfig = secciones.NEGOCIOS;
 
   // --- LÓGICA DE MOSTRAR / CERRAR ---
   const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
@@ -251,13 +254,13 @@ const modalImage = linkImages[link] || linkImages["default"];
     "form-cotizacion-producto"
   ) as HTMLFormElement | null;
   if (form) {
-    form.onsubmit = (e) => {
+    form.onsubmit = async (e) => {
       e.preventDefault();
       const data = new FormData(form);
       const nombre = data.get("nombre");
       const telefono = data.get("telefono");
       const correo = data.get("correo");
-
+      const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
       const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
       window.open(
         `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`,
@@ -266,6 +269,33 @@ const modalImage = linkImages[link] || linkImages["default"];
 
       const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
       if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
+
+      try {
+        const response = await fetch(`${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre,
+            telefono,
+            correo,
+            productLink
+          }),
+        });
+
+        if (response.ok) {
+          const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+          if (mensajeEl) mensajeEl.textContent = "Correo enviado con éxito ✅";
+        } else {
+          const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+          if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
+        }
+      } catch (error) {
+        console.error("Error al enviar el formulario:", error);
+        const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+        if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
+      }
       form.reset();
     };
   }
@@ -287,12 +317,12 @@ const modalImage = linkImages[link] || linkImages["default"];
       );
       formContainer.classList.add(
         "bg-gradient-to-b",
-        ...config.gradient.split(" ")
+        ...sectionConfig.gradient.split(" ")
       );
     }
 
     if (title) {
-      title.innerHTML = config.title;
+      title.innerHTML = sectionConfig.title;
     }
 
     if (btn) {
@@ -304,10 +334,10 @@ const modalImage = linkImages[link] || linkImages["default"];
         "bg-violet-500",
         "hover:bg-violet-600"
       );
-      btn.classList.add(...config.btn.split(" "), "text-white");
+      btn.classList.add(...sectionConfig.btn.split(" "), "text-white");
     }
     if (buttonText) {
-      buttonText.textContent = config.buttonText || "Enviar";
+      buttonText.textContent = sectionConfig.buttonText || "Enviar";
       buttonText.classList.add("font-bold");
     }
   }
@@ -361,7 +391,7 @@ const modalImage = linkImages[link] || linkImages["default"];
 
     const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
       "NEGOCIOS") as keyof typeof secciones;
-    config = secciones[productoSeccion] || secciones.NEGOCIOS;
+    sectionConfig = secciones[productoSeccion] || secciones.NEGOCIOS;
 
     aplicarConfig();
   }
