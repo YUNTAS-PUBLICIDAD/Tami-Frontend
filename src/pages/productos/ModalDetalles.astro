@@ -277,10 +277,10 @@ const modalImage = linkImages[link] || linkImages["default"];
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            nombre,
-            telefono,
-            correo,
-            productLink
+            name: nombre,
+            celular: telefono,
+            email: correo,
+            link: productLink
           }),
         });
 
