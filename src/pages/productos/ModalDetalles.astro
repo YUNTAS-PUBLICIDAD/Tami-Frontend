@@ -73,12 +73,12 @@ const modalImage = linkImages[link] || linkImages["default"];
 
         <h2
           id="modal-title"
-          class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4"
+          class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4 select-none"
         >
         </h2>
 
         <form id="form-cotizacion-producto" class="flex flex-col gap-1">
-          <label class="text-base sm:text-lg font-bold">Nombre</label>
+          <label class="text-base sm:text-lg font-bold select-none">Nombre</label>
           <input
             type="text"
             name="nombre"
@@ -87,7 +87,7 @@ const modalImage = linkImages[link] || linkImages["default"];
             required
           />
 
-          <label class="text-base sm:text-lg font-bold">Teléfono</label>
+          <label class="text-base sm:text-lg font-bold select-none">Teléfono</label>
           <input
             type="tel"
             name="telefono"
@@ -96,7 +96,7 @@ const modalImage = linkImages[link] || linkImages["default"];
             required
           />
 
-          <label class="text-base sm:text-lg font-bold">Correo</label>
+          <label class="text-base sm:text-lg font-bold select-none">Correo</label>
           <input
             type="email"
             name="correo"

@@ -222,12 +222,12 @@ const ScrollModal = () => {
           <img
             src={asesoriaImg.src}
             alt="Asesoría"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover select-none"
           />
           <img
             src={Logo.src}
             alt="LogoTami"
-            className="absolute top-40 left-4 w-80 h-80 object-contain"
+            className="absolute top-40 left-4 w-80 h-80 object-contain select-none"
           />
         </div>
 
@@ -241,12 +241,12 @@ const ScrollModal = () => {
             >
               X
             </button>
-            <h2 className="scrollmodal-body">
-              DESCARGA <span className="scrollmodal-title">GRATIS</span> NUESTRO <span className="scrollmodal-title">CATÁLOGO</span> PARA TU PROYECTO
+            <h2 className="scrollmodal-body select-none">
+              DESCARGA <span className="scrollmodal-title">GRATIS</span> NUESTRO <span className="scrollmodal-title">CATÁLOGO</span>
             </h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-1">
-              <h3 className="text-base sm:text-lg font-bold">Nombre</h3>
+              <h3 className="text-base sm:text-lg font-bold select-none">Nombre</h3>
               <input
                 type="text"
                 placeholder="Nombres y Apellidos"
@@ -258,7 +258,7 @@ const ScrollModal = () => {
                 {errors.nombre || "\u00A0"}
               </p>
 
-              <h3 className="text-base sm:text-lg font-bold">Teléfono</h3>
+              <h3 className="text-base sm:text-lg font-bold select-none">Teléfono</h3>
               <input
                 type="tel"
                 placeholder="Teléfono: 905 876 524"
@@ -270,7 +270,7 @@ const ScrollModal = () => {
                 {errors.telefono || "\u00A0"}
               </p>
 
-              <h3 className="text-base sm:text-lg font-bold">Correo</h3>
+              <h3 className="text-base sm:text-lg font-bold select-none">Correo</h3>
               <input
                 type="email"
                 placeholder="Correo@gmail.com"
@@ -292,7 +292,7 @@ const ScrollModal = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#01A09E] text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center shadow-[0_4px_10px_rgba(255,255,255,0.6)] cursor-pointer"
+                className="bg-[#01A09E] rounded-2xl text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold mx-auto text-center shadow-[0_4px_10px_rgba(255,255,255,0.6)] cursor-pointer"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
