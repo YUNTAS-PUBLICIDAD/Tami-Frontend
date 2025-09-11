@@ -50,6 +50,10 @@ export const config = {
     email:{
       //Endpoints de emails
       sendEmailByProductLink: "/api/v1/emails/product-link",
+    },
+    whatsapp:{
+      //Endpoints de whatsapp
+      sendMessageAccept: "/api/v1/whatsapp/sendMessageAccept",
     }
   },
 };

@@ -261,14 +261,39 @@ const modalImage = linkImages[link] || linkImages["default"];
       e.preventDefault();
       const data = new FormData(form);
       const nombre = data.get("nombre");
-      const telefono = data.get("telefono");
+      const telefono = "+51 " + data.get("telefono");
       const correo = data.get("correo");
       const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
+
       const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-      window.open(
+      /* window.open(
         `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`,
         "_blank"
-      );
+      ); */
+
+      try {
+        const responseWhatsApp = await fetch(`${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            telefono: telefono,
+            comentario: mensaje,
+          }),
+        });
+
+        if (responseWhatsApp.ok) {
+          const responseData = await responseWhatsApp.json();
+          console.log('Mensaje enviado con éxito:', responseData);
+        } else {
+          const errorData = await responseWhatsApp.json();
+          console.error('Error al enviar mensaje:', errorData);
+        }
+      } catch (error) {
+        console.error('Error al enviar mensaje a WhatsApp:', error);
+      }
+
 
       const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
       if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
