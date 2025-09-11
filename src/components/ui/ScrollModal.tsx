@@ -237,7 +237,7 @@ const ScrollModal = () => {
             <button
               onClick={closeModal}
               aria-label="Cerrar modal"
-              className="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+              className="absolute top-4 right-5 text-md text-white hover:text-gray-300 cursor-pointer"
             >
               X
             </button>
@@ -292,7 +292,7 @@ const ScrollModal = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#01A09E] text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center shadow-[0_4px_10px_rgba(255,255,255,0.6)]"
+                className="bg-[#01A09E] text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold rounded-xl mx-auto text-center shadow-[0_4px_10px_rgba(255,255,255,0.6)] cursor-pointer"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
