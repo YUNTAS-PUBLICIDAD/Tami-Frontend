@@ -66,39 +66,42 @@ const modalImage = linkImages[link] || linkImages["default"];
         <button
           id="close-modal-cotizacion"
           aria-label="Cerrar modal"
-          class="absolute top-4 right-5 text-md text-white hover:text-gray-300"
+          class="absolute top-4 right-5 text-md text-white hover:text-gray-300 cursor-pointer"
         >
           X
         </button>
 
         <h2
           id="modal-title"
-          class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4"
+          class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4 select-none"
         >
         </h2>
 
         <form id="form-cotizacion-producto" class="flex flex-col gap-1">
-          <label class="text-base sm:text-lg font-bold">Nombre</label>
+          <label class="text-base sm:text-lg font-bold select-none">Nombre</label>
           <input
             type="text"
             name="nombre"
             class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            placeholder="Nombre y Apellidos"
             required
           />
 
-          <label class="text-base sm:text-lg font-bold">Teléfono</label>
+          <label class="text-base sm:text-lg font-bold select-none">Teléfono</label>
           <input
             type="tel"
             name="telefono"
             class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            placeholder="Teléfono: 905 876 524"
             required
           />
 
-          <label class="text-base sm:text-lg font-bold">Correo</label>
+          <label class="text-base sm:text-lg font-bold select-none">Correo</label>
           <input
             type="email"
             name="correo"
             class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            placeholder="Correo@gmail.com"
             required
           />
           <button
@@ -131,23 +134,23 @@ const modalImage = linkImages[link] || linkImages["default"];
     NEGOCIOS: {
       gradient: "from-sky-400 to-sky-600",
       title:
-        "¡DESCARGA LA <span class='scrollmodal-title'>INFORMACIÓN</span> SOBRE TUS HERRAMIENTAS <span class='scrollmodal-title'>GRATIS!</span>",
-      btn: "bg-sky-400 hover:bg-sky-500",
-      buttonText: "¡SÍ QUIERO CRECER!",
+        "DESCARGA MÁS INFORMACIÓN GRATIS",
+      btn: "bg-sky-400 hover:bg-sky-500 cursor-pointer",
+      buttonText: "¡SÍ, QUIERO CRECER!",
     },
     MAQUINARIA: {
       gradient: "from-emerald-400 to-teal-600",
       title:
-        "¡DESCARGA LA <span class='scrollmodal-title'>GUÍA TÉCNICA</span> CON ESPECIFICACIONES <span class='scrollmodal-title'>GRATIS!</span>",
-      btn: "bg-emerald-400 hover:bg-emerald-500",
-      buttonText: "¡SÍ QUIERO MI GUIA!",
+        "DESCARGA TU <span class='scrollmodal-title'>GUÍA TÉCNICA GRATIS</span>",
+      btn: "bg-emerald-400 hover:bg-emerald-500 cursor-pointer",
+      buttonText: "¡SÍ, QUIERO MI GUÍA!",
     },
     DECORACIÓN: {
       gradient: "from-violet-500 to-indigo-700",
       title:
-        "¡RECIBE <span class='scrollmodal-title'>GRATIS</span> TU GUÍA SOBRE NUESTRA <span class='scrollmodal-title'>DECORACIÓN EXCLUSIVA!</span>",
-      btn: "bg-violet-500 hover:bg-violet-600",
-      buttonText: "¡QUIERO CRECER!",
+        "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS",
+      btn: "bg-violet-500 hover:bg-violet-600 cursor-pointer",
+      buttonText: "¡SÍ, QUIERO CRECER!",
     },
   };
 
@@ -442,6 +445,8 @@ const modalImage = linkImages[link] || linkImages["default"];
 
   // Inicializar
   document.addEventListener("DOMContentLoaded", function () {
+    localStorage.removeItem('asesoriaModalLastClosedDetalle');
+
     updateSectionFromDataset();
     actualizarImagenDesdeLink();
     configurarBotonesCotizacion();
