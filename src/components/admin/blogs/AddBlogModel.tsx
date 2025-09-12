@@ -1,3 +1,30 @@
+// Cuenta palabras en un string
+function contarPalabras(texto: string): number {
+  return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
+}
+// Utilidad para convertir números a palabras en español
+function numeroAPalabras(n: number): string {
+  const unidades = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte"];
+  const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+  if (n <= 20) return unidades[n];
+  if (n < 100) {
+    const d = Math.floor(n / 10);
+    const u = n % 10;
+    if (u === 0) return decenas[d];
+    if (d === 2) return "veinti" + unidades[u];
+    return decenas[d] + " y " + unidades[u];
+  }
+  if (n === 100) return "cien";
+  if (n < 200) return "ciento " + numeroAPalabras(n - 100);
+  if (n < 1000) {
+    const c = Math.floor(n / 100);
+    const r = n % 100;
+    let centena = c === 1 ? "ciento" : unidades[c] + "cientos";
+    if (r === 0) return centena;
+    return centena + " " + numeroAPalabras(r);
+  }
+  return n.toString();
+}
 import { config, getApiUrl } from "../../../../config.ts";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -11,16 +38,16 @@ interface ImagenAdicional {
 interface BlogPOST {
   titulo: string;
   link: string;
-  subtitulo1: string;
-  subtitulo2: string;
-  video_titulo: string;
-  video_url: string;
-  producto_id: number | string; // Changed from nombre_producto
+  subtitulo1: string; // Párrafo corto (100)
+  subtitulo2: string; // Descripción (255)
+  video_titulo: string; // 40
+  video_url: string;    // 255
+  producto_id: number | string;
   miniatura: File | null;
-  imagenes: ImagenAdicional[];
+  imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
   etiqueta: {
-    meta_titulo: string;
-    meta_descripcion: string;
+    meta_titulo: string;        // sugerido <= 60
+    meta_descripcion: string;   // sugerido <= 160
   };
 }
 
@@ -30,6 +57,32 @@ interface AddBlogModalProps {
   onClose?: () => void;
   blogToEdit?: any;
 }
+
+/* ====== Límites centralizados ====== */
+const LENGTHS = {
+  titulo: 120,
+  parrafo: 100,         // subtitulo1
+  descripcion: 255,     // subtitulo2
+  videoTitulo: 40,
+  videoUrl: 255,
+  metaTitulo: 60,       // recomendado (no bloqueante)
+  metaDescripcion: 160, // recomendado (no bloqueante)
+};
+
+const MAX_IMAGE_MB = 2;
+const ACCEPT_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+/* ===== utilidades ===== */
+const isValidUrl = (value: string) => {
+  try {
+    const u = new URL(value);
+    return !!u.protocol && !!u.host;
+  } catch {
+    return false;
+  }
+};
+
+const bytesToMB = (bytes: number) => bytes / (1024 * 1024);
 
 const AddBlogModal: React.FC<AddBlogModalProps> = ({
   onBlogAdded,
@@ -53,7 +106,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     subtitulo2: "",
     video_url: "",
     video_titulo: "",
-    producto_id: "", // Changed from nombre_producto
+    producto_id: "",
     miniatura: null,
     imagenes: [
       { imagen: null, parrafo: "" },
@@ -64,10 +117,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       meta_descripcion: "",
     },
   });
+
   useEffect(() => {
-    if (propIsOpen !== undefined) {
-      setIsOpen(propIsOpen);
-    }
+    if (propIsOpen !== undefined) setIsOpen(propIsOpen);
   }, [propIsOpen]);
 
   useEffect(() => {
@@ -87,8 +139,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         let lista: any[] = [];
         if (Array.isArray(data)) lista = data;
         else if (Array.isArray(data?.data)) lista = data.data;
-        else if (Array.isArray(data?.data?.productos))
-          lista = data.data.productos;
+        else if (Array.isArray(data?.data?.productos)) lista = data.data.productos;
 
         setProductos(lista);
       } catch (err) {
@@ -100,12 +151,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     fetchProductos();
 
     if (blogToEdit) {
-      // Modo edición
-      //console.log("blogToEdit.imagenes recibido del backend:", blogToEdit.imagenes);
       const productoEncontrado = productos.find(
         (p) => p.nombre === blogToEdit.nombre_producto
       );
-      //console.log(productoEncontrado);
       setFormData({
         titulo: blogToEdit.titulo || "",
         link: blogToEdit.link || "",
@@ -115,28 +163,28 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_titulo: blogToEdit.video_titulo || "",
         producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
         miniatura: blogToEdit.miniatura || null,
-        imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
-          const raw = img.ruta_imagen || "";
-          return {
-            imagen: null,
-            parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
-            url: raw
-              ? raw.startsWith("http")
-                ? raw
-                : `${import.meta.env.PUBLIC_API_URL}${raw}`
-              : "",
-          };
-        }) || [
-          { imagen: null, parrafo: "", url: "" },
-          { imagen: null, parrafo: "", url: "" },
-        ],
+        imagenes:
+          blogToEdit.imagenes?.map((img: any, index: number) => {
+            const raw = img.ruta_imagen || "";
+            return {
+              imagen: null,
+              parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
+              url: raw
+                ? raw.startsWith("http")
+                  ? raw
+                  : `${import.meta.env.PUBLIC_API_URL}${raw}`
+                : "",
+            };
+          }) || [
+            { imagen: null, parrafo: "", url: "" },
+            { imagen: null, parrafo: "", url: "" },
+          ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
         },
       });
     } else {
-      // Modo crear → formulario vacío
       setFormData({
         titulo: "",
         link: "",
@@ -156,55 +204,84 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, blogToEdit]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
     if (name === "link") {
       const sanitized = value
-        .normalize("NFD") // descompone letras acentuadas
-        .replace(/[\u0300-\u036f]/g, "") // elimina las marcas diacríticas
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .replaceAll(" ", "-");
-
-      setFormData((prev) => ({
-        ...prev,
-        link: sanitized,
-      }));
-    } else if (name === "producto_id") {
-      // Handle product ID change
-      setFormData((prev) => ({
-        ...prev,
-        producto_id: value,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      setFormData((prev) => ({ ...prev, link: sanitized }));
+      return;
     }
+
+    if (name === "producto_id") {
+      setFormData((prev) => ({ ...prev, producto_id: value }));
+      return;
+    }
+
+    // Enforce max lengths on write for text fields
+    const next: Partial<BlogPOST> = {};
+    switch (name) {
+      case "titulo":
+        next.titulo = value.slice(0, LENGTHS.titulo);
+        break;
+      case "subtitulo1":
+        next.subtitulo1 = value.slice(0, LENGTHS.parrafo);
+        break;
+      case "subtitulo2":
+        next.subtitulo2 = value.slice(0, LENGTHS.descripcion);
+        break;
+      case "video_titulo":
+        next.video_titulo = value.slice(0, LENGTHS.videoTitulo);
+        break;
+      case "video_url":
+        next.video_url = value.slice(0, LENGTHS.videoUrl);
+        break;
+      default:
+        break;
+    }
+    setFormData((prev) => ({ ...prev, ...(next as any) }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, miniatura: e.target.files[0] });
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!ACCEPT_IMAGE_TYPES.includes(f.type)) {
+      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG o WEBP.", "warning");
+      return;
     }
+    if (bytesToMB(f.size) > MAX_IMAGE_MB) {
+      Swal.fire("Imagen muy pesada", `Máximo ${MAX_IMAGE_MB} MB.`, "warning");
+      return;
+    }
+    setFormData({ ...formData, miniatura: f });
   };
+
   const handleFileChangeAdicional = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    if (e.target.files && e.target.files[0]) {
-      const nuevoArray = [...formData.imagenes];
-      nuevoArray[index] = {
-        ...nuevoArray[index],
-        imagen: e.target.files[0],
-      };
-      setFormData({ ...formData, imagenes: nuevoArray });
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!ACCEPT_IMAGE_TYPES.includes(f.type)) {
+      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG o WEBP.", "warning");
+      return;
     }
+    if (bytesToMB(f.size) > MAX_IMAGE_MB) {
+      Swal.fire("Imagen muy pesada", `Máximo ${MAX_IMAGE_MB} MB.`, "warning");
+      return;
+    }
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], imagen: f };
+    setFormData({ ...formData, imagenes: nuevoArray });
   };
 
   const handleParrafoChange = (
@@ -212,10 +289,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     index: number
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = {
-      ...nuevoArray[index],
-      parrafo: e.target.value,
-    };
+    nuevoArray[index] = { ...nuevoArray[index], parrafo: e.target.value };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -229,11 +303,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const selected = textarea.value.substring(start, end);
 
     if (!selected) {
-      Swal.fire(
-        "Selecciona texto",
-        "Por favor selecciona el texto al que quieres agregar un enlace.",
-        "warning"
-      );
+      Swal.fire("Selecciona texto", "Selecciona texto para enlazar.", "warning");
       return;
     }
 
@@ -252,11 +322,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const selected = textarea.value.substring(start, end);
 
     if (!selected) {
-      Swal.fire(
-        "Selecciona texto",
-        "Por favor selecciona una palabra o frase para enlazar a un producto.",
-        "warning"
-      );
+      Swal.fire("Selecciona texto", "Selecciona texto para enlazar.", "warning");
       return;
     }
 
@@ -267,36 +333,23 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleAddProduct = () => {
     if (activeIndex === null) return;
-
     if (!formData.producto_id) {
-      Swal.fire(
-        "ID de producto vacío",
-        "Debes ingresar un ID válido.",
-        "error"
-      );
+      Swal.fire("ID de producto vacío", "Selecciona un producto.", "error");
       return;
     }
-
     const productoSeleccionado = productos.find(
       (p) => String(p.id) === String(formData.producto_id)
     );
-
     if (!productoSeleccionado?.link) {
-      Swal.fire(
-        "Producto no encontrado",
-        "No se encontró el producto.",
-        "error"
-      );
+      Swal.fire("Producto no encontrado", "No se encontró el producto.", "error");
       return;
     }
-
     const textarea = document.getElementById(
       `crear_descripcion_antes_${activeIndex}`
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-
     const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
     const before = parrafoActual.substring(0, start);
     const after = parrafoActual.substring(end);
@@ -306,25 +359,20 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const newValue = before + linkedProductText + after;
 
     const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = {
-      ...nuevosParrafos[activeIndex],
-      parrafo: newValue,
-    };
+    nuevosParrafos[activeIndex] = { ...nuevosParrafos[activeIndex], parrafo: newValue };
 
     setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
     setIsProductLinkModalOpen(false);
     setSelectedText("");
-    setActiveIndex(null); // Reseteamos
+    setActiveIndex(null);
   };
 
   const handleAddLink = () => {
     if (activeIndex === null) return;
-
-    if (!link.trim()) {
-      Swal.fire("Enlace vacío", "Debes ingresar un enlace válido.", "error");
+    if (!link.trim() || !isValidUrl(link.trim())) {
+      Swal.fire("Enlace inválido", "Ingresa una URL válida (https://...).", "error");
       return;
     }
-
     const textarea = document.getElementById(
       `crear_descripcion_antes_${activeIndex}`
     ) as HTMLTextAreaElement;
@@ -336,20 +384,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const before = parrafoActual.substring(0, start);
     const after = parrafoActual.substring(end);
 
-    const linkedText = `<a href="${link}" style="text-decoration: underline;">${selectedText}</a>`;
+    const linkedText = `<a href="${link.trim()}" style="text-decoration: underline;">${selectedText}</a>`;
     const newValue = before + linkedText + after;
 
     const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = {
-      ...nuevosParrafos[activeIndex],
-      parrafo: newValue,
-    };
+    nuevosParrafos[activeIndex] = { ...nuevosParrafos[activeIndex], parrafo: newValue };
 
     setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
     setIsModalOpen(false);
     setLink("");
     setSelectedText("");
-    setActiveIndex(null); // Reseteamos
+    setActiveIndex(null);
   };
 
   const closeModal = () => {
@@ -359,19 +404,15 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       link: "",
       subtitulo1: "",
       subtitulo2: "",
-      //subtitulo3: "",
       video_url: "",
       video_titulo: "",
-      producto_id: "", // Changed from nombre_producto
+      producto_id: "",
       miniatura: null,
       imagenes: [
         { imagen: null, parrafo: "" },
         { imagen: null, parrafo: "" },
       ],
-      etiqueta: {
-        meta_titulo: "",
-        meta_descripcion: "",
-      },
+      etiqueta: { meta_titulo: "", meta_descripcion: "" },
     });
   };
 
@@ -379,27 +420,42 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     e.preventDefault();
     setIsSaving(true);
 
-    // Validación básica
-    if (
-      !formData.titulo ||
-      !formData.link ||
-      !formData.subtitulo1 ||
-      !formData.subtitulo2 ||
-      !formData.video_url ||
-      !formData.video_titulo ||
-      !formData.producto_id ||
-      (!blogToEdit && !formData.miniatura) || // Solo obligatorio si es nuevo
-      formData.imagenes.some(
-        (img) => (!blogToEdit && !img.imagen) || !img.parrafo
-      )
-    ) {
-      Swal.fire({
-        icon: "warning",
-        title: "Campos obligatorios",
-        text: "⚠️ Todos los campos son obligatorios.",
-      });
-      setIsSaving(false);
-      return;
+    // Validaciones de longitud (bloqueantes según migración)
+    if (formData.titulo.length === 0 || formData.titulo.length > LENGTHS.titulo) {
+      Swal.fire("Error", `El título es obligatorio y máx. ${LENGTHS.titulo} caracteres.`, "error");
+      setIsSaving(false); return;
+    }
+    if (formData.subtitulo1.length === 0 || formData.subtitulo1.length > LENGTHS.parrafo) {
+      Swal.fire("Error", `El párrafo es obligatorio y máx. ${LENGTHS.parrafo} caracteres.`, "error");
+      setIsSaving(false); return;
+    }
+    if (formData.subtitulo2.length === 0 || formData.subtitulo2.length > LENGTHS.descripcion) {
+      Swal.fire("Error", `La descripción es obligatoria y máx. ${LENGTHS.descripcion} caracteres.`, "error");
+      setIsSaving(false); return;
+    }
+    if (formData.video_titulo.length === 0 || formData.video_titulo.length > LENGTHS.videoTitulo) {
+      Swal.fire("Error", `El título del video es obligatorio y máx. ${LENGTHS.videoTitulo} caracteres.`, "error");
+      setIsSaving(false); return;
+    }
+    if (formData.video_url.length === 0 || formData.video_url.length > LENGTHS.videoUrl || !isValidUrl(formData.video_url)) {
+      Swal.fire("Error", `La URL del video es obligatoria, máx. ${LENGTHS.videoUrl} y debe ser válida.`, "error");
+      setIsSaving(false); return;
+    }
+    if (!formData.producto_id) {
+      Swal.fire("Error", "Selecciona un producto.", "error");
+      setIsSaving(false); return;
+    }
+
+    // miniatura obligatoria solo en creación
+    if (!blogToEdit && !formData.miniatura) {
+      Swal.fire("Error", "La miniatura es obligatoria.", "error");
+      setIsSaving(false); return;
+    }
+
+    // Validación imágenes adicionales y párrafos
+    if (formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)) {
+      Swal.fire("Error", "Cada imagen adicional y su descripción son obligatorias.", "error");
+      setIsSaving(false); return;
     }
 
     try {
@@ -414,19 +470,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
-      formDataToSend.append("producto_id", formData.producto_id.toString()); // Changed to producto_id and converted to string
-      // Solo si hay nueva imagen principal
+      formDataToSend.append("producto_id", formData.producto_id.toString());
+
       if (formData.miniatura instanceof File) {
         formDataToSend.append("miniatura", formData.miniatura);
       }
 
       formData.imagenes.forEach((item) => {
-        if (item.imagen) {
-          formDataToSend.append("imagenes[]", item.imagen);
-        }
+        if (item.imagen) formDataToSend.append("imagenes[]", item.imagen);
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
+
       formDataToSend.append(
         "etiqueta",
         JSON.stringify({
@@ -435,10 +490,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         })
       );
 
-      // Si es edición, agrega _method=PUT
-      if (blogToEdit) {
-        formDataToSend.append("_method", "PUT");
-      }
+      if (blogToEdit) formDataToSend.append("_method", "PUT");
 
       const url = blogToEdit
         ? `${getApiUrl(config.endpoints.blogs.list)}/${blogToEdit.id}`
@@ -446,21 +498,16 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formDataToSend,
       });
 
       const data = await response.json();
-      console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
         await Swal.fire({
           icon: "success",
-          title: blogToEdit
-            ? "Blog actualizado exitosamente"
-            : "Blog añadido exitosamente",
+          title: blogToEdit ? "Blog actualizado exitosamente" : "Blog añadido exitosamente",
           showConfirmButton: true,
         });
         closeModal();
@@ -472,13 +519,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           text: `❌ Error: ${data.message || "Error al guardar blog"}`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al enviar los datos:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `❌ ${error}`,
-      });
+      Swal.fire({ icon: "error", title: "Error", text: `❌ ${error}` });
     } finally {
       setIsSaving(false);
     }
@@ -507,36 +550,41 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               onSubmit={handleSubmit}
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Título*
-                </label>
+              {/* Título */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Título*</label>
                 <input
                   type="text"
                   name="titulo"
                   value={formData.titulo}
                   onChange={handleChange}
-                  //required
-                  //required
+                  maxLength={LENGTHS.titulo}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.titulo)} / 20
+                </small>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Link*
-                </label>
+
+              {/* Link (slug) */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Link*</label>
                 <input
                   type="text"
                   name="link"
                   value={formData.link}
                   onChange={handleChange}
+                  maxLength={LENGTHS.titulo} /* opcional: igual que título */
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
+                <small className="text-gray-500">Máximo 20 palabras — {contarPalabras(formData.link)} / 20</small>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Meta título
-                </label>
+
+              {/* Meta título */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Meta título</label>
                 <input
                   type="text"
                   name="meta_titulo"
@@ -544,95 +592,112 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      etiqueta: {
-                        ...formData.etiqueta,
-                        meta_titulo: e.target.value,
-                      },
+                      etiqueta: { ...formData.etiqueta, meta_titulo: e.target.value.slice(0, LENGTHS.metaTitulo) },
                     })
                   }
+                  maxLength={LENGTHS.metaTitulo}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.etiqueta.meta_titulo)} / 20
+                </small>
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Meta descripción
-                </label>
+              {/* Meta descripción */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Meta descripción</label>
                 <textarea
                   name="meta_descripcion"
                   value={formData.etiqueta.meta_descripcion}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      etiqueta: {
-                        ...formData.etiqueta,
-                        meta_descripcion: e.target.value,
-                      },
+                      etiqueta: { ...formData.etiqueta, meta_descripcion: e.target.value.slice(0, LENGTHS.metaDescripcion) },
                     })
                   }
+                  maxLength={LENGTHS.metaDescripcion}
+                  rows={3}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.etiqueta.meta_descripcion)} / 20
+                </small>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Párrafo*
-                </label>
+
+              {/* Párrafo (subtitulo1) */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Párrafo*</label>
                 <input
                   type="text"
                   name="subtitulo1"
                   value={formData.subtitulo1}
                   onChange={handleChange}
-                  //required
-                  //required
+                  maxLength={LENGTHS.parrafo}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.subtitulo1)} / 20
+                </small>
               </div>
-              <div className="md:col-span-2 space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Descripción*
-                </label>
+
+              {/* Descripción (subtitulo2) */}
+              <div className="md:col-span-2 space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Descripción*</label>
                 <input
                   type="text"
                   name="subtitulo2"
                   value={formData.subtitulo2}
                   onChange={handleChange}
-                  //required
-                  //required
+                  maxLength={LENGTHS.descripcion}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.subtitulo2)} / 20
+                </small>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Título Video*
-                </label>
+
+              {/* Título Video */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Título Video*</label>
                 <input
                   type="text"
                   name="video_titulo"
                   value={formData.video_titulo}
                   onChange={handleChange}
-                  //required
-                  //required
+                  maxLength={LENGTHS.videoTitulo}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.video_titulo)} / 20
+                </small>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  URL del Video*
-                </label>
+
+              {/* URL del Video */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">URL del Video*</label>
                 <input
-                  type="text"
+                  type="url"
                   name="video_url"
                   value={formData.video_url}
                   onChange={handleChange}
+                  maxLength={LENGTHS.videoUrl}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                  placeholder="https://www.youtube.com/watch?v=..."
                 />
+                <small className="text-gray-500">
+                  Máximo 20 palabras — {contarPalabras(formData.video_url)} / 20
+                </small>
               </div>
-              <div className="md:col-span-2 space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Producto*
-                </label>
+
+              {/* Producto */}
+              <div className="md:col-span-2 space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Producto*</label>
                 <select
-                  name="producto_id" // Changed name to producto_id
+                  name="producto_id"
                   value={formData.producto_id}
                   onChange={handleChange}
                   required
@@ -645,27 +710,24 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     </option>
                   ))}
                 </select>
+                <small className="text-gray-500">Selecciona el producto relacionado.</small>
               </div>
-              <div className="md:col-span-2 space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Miniatura*
-                </label>
 
+              {/* Miniatura */}
+              <div className="md:col-span-2 space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Miniatura{!blogToEdit && "*"}</label>
                 {formData.miniatura instanceof File ? (
                   <img
                     src={URL.createObjectURL(formData.miniatura)}
                     alt="Vista previa miniatura"
                     className="w-32 h-32 object-cover rounded-md border mb-2"
                   />
-                ) : typeof formData.miniatura === "string" &&
-                  formData.miniatura ? (
+                ) : typeof formData.miniatura === "string" && formData.miniatura ? (
                   <img
                     src={
                       String(formData.miniatura).startsWith("http")
                         ? String(formData.miniatura)
-                        : `${import.meta.env.PUBLIC_API_URL}${
-                            formData.miniatura
-                          }`
+                        : `${import.meta.env.PUBLIC_API_URL}${formData.miniatura}`
                     }
                     alt="Miniatura actual"
                     className="w-32 h-32 object-cover rounded-md border mb-2"
@@ -674,15 +736,20 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
                 <input
                   type="file"
-                  accept="image/*"
+                  accept={ACCEPT_IMAGE_TYPES.join(",")}
                   onChange={handleFileChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
+                <small className="text-gray-500">
+                  Formatos permitidos: JPG, JPEG, PNG, WEBP. Máx. {MAX_IMAGE_MB} MB.
+                </small>
               </div>
+
+              {/* Imágenes adicionales + descripción larga */}
               {formData.imagenes.map((imagen, index) => (
                 <div key={index} className="md:col-span-2 space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Imagen Adicional {index + 1}*
+                    Imagen Adicional {index + 1}{!blogToEdit && "*"}
                   </label>
 
                   {imagen.imagen instanceof File ? (
@@ -708,18 +775,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-500 transition">
                         <input
                           type="file"
-                          accept="image/*"
+                          accept={ACCEPT_IMAGE_TYPES.join(",")}
                           onChange={(e) => handleFileChangeAdicional(e, index)}
                           className="hidden"
                         />
                         <p className="text-center text-gray-500">
-                          {imagen.imagen instanceof File
-                            ? imagen.imagen.name
-                            : "Seleccionar archivo"}
+                          {imagen.imagen instanceof File ? imagen.imagen.name : "Seleccionar archivo"}
                         </p>
                       </div>
                     </label>
                   </div>
+
                   <div className="md:col-span-2 space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
                       Descripción Completa*
@@ -742,19 +808,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           title="Insertar enlace"
                           className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-all duration-200"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                            />
+                          {/* icono link */}
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                           </svg>
                         </button>
                         <button
@@ -763,19 +819,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           title="Enlazar a producto"
                           className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-full shadow-lg transition-all duration-200"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                            />
+                          {/* icono carrito */}
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                           </svg>
                         </button>
                       </div>
@@ -788,6 +834,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                 </div>
               ))}
+
+              {/* Acciones */}
               <div className="md:col-span-2 flex justify-end gap-4">
                 <button
                   type="button"
@@ -803,25 +851,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 >
                   {isSaving ? (
                     <>
-                      <svg
-                        className="animate-spin h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8z"
-                        />
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
                       Guardando...
                     </>
@@ -833,6 +865,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 </button>
               </div>
             </form>
+
+            {/* Modal enlace */}
             {isModalOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
@@ -847,16 +881,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
                   />
                   <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => setIsModalOpen(false)}
-                      className="px-4 py-2 bg-gray-300 rounded"
-                    >
+                    <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
                       Cancelar
                     </button>
-                    <button
-                      onClick={handleAddLink}
-                      className="px-4 py-2 bg-blue-600 text-white rounded"
-                    >
+                    <button onClick={handleAddLink} className="px-4 py-2 bg-blue-600 text-white rounded">
                       Insertar
                     </button>
                   </div>
@@ -864,6 +892,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               </div>
             )}
 
+            {/* Modal producto */}
             {isProductLinkModalOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -871,7 +900,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     Enlazar "{selectedText}" a producto:
                   </h3>
                   <select
-                    name="producto_id" // Changed name to producto_id
+                    name="producto_id"
                     value={formData.producto_id}
                     onChange={handleChange}
                     required
@@ -880,8 +909,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     <option value="">Selecciona un producto</option>
                     {productos.map((producto) => (
                       <option key={producto.id} value={producto.id}>
-                        {" "}
-                        {/* Changed value to producto.id */}
                         {producto.nombre}
                       </option>
                     ))}
@@ -893,10 +920,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     >
                       Cancelar
                     </button>
-                    <button
-                      onClick={handleAddProduct}
-                      className="px-4 py-2 bg-blue-600 text-white rounded"
-                    >
+                    <button onClick={handleAddProduct} className="px-4 py-2 bg-blue-600 text-white rounded">
                       Insertar
                     </button>
                   </div>
