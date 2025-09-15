@@ -464,7 +464,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         })
       );
 
-      if (blogToEdit) formDataToSend.append("_method", "PUT");
+      if (blogToEdit) formDataToSend.append("_method", "POST");
 
       const url = blogToEdit
         ? `${getApiUrl(config.endpoints.blogs.list)}/${blogToEdit.id}`
