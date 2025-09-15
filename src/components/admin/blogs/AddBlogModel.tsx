@@ -464,7 +464,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         })
       ); */
 
-      if (blogToEdit) formDataToSend.append("_method", "PUT");
+      // Para actualizar ya no se usa PUT por problemas de compatibilidad
+      //if (blogToEdit) formDataToSend.append("_method", "PUT");
 
       const url = blogToEdit
         ? `${getApiUrl(config.endpoints.blogs.list)}/${blogToEdit.id}`
