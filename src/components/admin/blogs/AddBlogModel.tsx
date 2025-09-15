@@ -476,8 +476,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         body: formDataToSend,
       });
 
+      console.log('response', response)
+
       const data = await response.json();
 
+      console.log('data', data)
       if (response.ok) {
         await Swal.fire({
           icon: "success",
