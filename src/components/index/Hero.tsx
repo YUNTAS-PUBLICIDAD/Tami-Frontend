@@ -12,8 +12,8 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [heroArray.length]);
 
-  function moveToBienvenida() {
-    const element = document.getElementById("bienvenida");
+  function moveToSectionCards() {
+    const element = document.getElementById("sectionCards");
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
@@ -58,30 +58,21 @@ const Hero = () => {
       </div>
 
       <div className="gradient-hero md:block relative pt-20 px-8 lg:pl-32 z-10 bg-gradient-to-b from-teal-700/75 to-black/75 h-full content-center">
-        <h1
-          className="mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-7xl leading-tight font-extrabold whitespace-pre-line transform-none"
-          aria-live="polite"
-        >
-          {heroArray[currentIndex].title}
-        </h1>
-
-        {heroArray[currentIndex].items && (
-          <ul className="mt-3 md:mt-8">
-            {heroArray[currentIndex].items.map((item, index) => (
-              <li key={index} className="text-sm md:text-lg text-white">
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <button
-          onClick={moveToBienvenida}
-          className="cursor-pointer bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 px-4 py-3 lg:px-6 lg:py-2 2xl:px-10 2xl:py-4 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl mt-8 w-fit"
-          aria-label="Descubre más sobre la bienvenida"
-        >
-          Descubre más
-        </button>
+      <div className="inline-block bg-black/25 rounded-2xl p-8 md:p-12 lg:p-16 shadow-2xl">
+          <h1
+            className="mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-7xl leading-tight font-extrabold whitespace-pre-line transform-none drop-shadow-2xl shadow-black"
+            aria-live="polite"
+          >
+            {heroArray[currentIndex].title}
+          </h1>
+          <button
+            onClick={moveToSectionCards}
+            className="cursor-pointer bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 px-4 py-3 lg:px-6 lg:py-2 2xl:px-10 2xl:py-4 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl mt-8 w-fit shadow-xl shadow-black hover:shadow-2xl"
+            aria-label="Descubre más sobre productos destacados"
+          >
+            Descubre más
+          </button>
+        </div>
       </div>
     </section>
   );
