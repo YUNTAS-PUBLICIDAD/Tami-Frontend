@@ -442,8 +442,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("subtitulo2", formData.subtitulo2);
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
-      formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
-      formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
+      formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
+      formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
       if (formData.miniatura instanceof File) {
@@ -456,13 +456,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
 
-      formDataToSend.append(
+      /* formDataToSend.append(
         "etiqueta",
         JSON.stringify({
           meta_titulo: formData.etiqueta.meta_titulo,
           meta_descripcion: formData.etiqueta.meta_descripcion,
         })
-      );
+      ); */
 
       if (blogToEdit) formDataToSend.append("_method", "POST");
 
@@ -479,6 +479,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       console.log('response', response)
 
       const data = await response.json();
+      console.log(data);
 
       console.log('data', data)
       if (response.ok) {
