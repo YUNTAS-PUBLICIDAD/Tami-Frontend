@@ -11,6 +11,7 @@ import SectionCardsContainer from "src/components/index/SectionCardsContainer.as
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
 import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
+import ScrollModal from "../components/ui/ScrollModal.tsx";
 //import ProductContainer from "../components/index/ProductContainer.astro";
 ---
 
@@ -21,6 +22,9 @@ import Testimonials from "../components/index/Slideshow";
 >
   {/* Hero principal con CTA */}
   <Hero client:idle />
+
+  {/* Modal de asesoría/captación de leads */}
+  <ScrollModal client:only="react" />
 
   {/* Sección de bienvenida con imágenes y texto */}
   <section
