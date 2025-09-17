@@ -537,8 +537,8 @@ function numeroAPalabras(n: number): string {
   return (
     <>
       {(isOpen || propIsOpen) && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="max-h-[90vh] overflow-y-auto bg-white text-gray-800 p-8 rounded-xl w-full max-w-4xl shadow-2xl">
+        <div className="dialog-overlay">
+          <div className="max-h-[90vh] dialog">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-3xl font-bold text-teal-600">
                 {blogToEdit ? "Editar Blog" : "Añadir Nuevo Blog"}
@@ -558,8 +558,8 @@ function numeroAPalabras(n: number): string {
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               {/* Título */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Título*</label>
+              <div className="form-input">
+                <label className="font-medium">Título*</label>
                 <input
                   type="text"
                   name="titulo"
@@ -567,7 +567,6 @@ function numeroAPalabras(n: number): string {
                   onChange={handleChange}
                   maxLength={LENGTHS.titulo}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
                 <small className="text-gray-500">
                   Máximo 120 caracteres (20 palabras)
@@ -575,8 +574,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* Link (slug) */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Link*</label>
+              <div className="form-input">
+                <label className="font-medium">Link*</label>
                 <input
                   type="text"
                   name="link"
@@ -584,14 +583,13 @@ function numeroAPalabras(n: number): string {
                   onChange={handleChange}
                   maxLength={LENGTHS.titulo} /* opcional: igual que título */
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
                 <small className="text-gray-500">Máximo 120 caracteres (20 palabras)</small>
               </div>
 
               {/* Meta título */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Meta título</label>
+              <div className="form-input">
+                <label className="font-medium">Meta título</label>
                 <input
                   type="text"
                   name="meta_titulo"
@@ -603,7 +601,6 @@ function numeroAPalabras(n: number): string {
                     })
                   }
                   maxLength={LENGTHS.metaTitulo}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
                 />
                 <small className="text-gray-500">
                   Máximo 60 caracteres (20 palabras)
@@ -611,8 +608,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* Meta descripción */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Meta descripción</label>
+              <div className="form-input">
+                <label className="font-medium">Meta descripción</label>
                 <textarea
                   name="meta_descripcion"
                   value={formData.etiqueta.meta_descripcion}
@@ -624,7 +621,6 @@ function numeroAPalabras(n: number): string {
                   }
                   maxLength={LENGTHS.metaDescripcion}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
                 />
                 <small className="text-gray-500">
                   Máximo 160 caracteres (20 palabras)
@@ -632,8 +628,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* Párrafo (subtitulo1) */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Párrafo*</label>
+              <div className="form-input">
+                <label className="font-medium">Párrafo*</label>
                 <input
                   type="text"
                   name="subtitulo1"
@@ -641,7 +637,6 @@ function numeroAPalabras(n: number): string {
                   onChange={handleChange}
                   maxLength={LENGTHS.parrafo}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
                 <small className="text-gray-500">
                   Máximo 100 caracteres (20 palabras)
@@ -649,8 +644,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* Descripción (subtitulo2) */}
-              <div className="md:col-span-2 space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Descripción*</label>
+              <div className="md:col-span-2 form-input">
+                <label className="font-medium">Descripción*</label>
                 <input
                   type="text"
                   name="subtitulo2"
@@ -658,7 +653,6 @@ function numeroAPalabras(n: number): string {
                   onChange={handleChange}
                   maxLength={LENGTHS.descripcion}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
                 <small className="text-gray-500">
                   Máximo 255 caracteres (20 palabras)
@@ -666,8 +660,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* Título Video */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Título Video*</label>
+              <div className="form-input">
+                <label className="font-medium">Título Video*</label>
                 <input
                   type="text"
                   name="video_titulo"
@@ -675,7 +669,6 @@ function numeroAPalabras(n: number): string {
                   onChange={handleChange}
                   maxLength={LENGTHS.videoTitulo}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
                 <small className="text-gray-500">
                   Máximo 40 caracteres (20 palabras)
@@ -683,8 +676,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* URL del Video */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">URL del Video*</label>
+              <div className="form-input">
+                <label className="font-medium">URL del Video*</label>
                 <input
                   type="url"
                   name="video_url"
@@ -701,8 +694,8 @@ function numeroAPalabras(n: number): string {
               </div>
 
               {/* Producto */}
-              <div className="md:col-span-2 space-y-1">
-                <label className="block text-sm font-medium text-gray-700">Producto*</label>
+              <div className="md:col-span-2 form-input">
+                <label className="font-medium">Producto*</label>
                 <select
                   name="producto_id"
                   value={formData.producto_id}
@@ -754,8 +747,8 @@ function numeroAPalabras(n: number): string {
 
               {/* Imágenes adicionales + descripción larga */}
               {formData.imagenes.map((imagen, index) => (
-                <div key={index} className="md:col-span-2 space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                <div key={index} className="md:col-span-2 form-input">
+                  <label className="font-medium">
                     Imagen Adicional {index + 1}{!blogToEdit && "*"}
                   </label>
 
@@ -793,8 +786,8 @@ function numeroAPalabras(n: number): string {
                     </label>
                   </div>
 
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
+                  <div className="md:col-span-2 form-input">
+                    <label className="font-medium">
                       Descripción Completa*
                     </label>
                     <div className="relative">
@@ -847,7 +840,7 @@ function numeroAPalabras(n: number): string {
                 <button
                   type="button"
                   onClick={onClose ? onClose : closeModal}
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+                  className="px-6 py-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-900 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 transition"
                 >
                   Cancelar
                 </button>
@@ -875,8 +868,8 @@ function numeroAPalabras(n: number): string {
 
             {/* Modal enlace */}
             {isModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+              <div className="dialog-overlay">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm">
                   <h3 className="text-lg font-semibold mb-4">
                     Insertar enlace para "{selectedText}"
                   </h3>
@@ -888,7 +881,7 @@ function numeroAPalabras(n: number): string {
                     className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
                   />
                   <div className="flex justify-end gap-2">
-                    <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
+                    <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 dark:bg-gray-900 rounded">
                       Cancelar
                     </button>
                     <button onClick={handleAddLink} className="px-4 py-2 bg-blue-600 text-white rounded">
@@ -901,8 +894,8 @@ function numeroAPalabras(n: number): string {
 
             {/* Modal producto */}
             {isProductLinkModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+              <div className="dialog-overlay">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto form-input">
                   <h3 className="text-xl font-bold mb-4">
                     Enlazar "{selectedText}" a producto:
                   </h3>
@@ -923,7 +916,7 @@ function numeroAPalabras(n: number): string {
                   <div className="flex justify-end gap-2 p-6">
                     <button
                       onClick={() => setIsProductLinkModalOpen(false)}
-                      className="px-4 py-2 bg-gray-300 rounded"
+                      className="px-4 py-2 bg-gray-300 dark:bg-gray-900 rounded"
                     >
                       Cancelar
                     </button>
