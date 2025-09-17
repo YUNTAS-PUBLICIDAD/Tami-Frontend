@@ -424,7 +424,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
         Agregar Producto
       </button>
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 md:p-6 lg:p-8 overflow-y-auto">
+        <div className="dialog-overlay">
           <button
             className="absolute top-4 right-4 md:top-6 md:right-6 text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl"
             onClick={() => closeModal()}
@@ -434,10 +434,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
           </button>
           <div
             ref={formContainerRef}
-            className="bg-white w-full max-w-md md:max-w-2xl lg:max-w-4xl rounded-2xl shadow-2xl p-6 md:p-8 relative transition-all duration-500 overflow-y-auto max-h-[90vh] min-h-[70vh] md:min-h-[80vh]"
+            className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh]"
           >
-            <div className="bg-teal-600 -mx-6 md:-mx-8 -mt-6 md:-mt-8 mb-6 p-4 md:p-6 rounded-t-2xl">
-              <h4 className="text-xl md:text-2xl text-center font-bold text-white">
+            <div className="dialog-header">
+              <h4 className="dialog-title">
                 Agregar Producto
               </h4>
             </div>
@@ -454,7 +454,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
               >
                 <div className="space-y-4">
                   <div className="form-input">
-                    <label className="block !text-gray-700 text-sm font-medium mb-1">Nombre:</label>
+                    <label>Nombre:</label>
                     <input
                       required
                       value={formData.nombre}
@@ -462,23 +462,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       type="text"
                       name="nombre"
                       placeholder="Nombre del producto..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                     />
                   </div>
                   <div className="form-input">
-                    <label className="block !text-gray-700 text-sm font-medium mb-1">Descripción:</label>
+                    <label>Descripción:</label>
                     <textarea
                       required
                       value={formData.descripcion}
                       onChange={handleChange}
                       name="descripcion"
                       placeholder="Descripción del producto..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px]"
+                      className="min-h-[100px]"
                     />
                   </div>
                   {/* METADATOS SEO */}
-                  <div className="mb-4">
-                    <label htmlFor="meta_titulo" className="block font-medium text-sm text-gray-700">
+                  <div className="form-input">
+                    <label htmlFor="meta_titulo" >
                       Meta título <span className="text-gray-500">(recomendado: 50-60 caracteres)</span>
                     </label>
                     <input
@@ -496,15 +495,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         }))
                       }
                       maxLength={70}
-                      className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {formData.etiqueta.meta_titulo.length} / 70 caracteres
                     </p>
                   </div>
 
-                  <div className="mb-4">
-                    <label htmlFor="meta_descripcion" className="block font-medium text-sm text-gray-700">
+                  <div className="form-input">
+                    <label htmlFor="meta_descripcion">
                       Meta descripción <span className="text-gray-500">(recomendado: 40-160 caracteres)</span>
                     </label>
                     <textarea
@@ -522,7 +520,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       }
                       maxLength={200}
                       rows={3}
-                      className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {formData.etiqueta.meta_descripcion.length} / 200 caracteres
@@ -530,7 +527,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     </p>
                   </div>
                   <div className="form-input">
-                    <label className="block !text-gray-700 text-sm font-medium mb-1">Título:</label>
+                    <label>Título:</label>
                     <input
                       required
                       value={formData.titulo}
@@ -538,11 +535,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       type="text"
                       name="titulo"
                       placeholder="Título..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                     />
                   </div>
                   <div className="form-input">
-                    <label className="block !text-gray-700 text-sm font-medium mb-1">Subtitulo:</label>
+                    <label>Subtitulo:</label>
                     <input
                       required
                       value={formData.subtitulo}
@@ -550,7 +546,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       type="text"
                       name="subtitulo"
                       placeholder="Subtitulo..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                     />
                   </div>
                   {/*<div className="form-input">*/}
@@ -566,13 +561,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   {/*  </div>*/}
                   {/*</div>*/}
                   <div className="form-input">
-                    <label className="block !text-gray-700 text-sm font-medium mb-1">Sección del Producto:</label>
+                    <label>Sección del Producto:</label>
                     <select
                       required
                       value={formData.seccion}
                       onChange={handleChange}
                       name="seccion"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition appearance-none bg-white"
                     >
                       <option value="Negocio">Negocio</option>
                       <option value="Decoración">Decoración</option>
@@ -581,16 +575,16 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
 
                   {/* Especificaciones */}
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                    <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
+                  <div className="card">
+                    <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Especificaciones</h5>
 
-                    <div className="mb-3 flex items-center gap-2">
+                    <div className="flex items-center gap-2 form-input">
                       <input
                         type="text"
                         value={nuevaEspecificacion}
                         onChange={(e) => setNuevaEspecificacion(e.target.value)}
                         placeholder="Nueva especificación..."
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className="flex-1 "
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewSpecification())}
                       />
                       <button
@@ -607,12 +601,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                     <div className="space-y-2">
                       {formData.especificaciones.map((espec, index) => (
-                        <div key={index} className="flex items-center gap-2">
+                        <div key={index} className="flex items-center gap-2 form-input">
                           <input
                             type="text"
                             value={espec}
                             onChange={(e) => handleEspecificacionChange(index, e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           />
                           <button
                             type="button"
@@ -632,11 +625,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     </div>
                   </div>
                   {/* Dimensiones */}
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                    <h5 className="font-medium !text-gray-700 mb-3">Dimensiones</h5>
+                  <div className="card">
+                    <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Dimensiones</h5>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="form-input">
-                        <label className="block text-sm text-gray-600 mb-1">Alto:</label>
+                        <label>Alto:</label>
                         <div className="relative">
                           <input
                             required
@@ -705,8 +698,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     : "opacity-0 pointer-events-none"
                   }`}
               >
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
-                  <h5 className="font-medium !text-gray-700 mb-4">Galería de Imágenes</h5>
+                <div className="card">
+                  <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
                   <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
                     <p className="font-medium">ℹ️ Instrucciones:</p>
                     <ul className="list-disc list-inside space-y-1 mt-1">
@@ -720,8 +713,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   <div className="space-y-4">
                     {formData.imagenes.map((_, index) => (
                       <div key={index} className="form-input">
-                        <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen {index + 1}:</label>
-                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
+                        <label>Imagen {index + 1}:</label>
+                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
                           <input
                             type="file"
                             accept="image/*"
@@ -729,12 +722,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                           />
                         </div>
-                        <label className="block !text-gray-700 text-sm font-medium mb-1">Texto SEO Imagen {index + 1}:</label>
-                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
+                        <label>Texto SEO Imagen {index + 1}:</label>
+                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
                           <input
                             type="text"
                             onChange={(e) => handleImagesTextoSEOChange(e, index)}
-                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 outline-none"
                           />
                         </div>
                       </div>
@@ -776,9 +769,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   }`}
               >
                 <div className="form-input mb-6">
-                  <label className="block !text-gray-700 text-sm font-medium mb-3">Productos Relacionados:</label>
+                  <label>Productos Relacionados:</label>
                   {productos.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-64 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="card grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-y-auto">
                       {productos.map((item) => (
                         <div
                           key={item.id}
@@ -793,7 +786,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                 handleRelacionadosChange(e, item.id)
                               }
                             />
-                            <div className="relative">
+                            <div className="relative flex items-center justify-center">
                               {item.imagenes?.[0]?.url_imagen ? (
                                 <img
                                   src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
@@ -821,7 +814,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                 </svg>
                               </div>
                             </div>
-                            <p className="text-xs text-center mt-1 text-gray-600">{item.nombre}</p>
+                            <p className="text-xs text-center mt-1 text-gray-600 dark:text-gray-500">{item.nombre}</p>
                           </label>
                         </div>
                       ))}
