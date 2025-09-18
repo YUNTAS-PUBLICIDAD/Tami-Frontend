@@ -2,7 +2,6 @@ import { config, getApiUrl } from "../../../../config.ts";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
-
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
@@ -15,13 +14,13 @@ interface BlogPOST {
   subtitulo1: string; // Párrafo corto (100)
   subtitulo2: string; // Descripción (255)
   video_titulo: string; // 40
-  video_url: string;    // 255
+  video_url: string; // 255
   producto_id: number | string;
   miniatura: File | null;
   imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
   etiqueta: {
-    meta_titulo: string;        // sugerido <= 60
-    meta_descripcion: string;   // sugerido <= 160
+    meta_titulo: string; // sugerido <= 60
+    meta_descripcion: string; // sugerido <= 160
   };
 }
 
@@ -35,16 +34,21 @@ interface AddBlogModalProps {
 /* ====== Límites centralizados ====== */
 const LENGTHS = {
   titulo: 120,
-  parrafo: 100,         // subtitulo1
-  descripcion: 255,     // subtitulo2
+  parrafo: 100, // subtitulo1
+  descripcion: 255, // subtitulo2
   videoTitulo: 40,
   videoUrl: 255,
-  metaTitulo: 60,       // recomendado (no bloqueante)
+  metaTitulo: 60, // recomendado (no bloqueante)
   metaDescripcion: 160, // recomendado (no bloqueante)
 };
 
 const MAX_IMAGE_MB = 2;
-const ACCEPT_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const ACCEPT_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 /* ===== utilidades ===== */
 const isValidUrl = (value: string) => {
@@ -113,7 +117,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         let lista: any[] = [];
         if (Array.isArray(data)) lista = data;
         else if (Array.isArray(data?.data)) lista = data.data;
-        else if (Array.isArray(data?.data?.productos)) lista = data.data.productos;
+        else if (Array.isArray(data?.data?.productos))
+          lista = data.data.productos;
 
         setProductos(lista);
       } catch (err) {
@@ -137,22 +142,21 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_titulo: blogToEdit.video_titulo || "",
         producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
         miniatura: blogToEdit.miniatura || null,
-        imagenes:
-          blogToEdit.imagenes?.map((img: any, index: number) => {
-            const raw = img.ruta_imagen || "";
-            return {
-              imagen: null,
-              parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
-              url: raw
-                ? raw.startsWith("http")
-                  ? raw
-                  : `${import.meta.env.PUBLIC_API_URL}${raw}`
-                : "",
-            };
-          }) || [
-            { imagen: null, parrafo: "", url: "" },
-            { imagen: null, parrafo: "", url: "" },
-          ],
+        imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
+          const raw = img.ruta_imagen || "";
+          return {
+            imagen: null,
+            parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
+            url: raw
+              ? raw.startsWith("http")
+                ? raw
+                : `${import.meta.env.PUBLIC_API_URL}${raw}`
+              : "",
+          };
+        }) || [
+          { imagen: null, parrafo: "", url: "" },
+          { imagen: null, parrafo: "", url: "" },
+        ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
@@ -182,7 +186,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   }, [isOpen, blogToEdit]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
 
@@ -277,7 +283,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const selected = textarea.value.substring(start, end);
 
     if (!selected) {
-      Swal.fire("Selecciona texto", "Selecciona texto para enlazar.", "warning");
+      Swal.fire(
+        "Selecciona texto",
+        "Selecciona texto para enlazar.",
+        "warning"
+      );
       return;
     }
 
@@ -296,7 +306,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const selected = textarea.value.substring(start, end);
 
     if (!selected) {
-      Swal.fire("Selecciona texto", "Selecciona texto para enlazar.", "warning");
+      Swal.fire(
+        "Selecciona texto",
+        "Selecciona texto para enlazar.",
+        "warning"
+      );
       return;
     }
 
@@ -315,7 +329,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       (p) => String(p.id) === String(formData.producto_id)
     );
     if (!productoSeleccionado?.link) {
-      Swal.fire("Producto no encontrado", "No se encontró el producto.", "error");
+      Swal.fire(
+        "Producto no encontrado",
+        "No se encontró el producto.",
+        "error"
+      );
       return;
     }
     const textarea = document.getElementById(
@@ -333,7 +351,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const newValue = before + linkedProductText + after;
 
     const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = { ...nuevosParrafos[activeIndex], parrafo: newValue };
+    nuevosParrafos[activeIndex] = {
+      ...nuevosParrafos[activeIndex],
+      parrafo: newValue,
+    };
 
     setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
     setIsProductLinkModalOpen(false);
@@ -344,7 +365,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const handleAddLink = () => {
     if (activeIndex === null) return;
     if (!link.trim() || !isValidUrl(link.trim())) {
-      Swal.fire("Enlace inválido", "Ingresa una URL válida (https://...).", "error");
+      Swal.fire(
+        "Enlace inválido",
+        "Ingresa una URL válida (https://...).",
+        "error"
+      );
       return;
     }
     const textarea = document.getElementById(
@@ -362,7 +387,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const newValue = before + linkedText + after;
 
     const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = { ...nuevosParrafos[activeIndex], parrafo: newValue };
+    nuevosParrafos[activeIndex] = {
+      ...nuevosParrafos[activeIndex],
+      parrafo: newValue,
+    };
 
     setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
     setIsModalOpen(false);
@@ -394,42 +422,94 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     e.preventDefault();
     setIsSaving(true);
 
-    // Validaciones de longitud (bloqueantes según migración)
-    if (formData.titulo.length === 0 || formData.titulo.length > LENGTHS.titulo) {
-      Swal.fire("Error", `El título es obligatorio y máx. ${LENGTHS.titulo} caracteres.`, "error");
-      setIsSaving(false); return;
+    // 🔹 Validaciones frontend (las que ya tenías)
+    if (
+      formData.titulo.length === 0 ||
+      formData.titulo.length > LENGTHS.titulo
+    ) {
+      Swal.fire(
+        "Error",
+        `El título es obligatorio y máx. ${LENGTHS.titulo} caracteres.`,
+        "error"
+      );
+      setIsSaving(false);
+      return;
     }
-    if (formData.subtitulo1.length === 0 || formData.subtitulo1.length > LENGTHS.parrafo) {
-      Swal.fire("Error", `El párrafo es obligatorio y máx. ${LENGTHS.parrafo} caracteres.`, "error");
-      setIsSaving(false); return;
+    if (
+      formData.subtitulo1.length === 0 ||
+      formData.subtitulo1.length > LENGTHS.parrafo
+    ) {
+      Swal.fire(
+        "Error",
+        `El párrafo es obligatorio y máx. ${LENGTHS.parrafo} caracteres.`,
+        "error"
+      );
+      setIsSaving(false);
+      return;
     }
-    if (formData.subtitulo2.length === 0 || formData.subtitulo2.length > LENGTHS.descripcion) {
-      Swal.fire("Error", `La descripción es obligatoria y máx. ${LENGTHS.descripcion} caracteres.`, "error");
-      setIsSaving(false); return;
+    if (
+      formData.subtitulo2.length === 0 ||
+      formData.subtitulo2.length > LENGTHS.descripcion
+    ) {
+      Swal.fire(
+        "Error",
+        `La descripción es obligatoria y máx. ${LENGTHS.descripcion} caracteres.`,
+        "error"
+      );
+      setIsSaving(false);
+      return;
     }
-    if (formData.video_titulo.length === 0 || formData.video_titulo.length > LENGTHS.videoTitulo) {
-      Swal.fire("Error", `El título del video es obligatorio y máx. ${LENGTHS.videoTitulo} caracteres.`, "error");
-      setIsSaving(false); return;
+    if (
+      formData.video_titulo.length === 0 ||
+      formData.video_titulo.length > LENGTHS.videoTitulo
+    ) {
+      Swal.fire(
+        "Error",
+        `El título del video es obligatorio y máx. ${LENGTHS.videoTitulo} caracteres.`,
+        "error"
+      );
+      setIsSaving(false);
+      return;
     }
-    if (formData.video_url.length === 0 || formData.video_url.length > LENGTHS.videoUrl || !isValidUrl(formData.video_url)) {
-      Swal.fire("Error", `La URL del video es obligatoria, máx. ${LENGTHS.videoUrl} y debe ser válida.`, "error");
-      setIsSaving(false); return;
+    if (
+      formData.video_url.length === 0 ||
+      formData.video_url.length > LENGTHS.videoUrl ||
+      !isValidUrl(formData.video_url)
+    ) {
+      Swal.fire(
+        "Error",
+        `La URL del video es obligatoria, máx. ${LENGTHS.videoUrl} y debe ser válida.`,
+        "error"
+      );
+      setIsSaving(false);
+      return;
     }
     if (!formData.producto_id) {
       Swal.fire("Error", "Selecciona un producto.", "error");
-      setIsSaving(false); return;
+      setIsSaving(false);
+      return;
     }
 
     // miniatura obligatoria solo en creación
     if (!blogToEdit && !formData.miniatura) {
       Swal.fire("Error", "La miniatura es obligatoria.", "error");
-      setIsSaving(false); return;
+      setIsSaving(false);
+      return;
     }
 
     // Validación imágenes adicionales y párrafos
-    if (formData.imagenes.some((img) => (!blogToEdit && !img.imagen) || !img.parrafo)) {
-      Swal.fire("Error", "Cada imagen adicional y su descripción son obligatorias.", "error");
-      setIsSaving(false); return;
+    if (
+      formData.imagenes.some(
+        (img) => (!blogToEdit && !img.imagen) || !img.parrafo
+      )
+    ) {
+      Swal.fire(
+        "Error",
+        "Cada imagen adicional y su descripción son obligatorias.",
+        "error"
+      );
+      setIsSaving(false);
+      return;
     }
 
     try {
@@ -443,7 +523,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("video_url", formData.video_url);
       formDataToSend.append("video_titulo", formData.video_titulo);
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
-      formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
+      formDataToSend.append(
+        "meta_descripcion",
+        formData.etiqueta.meta_descripcion
+      );
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
       if (formData.miniatura instanceof File) {
@@ -455,14 +538,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         formDataToSend.append("parrafos[]", item.parrafo);
         formDataToSend.append("text_alt[]", "Sin descripción");
       });
-
-      /* formDataToSend.append(
-        "etiqueta",
-        JSON.stringify({
-          meta_titulo: formData.etiqueta.meta_titulo,
-          meta_descripcion: formData.etiqueta.meta_descripcion,
-        })
-      ); */
 
       if (blogToEdit) formDataToSend.append("_method", "POST");
 
@@ -476,26 +551,42 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         body: formDataToSend,
       });
 
-      console.log('response', response)
-
       const data = await response.json();
-      console.log(data);
+      console.log("response", response);
+      console.log("data", data);
 
-      console.log('data', data)
       if (response.ok) {
         await Swal.fire({
           icon: "success",
-          title: blogToEdit ? "Blog actualizado exitosamente" : "Blog añadido exitosamente",
+          title: blogToEdit
+            ? "Blog actualizado exitosamente"
+            : "Blog añadido exitosamente",
           showConfirmButton: true,
         });
         closeModal();
         onBlogAdded();
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: `❌ Error: ${data.message || "Error al guardar blog"}`,
-        });
+        // 🔹 Mostrar errores detallados del backend
+        if (data.errors) {
+          const errores = Object.entries(data.errors)
+            .map(
+              ([campo, mensajes]) =>
+                `- ${campo}: ${(mensajes as string[]).join(", ")}`
+            )
+            .join("\n");
+
+          Swal.fire({
+            icon: "error",
+            title: "Errores de validación",
+            text: errores,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `❌ ${data.message || "Error al guardar blog"}`,
+          });
+        }
       }
     } catch (error: any) {
       console.error("Error al enviar los datos:", error);
@@ -505,34 +596,66 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     }
   };
 
-  
-// Cuenta palabras en un string
-function contarPalabras(texto: string): number {
-  return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
-}
-// Utilidad para convertir números a palabras en español
-function numeroAPalabras(n: number): string {
-  const unidades = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte"];
-  const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
-  if (n <= 20) return unidades[n];
-  if (n < 100) {
-    const d = Math.floor(n / 10);
-    const u = n % 10;
-    if (u === 0) return decenas[d];
-    if (d === 2) return "veinti" + unidades[u];
-    return decenas[d] + " y " + unidades[u];
+  // Cuenta palabras en un string
+  function contarPalabras(texto: string): number {
+    return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
   }
-  if (n === 100) return "cien";
-  if (n < 200) return "ciento " + numeroAPalabras(n - 100);
-  if (n < 1000) {
-    const c = Math.floor(n / 100);
-    const r = n % 100;
-    let centena = c === 1 ? "ciento" : unidades[c] + "cientos";
-    if (r === 0) return centena;
-    return centena + " " + numeroAPalabras(r);
+  // Utilidad para convertir números a palabras en español
+  function numeroAPalabras(n: number): string {
+    const unidades = [
+      "cero",
+      "uno",
+      "dos",
+      "tres",
+      "cuatro",
+      "cinco",
+      "seis",
+      "siete",
+      "ocho",
+      "nueve",
+      "diez",
+      "once",
+      "doce",
+      "trece",
+      "catorce",
+      "quince",
+      "dieciséis",
+      "diecisiete",
+      "dieciocho",
+      "diecinueve",
+      "veinte",
+    ];
+    const decenas = [
+      "",
+      "diez",
+      "veinte",
+      "treinta",
+      "cuarenta",
+      "cincuenta",
+      "sesenta",
+      "setenta",
+      "ochenta",
+      "noventa",
+    ];
+    if (n <= 20) return unidades[n];
+    if (n < 100) {
+      const d = Math.floor(n / 10);
+      const u = n % 10;
+      if (u === 0) return decenas[d];
+      if (d === 2) return "veinti" + unidades[u];
+      return decenas[d] + " y " + unidades[u];
+    }
+    if (n === 100) return "cien";
+    if (n < 200) return "ciento " + numeroAPalabras(n - 100);
+    if (n < 1000) {
+      const c = Math.floor(n / 100);
+      const r = n % 100;
+      let centena = c === 1 ? "ciento" : unidades[c] + "cientos";
+      if (r === 0) return centena;
+      return centena + " " + numeroAPalabras(r);
+    }
+    return n.toString();
   }
-  return n.toString();
-}
 
   return (
     <>
@@ -568,9 +691,6 @@ function numeroAPalabras(n: number): string {
                   maxLength={LENGTHS.titulo}
                   required
                 />
-                <small className="text-gray-500">
-                  Máximo 120 caracteres (20 palabras)
-                </small>
               </div>
 
               {/* Link (slug) */}
@@ -584,7 +704,6 @@ function numeroAPalabras(n: number): string {
                   maxLength={LENGTHS.titulo} /* opcional: igual que título */
                   required
                 />
-                <small className="text-gray-500">Máximo 120 caracteres (20 palabras)</small>
               </div>
 
               {/* Meta título */}
@@ -597,13 +716,19 @@ function numeroAPalabras(n: number): string {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      etiqueta: { ...formData.etiqueta, meta_titulo: e.target.value.slice(0, LENGTHS.metaTitulo) },
+                      etiqueta: {
+                        ...formData.etiqueta,
+                        meta_titulo: e.target.value.slice(
+                          0,
+                          LENGTHS.metaTitulo
+                        ),
+                      },
                     })
                   }
                   maxLength={LENGTHS.metaTitulo}
                 />
                 <small className="text-gray-500">
-                  Máximo 60 caracteres (20 palabras)
+                  Máximo 10 caracteres
                 </small>
               </div>
 
@@ -616,14 +741,20 @@ function numeroAPalabras(n: number): string {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      etiqueta: { ...formData.etiqueta, meta_descripcion: e.target.value.slice(0, LENGTHS.metaDescripcion) },
+                      etiqueta: {
+                        ...formData.etiqueta,
+                        meta_descripcion: e.target.value.slice(
+                          0,
+                          LENGTHS.metaDescripcion
+                        ),
+                      },
                     })
                   }
                   maxLength={LENGTHS.metaDescripcion}
                   rows={3}
                 />
                 <small className="text-gray-500">
-                  Máximo 160 caracteres (20 palabras)
+                  Máximo 40 caracteres
                 </small>
               </div>
 
@@ -638,9 +769,6 @@ function numeroAPalabras(n: number): string {
                   maxLength={LENGTHS.parrafo}
                   required
                 />
-                <small className="text-gray-500">
-                  Máximo 100 caracteres (20 palabras)
-                </small>
               </div>
 
               {/* Descripción (subtitulo2) */}
@@ -654,9 +782,6 @@ function numeroAPalabras(n: number): string {
                   maxLength={LENGTHS.descripcion}
                   required
                 />
-                <small className="text-gray-500">
-                  Máximo 255 caracteres (20 palabras)
-                </small>
               </div>
 
               {/* Título Video */}
@@ -670,9 +795,6 @@ function numeroAPalabras(n: number): string {
                   maxLength={LENGTHS.videoTitulo}
                   required
                 />
-                <small className="text-gray-500">
-                  Máximo 40 caracteres (20 palabras)
-                </small>
               </div>
 
               {/* URL del Video */}
@@ -688,9 +810,6 @@ function numeroAPalabras(n: number): string {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                   placeholder="https://www.youtube.com/watch?v=..."
                 />
-                <small className="text-gray-500">
-                  Máximo 255 caracteres (20 palabras)
-                </small>
               </div>
 
               {/* Producto */}
@@ -710,24 +829,31 @@ function numeroAPalabras(n: number): string {
                     </option>
                   ))}
                 </select>
-                <small className="text-gray-500">Selecciona el producto relacionado.</small>
+                <small className="text-gray-500">
+                  Selecciona el producto relacionado.
+                </small>
               </div>
 
               {/* Miniatura */}
               <div className="md:col-span-2 space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Miniatura{!blogToEdit && "*"}</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Miniatura{!blogToEdit && "*"}
+                </label>
                 {formData.miniatura instanceof File ? (
                   <img
                     src={URL.createObjectURL(formData.miniatura)}
                     alt="Vista previa miniatura"
                     className="w-32 h-32 object-cover rounded-md border mb-2"
                   />
-                ) : typeof formData.miniatura === "string" && formData.miniatura ? (
+                ) : typeof formData.miniatura === "string" &&
+                  formData.miniatura ? (
                   <img
                     src={
                       String(formData.miniatura).startsWith("http")
                         ? String(formData.miniatura)
-                        : `${import.meta.env.PUBLIC_API_URL}${formData.miniatura}`
+                        : `${import.meta.env.PUBLIC_API_URL}${
+                            formData.miniatura
+                          }`
                     }
                     alt="Miniatura actual"
                     className="w-32 h-32 object-cover rounded-md border mb-2"
@@ -741,7 +867,8 @@ function numeroAPalabras(n: number): string {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 />
                 <small className="text-gray-500">
-                  Formatos permitidos: JPG, JPEG, PNG, WEBP. Máx. {MAX_IMAGE_MB} MB.
+                  Formatos permitidos: JPG, JPEG, PNG, WEBP. Máx. {MAX_IMAGE_MB}{" "}
+                  MB.
                 </small>
               </div>
 
@@ -749,7 +876,8 @@ function numeroAPalabras(n: number): string {
               {formData.imagenes.map((imagen, index) => (
                 <div key={index} className="md:col-span-2 form-input">
                   <label className="font-medium">
-                    Imagen Adicional {index + 1}{!blogToEdit && "*"}
+                    Imagen Adicional {index + 1}
+                    {!blogToEdit && "*"}
                   </label>
 
                   {imagen.imagen instanceof File ? (
@@ -780,16 +908,16 @@ function numeroAPalabras(n: number): string {
                           className="hidden"
                         />
                         <p className="text-center text-gray-500">
-                          {imagen.imagen instanceof File ? imagen.imagen.name : "Seleccionar archivo"}
+                          {imagen.imagen instanceof File
+                            ? imagen.imagen.name
+                            : "Seleccionar archivo"}
                         </p>
                       </div>
                     </label>
                   </div>
 
                   <div className="md:col-span-2 form-input">
-                    <label className="font-medium">
-                      Descripción Completa*
-                    </label>
+                    <label className="font-medium">Descripción Completa*</label>
                     <div className="relative">
                       <textarea
                         name="descripcionAntes"
@@ -809,8 +937,19 @@ function numeroAPalabras(n: number): string {
                           className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-all duration-200"
                         >
                           {/* icono link */}
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                            />
                           </svg>
                         </button>
                         <button
@@ -820,8 +959,19 @@ function numeroAPalabras(n: number): string {
                           className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-full shadow-lg transition-all duration-200"
                         >
                           {/* icono carrito */}
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -851,9 +1001,25 @@ function numeroAPalabras(n: number): string {
                 >
                   {isSaving ? (
                     <>
-                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8z"
+                        />
                       </svg>
                       Guardando...
                     </>
@@ -881,10 +1047,16 @@ function numeroAPalabras(n: number): string {
                     className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
                   />
                   <div className="flex justify-end gap-2">
-                    <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 dark:bg-gray-900 rounded">
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-4 py-2 bg-gray-300 dark:bg-gray-900 rounded"
+                    >
                       Cancelar
                     </button>
-                    <button onClick={handleAddLink} className="px-4 py-2 bg-blue-600 text-white rounded">
+                    <button
+                      onClick={handleAddLink}
+                      className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
                       Insertar
                     </button>
                   </div>
@@ -920,7 +1092,10 @@ function numeroAPalabras(n: number): string {
                     >
                       Cancelar
                     </button>
-                    <button onClick={handleAddProduct} className="px-4 py-2 bg-blue-600 text-white rounded">
+                    <button
+                      onClick={handleAddProduct}
+                      className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
                       Insertar
                     </button>
                   </div>
