@@ -4,11 +4,11 @@ const props = Astro.props;
 ---
 
 <div
-  class="transition-all duration-300 ease-in-out w-full md:w-1/3 md:group-hover:w-[30%] md:hover:w-[70%] h-90 md:h-full flex flex-col items-center"
+  class="group w-full md:w-1/3 h-90 md:h-full flex flex-col items-center"
 >
   <a
     href={`/productos#${props.id}`}
-    class="relative rounded-3xl overflow-hidden w-full h-full flex"
+    class="relative rounded-3xl overflow-hidden w-full h-full flex transform border border-teal-200 hover:scale-108 hover:z-20 hover:shadow-2xl hover:border-teal-400"
     title="Cards de productos"
   >
     <Image
