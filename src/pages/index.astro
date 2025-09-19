@@ -61,22 +61,8 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
       class="w-full md:w-1/2 flex flex-col justify-center p-3 md:px-6 xl:px-16 2xl:px-20 order-1 md:order-2"
     >
       <h2
-        class="flex items-center gap-2 text-orange-700 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
+        class="text-orange-700 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
       >
-        {/* Flecha decorativa */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          class="-rotate-90 scale-75 lg:scale-100 xl:scale-125 2xl:scale-150"
-          stroke-width="2"
-        >
-          <path
-            d="M12 17.414 3.293 8.707l1.414-1.414L12 14.586l7.293-7.293 1.414 1.414L12 17.414z"
-          ></path>
-        </svg>
         BIENVENIDO A TAMI
       </h2>
       <h3
@@ -93,10 +79,7 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
     </div>
   </section>
 
-  {/* Botón flotante para bajar a sección de productos destacados */}
-  <div class="flex justify-center items-center pt-12 md:pt-0">
-    <BtnGoToSectionCards client:visible />
-  </div>
+
 
   {/* Sección de productos destacados en cartas */}
   <section
@@ -148,15 +131,21 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
       <div
         class="flex flex-wrap gap-4 my-6 justify-center lg:justify-start text-white"
       >
-        <div class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
+        <a href="/blog" class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full transition-all duration-200 hover:bg-teal-800 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400">
           CALIDAD
-        </div>
-        <div class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
+        </a>
+        <a href="/blog" class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full transition-all duration-200 hover:bg-teal-800 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400">
           INNOVACIÓN
-        </div>
-        <div class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
+        </a>
+        <a href="/blog" class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full transition-all duration-200 hover:bg-teal-800 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400">
           NEGOCIO PROPIO
-        </div>
+        </a>
+      </div>
+
+      <div class="w-full flex flex-col lg:flex-row items-center lg:items-start gap-0 lg:gap-8">
+        <p class="text-teal-800 text-base md:text-lg xl:text-xl 2xl:text-2xl font-semibold text-center lg:text-left mt-2 mb-4 lg:mb-0 max-w-2xl mx-auto lg:mx-0">
+          Descubre cómo la calidad, la innovación y el espíritu emprendedor de nuestros clientes nos inspiran a ofrecer soluciones reales y resultados comprobados.
+        </p>
       </div>
     </div>
 
