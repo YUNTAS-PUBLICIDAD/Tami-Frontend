@@ -80,11 +80,33 @@ const { title, description, canonicalUrl } = Astro.props;
 
   <body class="font-montserrat w-full">
     
-    <NavBar client:idle />
-    <slot />
-    <Footer />
-    {/* Activado con el atributo `client:load`.*/}
-    {/* <WhatsApp /> */}
-    {/*Ya hay un botón en la navbar con ello. Se dejaría ese o este?*/}
+  <NavBar client:idle />
+  <slot />
+  <Footer />
+  <ScrollModal client:load />
+  {/* Activado con el atributo `client:load`.*/}
+  <script is:inline>
+    function addOpenScrollListeners() {
+      document.querySelectorAll('#open-scroll-btn').forEach(btn => {
+        if (!btn.dataset.listenerAdded) {
+          btn.addEventListener("click", () => {
+            window.dispatchEvent(new Event("open-scroll-modal"));
+          });
+          btn.dataset.listenerAdded = "true";
+        }
+      });
+    }
+
+    // Inicial
+    addOpenScrollListeners();
+
+    // Observer para detectar nuevos botones en el DOM
+    const observer = new MutationObserver(() => {
+      addOpenScrollListeners();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  </script>
+  {/* <WhatsApp /> */}
+  {/*Ya hay un botón en la navbar con ello. Se dejaría ese o este?*/}
   </body>
 </html>

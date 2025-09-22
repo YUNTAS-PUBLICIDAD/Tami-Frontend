@@ -21,21 +21,59 @@ import Card from "../components/about/Card.astro";
       backgroundImage: `linear-gradient(to bottom, rgba(0,120,111,.75), rgba(0,0,0,.75)), url(${aboutHero.src})`,
     }}
   >
-    <h2
-      class="sm:text-xl md:text-2xl xl:text-3xl 2xl:text-5xl font-extrabold mb-4 sm:mb-5 lg:mb-3 2xl:mb-5 px-4 sm:px-0 text-center lg:text-left"
-      style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
-    >
-      SOBRE<br />NOSOTROS
-    </h2>
-    <p
-      class="text-base sm:text-lg lg:text-2xl 2xl:text-3xl/tight font-bold 2xl:font-semibold px-4 sm:px-0 text-center lg:text-left"
-    >
-      Buscamos ayudar en tu negocio, mediante la<br />
-      comercialización de productos para<br />
-      emprendimiento, trabajo y decoración,<br />
-      cumpliendo con los estándares de calidad.
-    </p>
+    <div class="backdrop-blur-md bg-white/20 rounded-3xl border-b-8 border-orange-500 shadow-2xl px-6 py-8 sm:px-12 sm:py-10 max-w-2xl animate-fadeInUp" style="animation-duration:1.2s;">
+      <h2
+        class="sm:text-xl md:text-2xl xl:text-3xl 2xl:text-5xl font-extrabold mb-4 sm:mb-5 lg:mb-3 2xl:mb-5 px-4 sm:px-0 text-center lg:text-left drop-shadow-lg"
+        style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
+      >
+        SOBRE<br />NOSOTROS
+      </h2>
+      <p
+        class="text-base sm:text-lg lg:text-2xl 2xl:text-3xl/tight font-bold 2xl:font-semibold px-4 sm:px-0 text-center lg:text-left"
+      >
+        Buscamos ayudar en tu negocio, mediante la<br />
+        comercialización de productos para<br />
+        emprendimiento, trabajo y decoración,<br />
+        cumpliendo con los estándares de calidad.
+      </p>
+    </div>
   </section>
+<style>
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fadeInUp {
+  animation: fadeInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+</style>
+
+  {/* 🔹 Sección Identidad y CTA */}
+  <section class="bg-white/90 py-12 px-4 flex flex-col items-center text-center rounded-2xl shadow-xl border border-teal-100 max-w-4xl mx-auto my-12">
+    <h2 class="text-3xl md:text-4xl font-extrabold text-teal-700 mb-6 tracking-tight drop-shadow">¿Por qué elegir TAMI?</h2>
+    <p class="max-w-2xl text-teal-800 text-base md:text-lg mb-8 leading-relaxed">
+      En <span class="font-bold text-orange-600">TAMI</span> nos especializamos en soluciones de maquinaria y tecnología para empresas y emprendedores que buscan eficiencia, innovación y confianza. Nuestra misión es acompañar a nuestros clientes en el crecimiento de sus proyectos, brindando productos de calidad y un servicio personalizado.<br/><br/>
+      Nos diferenciamos por nuestro compromiso con la mejora continua, la atención cercana y la transparencia en cada proceso. Aspiramos a ser la empresa líder en el sector, reconocida por nuestra innovación y por el éxito de quienes confían en nosotros.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/productos" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full transition-all duration-300 shadow-lg text-lg">Ver productos</a>
+      <button
+        id="open-scroll-btn"
+        type="button"
+        class="bg-teal-700 hover:bg-teal-900 text-white font-bold py-2 px-8 rounded-full transition-all duration-300 shadow-lg text-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+      >
+        Contáctanos
+      </button>
+    </div>
+  </section>
+
+
 
   {/* 🔹 Franja con mensaje “Sobre nuestros propósitos y metas” */}
   <div
