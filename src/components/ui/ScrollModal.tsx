@@ -110,16 +110,14 @@ const ScrollModal = () => {
 
   // Se elimina la aparición automática y por intención de salida. Solo trigger manual por evento open-scroll-modal.
 
-  // Abierto manualmente por el botón del footer
+  // Abierto manualmente por el botón del footer o cualquier sección
   useEffect(() => {
     const handleOpenEvent = () => {
       setShowModal(true);
       hasShownRef.current = true;
     };
-
     window.addEventListener("open-scroll-modal", handleOpenEvent);
-    return () =>
-      window.removeEventListener("open-scroll-modal", handleOpenEvent);
+    return () => window.removeEventListener("open-scroll-modal", handleOpenEvent);
   }, []);
 
   // Abierto automáticamente por scroll
@@ -260,9 +258,7 @@ const ScrollModal = () => {
   };
 
   // Si la ruta no está permitida, no renderizar nada
-  if (!allowedRoutes.includes(pathname)) {
-    return null;
-  }
+  // El modal ahora se puede abrir en cualquier ruta, solo se controla la apertura automática por los efectos.
 
   if (!showModal) return null;
 

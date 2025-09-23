@@ -11,7 +11,7 @@ import SectionCardsContainer from "src/components/index/SectionCardsContainer.as
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
 import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
-import ScrollModal from "../components/ui/ScrollModal.tsx";
+// import ScrollModal from "../components/ui/ScrollModal.tsx";
 //import ProductContainer from "../components/index/ProductContainer.astro";
 ---
 
@@ -23,8 +23,7 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
   {/* Hero principal con CTA */}
   <Hero client:idle />
 
-  {/* Modal de asesoría/captación de leads */}
-  <ScrollModal client:only="react" />
+  {/* Modal de asesoría/captación de leads: ahora global en Layout */}
 
   {/* Sección de bienvenida con imágenes y texto */}
   <section
@@ -192,3 +191,18 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
     </div>
   </section>
 </Layout>
+<style>
+@keyframes fadeInUpHero {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fadeInUpHero {
+  animation: fadeInUpHero 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+</style>
