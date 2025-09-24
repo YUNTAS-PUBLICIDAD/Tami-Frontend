@@ -5,12 +5,10 @@ import { config, getApiUrl } from "../../../config";
 
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
-
 const SESSION_STORAGE_KEY = "catalogModalSessionShown";
+
 const ScrollModal = () => {
-
-
-  // Estados y referencias al inicio del componente
+  // --- Hooks (siempre en el mismo orden)
   const [pathname, setPathname] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -25,6 +23,7 @@ const ScrollModal = () => {
   const hasReachedBottomRef = useRef(false);
   const hasShownRef = useRef(false);
 
+  // --- TUS rutas (mantuve exactamente las que tenías)
   const allowedRoutes = [
     "/",
     "/about",
@@ -33,11 +32,18 @@ const ScrollModal = () => {
     "/blog",
   ];
 
-  // Mostrar modal automáticamente después de 2 segundos SOLO en primera visita de sesión
+  // Obtener pathname en cliente
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPathname(window.location.pathname);
+    }
+  }, []);
+
+  // Mostrar modal automáticamente después de 2 segundos SOLO en allowedRoutes
   useEffect(() => {
     if (!pathname || !allowedRoutes.includes(pathname)) return;
     if (showModal || isClosing) return;
-    let timer: NodeJS.Timeout | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
     const lastClosed = parseInt(
       localStorage.getItem(MODAL_STORAGE_KEY) || "0",
@@ -46,8 +52,8 @@ const ScrollModal = () => {
     const now = Date.now();
     const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
 
-    const isAnyModalOpen = document.querySelector('.modal-overlay');
-    const isCatalogModalOpen = document.getElementById('catalog-modal');
+    const isAnyModalOpen = document.querySelector(".modal-overlay");
+    const isCatalogModalOpen = document.getElementById("catalog-modal");
 
     if (
       now - lastClosed >= MODAL_COOLDOWN_MS &&
@@ -61,12 +67,12 @@ const ScrollModal = () => {
         setShowModal(true);
         hasShownRef.current = true;
         sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
-      }, 2000); // 2 segundos
+      }, 16000); // 16 segundos
     }
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [pathname]);
+  }, [pathname, showModal, isClosing]);
 
   // Mostrar modal al detectar intención de salida (mouse hacia arriba fuera de la ventana)
   useEffect(() => {
@@ -74,15 +80,16 @@ const ScrollModal = () => {
     const handleMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 0) {
         if (showModal || isClosing) return;
-        // Bloquear triggers si está cerrando
+
         const lastClosed = parseInt(
           localStorage.getItem(MODAL_STORAGE_KEY) || "0",
           10
         );
         const now = Date.now();
         const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
-        const isAnyModalOpen = document.querySelector('.modal-overlay');
-        const isCatalogModalOpen = document.getElementById('catalog-modal');
+        const isAnyModalOpen = document.querySelector(".modal-overlay");
+        const isCatalogModalOpen = document.getElementById("catalog-modal");
+
         if (
           now - lastClosed >= MODAL_COOLDOWN_MS &&
           !hasShownRef.current &&
@@ -99,31 +106,26 @@ const ScrollModal = () => {
     };
     window.addEventListener("mouseout", handleMouseOut);
     return () => window.removeEventListener("mouseout", handleMouseOut);
+  }, [pathname, showModal, isClosing]);
+
+  // Abierto manualmente por el botón (evento global)
+  useEffect(() => {
+    const handler = () => {
+      if (!pathname || !allowedRoutes.includes(pathname)) return;
+      const isAnyModalOpen = document.querySelector(".modal-overlay");
+      if (!isAnyModalOpen) {
+        setShowModal(true);
+      }
+    };
+    window.addEventListener("open-scroll-modal", handler);
+    return () => window.removeEventListener("open-scroll-modal", handler);
   }, [pathname]);
 
-  // Obtener pathname solo en cliente
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setPathname(window.location.pathname);
-    }
-  }, []);
-
-  // Se elimina la aparición automática y por intención de salida. Solo trigger manual por evento open-scroll-modal.
-
-  // Abierto manualmente por el botón del footer o cualquier sección
-  useEffect(() => {
-    const handleOpenEvent = () => {
-      setShowModal(true);
-      hasShownRef.current = true;
-    };
-    window.addEventListener("open-scroll-modal", handleOpenEvent);
-    return () => window.removeEventListener("open-scroll-modal", handleOpenEvent);
-  }, []);
-
-  // Abierto automáticamente por scroll
+  // Abierto automáticamente por scroll (bajar hasta abajo + subir)
   useEffect(() => {
     const handleScroll = () => {
-  if (showModal || isClosing) return;
+      if (!pathname || !allowedRoutes.includes(pathname)) return;
+      if (showModal || isClosing) return;
       const currentScroll = window.scrollY;
       const scrollDirection =
         currentScroll < lastScrollRef.current ? "up" : "down";
@@ -138,15 +140,12 @@ const ScrollModal = () => {
         scrollDirection === "up" &&
         !hasShownRef.current
       ) {
-        // Verificar cooldown antes de mostrar
         const lastClosed = parseInt(
           localStorage.getItem(MODAL_STORAGE_KEY) || "0",
           10
         );
         const now = Date.now();
-        if (now - lastClosed < MODAL_COOLDOWN_MS) {
-          return; // Todavía dentro del tiempo de enfriamiento
-        }
+        if (now - lastClosed < MODAL_COOLDOWN_MS) return; // dentro del cooldown
 
         setShowModal(true);
         hasShownRef.current = true;
@@ -156,7 +155,7 @@ const ScrollModal = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname, showModal, isClosing]);
 
   const resetForm = () => {
     setNombre("");
@@ -172,7 +171,7 @@ const ScrollModal = () => {
       setIsClosing(false);
       resetForm();
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      // sessionStorage.removeItem(SESSION_STORAGE_KEY); // No reiniciar la sesión, así no vuelve a aparecer
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
       hasShownRef.current = false;
     }, 300);
   };
@@ -234,7 +233,7 @@ const ScrollModal = () => {
             general: "No se pudo enviar la información. Intenta nuevamente.",
           });
         }
-        return; // Evita que continúe como éxito
+        return;
       }
 
       console.log("[ScrollModal] Enviado exitosamente:", {
@@ -243,7 +242,6 @@ const ScrollModal = () => {
         correo,
       });
 
-      // Mostrar mensaje de éxito antes de cerrar
       setErrors({ general: "✅ Información enviada con éxito ✅" });
       setTimeout(() => {
         closeModal();
@@ -257,13 +255,15 @@ const ScrollModal = () => {
     }
   };
 
-  // Si la ruta no está permitida, no renderizar nada
-  // El modal ahora se puede abrir en cualquier ruta, solo se controla la apertura automática por los efectos.
-
-  if (!showModal) return null;
+  // --- Render: condición final (SE HACE DESPUÉS de declarar hooks y efectos)
+  const isAllowed = allowedRoutes.includes(pathname);
+  if (!isAllowed || !showModal) return null;
 
   return (
-  <div id="catalog-modal" className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn">
+    <div
+      id="catalog-modal"
+      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn"
+    >
       <div
         className={`bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative rounded-3xl border border-teal-400 transition-all duration-500 ${
           isClosing ? "animate-slideOut" : "animate-slideIn"
@@ -293,12 +293,23 @@ const ScrollModal = () => {
             >
               X
             </button>
+
             <h2 className="scrollmodal-body select-none text-2xl sm:text-3xl font-extrabold mb-6 animate-fadeInUp">
-              DESCARGA <span className="scrollmodal-title text-yellow-200">GRATIS</span> NUESTRO <span className="scrollmodal-title text-yellow-200">CATÁLOGO</span>
+              DESCARGA{" "}
+              <span className="scrollmodal-title text-yellow-200">GRATIS</span>{" "}
+              NUESTRO{" "}
+              <span className="scrollmodal-title text-yellow-200">
+                CATÁLOGO
+              </span>
             </h2>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp">
-              <h3 className="text-base sm:text-lg font-bold select-none">Nombre</h3>
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-1 animate-fadeInUp"
+            >
+              <h3 className="text-base sm:text-lg font-bold select-none">
+                Nombre
+              </h3>
               <input
                 type="text"
                 placeholder="Nombres y Apellidos"
@@ -310,7 +321,9 @@ const ScrollModal = () => {
                 {errors.nombre || "\u00A0"}
               </p>
 
-              <h3 className="text-base sm:text-lg font-bold select-none">Teléfono</h3>
+              <h3 className="text-base sm:text-lg font-bold select-none">
+                Teléfono
+              </h3>
               <input
                 type="tel"
                 placeholder="Teléfono: 905 876 524"
@@ -322,7 +335,9 @@ const ScrollModal = () => {
                 {errors.telefono || "\u00A0"}
               </p>
 
-              <h3 className="text-base sm:text-lg font-bold select-none">Correo</h3>
+              <h3 className="text-base sm:text-lg font-bold select-none">
+                Correo
+              </h3>
               <input
                 type="email"
                 placeholder="Correo@gmail.com"
@@ -341,10 +356,11 @@ const ScrollModal = () => {
               >
                 {errors.correo || errors.general || successMessage || "\u00A0"}
               </p>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#01A09E] rounded-2xl text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold mx-auto text-center shadow-[0_4px_10px_rgba(255,255,255,0.6)] cursor-pointer transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                className="bg-[#01A09E] rounded-2xl text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold mx-auto shadow-[0_4px_10px_rgba(255,255,255,0.6)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
