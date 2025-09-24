@@ -58,7 +58,7 @@ const Hero = () => {
       </div>
 
       <div className="gradient-hero md:block relative pt-20 px-8 lg:pl-32 z-10 bg-gradient-to-b from-teal-700/75 to-black/75 h-full content-center">
-        <div className="inline-block backdrop-blur-md bg-white/20 rounded-3xl border-b-8 border-orange-500 shadow-2xl p-8 md:p-12 lg:p-16 animate-fadeInUpHero" style={{animationDuration:'1.2s'}}>
+      <div className="inline-block backdrop-blur-md bg-white/20 rounded-3xl shadow-2xl p-8 md:p-12 lg:p-16 animate-fadeInUpHero" style={{animationDuration:'1.2s'}}>
           <h1
             className="mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-7xl leading-tight font-extrabold whitespace-pre-line transform-none drop-shadow-2xl shadow-black"
             aria-live="polite"
