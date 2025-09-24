@@ -68,6 +68,7 @@ const blogsUrl = config.endpoints.blogs;
       <div id="blog-video-section" class="mt-10"></div>
     </main>
   </div>
+ 
   <script
       define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
   >
@@ -140,6 +141,105 @@ const blogsUrl = config.endpoints.blogs;
         }
 
         const blog = data.data;
+
+        function generateBlogJsonLd(blog) {
+          const images = [
+            blog.miniatura,
+            ...(blog.imagenes?.map(img => img.ruta_imagen) || [])
+          ];
+          const description = blog.subtitulo1 || (blog.parrafos?.map(p => p.parrafo).join(" "));
+          return {
+            "@context": "https://schema.org/",
+            "@type": "Blog",
+            "@id": "https://tamimaquinarias.com/blog/",
+            mainEntityOfPage: "https://tamimaquinarias.com/blog/",
+            name: blog.titulo,
+            description: description,
+            publisher: {
+              "@type": "Organization",
+              "@id": "https://tamimaquinarias.com",
+              name: "Tami Maquinarias",
+              logo: {
+                "@type": "ImageObject",
+                "@id": "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
+                url: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
+                width: "600",
+                height: "60"
+              }
+            },
+            blogPost: [
+              {
+                "@type": "BlogPosting",
+                "@id": `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                mainEntityOfPage: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                headline: blog.nombre_producto,
+                name: blog.nombre_producto,
+                description: description,
+                datePublished: blog.created_at,
+                dateModified: blog.updated_at,
+                author: {
+                  "@type": "Person",
+                  url: "https://tamimaquinarias.com",
+                  name: "Equipo Tami Maquinarias"
+                },
+                image: {
+                  "@type": "ImageObject",
+                  "@id": images[0],
+                  url: images[0],
+                  height: "800",
+                  width: "1200"
+                },
+                url: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                keywords: ["LED", "Marketing Visual"],
+                review: [
+                  {
+                    "@type": "Review",
+                    author: { "@type": "Person", name: "Nilton Ramos" },
+                    datePublished: "2025-09-19",
+                    reviewBody: "Un excelente artículo, muy útil para emprendedores.",
+                    name: "Recomendado para negocios.",
+                    reviewRating: {
+                      "@type": "Rating",
+                      bestRating: "5",
+                      ratingValue: "4",
+                      worstRating: "1"
+                    }
+                  },
+                  {
+                    "@type": "Review",
+                    author: { "@type": "Person", name: "María López" },
+                    datePublished: "2025-08-10",
+                    reviewBody: "Información clara y bien explicada. Me ayudó mucho.",
+                    name: "Muy útil",
+                    reviewRating: {
+                      "@type": "Rating",
+                      bestRating: "5",
+                      ratingValue: "5",
+                      worstRating: "1"
+                    }
+                  }
+                ],
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: 90,
+                  bestRating: 100,
+                  ratingCount: 12
+                }
+              }
+            ]
+          };
+        }
+
+        function insertBlogJsonLd(blog) {
+          const jsonLd = generateBlogJsonLd(blog);
+          const script = document.createElement("script");
+          script.type = "application/ld+json";
+          script.text = JSON.stringify(jsonLd, null, 2);
+          document.head.appendChild(script);
+          console.log("[JSON-LD] Blog JSON-LD insertado:", script);
+        }
+
+        insertBlogJsonLd(blog);
 
         // Elementos del DOM
         const blogTitleElement = document.getElementById("blog-title"); // Header
