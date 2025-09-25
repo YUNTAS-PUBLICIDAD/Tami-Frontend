@@ -1,11 +1,9 @@
-import {useState, useEffect, lazy} from "react";
-//import logoMovil from "@images/logos/logo_movil.webp";
+import { useState, useEffect, lazy, useRef } from "react";
+import type Producto from "../../../models/Product";
 import logoTami from "@images/logos/logo-estatico-100x116.webp";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
-//import NavLink from "./NavLink";
 const NavLink = lazy(() => import("./NavLink"));
 const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
-//import SideMenu from "../sideMenu/SideMenu";
 import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 
@@ -13,6 +11,45 @@ function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLFormElement>(null);
+
+  // Cargar productos y filtrar sugerencias
+  useEffect(() => {
+    if (search.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    setLoading(true);
+    fetch('/api/productos')
+      .then(res => res.json())
+      .then(json => {
+        const todos: Producto[] = json.data ?? [];
+        const query = search.trim().toLowerCase();
+        const filtered = todos.filter((producto: Producto) =>
+          [producto.nombre, producto.titulo, producto.subtitulo, producto.descripcion]
+            .some(campo => campo && campo.toLowerCase().includes(query))
+        );
+        setSuggestions(filtered.slice(0, 6));
+        setShowSuggestions(true);
+      })
+      .catch(() => setSuggestions([]))
+      .finally(() => setLoading(false));
+  }, [search]);
+
+  // Cerrar sugerencias al hacer click fuera
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -44,8 +81,15 @@ function NavBar() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
+      setShowSuggestions(false);
       window.location.href = `/buscar?q=${encodeURIComponent(search.trim())}`;
     }
+  };
+
+  const handleSuggestionClick = (producto: Producto) => {
+    setShowSuggestions(false);
+    setSearch("");
+    window.location.href = `/productos/detalle/?link=${encodeURIComponent(producto.link)}`;
   };
 
   return (
@@ -69,17 +113,7 @@ function NavBar() {
             title="Ir a la seccion de inicio"
             className="place-self-end lg:place-self-auto content-center h-14 mr-4"
         >
-          {/* <img
-        src={logoTami.src}
-        srcSet={`${logoTami100.src} 100w, ${logoTami.src} 172w`}
-        sizes="100px"
-        alt="Logo de Tami"
-        title="Logo de Tami"
-        fetchPriority="high"
-        decoding="async"
-      /> */}
-
-           <img
+          <img
               src={logoTami.src}
               alt="Logo de Tami con letras"
               className="h-full lg:hidden object-contain"
@@ -140,13 +174,15 @@ function NavBar() {
           </a>
 
           {/* Buscador */}
-          <form onSubmit={handleSearchSubmit} className="relative">
+
+          <form onSubmit={handleSearchSubmit} className="relative" ref={inputRef} autoComplete="off">
             <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="¿Qué buscas?"
                 className="text-gray-800 placeholder-gray-400 bg-white rounded-full pl-4 pr-10 py-2 w-44 lg:w-56 focus:outline-none focus:ring-2 focus:ring-teal-400 transition duration-300"
+                onFocus={() => search.length > 1 && setShowSuggestions(true)}
             />
             <button
                 type="submit"
@@ -167,6 +203,23 @@ function NavBar() {
                 />
               </svg>
             </button>
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-72 overflow-y-auto">
+                {loading && (
+                  <li className="px-4 py-2 text-gray-500">Buscando...</li>
+                )}
+                {suggestions.map((producto) => (
+                  <li
+                    key={producto.id}
+                    className="px-4 py-2 cursor-pointer hover:bg-teal-100 text-gray-800 text-left"
+                    onClick={() => handleSuggestionClick(producto)}
+                  >
+                    <span className="font-semibold">{producto.nombre}</span>
+                    <span className="block text-xs text-gray-500">{producto.titulo}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </form>
 
 
