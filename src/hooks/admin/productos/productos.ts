@@ -21,7 +21,24 @@ export async function getProducts() {
     console.error("Error al obtener productos:", error);
   }
 }
+export async function getPublicProducts() {
+  try {
+    const url = getApiUrl(config.endpoints.productos.list); // /api/v1/productos
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
+    if (!response.ok) throw new Error("Error al obtener productos públicos");
+
+    return await response.json(); // debe retornar { data: Producto[] }
+  } catch (error) {
+    console.error("Error al obtener productos públicos:", error);
+    return { data: [] };
+  }
+}
 export async function deleteProduct(id: number) {
   try {
     const token = localStorage.getItem("token"); // Asegúrate de que el token esté almacenado en el localStorage
