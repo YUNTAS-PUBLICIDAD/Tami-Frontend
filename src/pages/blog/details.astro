@@ -326,21 +326,15 @@ const blogsUrl = config.endpoints.blogs;
           blog.imagenes.forEach((imagen, index) => {
             const section = document.createElement("section");
             section.className = "mb-5 text-justify";
-            const isSecondImage = index === 1;
-
             section.innerHTML = `
       <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""} gap-6 items-center">
         <!-- Imagen lateral adaptativa -->
-        <div class="relative w-full md:w-1/2 overflow-hidden rounded-lg shadow-md flex justify-center items-center bg-white">
+        <div class="relative w-full md:w-1/2 h-64 md:h-96 overflow-hidden rounded-lg shadow-md flex justify-center items-center bg-white">
           <img 
             src="${getApiUrl}${imagen.ruta_imagen}" 
             alt="${imagen.text_alt || 'Imagen del blog'}"
             title="${imagen.text_alt || 'Imagen del blog'}"
-            class="block w-auto h-auto max-w-full ${
-                isSecondImage
-                    ? 'max-h-[600px] md:max-h-[700px]' // Imagen 2: dejar más alto
-                    : 'max-h-[400px]' // Otras: altura moderada
-            } object-contain"
+            class="w-full h-full object-cover transition-all duration-300"
           />
         </div>
 
@@ -354,7 +348,6 @@ const blogsUrl = config.endpoints.blogs;
         </div>
       </div>
     `;
-
             blogSectionsElement.appendChild(section);
           });
         }
