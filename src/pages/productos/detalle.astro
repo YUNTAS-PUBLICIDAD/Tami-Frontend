@@ -9,7 +9,7 @@ const getApiUrl = config.apiUrl;
 const productosUrl = config.endpoints.productos;
 ---
 
-<Layout title="Product Details">
+<Layout title="Product Details" description="Descripcion por defecto" canonicalUrl="https://tamimaquinarias.com/productos">
   <div class="w-full">
     {/* -------------------- HERO -------------------- */}
     <div
@@ -269,7 +269,25 @@ const productosUrl = config.endpoints.productos;
     }
 
     displaySpecsAndDimensions(product.especificaciones, product.dimensiones);
-    document.title = `${product.titulo} - Detalles del Producto`;
+    document.title = product.etiqueta?.meta_titulo;
+
+    console.log("product",product);
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.name = "description";
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.content = product.etiqueta?.meta_descripcion || 'Descripción por defecto';
+
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.rel = 'canonical';
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.href = `https://tamimaquinarias.com/productos/${product.link}`;
+
     productNameToIdMap[product.link] = product.id;
     localStorage.setItem(`product_${product.link}`, product.link);
   }
