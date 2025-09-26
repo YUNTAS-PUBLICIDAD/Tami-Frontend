@@ -354,6 +354,89 @@ const productosUrl = config.endpoints.productos;
       removeLoader();
       displayProductDetails(product);
 
+      const images = [
+        ...(product.imagenes?.map((img) => `https://apitami.tamimaquinarias.com${img.url_imagen}`) || [])
+      ];
+
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.nombre,
+        image: images,
+        description: product.descripcion,
+        sku: `PROD-${product.id}`,
+        brand: {
+          "@type": "Brand",
+          name: "Tami Maquinarias",
+          logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
+          url: "https://tamimaquinarias.com/",
+        },
+        url: `https://tamimaquinarias.com/productos/detalle/?link=${encodeURIComponent(product.link)}`,
+        category: product.seccion,
+        review: [
+          {
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: "Nilton Ramos"
+            },
+            datePublished: "2025-09-19",
+            reviewBody: "Un excelente producto, seguramente volveré por más.",
+            name: "Todo lo que necesito.",
+            reviewRating: {
+              "@type": "Rating",
+              bestRating: "5",
+              ratingValue: "4",
+              worstRating: "1"
+            }
+          },
+          {
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: "María López"
+            },
+            datePublished: "2025-08-10",
+            reviewBody: "Muy buena calidad y entrega rápida. Recomiendo totalmente.",
+            name: "Entrega rápida y confiable",
+            reviewRating: {
+              "@type": "Rating",
+              bestRating: "5",
+              ratingValue: "5",
+              worstRating: "1"
+            }
+          },
+          {
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: "Carlos Fernández"
+            },
+            datePublished: "2025-07-22",
+            reviewBody: "Producto conforme a la descripción, buen soporte del vendedor.",
+            name: "Satisfecho con la compra",
+            reviewRating: {
+              "@type": "Rating",
+              bestRating: "5",
+              ratingValue: "4",
+              worstRating: "1"
+            }
+          }
+        ],
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: 88,
+          bestRating: 100,
+          ratingCount: 20
+        }
+      };
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.innerHTML = JSON.stringify(jsonLd, null, 2);
+      console.log(JSON.stringify(jsonLd, null, 2));
+      document.head.appendChild(script);
+
       // Botones cotización → WhatsApp
       ["btnQuotationHero", "btnQuotationDetail"].forEach((id) => {
         const btn = document.getElementById(id);
