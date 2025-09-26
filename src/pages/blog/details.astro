@@ -9,7 +9,7 @@ const blogsUrl = config.endpoints.blogs;
 ---
 
 {/* Details de blog */}
-<Layout title="Blog Details">
+<Layout title="Blog Details" description="Descripcion por defecto" canonicalUrl="https://tamimaquinarias.com/blog">
   <div class="bg-teal-500 flex flex-col min-h-screen">
     <!-- SECCIÓN HERO -->
     <header class="relative w-full h-screen md:min-h-[80vh]">
@@ -141,6 +141,24 @@ const blogsUrl = config.endpoints.blogs;
         }
 
         const blog = data.data;
+
+        document.title = blog.etiqueta?.meta_titulo || 'Título para blogs por defecto';
+
+        let metaDescription = document.querySelector('meta[name="description"]');
+        if (!metaDescription) {
+          metaDescription = document.createElement('meta');
+          metaDescription.name = "description";
+          document.head.appendChild(metaDescription);
+        }
+        metaDescription.content = blog.etiqueta?.meta_descripcion || 'Descripción por defecto';
+
+        let canonicalLink = document.querySelector('link[rel="canonical"]');
+        if (!canonicalLink) {
+          canonicalLink = document.createElement('link');
+          canonicalLink.rel = 'canonical';
+          document.head.appendChild(canonicalLink);
+        }
+        canonicalLink.href = window.location.href;
 
         function generateBlogJsonLd(blog) {
           const images = [

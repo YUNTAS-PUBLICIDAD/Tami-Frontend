@@ -271,7 +271,6 @@ const productosUrl = config.endpoints.productos;
     displaySpecsAndDimensions(product.especificaciones, product.dimensiones);
     document.title = product.etiqueta?.meta_titulo;
 
-    console.log("product",product);
     let metaDescription = document.querySelector('meta[name="description"]');
     if (!metaDescription) {
       metaDescription = document.createElement('meta');
@@ -286,7 +285,7 @@ const productosUrl = config.endpoints.productos;
       canonicalLink.rel = 'canonical';
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.href = `https://tamimaquinarias.com/productos/${product.link}`;
+    canonicalLink.href = `https://tamimaquinarias.com/productos/detalle?link=${encodeURIComponent(product.link)}`;
 
     productNameToIdMap[product.link] = product.id;
     localStorage.setItem(`product_${product.link}`, product.link);
