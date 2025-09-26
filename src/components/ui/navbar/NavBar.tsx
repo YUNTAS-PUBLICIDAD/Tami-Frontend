@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, useRef } from "react";
 import type Producto from "../../../models/Product";
 import logoTami from "@images/logos/logo-estatico-100x116.webp";
+import { getApiImageUrl } from "../../../utils/getApiUrl";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
 const NavLink = lazy(() => import("./NavLink"));
 const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
@@ -8,6 +9,7 @@ import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 
 function NavBar() {
+  const apiUrl = import.meta.env.PUBLIC_API_URL || "";
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [search, setSearch] = useState("");
@@ -205,20 +207,66 @@ function NavBar() {
               </svg>
             </button>
             {showSuggestions && suggestions.length > 0 && (
-              <ul className="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-72 overflow-y-auto">
+              <ul
+                className="absolute left-0 mt-2 w-[340px] backdrop-blur-md bg-white/80 border border-teal-200 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto ring-1 ring-teal-100"
+                style={{
+                  boxShadow: '0 8px 32px 0 rgba(0, 150, 136, 0.18)',
+                  scrollbarWidth: 'none', /* Firefox */
+                  msOverflowStyle: 'none', /* IE 10+ */
+                }}
+              >
+                {/* Ocultar scrollbar en navegadores Webkit */}
+                <style>{`
+                  ul::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
                 {loading && (
                   <li className="px-4 py-2 text-gray-500">Buscando...</li>
                 )}
-                {suggestions.map((producto) => (
-                  <li
-                    key={producto.id}
-                    className="px-4 py-2 cursor-pointer hover:bg-teal-100 text-gray-800 text-left"
-                    onClick={() => handleSuggestionClick(producto)}
-                  >
-                    <span className="font-semibold">{producto.nombre}</span>
-                    <span className="block text-xs text-gray-500">{producto.titulo}</span>
-                  </li>
-                ))}
+                {suggestions.map((producto, idx) => {
+                  let imgUrl = null;
+                  if (producto.imagenes && producto.imagenes.length > 0) {
+                    const rawUrl = producto.imagenes[0].url_imagen;
+                    imgUrl = getApiImageUrl(rawUrl, apiUrl);
+                  }
+                  return (
+                    <li
+                      key={producto.id}
+                      className={`flex items-center gap-3 px-3 py-3 cursor-pointer text-gray-800 text-left transition-all rounded-xl group relative hover:bg-teal-50/80 hover:ring-2 hover:ring-teal-300 ${idx === suggestions.length - 1 ? 'mb-0' : ''}`}
+                      style={{ borderBottom: idx === suggestions.length - 1 ? 'none' : '1px solid #e0f2f1' }}
+                      onClick={() => handleSuggestionClick(producto)}
+                    >
+                      {imgUrl ? (
+                        <div className="w-16 h-16 flex items-center justify-center bg-white rounded-xl border border-teal-200 shadow-md flex-shrink-0 p-1 group-hover:scale-105 transition-transform duration-200">
+                          <img
+                            src={imgUrl}
+                            alt={producto.nombre}
+                            className="w-full h-full object-contain rounded-lg"
+                            loading="lazy"
+                            style={{ background: 'white', boxShadow: '0 2px 8px 0 rgba(0,150,136,0.10)' }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 border border-teal-100">
+                          <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a4 4 0 004 4h10a4 4 0 004-4V7M3 7a4 4 0 014-4h10a4 4 0 014 4M3 7h18" /></svg>
+                        </div>
+                      )}
+                      <div className="flex flex-col min-w-0 max-w-[230px]">
+                        <span className="font-bold text-teal-800 whitespace-normal break-words leading-tight text-base group-hover:text-teal-900 transition-colors duration-200">
+                          {producto.nombre}
+                        </span>
+                        <span className="block text-xs text-gray-500 whitespace-normal break-words leading-tight mt-1">
+                          {producto.titulo}
+                        </span>
+                      </div>
+                      {/* Separador visual solo si no es el último */}
+                      {idx !== suggestions.length - 1 && (
+                        <span className="absolute left-4 bottom-0 w-[90%] h-[1px] bg-teal-100" />
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </form>
