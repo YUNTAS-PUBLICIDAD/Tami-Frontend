@@ -19,6 +19,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
           <img
               src={`${apiUrl}${blog.miniatura}`}
               alt={blog.titulo}
+              title={blog.titulo}
               loading="lazy"
               className="w-full h-48 object-cover"
           />

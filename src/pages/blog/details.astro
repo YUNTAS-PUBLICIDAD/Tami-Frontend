@@ -317,6 +317,7 @@ const blogsUrl = config.endpoints.blogs;
           <img 
             src="${getApiUrl}${imagen.ruta_imagen}" 
             alt="${imagen.text_alt || 'Imagen del blog'}"
+            title="${imagen.text_alt || 'Imagen del blog'}"
             class="block w-auto h-auto max-w-full ${
                 isSecondImage
                     ? 'max-h-[600px] md:max-h-[700px]' // Imagen 2: dejar más alto
