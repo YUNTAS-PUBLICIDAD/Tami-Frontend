@@ -47,6 +47,7 @@ const modalImage = linkImages[link] || linkImages["default"];
           id="modal-product-img"
           src={modalImage}
           alt={`Imagen para ${link}`}
+          title={`Imagen para ${link}`}
           class="h-full w-auto object-cover"
           loading="lazy"
           onError="this.onerror=null; this.src='/images/popup/default.webp'"
