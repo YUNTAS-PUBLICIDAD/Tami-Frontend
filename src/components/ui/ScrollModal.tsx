@@ -274,11 +274,13 @@ const ScrollModal = () => {
           <img
             src={asesoriaImg.src}
             alt="Asesoría"
+            title="Asesoría"
             className="w-full h-full object-cover select-none scale-105 transition-transform duration-700"
           />
           <img
             src={Logo.src}
             alt="LogoTami"
+            title="Logo Tami"
             className="absolute top-40 left-4 w-80 h-80 object-contain select-none drop-shadow-2xl animate-fadeIn"
           />
         </div>

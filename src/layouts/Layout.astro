@@ -13,7 +13,7 @@ const { title, description, canonicalUrl } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,6 +31,9 @@ const { title, description, canonicalUrl } = Astro.props;
 
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="author" content="Tamimaquinarias" />
+    <meta name="robots" content="index, follow" />
+    <meta name="publisher" content="Tami Maquinarias">
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <!-- <style>

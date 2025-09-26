@@ -43,6 +43,7 @@ const Hero = () => {
               srcSet={`${hero.imageMobile} 750w, ${hero.imageDesktop} 1200w`}
               sizes="100vw"
               alt={hero.alt || ""}
+              title={hero.alt || ""}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${

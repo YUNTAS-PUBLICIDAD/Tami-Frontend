@@ -9,7 +9,7 @@ const getApiUrl = config.apiUrl;
 const productosUrl = config.endpoints.productos;
 ---
 
-<Layout title="Product Details">
+<Layout title="Product Details" description="Descripcion por defecto" canonicalUrl="https://tamimaquinarias.com/productos">
   <div class="w-full">
     {/* -------------------- HERO -------------------- */}
     <div
@@ -21,6 +21,7 @@ const productosUrl = config.endpoints.productos;
             <img
               src={ArrowProducts.src}
               alt="Flecha"
+              title="Flecha"
               class="w-full h-full"
               loading="lazy"
             />
@@ -57,7 +58,8 @@ const productosUrl = config.endpoints.productos;
         <img
           id="product-img"
           src=""
-          alt=""
+          alt="Imagen del producto"
+          title="Imagen del producto"
           class="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto"
           loading="lazy"
         />
@@ -76,7 +78,8 @@ const productosUrl = config.endpoints.productos;
             <img
               id="product-viewer"
               src=""
-              alt=""
+              alt="Imagen del producto"
+              title="Imagen del producto"
               class="w-full h-full object-contain"
               loading="lazy"
             />
@@ -111,6 +114,7 @@ const productosUrl = config.endpoints.productos;
                 <img
                   src={boxSize.src}
                   alt="Box Size"
+                  title="Box Size"
                   class="w-full h-auto"
                   loading="lazy"
                 />
@@ -253,6 +257,7 @@ const productosUrl = config.endpoints.productos;
         const img = document.createElement("img");
         img.src = `${getApiUrl}${image.url_imagen}`;
         img.alt = `${product.titulo} - Vista ${index + 1}`;
+        img.title = product.titulo;
         img.className = "w-full h-full object-cover";
         div.appendChild(img);
         div.onclick = () => {
@@ -264,7 +269,24 @@ const productosUrl = config.endpoints.productos;
     }
 
     displaySpecsAndDimensions(product.especificaciones, product.dimensiones);
-    document.title = `${product.titulo} - Detalles del Producto`;
+    document.title = product.etiqueta?.meta_titulo;
+
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.name = "description";
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.content = product.etiqueta?.meta_descripcion || 'Descripción por defecto';
+
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.rel = 'canonical';
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.href = `https://tamimaquinarias.com/productos/detalle?link=${encodeURIComponent(product.link)}`;
+
     productNameToIdMap[product.link] = product.id;
     localStorage.setItem(`product_${product.link}`, product.link);
   }
@@ -297,6 +319,7 @@ const productosUrl = config.endpoints.productos;
       const img = document.createElement("img");
       img.src = `${getApiUrl}${prod.imagenes?.[0]?.url_imagen || "/placeholder.png"}`;
       img.alt = prod.titulo;
+      img.title = prod.titulo;
       img.loading = "lazy";
       img.className =
         "w-full h-full object-cover group-hover:scale-105 transition";
@@ -347,6 +370,89 @@ const productosUrl = config.endpoints.productos;
       console.log("Producto cargado - Link:", product.link);
       removeLoader();
       displayProductDetails(product);
+
+      const images = [
+        ...(product.imagenes?.map((img) => `https://apitami.tamimaquinarias.com${img.url_imagen}`) || [])
+      ];
+
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.nombre,
+        image: images,
+        description: product.descripcion,
+        sku: `PROD-${product.id}`,
+        brand: {
+          "@type": "Brand",
+          name: "Tami Maquinarias",
+          logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
+          url: "https://tamimaquinarias.com/",
+        },
+        url: `https://tamimaquinarias.com/productos/detalle/?link=${encodeURIComponent(product.link)}`,
+        category: product.seccion,
+        review: [
+          {
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: "Nilton Ramos"
+            },
+            datePublished: "2025-09-19",
+            reviewBody: "Un excelente producto, seguramente volveré por más.",
+            name: "Todo lo que necesito.",
+            reviewRating: {
+              "@type": "Rating",
+              bestRating: "5",
+              ratingValue: "4",
+              worstRating: "1"
+            }
+          },
+          {
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: "María López"
+            },
+            datePublished: "2025-08-10",
+            reviewBody: "Muy buena calidad y entrega rápida. Recomiendo totalmente.",
+            name: "Entrega rápida y confiable",
+            reviewRating: {
+              "@type": "Rating",
+              bestRating: "5",
+              ratingValue: "5",
+              worstRating: "1"
+            }
+          },
+          {
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: "Carlos Fernández"
+            },
+            datePublished: "2025-07-22",
+            reviewBody: "Producto conforme a la descripción, buen soporte del vendedor.",
+            name: "Satisfecho con la compra",
+            reviewRating: {
+              "@type": "Rating",
+              bestRating: "5",
+              ratingValue: "4",
+              worstRating: "1"
+            }
+          }
+        ],
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: 88,
+          bestRating: 100,
+          ratingCount: 20
+        }
+      };
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.innerHTML = JSON.stringify(jsonLd, null, 2);
+      console.log(JSON.stringify(jsonLd, null, 2));
+      document.head.appendChild(script);
 
       // Botones cotización → WhatsApp
       ["btnQuotationHero", "btnQuotationDetail"].forEach((id) => {

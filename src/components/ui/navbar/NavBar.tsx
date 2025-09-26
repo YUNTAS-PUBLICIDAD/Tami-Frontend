@@ -162,6 +162,7 @@ function NavBar() {
           {/* WhatsApp */}
           <a
               href="https://api.whatsapp.com/send?phone=51978883199"
+              title="Conéctate con nosotros por WhatsApp"
               target="_blank"
               rel="noopener noreferrer"
               className="transition-transform duration-200 transform hover:scale-110"
