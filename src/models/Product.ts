@@ -1,24 +1,24 @@
 import type Dimensions from "./Dimensions";
 import type Specs from "./Specs";
 
-export interface ProductApiPOST {
-  nombre: string;
-  titulo: string;
-  subtitulo: string;
-  link: string;
-  descripcion: string;
-  stock: number;
-  precio: number;
-  seccion: string;
-  especificaciones: string[];
-  imagenes: ImagenForm[];
-  textos_alt: string[];
-  relacionados: number[];
-  etiquetas: {
-    meta_titulo: string;
-    meta_descripcion: string;
-  };
-}
+// export interface ProductApiPOST {
+//   nombre: string;
+//   titulo: string;
+//   subtitulo: string;
+//   link: string;
+//   descripcion: string;
+//   stock: number;
+//   precio: number;
+//   seccion: string;
+//   especificaciones: string[];
+//   imagenes: ImagenForm[];
+//   textos_alt: string[];
+//   relacionados: number[];
+//   etiquetas: {
+//     meta_titulo: string;
+//     meta_descripcion: string;
+//   };
+// }
 
 // Interface para el formulario de producto
 export interface ProductFormularioPOST {
@@ -31,15 +31,12 @@ export interface ProductFormularioPOST {
   precio: number;
   seccion: string;
   especificaciones: string[];
-  dimensiones: {
-    alto: string;
-    largo: string;
-    ancho: string; 
-  }
+  dimensiones: Dimensions;
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
   etiqueta: {
+    keywords: string[];
     meta_titulo: string;
     meta_descripcion: string;
   };
@@ -74,6 +71,7 @@ export default interface Producto {
   precio: number;
   createdAt: string | null;
   etiqueta: {
+    keywords: string
     meta_titulo: string;
     meta_descripcion: string;
   };
@@ -83,3 +81,50 @@ export default interface Producto {
     ancho: string;
   }
 }
+
+// valores por defecto para guardar o editar
+export const defaultValuesProduct: ProductFormularioPOST = {
+  nombre: "",
+  titulo: "",
+  subtitulo: "",
+  descripcion: "",
+  link: "",
+  stock: 100,
+  precio: 199.99,
+  seccion: "Negocio",
+  especificaciones: [],
+  etiqueta: {
+    keywords: [""],
+    meta_titulo: "",
+    meta_descripcion: "",
+  },
+  relacionados: [],
+  imagenes: [
+    {
+      url_imagen: null,
+      texto_alt_SEO: "",
+    },
+    {
+      url_imagen: null,
+      texto_alt_SEO: "",
+    },
+    {
+      url_imagen: null,
+      texto_alt_SEO: "",
+    },
+    {
+      url_imagen: null,
+      texto_alt_SEO: "",
+    },
+    {
+      url_imagen: null,
+      texto_alt_SEO: "",
+    },
+  ],
+  textos_alt: [],
+  dimensiones: {
+    alto: "",
+    largo: "",
+    ancho: ""
+  }
+};
