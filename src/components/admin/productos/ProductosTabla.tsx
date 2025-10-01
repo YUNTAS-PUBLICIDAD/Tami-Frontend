@@ -237,18 +237,52 @@ const ProductosTabla = () => {
                 </Table>
 
                 {/* Paginación */}
-                {filteredProductos.length > itemsPerPage && (
-                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-8 py-6 bg-teal-50/50 dark:bg-gray-600/20 border-t border-teal-100 dark:border-gray-800">
-                        <div className="text-sm text-teal-700 font-medium">
-                            Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredProductos.length)} de {filteredProductos.length} productos
+                        {filteredProductos.length > 0 && (
+                        <div className="flex justify-center gap-2 mt-8">
+                            <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className={`${currentPage === 1 ? '' : 'cursor-pointer'} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
+                            >
+                            Anterior
+                            </button>
+
+                            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                            let pageToShow: number;
+                            if (totalPages <= 5) {
+                                pageToShow = i + 1;
+                            } else if (currentPage <= 3) {
+                                pageToShow = i + 1;
+                            } else if (currentPage >= totalPages - 2) {
+                                pageToShow = totalPages - 4 + i;
+                            } else {
+                                pageToShow = currentPage - 2 + i;
+                            }
+
+                            return (
+                                <button
+                                key={i}
+                                onClick={() => setCurrentPage(pageToShow)}
+                                className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${currentPage === pageToShow
+                                    ? "bg-teal-500 text-white border-teal-500"
+                                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    }`}
+                                >
+                                {pageToShow}
+                                </button>
+                            );
+                            })}
+
+                            <button
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className={`${currentPage === totalPages ? '' : 'cursor-pointer'} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
+                            >
+                            Siguiente
+                            </button>
                         </div>
-                        <Paginator
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={(page) => setCurrentPage(page)}
-                        />
-                    </div>
-                )}
+                        )}
+
             </div>
         </div>
     );
