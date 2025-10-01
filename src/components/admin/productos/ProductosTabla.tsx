@@ -238,7 +238,7 @@ const ProductosTabla = () => {
 
                 {/* Paginación */}
                         {filteredProductos.length > 0 && (
-                        <div className="flex justify-center gap-2 mt-8">
+                        <div className="flex justify-center gap-2 mt-8 px-4 pb-6">
                             <button
                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
