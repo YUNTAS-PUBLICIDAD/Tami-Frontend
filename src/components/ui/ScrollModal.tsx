@@ -23,16 +23,14 @@ const ScrollModal = () => {
   const hasReachedBottomRef = useRef(false);
   const hasShownRef = useRef(false);
 
-  // --- TUS rutas (mantuve exactamente las que tenías)
   const allowedRoutes = [
     "/",
-    "/about",
+    "/sobre-nosotros",
     "/productos",
     "/politicas-de-envio",
     "/blog",
   ];
 
-  // Obtener pathname en cliente
   useEffect(() => {
     if (typeof window !== "undefined") {
       setPathname(window.location.pathname);
