@@ -143,6 +143,7 @@ const ProductSlideshow = () => {
                 >
                     <a
                         href={getLinkHref(item)}
+                        title="Información del producto"
                         className="w-full h-full font-extrabold text-xl flex flex-col items-center gap-6"
                     >
                         <img

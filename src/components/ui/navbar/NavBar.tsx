@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, useRef } from "react";
 import type Producto from "../../../models/Product";
 import logoTami from "@images/logos/logo-estatico-100x116.webp";
+import { getApiImageUrl } from "../../../utils/getApiUrl";
 import whatsappIcon from "../../../assets/icons/smi_whatsapp.svg";
 const NavLink = lazy(() => import("./NavLink"));
 const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
@@ -8,6 +9,7 @@ import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 import { getPublicProducts } from "../../../hooks/admin/productos/productos";
 function NavBar() {
+  const apiUrl = import.meta.env.PUBLIC_API_URL || "";
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [search, setSearch] = useState("");
