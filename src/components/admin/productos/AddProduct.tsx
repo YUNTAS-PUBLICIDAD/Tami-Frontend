@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, type FC } from "react";
-import type { ProductApiPOST, ProductFormularioPOST } from "../../../models/Product.ts";
+import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
 import { config, getApiUrl } from "../../../../config.ts";
@@ -19,50 +19,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [productos, setProductos] = useState<Product[]>([]);
   const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
 
-  const [formData, setFormData] = useState<ProductFormularioPOST>({
-    nombre: "",
-    titulo: "",
-    subtitulo: "",
-    descripcion: "",
-    link: "",
-    stock: 100,
-    precio: 199.99,
-    seccion: "Negocio",
-    especificaciones: [],
-    etiqueta: {
-      meta_titulo: "",
-      meta_descripcion: "",
-    },
-    relacionados: [],
-    imagenes: [
-      {
-        url_imagen: null,
-        texto_alt_SEO: "",
-      },
-      {
-        url_imagen: null,
-        texto_alt_SEO: "",
-      },
-      {
-        url_imagen: null,
-        texto_alt_SEO: "",
-      },
-      {
-        url_imagen: null,
-        texto_alt_SEO: "",
-      },
-      {
-        url_imagen: null,
-        texto_alt_SEO: "",
-      },
-    ],
-    textos_alt: [],
-    dimensiones: {
-      alto: "",
-      largo: "",
-      ancho: ""
-    }
-  });
+  const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -161,50 +118,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
   function closeModal() {
     setFormPage(1); // Resetea el número de página
     setShowModal(false);
-    setFormData({
-      nombre: "",
-      titulo: "",
-      subtitulo: "",
-      descripcion: "",
-      link: "",
-      stock: 100,
-      precio: 199.99,
-      seccion: "Negocio",
-      especificaciones: [],
-      etiqueta: {
-        meta_titulo: "",
-        meta_descripcion: "",
-      },
-      relacionados: [],
-      imagenes: [
-        {
-          url_imagen: null,
-          texto_alt_SEO: "",
-        },
-        {
-          url_imagen: null,
-          texto_alt_SEO: "",
-        },
-        {
-          url_imagen: null,
-          texto_alt_SEO: "",
-        },
-        {
-          url_imagen: null,
-          texto_alt_SEO: "",
-        },
-        {
-          url_imagen: null,
-          texto_alt_SEO: "",
-        },
-      ],
-      textos_alt: [],
-      dimensiones: {
-        largo: "",
-        alto: "",
-        ancho: ""
-      }
-    });
+    setFormData(defaultValuesProduct);
   }
 
   function goNextForm() {
@@ -270,6 +184,38 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }));
   };
 
+  const agregarKeyword = () => {
+    setFormData((prev) => ({
+      ...prev,
+      etiqueta: {
+        ...prev.etiqueta,
+        keywords: [...prev.etiqueta.keywords, ""],
+      }
+    }));
+  };
+
+  const handleKeywordsChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const nuevasKeywords = [...formData.etiqueta.keywords];
+    nuevasKeywords[index] = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      etiqueta: {
+        ...prev.etiqueta,
+        keywords: nuevasKeywords
+      }
+    }));
+  };
+
+  const eliminarKeyword = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      etiqueta: {
+        ...prev.etiqueta,
+        keywords: prev.etiqueta.keywords.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true); // Cambia el estado de carga a verdadero
@@ -320,6 +266,18 @@ const AddProduct = ({ onProductAdded }: Props) => {
       return;
     }
 
+    if (
+      formData.etiqueta.keywords.every((keyword) => !keyword)
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Keywords inválidos",
+        text: "⚠️ Los keywords son obligatorios.",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
@@ -333,6 +291,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
+      formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto)
@@ -526,6 +485,38 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                     </p>
                   </div>
+                  {/* keywords */}
+                  <div className="card">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Keywords:</h4>
+                    {formData.etiqueta.keywords.map((k, index) => (
+                      <div className="form-input flex justify-between gap-2">
+                        <input type="text" id="keywords" value={k}
+                          onChange={(e) => handleKeywordsChange(index, e)}
+                        />
+                        <button
+                          type="button"
+                          disabled={index === 0} onClick={() => eliminarKeyword(index)}
+                          className="text-red-600 hover:cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={agregarKeyword}
+                      className="inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Añadir keyword
+                    </button>
+                  </div>
+
                   <div className="form-input">
                     <label>Título:</label>
                     <input

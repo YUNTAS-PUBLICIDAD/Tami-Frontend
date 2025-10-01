@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, type FC } from "react";
-import type { ProductApiPOST, ProductFormularioPOST } from "../../../models/Product.ts";
+import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import React from "react";
 import { config, getApiUrl } from "../../../../config.ts";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
@@ -14,9 +14,6 @@ interface EditProductProps {
     product: Product;
     onProductUpdated: () => Promise<void> | void;
 }
-// type Props = {
-//     onProductAdded?: () => void;
-// };
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -26,50 +23,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const [productos, setProductos] = useState<Product[]>([]);
     const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
 
-    const [formData, setFormData] = useState<ProductFormularioPOST>({
-        nombre: "",
-        titulo: "",
-        subtitulo: "",
-        link: "",
-        descripcion: "",
-        stock: 100,
-        precio: 199.99,
-        seccion: "Trabajo",
-        especificaciones: [],
-        etiqueta: {
-            meta_titulo: "",
-            meta_descripcion: "",
-        },
-        relacionados: [],
-        imagenes: [
-            {
-                url_imagen: null,
-                texto_alt_SEO: "",
-            },
-            {
-                url_imagen: null,
-                texto_alt_SEO: "",
-            },
-            {
-                url_imagen: null,
-                texto_alt_SEO: "",
-            },
-            {
-                url_imagen: null,
-                texto_alt_SEO: "",
-            },
-            {
-                url_imagen: null,
-                texto_alt_SEO: "",
-            },
-        ],
-        textos_alt: [],
-        dimensiones: {
-            largo: "",
-            alto: "",
-            ancho: ""
-        }
-    });
+    const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -122,6 +76,38 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
     };
 
+    const agregarKeyword = () => {
+        setFormData((prev) => ({
+            ...prev,
+            etiqueta: {
+                ...prev.etiqueta,
+                keywords: [...prev.etiqueta.keywords, ""],
+            }
+        }));
+    };
+
+    const handleKeywordsChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const nuevasKeywords = [...formData.etiqueta.keywords];
+        nuevasKeywords[index] = e.target.value;
+        setFormData(prev => ({
+            ...prev,
+            etiqueta: {
+                ...prev.etiqueta,
+                keywords: nuevasKeywords
+            }
+        }));
+    };
+
+    const eliminarKeyword = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            etiqueta: {
+                ...prev.etiqueta,
+                keywords: prev.etiqueta.keywords.filter((_, i) => i !== index)
+            }
+        }));
+    };
+
     const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -165,50 +151,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     function closeModal() {
         setFormPage(1); // Resetea el número de página
         setShowModal(false);
-        setFormData({
-            nombre: "",
-            titulo: "",
-            subtitulo: "",
-            link: "",
-            descripcion: "",
-            stock: 100,
-            precio: 199.99,
-            seccion: "Trabajo",
-            especificaciones: [],
-            etiqueta: {
-                meta_titulo: "",
-                meta_descripcion: "",
-            },
-            relacionados: [],
-            imagenes: [
-                {
-                    url_imagen: null,
-                    texto_alt_SEO: "",
-                },
-                {
-                    url_imagen: null,
-                    texto_alt_SEO: "",
-                },
-                {
-                    url_imagen: null,
-                    texto_alt_SEO: "",
-                },
-                {
-                    url_imagen: null,
-                    texto_alt_SEO: "",
-                },
-                {
-                    url_imagen: null,
-                    texto_alt_SEO: "",
-                },
-            ],
-            textos_alt: [],
-            dimensiones: {
-                largo: "",
-                alto: "",
-                ancho: ""
-            }
-        });
+        setFormData(defaultValuesProduct);
     }
 
     function goNextForm() {
@@ -239,16 +182,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     }
 
     const addNewSpecification = () => {
-        // const newKey = prompt("Nombre de la nueva especificación:");
-        // if (newKey && !formData.especificaciones[newKey]) {
-        //     setFormData((prev) => ({
-        //         ...prev,
-        //         especificaciones: {
-        //             ...prev.especificaciones,
-        //             [newKey]: "",
-        //         },
-        //     }));
-        // }
         if (nuevaEspecificacion.trim()) {
             setFormData(prev => ({
                 ...prev,
@@ -322,6 +255,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[meta_descripcion]",
                 formData.etiqueta.meta_descripcion
             );
+            formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
             formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
@@ -412,7 +346,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             // Transformar imágenes existentes
             let imagenesTransformadas =
                 product.imagenes?.map((img) => ({
-                    url_imagen: `https://apitami.tamimaquinarias.com${img.url_imagen}`,
+                    url_imagen: `${config.apiUrl}${img.url_imagen}`,
                     texto_alt_SEO: img.texto_alt_SEO || "",
                 })) || [];
 
@@ -423,7 +357,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             const relacionadosIds =
                 product.productos_relacionados?.map((rel) => (rel as { id: number }).id) || [];
 
-            console.log("producto: ", product);
+            // lista de strings para transformar en Array
+            const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
 
             setFormData({
                 nombre: product.nombre,
@@ -432,6 +367,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 link: product.link,
                 descripcion: product.descripcion,
                 etiqueta: {
+                    keywords: keywordsArray || [""],
                     meta_titulo: product.etiqueta?.meta_titulo || "",
                     meta_descripcion: product.etiqueta?.meta_descripcion || "",
                 },
@@ -564,6 +500,39 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             {formData.etiqueta.meta_descripcion.length} / 200 caracteres
                                         </p>
                                     </div>
+
+                                    {/* keywords */}
+                                    <div className="card">
+                                        <h4 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Keywords:</h4>
+                                        {formData.etiqueta.keywords.map((k, index) => (
+                                            <div className="form-input flex justify-between gap-2">
+                                                <input type="text" id="keywords" value={k}
+                                                    onChange={(e) => handleKeywordsChange(index, e)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    disabled={index === 0} onClick={() => eliminarKeyword(index)}
+                                                    className="text-red-600 hover:cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+
+                                        <button
+                                            type="button"
+                                            onClick={agregarKeyword}
+                                            className="inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            Añadir keyword
+                                        </button>
+                                    </div>
+
                                     <div className="form-input">
                                         <label>Título:</label>
                                         <input
