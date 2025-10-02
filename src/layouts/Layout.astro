@@ -8,8 +8,10 @@ interface Props {
   title: string;
   description?: string;
   canonicalUrl?: string;
+  keywords?: string;
 }
-const { title, description, canonicalUrl } = Astro.props;
+const { title, description, canonicalUrl, keywords } = Astro.props;
+
 ---
 
 <!doctype html>
@@ -23,9 +25,27 @@ const { title, description, canonicalUrl } = Astro.props;
     />
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
     <!-- Preload de fuentes locales WOFF2 -->
-    <link rel="preload" href="/fonts/montserrat-regular.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/montserrat-600.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/montserrat-800.woff2" as="font" type="font/woff2" crossorigin> 
+    <link
+      rel="preload"
+      href="/fonts/montserrat-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/montserrat-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/montserrat-800.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
     <link rel="preconnect" href="https://apitami.tamimaquinarias.com" />
 
@@ -33,9 +53,10 @@ const { title, description, canonicalUrl } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <meta name="author" content="Tamimaquinarias" />
     <meta name="robots" content="index, follow" />
-    <meta name="publisher" content="Tami Maquinarias">
+    <meta name="publisher" content="Tami Maquinarias" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {keywords && <meta name="keywords" content={keywords} />}
     <!-- <style>
       body {
         font-family:
@@ -82,34 +103,33 @@ const { title, description, canonicalUrl } = Astro.props;
   </head>
 
   <body class="font-montserrat w-full">
-    
-  <NavBar client:idle />
-  <slot />
-  <Footer />
-  <ScrollModal client:load />
-  {/* Activado con el atributo `client:load`.*/}
-  <script is:inline>
-    function addOpenScrollListeners() {
-      document.querySelectorAll('#open-scroll-btn').forEach(btn => {
-        if (!btn.dataset.listenerAdded) {
-          btn.addEventListener("click", () => {
-            window.dispatchEvent(new Event("open-scroll-modal"));
-          });
-          btn.dataset.listenerAdded = "true";
-        }
-      });
-    }
+    <NavBar client:idle />
+    <slot />
+    <Footer />
+    <ScrollModal client:load />
+    {/* Activado con el atributo `client:load`.*/}
+    <script is:inline>
+      function addOpenScrollListeners() {
+        document.querySelectorAll("#open-scroll-btn").forEach((btn) => {
+          if (!btn.dataset.listenerAdded) {
+            btn.addEventListener("click", () => {
+              window.dispatchEvent(new Event("open-scroll-modal"));
+            });
+            btn.dataset.listenerAdded = "true";
+          }
+        });
+      }
 
-    // Inicial
-    addOpenScrollListeners();
-
-    // Observer para detectar nuevos botones en el DOM
-    const observer = new MutationObserver(() => {
+      // Inicial
       addOpenScrollListeners();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  </script>
-  {/* <WhatsApp /> */}
-  {/*Ya hay un botón en la navbar con ello. Se dejaría ese o este?*/}
+
+      // Observer para detectar nuevos botones en el DOM
+      const observer = new MutationObserver(() => {
+        addOpenScrollListeners();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    </script>
+    {/* <WhatsApp /> */}
+    {/*Ya hay un botón en la navbar con ello. Se dejaría ese o este?*/}
   </body>
 </html>

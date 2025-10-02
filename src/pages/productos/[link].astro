@@ -1,0 +1,244 @@
+---
+import type Producto from "src/models/Product";
+import Layout from "../../layouts/Layout.astro";
+import { ProductoService } from "src/services/producto.service";
+import ModalDetalles from "src/pages/productos/ModalDetalles.astro";
+import boxSize from "@icons/box-size.svg";
+import ArrowProducts from "../../assets/icons/flecha-product.svg";
+import { config } from "config";
+import SchemaMarkup from "src/components/SchemaMarkup.astro";
+const getApiUrl = config.apiUrl;
+const productosUrl = config.endpoints.productos;
+// Las páginas se generan en tiempo de build, no en tiempo de solicitud
+// Por lo tanto, necesitamos definir todas las rutas posibles de antemano mediante el fetct.
+// Si se agrega un nuevo producto, se debe reconstruir el sitio (build) para que la nueva página esté disponible.
+export async function getStaticPaths() {
+  const response = await ProductoService.getAllProductos();
+
+  return response.map((producto: Producto) => ({
+    params: { link: producto.link },
+    props: { producto },
+  }));
+}
+
+// Props que recibirá el componente
+const { link } = Astro.params;
+const { producto } = Astro.props as { producto: Producto };
+if (!producto) {
+  throw new Error(`Producto con link "${link}" no encontrado.`);
+}
+---
+
+<Layout
+  title={producto.etiqueta.meta_titulo || producto.titulo}
+  description={producto.etiqueta.meta_descripcion || producto.descripcion}
+  keywords={producto.etiqueta.keywords}
+  canonicalUrl={`${Astro.site}productos/${producto.link}`}
+>
+  <div class="w-full">
+    {/* -------------------- HERO -------------------- */}
+    <div
+      class="pt-16 md:pt-32 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden xl:h-screen"
+    >
+      <div class="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
+        <div class="flex items-center gap-6 mb-4">
+          <div class="w-5 md:w-6 h-5 md:h-6">
+            <img
+              src={ArrowProducts.src}
+              alt="Flecha"
+              title="Flecha"
+              class="w-full h-full"
+              loading="lazy"
+            />
+          </div>
+          <h2 class="text-xl uppercase md:text-2xl font-bold">
+            {producto.titulo}
+          </h2>
+        </div>
+
+        <h1
+          class="text-2xl md:text-4xl/14 uppercase font-bold mb-6 md:mb-8"
+          id="product-subtitle"
+        >
+          {producto.subtitulo}
+        </h1>
+
+        <button
+          id="btnQuotationHero"
+          class="bg-white text-teal-600 px-8 md:px-12 py-2 md:py-3 w-full rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition cursor-pointer"
+        >
+          ¡COTÍZALO!
+        </button>
+      </div>
+
+      {/* Imagen decorativa derecha */}
+      <div
+        class="hidden md:flex absolute right-0 top-32 w-full md:w-1/2 h-full bg-white
+                  rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%]
+                  rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
+      >
+        <img
+          id="product-img"
+          src={`${getApiUrl}${producto.imagenes?.[0]?.url_imagen || "/placeholder.png"}`}
+          alt={producto.nombre}
+          title={producto.nombre}
+          class="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    {/* -------------------- MAIN CONTENT -------------------- */}
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        {/* Galería izquierda */}
+        <div class="space-y-4 w-full max-w-[440px]">
+          {/* Imagen principal */}
+          <div
+            class="w-full aspect-[1/1] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
+          >
+            <img
+              id="product-viewer"
+              title={producto.nombre}
+              src={`${getApiUrl}${producto.imagenes?.[0]?.url_imagen}`}
+              alt={producto.titulo}
+              class="w-full h-full object-contain"
+              loading="lazy"
+            />
+          </div>
+          {/* Miniaturas */}
+          <div class="grid grid-cols-4 gap-2 w-full" id="thumbnails">
+            {
+              producto.imagenes.slice(0, 4).map((image, index) => (
+                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300">
+                  <img
+                    title={image.imageTitle || image.texto_alt_SEO}
+                    src={`${getApiUrl}${image.url_imagen}`}
+                    alt={`${image.texto_alt_SEO}`}
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        {/* Información producto */}
+        <div>
+          <div class="mb-6">
+            <h3 class="text-3xl font-black mb-2 text-teal-800">
+              {producto.titulo}
+            </h3>
+            <h1 class="font-bold mb-2 text-lg">Información del producto:</h1>
+            <p class="text-gray-700 text-justify break-words">
+              {producto.descripcion}
+            </p>
+          </div>
+
+          {/* Especificaciones */}
+          <div class="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
+            <h3 class="font-bold mb-2 text-lg">Detalles del producto</h3>
+            <h3 class="font-bold mb-2">Especificaciones técnicas:</h3>
+            <ul class="list-disc pl-5 space-y-2 text-gray-700" id="specs-list">
+              {producto.especificaciones.map((spec) => <li>{spec.valor}</li>)}
+            </ul>
+
+            <h3 class="font-bold mt-4 mb-4">Dimensiones:</h3>
+            <div class="flex items-start gap-4 md:gap-12">
+              <div class="w-24 md:w-32">
+                <img
+                  src={boxSize.src}
+                  title="Box Size"
+                  alt="Box Size"
+                  class="w-full h-auto"
+                  loading="lazy"
+                />
+              </div>
+              <ul class="space-y-2 md:space-y-4" id="product-dimensions">
+                <li class="flex items-center gap-2">
+                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">H</span>
+                  Alto - {producto.dimensiones.alto} cm
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">L</span>
+                  Largo - {producto.dimensiones.largo} cm
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">A</span>
+                  Ancho - {producto.dimensiones.ancho} cm
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <button
+            id="btnQuotationDetail"
+            class="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition cursor-pointer"
+          >
+            COTIZACIÓN
+          </button>
+        </div>
+      </div>
+
+      {/* -------------------- PRODUCTOS SIMILARES -------------------- */}
+      <div class="mt-8 md:mt-12">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-teal-500">
+          PRODUCTOS SIMILARES
+        </h2>
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6"
+          id="related-products-container"
+        >
+          {
+            producto?.productos_relacionados?.map((related) => (
+              <a
+                href={`/productos/${related.link}`}
+                class="group cursor-pointer"
+                title={`Ver detalles de ${producto.titulo}`}
+              >
+                <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2">
+                  <img
+                    src={`${getApiUrl}${related.imagenes?.[0]?.url_imagen || "/placeholder.png"}`}
+                    alt={related.nombre}
+                    title={related.nombre}
+                    class="w-full h-full object-cover group-hover:scale-105 transition"
+                    loading="lazy"
+                  />
+                </div>
+                <h3 class="text-center font-bold text-xs md:text-sm">
+                  {related.nombre}
+                </h3>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+    <ModalDetalles link={producto.link} />
+  </div>
+  <SchemaMarkup product={producto} />
+</Layout>
+
+<script>
+    
+  document.addEventListener("DOMContentLoaded", () => {
+    const mainImage = document.getElementById("product-viewer") as HTMLImageElement | null;
+    const thumbnails = document.querySelectorAll("#thumbnails img");
+
+    thumbnails.forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        if (mainImage && thumb instanceof HTMLImageElement) {
+          mainImage.src = thumb.src;
+          mainImage.alt = thumb.alt;
+        }
+
+        // Quitar estado activo de todas las miniaturas
+        thumbnails.forEach((t) => t.parentElement?.classList.remove("ring-2", "ring-teal-500"));
+
+        // Resaltar la miniatura seleccionada
+        thumb.parentElement?.classList.add("ring-2", "ring-teal-500");
+      });
+    });
+  });
+</script>

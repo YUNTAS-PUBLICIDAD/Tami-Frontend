@@ -65,7 +65,7 @@ export default interface Producto {
   subtitulo: string;
   descripcion: string;
   especificaciones: {valor: string}[];
-  productos_relacionados: object[] | null;
+  productos_relacionados: Producto[] | null;
   imagenes: ImagenBack[]; // las adicionales
   stock: number;
   precio: number;

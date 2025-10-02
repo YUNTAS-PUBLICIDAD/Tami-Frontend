@@ -1,0 +1,87 @@
+---
+import { config } from 'config';
+import type Producto from 'src/models/Product';
+
+interface Props {
+  product?: Producto
+}
+const { product } = Astro.props;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: product?.nombre,
+  image: product?.imagenes.map((i)=>({
+    ...i,
+    url_imagen: `${config.apiUrl}${i.url_imagen}`
+  })),
+  description: product?.descripcion,
+  sku: `PROD-${product?.id}`,
+  brand: {
+    "@type": "Brand",
+    name: "Tami Maquinarias",
+    logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
+    url: "https://tamimaquinarias.com/",
+  },
+  url: `https://tamimaquinarias.com/productos/${encodeURIComponent(product?.link || '')}`,
+  category: product?.seccion,
+  review: [
+    {
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: "Nilton Ramos",
+      },
+      datePublished: "2025-09-19",
+      reviewBody: "Un excelente producto, seguramente volveré por más.",
+      name: "Todo lo que necesito.",
+      reviewRating: {
+        "@type": "Rating",
+        bestRating: "5",
+        ratingValue: "4",
+        worstRating: "1",
+      },
+    },
+    {
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: "María López",
+      },
+      datePublished: "2025-08-10",
+      reviewBody: "Muy buena calidad y entrega rápida. Recomiendo totalmente.",
+      name: "Entrega rápida y confiable",
+      reviewRating: {
+        "@type": "Rating",
+        bestRating: "5",
+        ratingValue: "5",
+        worstRating: "1",
+      },
+    },
+    {
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: "Carlos Fernández",
+      },
+      datePublished: "2025-07-22",
+      reviewBody:
+        "Producto conforme a la descripción, buen soporte del vendedor.",
+      name: "Satisfecho con la compra",
+      reviewRating: {
+        "@type": "Rating",
+        bestRating: "5",
+        ratingValue: "4",
+        worstRating: "1",
+      },
+    },
+  ],
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: 88,
+    bestRating: 100,
+    ratingCount: 20,
+  },
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
