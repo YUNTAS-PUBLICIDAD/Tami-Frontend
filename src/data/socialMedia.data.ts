@@ -13,7 +13,7 @@ const socialMediaLinks = [
     linkTitle: "Visita nuestro perfil de TikTok", 
   },
   {
-    url: "https://www.instagram.com/tami_maquinarias/",
+    url: "https://www.instagram.com/tami2_02590/?igsh=MWZoYnZjM3FxYXN5cQ%3D%3D",
     socialMediaName: "Instagram",
     image: instagramIcon,
     imageTitle: "Instagram de Tami Maquinarias",
