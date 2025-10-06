@@ -8,9 +8,9 @@ import CopyText from "./CopyText.astro";
 
 
 <footer class="bg-teal-700 text-white py-12">
-  <div class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+  <div class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center lg:items-start text-center lg:text-left">
     <!-- Separacion en 3 bloques-->
-    <div class="flex items-start gap-8 w-full">
+  <div class="flex flex-col lg:flex-row items-center lg:items-start gap-8 w-full mb-8 lg:mb-0">
       <img
         src={logoTami.src}
         alt="Logo de Tami"
@@ -31,8 +31,8 @@ import CopyText from "./CopyText.astro";
         </ul>
       </div>
     </div>
-    <div class="flex justify-center">
-      <div class="text-left">
+    <div class="flex justify-center mb-8 lg:mb-0">
+      <div class="text-center lg:text-left">
         <h4 class="uppercase font-bold text-xl mb-5 tracking-wide">CONTACTO</h4>
         <p class="font-bold mb-1 text-base">Horario de atención</p>
         <p class="mb-4 text-base">Lunes a Viernes<br />9:00 am a 9:00 pm</p>
@@ -42,7 +42,7 @@ import CopyText from "./CopyText.astro";
         <CopyText>+51978883199</CopyText>
       </div>
     </div>
-    <div class="flex flex-col items-center space-y-8">
+  <div class="flex flex-col items-center space-y-8">
       <img
         src={mascotaTami.src}
         title="Mascota Tami"

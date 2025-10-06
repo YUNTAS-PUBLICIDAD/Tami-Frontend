@@ -237,13 +237,13 @@ const BlogsTable = () => {
               {currentItems.map((blog) => (
                 <div
                   key={blog.id}
-                  className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
+                  className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col w-full max-w-[370px] mx-auto"
                 >
-                  <div className="relative h-48">
+                  <div className="relative aspect-video bg-gray-100 flex items-center justify-center w-full h-[210px]">
                     <img
                       src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
                       alt={blog.titulo}
-                      className="w-full h-full object-cover"
+                      className="max-w-full max-h-full object-contain mx-auto"
                     />
                     <div className="absolute top-0 right-0 m-2 flex space-x-1">
                       <button
