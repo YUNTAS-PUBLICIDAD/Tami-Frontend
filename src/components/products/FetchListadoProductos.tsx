@@ -260,7 +260,9 @@ const Seccion = React.memo(function Seccion({ nombreSeccion, productosDeLaSeccio
           </h2>
 
           {/* Grid de productos - de 1 columna en móvil pequeño a 4 columnas en desktop */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr mt-4 sm:mt-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4
+                       gap-2 xs:gap-4 sm:gap-6 md:gap-8
+                       mt-4 sm:mt-6">
             {productCards}
           </div>
         </div>
