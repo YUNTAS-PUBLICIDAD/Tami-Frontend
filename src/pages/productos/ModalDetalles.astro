@@ -155,8 +155,8 @@ const modalImage = linkImages[link] || linkImages["default"];
     },
   };
 
-  // Objeto con las rutas de imágenes para cada producto
-  const linkImages = {
+  // Objeto con las rutas de imágenes para cada producto (fallback)
+  const linkImages: Record<string, string> = {
     "soldadora-lingba": "/images/popup/soldadora-lingba.webp",
     "purificador-de-agua": "/images/popup/purificador-de-agua.webp",
     "maquina-de-embalaje-de-te": "/images/popup/maquina-de-embalaje-de-te.webp",
@@ -199,6 +199,14 @@ const modalImage = linkImages[link] || linkImages["default"];
     }
   }
 
+  /**
+   * Actualiza la imagen del modal popup desde la API del producto.
+   * 
+   * Prioridad de imágenes:
+   * 1. Imagen con tipo='popup' desde producto_imagenes (subida desde el admin)
+   * 2. Imagen hardcodeada en linkImages (fallback para productos antiguos)
+   * 3. Imagen default
+   */
   function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
     const modalImg = document.getElementById(
@@ -209,16 +217,40 @@ const modalImage = linkImages[link] || linkImages["default"];
 
     const productLink = container.dataset.productLink || "";
     console.log("Link del producto desde dataset:", productLink);
-    const imagen = linkImages[productLink] || linkImages["default"];
-    console.log("Imagen seleccionada:", imagen);
 
-    console.log("Imagen seleccionada:", imagen);
+    // Intentar obtener la imagen desde el producto cargado en la API
+    let imagen = linkImages["default"];
+    let imagenAlt = "Imagen por defecto";
+
+    if (window.__detalleProducto) {
+      const producto = window.__detalleProducto;
+      // Buscar imagen con tipo 'popup' en producto_imagenes
+      const imagenPopup = producto.producto_imagenes?.find(
+        (img: any) => img.tipo === 'popup'
+      );
+      
+      if (imagenPopup?.url_imagen) {
+        imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
+        imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
+        console.log("Imagen popup encontrada desde API:", imagen);
+      } else {
+        // Fallback: usar imagen hardcodeada si existe, sino usar default
+        imagen = linkImages[productLink] || linkImages["default"];
+        imagenAlt = `Imagen para ${productLink}`;
+        console.log("Usando imagen hardcodeada o default:", imagen);
+      }
+    } else {
+      // Si no hay producto cargado, usar imagen hardcodeada
+      imagen = linkImages[productLink] || linkImages["default"];
+      imagenAlt = `Imagen para ${productLink}`;
+      console.log("Producto no cargado, usando imagen hardcodeada:", imagen);
+    }
 
     // Verificar si la imagen existe
     const testImage = new Image();
     testImage.onload = function () {
       modalImg.src = imagen;
-      modalImg.alt = `Imagen para ${productLink}`;
+      modalImg.alt = imagenAlt;
     };
     testImage.onerror = function () {
       console.error("Error al cargar la imagen:", imagen);
