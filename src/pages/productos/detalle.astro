@@ -247,6 +247,41 @@ const productosUrl = config.endpoints.productos;
     infoDescription.textContent = product.descripcion;
 
     if (product.imagenes?.length) {
+      let currentIndex = 0;
+      let carouselInterval = null;
+      let carouselTimeout = null;
+      const totalImages = Math.min(product.imagenes.length, 4);
+
+      function showImage(index) {
+        currentIndex = index;
+        productViewer.src = `${getApiUrl}${product.imagenes[index].url_imagen}`;
+        productViewer.alt = `${product.titulo} - Vista ${index + 1}`;
+        Array.from(imagesList.children).forEach((div, i) => {
+          if (i === index) {
+            div.classList.add("ring-2", "ring-teal-500");
+          } else {
+            div.classList.remove("ring-2", "ring-teal-500");
+          }
+        });
+      }
+
+      function startCarousel() {
+        if (carouselInterval) clearInterval(carouselInterval);
+        carouselInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % totalImages;
+          showImage(currentIndex);
+        }, 5000);
+      }
+
+      function pauseCarouselAndResume(index) {
+        if (carouselInterval) clearInterval(carouselInterval);
+        if (carouselTimeout) clearTimeout(carouselTimeout);
+        showImage(index);
+        carouselTimeout = setTimeout(() => {
+          startCarousel();
+        }, 5000);
+      }
+
       productViewer.src = `${getApiUrl}${product.imagenes[0].url_imagen}`;
       productViewer.alt = `${product.titulo} - Vista 1`;
       imagesList.innerHTML = "";
@@ -261,11 +296,12 @@ const productosUrl = config.endpoints.productos;
         img.className = "w-full h-full object-cover";
         div.appendChild(img);
         div.onclick = () => {
-          productViewer.src = img.src;
-          productViewer.alt = img.alt;
+          pauseCarouselAndResume(index);
         };
         imagesList.appendChild(div);
       });
+      showImage(0);
+      startCarousel();
     }
 
     displaySpecsAndDimensions(product.especificaciones, product.dimensiones);
@@ -314,17 +350,15 @@ const productosUrl = config.endpoints.productos;
       a.className = "group cursor-pointer";
       a.title = `Ver detalles de ${prod.titulo}`;
       const div = document.createElement("div");
-      div.className =
-        "aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2";
+      div.className = "aspect-video bg-white rounded-xl overflow-hidden mb-3 flex items-center justify-center border border-teal-100 shadow-sm transition-all duration-300 group-hover:shadow-lg";
       const img = document.createElement("img");
       img.src = `${getApiUrl}${prod.imagenes?.[0]?.url_imagen || "/placeholder.png"}`;
       img.alt = prod.titulo;
       img.title = prod.titulo;
       img.loading = "lazy";
-      img.className =
-        "w-full h-full object-cover group-hover:scale-105 transition";
+      img.className = "w-full h-full object-contain transition-transform duration-300 group-hover:scale-102";
       const h3 = document.createElement("h3");
-      h3.className = "text-center font-bold text-xs md:text-sm";
+      h3.className = "text-center font-semibold text-sm md:text-base text-teal-700 mt-2 mb-1 drop-shadow-sm tracking-wide group-hover:text-teal-900 transition-colors duration-300";
       h3.textContent = prod.titulo;
       div.appendChild(img);
       a.appendChild(div);
