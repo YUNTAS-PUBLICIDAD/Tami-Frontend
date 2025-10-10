@@ -263,7 +263,6 @@ const Seccion = React.memo(function Seccion({ nombreSeccion, productosDeLaSeccio
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4
                        gap-2 xs:gap-4 sm:gap-6 md:gap-8
                        mt-4 sm:mt-6">
-<<<<<<< HEAD
             {productosDeLaSeccion.length > 0 ? (
                 productosDeLaSeccion.map((producto) => (
                     <ProductCard key={producto.id} producto={producto} />
@@ -273,9 +272,8 @@ const Seccion = React.memo(function Seccion({ nombreSeccion, productosDeLaSeccio
                   No hay productos en esta sección.
                 </p>
             )}
-=======
             {productCards}
->>>>>>> db6f5270a9adad6791d7935e50dce4a9ef0250ea
+
           </div>
         </div>
       </div>
