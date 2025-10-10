@@ -35,6 +35,11 @@ export interface ProductFormularioPOST {
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
+  imagen_popup?: File | null;
+  texto_alt_popup?: string;
+  imagen_email?: File | null;
+  texto_alt_email?: string;
+  video_url?: string;
   etiqueta: {
     keywords: string[];
     meta_titulo: string;
@@ -47,6 +52,7 @@ export interface ImagenBack {
   url_imagen: string;
   texto_alt_SEO: string;
   imageTitle?: string;
+  tipo?: string; // 'galeria', 'popup', 'email'
 }
 
 // Usado para el formulario de creación/edición
@@ -67,8 +73,10 @@ export default interface Producto {
   especificaciones: {valor: string}[];
   productos_relacionados: object[] | null;
   imagenes: ImagenBack[]; // las adicionales
+  producto_imagenes?: ImagenBack[]; // Todas las imágenes incluyendo popup
   stock: number;
   precio: number;
+  video_url?: string;
   createdAt: string | null;
   etiqueta: {
     keywords: string
@@ -126,5 +134,10 @@ export const defaultValuesProduct: ProductFormularioPOST = {
     alto: "",
     largo: "",
     ancho: ""
-  }
+  },
+  imagen_popup: null,
+  texto_alt_popup: "",
+  imagen_email: null,
+  texto_alt_email: "",
+  video_url: ""
 };
