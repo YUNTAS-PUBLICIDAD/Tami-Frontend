@@ -241,6 +241,14 @@ const removeLoaderString = "\n  function removeLoader() {\n    const loader = do
     }
     metaDescription.content = product.etiqueta?.meta_descripcion || 'Descripción por defecto';
 
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (!metaKeywords) {
+      metaKeywords = document.createElement("meta");
+      metaKeywords.name = "keywords";
+      document.head.appendChild(metaKeywords);
+    }
+    metaKeywords.content = product.etiqueta?.keywords || "";
+
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
