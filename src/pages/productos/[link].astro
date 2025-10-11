@@ -36,4 +36,5 @@ if (!producto) {
   canonicalUrl={`${Astro.site}productos/${producto.link}`}
 >
   <ProductPage producto={producto} client:idle />
+  <ModalDetalles link={producto.link} seccion={producto.seccion} />
 </Layout>

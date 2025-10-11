@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import boxSize from "@icons/box-size.svg";
 import ArrowProducts from "../../assets/icons/flecha-product.svg";
-import type Producto from 'src/models/Product'
-import ModalDetalles from 'src/pages/productos/ModalDetalles.astro'
+import type Producto from '../../models/Product'
 import { insertJsonLd } from "../../utils/schema-markup-generator";
 import { config } from 'config';
 
@@ -16,12 +15,6 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     useEffect(() => {
         insertJsonLd("product", producto);
     }, [producto]);
-
-    if (!producto) {
-        <div className='min-h-screen flex items-center justify-center'>
-            No hay producto | 404
-        </div>
-    }
 
     return (
         <div className="w-full">
@@ -67,7 +60,6 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                   rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
                 >
                     <img
-                        id="product-img"
                         src={`${config.apiUrl}${producto.imagenes[0].url_imagen || "/placeholder.png"}`}
                         alt={producto.nombre}
                         title={producto.nombre}
@@ -100,7 +92,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                                 producto.imagenes.slice(0, 4).map((image, index) => (
                                     <div
                                         key={index}
-                                        className={`aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ${image.url_imagen === productViewer && 'border-2 border-b-cyan-500'}`}
+                                        className={`aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ${image.url_imagen === productViewer && 'border-2 border-teal-700'}`}
                                         onClick={() => {
                                             setProductViewer(image.url_imagen)
                                         }}
@@ -210,7 +202,6 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                     </div>
                 </div>
             </div>
-            {/* <ModalDetalles link={producto.link} /> */}
         </div>
     )
 }
