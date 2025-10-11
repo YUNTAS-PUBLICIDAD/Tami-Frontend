@@ -1,16 +1,17 @@
-type MappedData = { success: boolean; message: string; data: any };
+import { config } from "config";
+import type Producto from "src/models/Product";
 
 export function insertJsonLd(
   type: "product" | "blog",
-  mapped: MappedData
+  producto: Producto
 ) {
   try {
     let jsonLd: object;
 
     if (type === "product") {
-      jsonLd = generateProductJsonLd(mapped.data);
+      jsonLd = generateProductJsonLd(producto);
     } else if (type === "blog") {
-      jsonLd = generateBlogJsonLd(mapped.data);
+      jsonLd = generateBlogJsonLd(producto);
     } else {
       throw new Error(`Tipo no soportado: ${type}`);
     }
@@ -27,9 +28,9 @@ export function insertJsonLd(
 }
 
 // Función para generar JSON-LD dinámicamente a partir del producto
-export function generateProductJsonLd(product: any) {
+export function generateProductJsonLd(product: Producto) {
   const images = [
-    ...(product.imagenes?.map((img: any) => img.url_imagen) || [])
+    ...(product.imagenes?.map((img: any) => `${config.apiUrl}${img.url_imagen}`) || [])
   ];
 
   return {
@@ -45,7 +46,7 @@ export function generateProductJsonLd(product: any) {
       logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
       url: "https://tamimaquinarias.com/",
     },
-    url: `https://tamimaquinarias.com/productos/detalle/?link=${encodeURIComponent(product.link)}`,
+    url: `https://tamimaquinarias.com/productos/${encodeURIComponent(product.link)}`,
     category: product.seccion,
     /* offers: {
       "@type": "Offer",

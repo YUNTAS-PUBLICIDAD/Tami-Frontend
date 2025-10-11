@@ -8,8 +8,9 @@ interface Props {
   title: string;
   description?: string;
   canonicalUrl?: string;
+  keywords?: string;
 }
-const { title, description, canonicalUrl } = Astro.props;
+const { title, description, canonicalUrl, keywords } = Astro.props;
 ---
 
 <!doctype html>
@@ -36,6 +37,7 @@ const { title, description, canonicalUrl } = Astro.props;
     <meta name="publisher" content="Tami Maquinarias">
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {keywords && <meta name="keywords" content={keywords}/>}
     <!-- <style>
       body {
         font-family:

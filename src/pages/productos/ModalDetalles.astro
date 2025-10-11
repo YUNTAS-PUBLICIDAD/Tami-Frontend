@@ -50,7 +50,7 @@ const modalImage = linkImages[link] || linkImages["default"];
           title={`Imagen para ${link}`}
           class="h-full w-auto object-cover"
           loading="lazy"
-          onError="this.onerror=null; this.src='/images/popup/default.webp'"
+          onerror="this.onerror=null; this.src='/images/popup/default.webp'"
         />
       </div>
     </div>

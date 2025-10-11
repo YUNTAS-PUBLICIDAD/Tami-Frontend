@@ -333,7 +333,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: Props) {
 
   return (
     <a
-      href={`/productos/detalle?link=${producto.link}`}
+      href={`/productos/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
       className="my-4 sm:my-6 md:my-10 flex flex-col items-center group hover:cursor-pointer w-full"
     >
