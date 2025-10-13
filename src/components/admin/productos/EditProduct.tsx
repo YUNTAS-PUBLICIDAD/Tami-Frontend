@@ -291,9 +291,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 formDataToSend.append('imagen_email', formData.imagen_email);
                 formDataToSend.append('texto_alt_email', formData.texto_alt_email || '');
             }
-            if (formData.imagen_Whatsapp) {
-                formDataToSend.append('imagen_email', formData.imagen_Whatsapp);
-                formDataToSend.append('texto_alt_email', formData.texto_alt_Whatsapp || '');
+            if (formData.imagen_whatsapp) {
+                formDataToSend.append('imagen_email', formData.imagen_whatsapp);
+                formDataToSend.append('texto_alt_email', formData.texto_alt_whatsapp || '');
             }
             // Agregar URL del video si existe
             if (formData.video_url) {

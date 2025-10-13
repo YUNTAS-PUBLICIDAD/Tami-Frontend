@@ -328,9 +328,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
       
       // Agregar imagen Whatsapp y texto alt Whatsapp al FormData
-      if (formData.imagen_Whatsapp) {
-        formDataToSend.append('imagen_Whatsapp', formData.imagen_Whatsapp);
-        formDataToSend.append('texto_alt_Whatsapp', formData.texto_alt_Whatsapp || '');
+      if (formData.imagen_whatsapp) {
+        formDataToSend.append('imagen_Whatsapp', formData.imagen_whatsapp);
+        formDataToSend.append('texto_alt_Whatsapp', formData.texto_alt_whatsapp || '');
       }
 
       // Agregar URL del video si existe
