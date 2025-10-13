@@ -297,22 +297,17 @@ const modalImage = linkImages[link] || linkImages["default"];
       const telefono = "+51 " + data.get("telefono");
       const correo = data.get("correo");
       const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
-
-      const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-      /* window.open(
-        `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`,
-        "_blank"
-      ); */
-
+      
       try {
-        const responseWhatsApp = await fetch(`${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`, {
+        const responseWhatsApp = await fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            telefono: telefono,
-            comentario: mensaje,
+            phone: telefono,
+            email: correo,
+            link: productLink
           }),
         });
 
