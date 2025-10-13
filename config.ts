@@ -53,7 +53,7 @@ export const config = {
     },
     whatsapp:{
       //Endpoints de whatsapp
-      sendMessageAccept: "/api/v1/whatsapp/sendMessageAccept",
+      info: "/api/v1/whatsapp/solicitar-info-producto",
     }
   },
 };
