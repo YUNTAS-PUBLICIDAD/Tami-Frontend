@@ -369,57 +369,11 @@ const ProductCard = React.memo(function ProductCard({ producto }: Props) {
         )}
       </div>
       <div className="flex flex-row justify-center items-center text-teal-700 mt-3">
-        <svg
-          viewBox="0 0 25 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
-        >
-          <path
-        d="M16 4L8 12L16 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(-2, 0)"
-          ></path>
-          <path
-        d="M16 4L8 12L16 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(5, 0)"
-          ></path>
-        </svg>
         <div className="flex-grow text-center group w-full px-2">
           <h3 className="text-base sm:text-lg font-bold text-teal-700 leading-snug break-words whitespace-normal group-hover:scale-105 transition-transform duration-300 ease-in-out">
             {producto.nombre}
           </h3>
         </div>
-        <svg
-          viewBox="0 0 25 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
-        >
-          <path
-        d="M8 4L16 12L8 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(2, 0)"
-          ></path>
-          <path
-        d="M8 4L16 12L8 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(-5, 0)"
-          ></path>
-        </svg>
       </div>
     </a>
   );
