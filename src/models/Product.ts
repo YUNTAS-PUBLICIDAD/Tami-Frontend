@@ -35,9 +35,9 @@ export interface ProductFormularioPOST {
   imagenes: ImagenForm[];
   relacionados: number[];
   textos_alt: string[];
-  imagen_popup?: File | null;
+  imagen_popup?: File | string | null;
   texto_alt_popup?: string;
-  imagen_email?: File | null;
+  imagen_email?: File | string | null;
   texto_alt_email?: string;
   video_url?: string;
   etiqueta: {
