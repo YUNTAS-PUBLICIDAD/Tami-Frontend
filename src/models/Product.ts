@@ -39,6 +39,8 @@ export interface ProductFormularioPOST {
   texto_alt_popup?: string;
   imagen_email?: File | string | null;
   texto_alt_email?: string;
+  imagen_whatsapp?: File | null;
+  texto_alt_whatsapp?: string;
   video_url?: string;
   etiqueta: {
     keywords: string[];

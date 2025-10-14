@@ -247,7 +247,6 @@ const { link = "" } = Astro.props as ModalProps;
       const telefono = "+51 " + data.get("telefono");
       const correo = data.get("correo");
       const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
-
       const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
       const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
 
