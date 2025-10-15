@@ -5,29 +5,9 @@ interface ModalProps {
 }
 
 const numeroWhatsApp = "51978883199";
-
-// Objeto con las rutas de imágenes para cada producto
-const linkImages: Record<string, string> = {
-  "soldadora-lingba": "/images/popup/soldadora-lingba.webp",
-  "purificador-de-agua": "/images/popup/purificador-de-agua.webp",
-  "maquina-de-embalaje-de-te": "/images/popup/maquina-de-embalaje-de-te.webp",
-  "maquina-selladora-de-bolsas-para-solidos":"/images/popup/maquina-selladora-de-bolsas-para-solidos.webp",
-  "mesa-led-bar-alta-cuadrada": "/images/popup/mesa-led-bar-alta-cuadrada.webp",
-  "mesa-led-bar-alta": "/images/popup/mesa-led-bar-alta.webp",
-  "selladora-por-induccion": "/images/popup/selladora-por-induccion.webp",
-  "selladora-de-vaso-manual": "/images/popup/selladora-de-vaso-manual.webp",
-  "silla-bar-led-alta": "/images/popup/silla-bar-led-alta.webp",
-  "sillas-cuadradas-o-de-cubo": "/images/popup/sillas-cuadradas-o-de-cubo.webp",
-  "soldadora-spark-mig-250": "/images/popup/soldadora-spark-mig-250.webp",
-  "ventilador-holografico": "/images/popup/ventilador-holografico.webp",
-  "maquina-selladora-de-bolsas-para-liquidos":"/images/popup/maquina-selladora-de-bolsas-para-liquidos.webp",
-
-  // Agrega más productos aquí según necesites
-  default: "/images/popup/default.webp",
-};
+const DEFAULT_IMAGE = "/images/popup/default.webp";
 
 const { link = "" } = Astro.props as ModalProps;
-const modalImage = linkImages[link] || linkImages["default"];
 ---
 
 <!-- Modal -->
@@ -45,12 +25,12 @@ const modalImage = linkImages[link] || linkImages["default"];
       <div class="w-full h-full flex justify-center items-center p-0">
         <img
           id="modal-product-img"
-          src={modalImage}
-          alt={`Imagen para ${link}`}
-          title={`Imagen para ${link}`}
+          src={DEFAULT_IMAGE}
+          alt="Imagen del producto"
+          title="Imagen del producto"
           class="h-full w-auto object-cover"
           loading="lazy"
-          onError="this.onerror=null; this.src='/images/popup/default.webp'"
+          onerror="this.onerror=null; this.src='/images/popup/default.webp'"
         />
       </div>
     </div>
@@ -155,25 +135,8 @@ const modalImage = linkImages[link] || linkImages["default"];
     },
   };
 
-  // Objeto con las rutas de imágenes para cada producto (fallback)
-  const linkImages: Record<string, string> = {
-    "soldadora-lingba": "/images/popup/soldadora-lingba.webp",
-    "purificador-de-agua": "/images/popup/purificador-de-agua.webp",
-    "maquina-de-embalaje-de-te": "/images/popup/maquina-de-embalaje-de-te.webp",
-    "maquina-selladora-de-bolsas-para-solidos":"/images/popup/maquina-selladora-de-bolsas-para-solidos.webp",
-    "mesa-led-bar-alta-cuadrada":"/images/popup/mesa-led-bar-alta-cuadrada.webp",
-    "mesa-led-bar-alta": "/images/popup/mesa-led-bar-alta.webp",
-    "selladora-por-induccion": "/images/popup/selladora-por-induccion.webp",
-    "selladora-de-vaso-manual": "/images/popup/selladora-de-vaso-manual.webp",
-    "silla-bar-led-alta": "/images/popup/silla-bar-led-alta.webp",
-    "sillas-cuadradas-o-de-cubo": "/images/popup/sillas-cuadradas-o-de-cubo.webp",
-    "soldadora-spark-mig-250": "/images/popup/soldadora-spark-mig-250.webp",
-    "ventilador-holografico": "/images/popup/ventilador-holografico.webp",
-    "maquina-selladora-de-bolsas-para-liquidos":"/images/popup/maquina-selladora-de-bolsas-para-liquidos.webp",
-
-    // Agrega más productos aquí según necesites
-    default: "/images/popup/default.webp",
-  };
+  // Imagen por defecto (solo fallback)
+  const DEFAULT_IMAGE = "/images/popup/default.webp";
 
   const container = document.getElementById("modal-form-container");
   const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
@@ -187,9 +150,9 @@ const modalImage = linkImages[link] || linkImages["default"];
   let modalMostrado = false;
   let scrollActivado = false;
 
-  function showCotizacionModal() {
+  async function showCotizacionModal() {
     aplicarConfig();
-    actualizarImagenDesdeLink();
+    await actualizarImagenDesdeLink(); // Esperar a que cargue la imagen
     const modal = document.getElementById("modal-cotizacion-producto");
     const mensaje = document.getElementById("modal-cotizacion-mensaje");
     if (modal && mensaje) {
@@ -200,31 +163,36 @@ const modalImage = linkImages[link] || linkImages["default"];
   }
 
   /**
-   * Actualiza la imagen del modal popup desde la API del producto.
-   * 
-   * Prioridad de imágenes:
-   * 1. Imagen con tipo='popup' desde producto_imagenes (subida desde el admin)
-   * 2. Imagen hardcodeada en linkImages (fallback para productos antiguos)
-   * 3. Imagen default
+   * Actualiza la imagen del modal popup desde la BD.
+   * Prioridad: imagen popup > primera imagen galería > default
    */
-  function actualizarImagenDesdeLink() {
+  async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
-    const modalImg = document.getElementById(
-      "modal-product-img"
-    ) as HTMLImageElement | null;
+    const modalImg = document.getElementById("modal-product-img") as HTMLImageElement | null;
 
     if (!container || !modalImg) return;
 
     const productLink = container.dataset.productLink || "";
-    console.log("Link del producto desde dataset:", productLink);
+    let imagen = DEFAULT_IMAGE;
+    let imagenAlt = "Imagen del producto";
 
-    // Intentar obtener la imagen desde el producto cargado en la API
-    let imagen = linkImages["default"];
-    let imagenAlt = "Imagen por defecto";
+    // Cargar producto desde API si no está en caché
+    if (!window.__detalleProducto && productLink) {
+      try {
+        const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${productLink}`);
+        if (response.ok) {
+          const result = await response.json();
+          window.__detalleProducto = result.data || result;
+        }
+      } catch (error) {
+        // Usar imagen default
+      }
+    }
 
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
-      // Buscar imagen con tipo 'popup' en producto_imagenes
+      
+      // Buscar imagen con tipo 'popup'
       const imagenPopup = producto.producto_imagenes?.find(
         (img: any) => img.tipo === 'popup'
       );
@@ -232,32 +200,19 @@ const modalImage = linkImages[link] || linkImages["default"];
       if (imagenPopup?.url_imagen) {
         imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
         imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
-        console.log("Imagen popup encontrada desde API:", imagen);
-      } else {
-        // Fallback: usar imagen hardcodeada si existe, sino usar default
-        imagen = linkImages[productLink] || linkImages["default"];
-        imagenAlt = `Imagen para ${productLink}`;
-        console.log("Usando imagen hardcodeada o default:", imagen);
+      } else if (producto.imagenes && producto.imagenes.length > 0) {
+        // Fallback: primera imagen de galería
+        imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
+        imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre || "Imagen del producto";
       }
-    } else {
-      // Si no hay producto cargado, usar imagen hardcodeada
-      imagen = linkImages[productLink] || linkImages["default"];
-      imagenAlt = `Imagen para ${productLink}`;
-      console.log("Producto no cargado, usando imagen hardcodeada:", imagen);
     }
 
-    // Verificar si la imagen existe
-    const testImage = new Image();
-    testImage.onload = function () {
-      modalImg.src = imagen;
-      modalImg.alt = imagenAlt;
-    };
-    testImage.onerror = function () {
-      console.error("Error al cargar la imagen:", imagen);
-      modalImg.src = linkImages["default"];
+    modalImg.src = imagen;
+    modalImg.alt = imagenAlt;
+    modalImg.onerror = function () {
+      modalImg.src = DEFAULT_IMAGE;
       modalImg.alt = "Imagen por defecto";
     };
-    testImage.src = imagen;
   }
 
   function puedeMostrarModal() {
@@ -268,12 +223,7 @@ const modalImage = linkImages[link] || linkImages["default"];
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
 
-  function programarModal() {
-    if (modalTimeout) clearTimeout(modalTimeout);
-    if (puedeMostrarModal() && !modalMostrado) {
-      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
-    }
-  }
+
 
   const closeBtn = document.getElementById("close-modal-cotizacion");
   if (closeBtn) {
@@ -297,66 +247,38 @@ const modalImage = linkImages[link] || linkImages["default"];
       const telefono = "+51 " + data.get("telefono");
       const correo = data.get("correo");
       const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
-
       const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-      /* window.open(
-        `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`,
-        "_blank"
-      ); */
+      const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
 
+      // Enviar mensaje a WhatsApp
       try {
-        const responseWhatsApp = await fetch(`${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`, {
+        await fetch(`${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            telefono: telefono,
-            comentario: mensaje,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telefono, comentario: mensaje }),
         });
-
-        if (responseWhatsApp.ok) {
-          const responseData = await responseWhatsApp.json();
-          console.log('Mensaje enviado con éxito:', responseData);
-        } else {
-          const errorData = await responseWhatsApp.json();
-          console.error('Error al enviar mensaje:', errorData);
-        }
+        if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
       } catch (error) {
-        console.error('Error al enviar mensaje a WhatsApp:', error);
+        // Error silencioso
       }
 
-
-      const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
-      if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
-
+      // Enviar correo electrónico
       try {
         const response = await fetch(`${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: nombre,
-            celular: telefono,
-            email: correo,
-            link: productLink
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: nombre, celular: telefono, email: correo, link: productLink }),
         });
 
         if (response.ok) {
-          const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
           if (mensajeEl) mensajeEl.textContent = "Correo enviado con éxito ✅";
         } else {
-          const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
           if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
         }
       } catch (error) {
-        console.error("Error al enviar el formulario:", error);
-        const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
         if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
       }
+      
       form.reset();
     };
   }
@@ -403,69 +325,54 @@ const modalImage = linkImages[link] || linkImages["default"];
     }
   }
 
-  // --- MOSTRAR MODAL MANUALMENTE CON BOTÓN ---
-  // Configurar los botones de cotización para abrir el modal
+  // Configurar botones de cotización
   function configurarBotonesCotizacion() {
     const botones = document.querySelectorAll('[id^="btnQuotation"]');
     botones.forEach((boton) => {
-      boton.addEventListener("click", () => {
-        showCotizacionModal();
+      boton.addEventListener("click", async () => {
+        await showCotizacionModal();
       });
     });
   }
 
-  // --- MOSTRAR EN SCROLL ---
-  window.addEventListener("open-scroll-modal", showCotizacionModal);
-  window.addEventListener("scroll", () => {
-    // Mostrar modal después de hacer scroll del 30% de la página
-    const scrollPercentage =
-      (window.scrollY /
-        (document.documentElement.scrollHeight - window.innerHeight)) *
-      100;
+  // Mostrar modal por evento o scroll
+  window.addEventListener("open-scroll-modal", async () => {
+    await showCotizacionModal();
+  });
+  
+  window.addEventListener("scroll", async () => {
+    const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
 
-    if (
-      scrollPercentage > 30 &&
-      !scrollActivado &&
-      puedeMostrarModal() &&
-      !modalMostrado
-    ) {
+    if (scrollPercentage > 30 && !scrollActivado && puedeMostrarModal() && !modalMostrado) {
       scrollActivado = true;
-      showCotizacionModal();
+      await showCotizacionModal();
     }
   });
 
-  // --- ACTUALIZAR SECCIÓN DINÁMICAMENTE ---
+  // Actualizar sección dinámicamente
   function updateSectionFromDataset() {
     const container = document.getElementById("modal-form-container");
     if (!container) return;
 
     const rawSection = container.dataset.seccion || "NEGOCIOS";
-    const normalized = rawSection
-      .normalize?.("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toUpperCase();
-    const keyMap = {
-      NEGOCIOS: "NEGOCIOS",
-      MAQUINARIA: "MAQUINARIA",
-      DECORACION: "DECORACIÓN",
-    } as const;
+    const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
 
-    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
-      "NEGOCIOS") as keyof typeof secciones;
+    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
     sectionConfig = secciones[productoSeccion] || secciones.NEGOCIOS;
 
     aplicarConfig();
   }
 
-  // observar cambios en data-seccion
+  // Observer para detectar cambios en data-seccion y data-product-link
   if (container) {
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
+      mutations.forEach(async (mutation) => {
         if (mutation.attributeName === "data-seccion") {
           updateSectionFromDataset();
         }
         if (mutation.attributeName === "data-product-link") {
-          actualizarImagenDesdeLink();
+          await actualizarImagenDesdeLink();
         }
       });
     });
@@ -477,11 +384,11 @@ const modalImage = linkImages[link] || linkImages["default"];
   }
 
   // Inicializar
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", async function () {
     localStorage.removeItem('asesoriaModalLastClosedDetalle');
 
     updateSectionFromDataset();
-    actualizarImagenDesdeLink();
+    await actualizarImagenDesdeLink();
     configurarBotonesCotizacion();
   });
 </script>

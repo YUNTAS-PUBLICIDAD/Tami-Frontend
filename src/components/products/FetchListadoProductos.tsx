@@ -263,7 +263,17 @@ const Seccion = React.memo(function Seccion({ nombreSeccion, productosDeLaSeccio
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4
                        gap-2 xs:gap-4 sm:gap-6 md:gap-8
                        mt-4 sm:mt-6">
+            {productosDeLaSeccion.length > 0 ? (
+                productosDeLaSeccion.map((producto) => (
+                    <ProductCard key={producto.id} producto={producto} />
+                ))
+            ) : (
+                <p className="text-gray-400 text-lg col-span-full text-center py-8">
+                  No hay productos en esta sección.
+                </p>
+            )}
             {productCards}
+
           </div>
         </div>
       </div>
@@ -333,7 +343,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: Props) {
 
   return (
     <a
-      href={`/productos/detalle?link=${producto.link}`}
+      href={`/productos/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
       className="my-4 sm:my-6 md:my-10 flex flex-col items-center group hover:cursor-pointer w-full"
     >
@@ -369,57 +379,11 @@ const ProductCard = React.memo(function ProductCard({ producto }: Props) {
         )}
       </div>
       <div className="flex flex-row justify-center items-center text-teal-700 mt-3">
-        <svg
-          viewBox="0 0 25 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
-        >
-          <path
-        d="M16 4L8 12L16 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(-2, 0)"
-          ></path>
-          <path
-        d="M16 4L8 12L16 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(5, 0)"
-          ></path>
-        </svg>
         <div className="flex-grow text-center group w-full px-2">
           <h3 className="text-base sm:text-lg font-bold text-teal-700 leading-snug break-words whitespace-normal group-hover:scale-105 transition-transform duration-300 ease-in-out">
             {producto.nombre}
           </h3>
         </div>
-        <svg
-          viewBox="0 0 25 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
-        >
-          <path
-        d="M8 4L16 12L8 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(2, 0)"
-          ></path>
-          <path
-        d="M8 4L16 12L8 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(-5, 0)"
-          ></path>
-        </svg>
       </div>
     </a>
   );

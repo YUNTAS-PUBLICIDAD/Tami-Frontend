@@ -1,0 +1,40 @@
+---
+import type Producto from "src/models/Product";
+import Layout from "../../layouts/Layout.astro";
+import { ProductoService } from "src/services/producto.service";
+import ModalDetalles from "src/pages/productos/ModalDetalles.astro";
+import boxSize from "@icons/box-size.svg";
+import ArrowProducts from "../../assets/icons/flecha-product.svg";
+import { config } from "config";
+import ProductPage from "src/components/products/ProductPage";
+const getApiUrl = config.apiUrl;
+const productosUrl = config.endpoints.productos;
+// Las páginas se generan en tiempo de build, no en tiempo de solicitud
+// Por lo tanto, necesitamos definir todas las rutas posibles de antemano mediante el fetct.
+// Si se agrega un nuevo producto, se debe reconstruir el sitio (build) para que la nueva página esté disponible.
+export async function getStaticPaths() {
+  const response = await ProductoService.getAllProductos();
+
+  return response.map((producto: Producto) => ({
+    params: { link: producto.link },
+    props: { producto },
+  }));
+}
+
+// Props que recibirá el componente
+const { link } = Astro.params;
+const { producto } = Astro.props as { producto: Producto };
+if (!producto) {
+  throw new Error(`Producto con link "${link}" no encontrado.`);
+}
+---
+
+<Layout
+  title={producto.etiqueta.meta_titulo || producto.titulo}
+  description={producto.etiqueta.meta_descripcion || producto.descripcion}
+  keywords={producto.etiqueta.keywords}
+  canonicalUrl={`${Astro.site}productos/${producto.link}`}
+>
+  <ProductPage producto={producto} client:idle />
+  <ModalDetalles link={producto.link} seccion={producto.seccion} />
+</Layout>
