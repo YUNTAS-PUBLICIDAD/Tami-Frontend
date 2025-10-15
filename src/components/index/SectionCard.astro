@@ -1,11 +1,9 @@
 ---
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 const props = Astro.props;
 ---
 
-<div
-  class="group w-full md:w-1/3 h-90 md:h-full flex flex-col items-center"
->
+<div class="group w-full md:w-1/3 h-90 md:h-full flex flex-col items-center">
   <a
     href={`/productos#${props.id}`}
     class="relative rounded-3xl overflow-hidden w-full h-full flex transform border border-teal-200 hover:scale-108 hover:z-20 hover:shadow-2xl hover:border-teal-400"
@@ -15,23 +13,16 @@ const props = Astro.props;
       src={props.image}
       alt={props.alt}
       title={props.alt}
-      loading={'lazy'}
+      loading={"lazy"}
       width={400}
       height={700}
       class="absolute z-0 w-full h-full object-cover object-center"
     />
 
     <div
-      class="text-center flex flex-col justify-end bg-gradient-to-t from-teal-700 from-10% to-transparent relative z-10 text-white w-full px-2 py-4 md:py-2"
+      class="text-center flex flex-col justify-end relative z-10 text-white w-full px-2 py-4 md:py-16"
     >
       <h3 class="text-2xl md:text-xl font-bold">{props.title}</h3>
-      <p class="text-lg font-light hidden md:block">{props.paragraph}</p>
     </div>
   </a>
-
-  <!-- En mobile, se muestra fuera de la tarjeta -->
-  <div class="block md:hidden w-full mt-2 px-2">
-    <p class="text-base text-teal-700 font-medium">{props.paragraph}</p>
-    <hr class="border-t border-teal-800 my-3" />
-  </div>
 </div>

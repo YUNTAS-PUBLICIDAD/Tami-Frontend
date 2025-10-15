@@ -2,6 +2,8 @@
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
+import bg_card4 from "@images/index/cards/porquetami2.png";
+import mapaPeru from "@images/shipping-policies/mapa.webp";
 import manoRobotica from "@images/index/robot-gris-señalar.webp";
 import circuitos from "@images/index/circuitos.webp";
 import iconGarantia from "@icons/icon_garantia.webp";
@@ -28,59 +30,111 @@ import Testimonials from "../components/index/Slideshow";
   {/* Sección de bienvenida con imágenes y texto */}
   <section
     id="bienvenida"
-    class="scroll-mt-16 h-96 sm:h-[calc(100dvh-10rem)] md:h-[calc(90dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col md:flex-row justify-between max-w-screen-2xl mx-auto"
+    class="min-h-[360px] flex items-center justify-center px-4 text-center bg-white"
   >
-    {/* Contenedor de imágenes */}
-    <div
-      class="w-full md:w-1/2 flex justify-center items-center order-2 md:order-1"
-    >
-      <div class="relative">
-        <Image
-          src={manoRobotica}
-          alt="Mano robótica apuntando"
-          title="Mano robótica apuntando"
-          width={manoRobotica.width}
-          height={manoRobotica.height}
-          quality={70}
-          widths={[320, 540, 720, manoRobotica.width]}
-          sizes="(max-width: 420px) 320px, (max-width: 720px) 540px, (max-width: 1024px) 720px, 100vw"
-          
-        />
-
-        <Image
-          src={circuitos}
-          alt="Circuitos electrónicos"
-          title="Circuitos electrónicos"
-          class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-[-10] hidden md:block"
-          loading="lazy"
-        />
-      </div>
-    </div>
-
-    {/* Contenedor de texto */}
-    <div
-      class="w-full md:w-1/2 flex flex-col justify-center p-3 md:px-6 xl:px-16 2xl:px-20 order-1 md:order-2"
-    >
-      <h2
-        class="text-orange-700 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold py-2 tracking-widest"
-      >
-        BIENVENIDO A TAMI
-      </h2>
+    <div class="max-w-4xl mx-auto">
       <h3
-        class="text-teal-700 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold py-2 tracking-wider leading-tight"
+        class="text-teal-700 text-3xl md:text-4xl xl:text-5xl font-extrabold tracking-wider leading-tight mb-4"
       >
-        TECNOLOGÍA E INNOVACIÓN PARA TI
+        ¡BIENVENIDOS A TAMI!
       </h3>
-      <p
-        class="text-stone-500 text-base lg:text-lg xl:text-xl 2xl:text-2xl py-2"
-      >
-        Ofrecemos calidad y soluciones avanzadas para mejorar y equipar tu
-        negocio y hogar de manera eficiente.
+      <p class="text-stone-500 text-lg md:text-xl xl:text-2xl">
+        COMPROMETIDOS CON EL <span class="font-bold text-teal-700"
+          >EMPRENDEDOR PERUANO</span
+        >, OFRECIENDO PRODUCTOS <span class="font-bold text-teal-700"
+          >ASEQUIBLES</span
+        >
       </p>
     </div>
   </section>
+  {/* Carrusel de productos con gradiente de fondo */}
+  <section
+    class="w-full flex flex-col lg:flex-row justify-between gap-6 py-10 px-6 lg:px-16 bg-[linear-gradient(to_right,_#2A938B,_#0D2D2B)]"
+  >
+    <!-- Título -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center">
+      <h3
+        class="text-white text-4xl lg:text-5xl xl:text-6xl font-extrabold text-center leading-none"
+      >
+        <span class="block">PRODUCTOS</span>
+        <span class="block">DESTACADOS</span>
+      </h3>
+    </div>
 
+    <!-- Slideshow -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center">
+      <ProductSlideshow client:idle />
+    </div>
+  </section>
+  <!-- ENVIOS -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-10 py-8">
+    {/* Texto a la izquierda, centrado vertical y horizontalmente */}
+    <div
+      class="flex flex-col justify-center items-center px-4 sm:px-12 space-y-6 text-center"
+    >
+      <h2
+        class="text-teal-700 font-extrabold text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl lg:mb-2 max-w-3/2"
+        style={{ margin: "0 auto" }}
+      >
+        ENVÍOS A TODA LIMA METROPOLITANA
+      </h2>
+      <a
+        title="Enviar mensaje por WhatsApp"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-3 bg-[#009689] hover:bg-[#007a72] transition text-white rounded-2xl px-6 py-4 font-semibold text-lg lg:text-xl 2xl:text-3xl my-5"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="scale-x-[-1] w-10 h-10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M2.678 11.422a2.5 2.5 0 0 0 0 3.536l6.364 6.364a2.5 2.5 0 0 0 3.536 0l7.69-7.69A2.5 2.5 0 0 0 21 11.864V4.5A1.5 1.5 0 0 0 19.5 3h-7.365a2.5 2.5 0 0 0-1.768.732l-7.69 7.69zM14.988 7C13.878 7 13 7.832 13 8.988c0 1.157.878 2.012 1.988 2.012C16.121 11 17 10.145 17 8.988 17 7.832 16.12 7 14.988 7z"
+            fill="currentColor"></path>
+        </svg>
 
+        <div class="leading-snug">
+          <p>COTÍZALO AQUÍ</p>
+        </div>
+      </a>
+    </div>
+
+    {/* Mapa a la derecha */}
+    <div class="flex justify-center items-center">
+      <img
+        src={mapaPeru.src}
+        alt="Mapa apuntando Lima"
+        title="Mapa apuntando Lima"
+        class="w-3/4 md:w-1/2"
+      />
+    </div>
+  </section>
+  {/* Sección ¿Por qué elegir TAMI? */}
+  <section class="w-full px-4 lg:px-8 py-8">
+    <div
+      class="relative rounded-3xl overflow-hidden h-[700px] lg:h-[800px] px-6 lg:px-24 flex items-center"
+      style={`background-image: url('${bg_card4.src}'); background-size: contain; background-position: center; background-repeat: no-repeat;`}
+    >
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black/40 z-0"></div>
+
+      <!-- Contenido con texto alineado a la derecha -->
+      <div class="relative z-10 text-white text-left max-w-3xl ml-auto">
+        <h2 class="text-3xl md:text-5xl font-extrabold mb-6">
+          ¿POR QUÉ ELEGIR TAMI?
+        </h2>
+        <p class="text-lg md:text-xl font-medium">
+          Ofrecemos garantía, asesoría y acompañamiento para cada compra. Somos
+          aliados de emprendedores en todo el Perú.
+        </p>
+      </div>
+    </div>
+  </section>
 
   {/* Sección de productos destacados en cartas */}
   <section
@@ -89,124 +143,35 @@ import Testimonials from "../components/index/Slideshow";
   >
     <SectionCardsContainer />
   </section>
-
-  {/* Carrusel de productos con gradiente de fondo */}
   <section
-    class="flex flex-col pt-6 px-6 lg:px-16 bg-gradient-to-b from-teal-700 via-teal-500 to-white max-w-screen-2xl mx-auto"
-  >
-    <h3 class="text-white text-lg lg:text-2xl xl:text-3xl font-extrabold mb-10">
-      COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
-    </h3>
-    <ProductSlideshow client:idle />
-  </section>
-
-
-  {/* Sección ¿Por qué elegir TAMI? */}
-  <section
-    class="w-full flex flex-col lg:flex-row items-center justify-center py-6 px-2 lg:px-16"
-  >
-    {/* Texto con iconos y etiquetas */}
-    <div class="lg:w-1/2 text-center lg:text-left">
-      <h2
-        class="flex-col text-teal-700 font-extrabold text-3xl sm:text-4xl lg:text-6xl 2xl:text-7xl flex lg:justify-start gap-2"
-      >
-        <span class="flex justify-center lg:justify-start items-end">
-          ¿POR QUÉ
-          <Image
-            src={iconGarantia}
-            alt="Garantía"
-            title="Garantía"
-            width="48"
-            height="48"
-            class="ml-2 w-10 sm:w-12 lg:w-24"
-            loading="lazy"
-          />
-        </span>
-        ELEGIR TAMI?
-      </h2>
-      <p class="text-gray-600 text-xl xl:text-3xl 2xl:text-4xl mt-4">
-        Calidad respaldada por nuestra garantía, mostrando nuestro compromiso
-        con la satisfacción de nuestros clientes.
-      </p>
-
-      {/* Etiquetas destacadas */}
-      <div
-        class="flex flex-wrap gap-4 my-6 justify-center lg:justify-start text-white"
-      >
-        <a href="/blog" title="Calidad" class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full transition-all duration-200 hover:bg-teal-800 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400">
-          CALIDAD
-        </a>
-        <a href="/blog" title="Innovación" class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full transition-all duration-200 hover:bg-teal-800 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400">
-          INNOVACIÓN
-        </a>
-        <a href="/blog" title="Negocio Propio" class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full transition-all duration-200 hover:bg-teal-800 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400">
-          NEGOCIO PROPIO
-        </a>
-      </div>
-
-      <div class="w-full flex flex-col lg:flex-row items-center lg:items-start gap-0 lg:gap-8">
-        <p class="text-teal-800 text-base md:text-lg xl:text-xl 2xl:text-2xl font-semibold text-center lg:text-left mt-2 mb-4 lg:mb-0 max-w-2xl mx-auto lg:mx-0">
-          Descubre cómo la calidad, la innovación y el espíritu emprendedor de nuestros clientes nos inspiran a ofrecer soluciones reales y resultados comprobados.
-        </p>
-      </div>
-    </div>
-
-    {/* Imagen lateral */}
-    <Image
-      src={trabajo}
-      alt="Personal hablando"
-      title="Personal hablando"
-      widths={[320, 640, 960, 1200]}
-      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 40vw"
-      width={500}
-      height={350}
-      quality={80}
-      class="w-5/6 lg:w-1/2 2xl:w-1/4"
-      loading="lazy"
-    />
-  </section>
-
-  {/* Testimonios de clientes */}
-  <section
-    class="w-full pt-12 flex flex-col relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200"
+    class="w-full pt-12 mt-16 md:mt-24 flex flex-col relative bg-[linear-gradient(90deg,_#035751_0%,_#018C81_100%)] before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200"
   >
     <h2
-      class="text-center text-3xl md:text-4xl font-black text-teal-600 mb-4 tracking-widest"
+      class="text-center text-3xl md:text-4xl font-black text-white mb-4 tracking-widest"
     >
       LO QUE DICEN NUESTROS CLIENTES
     </h2>
     <h3
-      class="text-center text-lg md:text-2xl font-black text-teal-700 mb-8 md:mb-14 tracking-widest px-4 md:px-40 lg:px-80"
+      class="text-center text-lg md:text-2xl font-black text-white mb-8 md:mb-14 tracking-widest px-4 md:px-40 lg:px-80"
     >
       VALORAMOS CADA COMENTARIO PARA SEGUIR MEJORANDO Y OFRECIENDO LO MEJOR PARA
       TI.
     </h3>
     <Testimonials client:only="react" />
-
-    {/* Franja inferior con lema */}
-    <div
-      class="relative w-full py-12 h-20 bg-gradient-to-r from-orange-300 from-30% to-teal-500 flex items-center justify-center"
-    >
-      <div class="w-full max-w-screen-xl px-4 md:px-12 text-center">
-        <h2 class="text-white font-black text-2xl md:tracking-[.5em]">
-          TAMI : TECNOLOGÍA E INNOVACIÓN PARA TI
-        </h2>
-      </div>
-    </div>
   </section>
 </Layout>
 <style>
-@keyframes fadeInUpHero {
-  0% {
-    opacity: 0;
-    transform: translateY(40px);
+  @keyframes fadeInUpHero {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
+  .animate-fadeInUpHero {
+    animation: fadeInUpHero 1.2s cubic-bezier(0.23, 1, 0.32, 1);
   }
-}
-.animate-fadeInUpHero {
-  animation: fadeInUpHero 1.2s cubic-bezier(0.23, 1, 0.32, 1);
-}
 </style>
