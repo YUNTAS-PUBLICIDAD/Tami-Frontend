@@ -47,7 +47,7 @@ const Hero = () => {
           );
         })}
       </div>
-      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6 bg-gradient-to-b from-[#046A63]/90 to-black/85">
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6 bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60">
         <h1 className="text-4xl md:text-6xl max-w-4xl font-bold mb-8 leading-relaxed drop-shadow-lg">
           Innovación y Soluciones para cada Proyecto
         </h1>
