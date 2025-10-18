@@ -1,45 +1,51 @@
+// src/components/blog/CardBlog.tsx
+
 import React from "react";
-import { MdOutlineArrowForwardIos } from "react-icons/md";
-import type Blog from "src/models/Blog";
+import type Blog from "src/models/Blog"; 
 import { config } from "config";
 
 interface CardBlogProps {
   blog: Blog;
 }
 
-const apiUrl = config.apiUrl;
-
 const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
-  const miniatura = blog.miniatura ? `${apiUrl}${blog.miniatura}` : "/images/default-blog.webp";
-  const altImg = blog.titulo || "Imagen del blog";
+  const imageUrl = blog.miniatura ? `${config.apiUrl}${blog.miniatura}` : "https://via.placeholder.com/330x530?text=TAMI";
+  const altText = blog.titulo || "Imagen del blog";
+
+  const formattedDate = new Date(blog.created_at || Date.now()).toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
   return (
-    <a
-      href={`/blog/details?id=${blog.id}`}
-      title="Ver detalles del blog"
-      className="my-5 flex flex-col lg:flex-row items-center transition-transform duration-300 ease-in-out hover:scale-105 bg-teal-800 text-white shadow-md overflow-hidden rounded-xl"
+    <a 
+      href={`/blog/details?id=${blog.id}`} 
+      className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row border border-gray-200 hover:shadow-xl transition-shadow duration-300 w-full h-full"
     >
-      <figure className="lg:w-1/3 w-full h-48 flex items-center justify-center bg-white rounded-l-xl overflow-hidden">
-        <img
-          src={miniatura}
-          alt={altImg}
-          title={altImg}
+      <div className="w-full md:w-[330px] flex-shrink-0 bg-gray-100 flex items-center justify-center p-4 rounded-l-2xl">
+        <img 
+          src={imageUrl} 
+          alt={altText} 
+          title={altText}
+          className="w-full h-full object-contain rounded-lg" 
           loading="lazy"
-          className="w-full h-full object-cover transition-all duration-300"
         />
-      </figure>
-      <div className="lg:w-2/3 w-full p-6">
-        {blog.nombre_producto ? (
-          <div className="flex items-center mb-2">
-            <span className="border border-white rounded px-2 py-1 mr-2 ml-3">
-              {blog.nombre_producto}
-            </span>
-          </div>
-        ) : null}
-        <h2 className="text-2xl font-bold mb-2 ml-3">{blog.subtitulo1}</h2>
-        <div className="flex flex-row items-center gap-2">
-          <MdOutlineArrowForwardIos className="text-5xl" />
-          <p className="text-gray-300">{blog.subtitulo2}</p>
-        </div>
+      </div>
+
+      <div className="p-8 flex flex-col flex-grow">
+        <span className="inline-block bg-[#07625b] text-white text-sm font-semibold px-4 py-1 rounded-md mb-4 w-fit">
+          Producto
+        </span>
+        <h3 className="font-bold text-2xl text-[#07625b] mb-3">
+          {blog.titulo || "Tecnología e Innovación"}
+        </h3>
+        <p className="text-gray-600 text-base mb-6 flex-grow">
+          {blog.subtitulo1 || "Ofrecemos calidad y soluciones avanzadas para tu negocio."}
+        </p>
+        <p className="text-gray-500 text-sm mt-auto">
+          {formattedDate}
+        </p>
       </div>
     </a>
   );
