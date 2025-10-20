@@ -18,6 +18,8 @@ const { link = "" } = Astro.props as ModalProps;
   <div
     class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn rounded-xl"
   >
+    <div id="background-modal" class="absolute inset-0 z-20"></div>
+
     <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
     <div
       class="hidden sm:flex w-2/4 relative justify-center items-center bg-gray-100 overflow-hidden"
@@ -38,7 +40,7 @@ const { link = "" } = Astro.props as ModalProps;
     <!-- Formulario dinámico -->
     <div
       id="modal-form-container"
-      class="w-full sm:w-3/5 p-6 text-white relative"
+      class="w-full sm:w-3/5 p-6 text-white relative z-30"
       data-product-link={link}
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
@@ -54,12 +56,12 @@ const { link = "" } = Astro.props as ModalProps;
 
         <h2
           id="modal-title"
-          class="text-xl sm:text-3xl font-bold text-center sm:mt-3 mb-4 select-none"
+          class="text-xl sm:text-3xl font-semibold text-center sm:mt-3 mb-4 select-none"
         >
         </h2>
 
-        <form id="form-cotizacion-producto" class="flex flex-col gap-1">
-          <label class="text-base sm:text-lg font-bold select-none">Nombre</label>
+        <form id="form-cotizacion-producto" class="flex flex-col gap-3">
+          <!-- <label class="text-base sm:text-lg font-bold select-none">Nombre</label> -->
           <input
             type="text"
             name="nombre"
@@ -68,7 +70,16 @@ const { link = "" } = Astro.props as ModalProps;
             required
           />
 
-          <label class="text-base sm:text-lg font-bold select-none">Teléfono</label>
+          <!-- <label class="text-base sm:text-lg font-bold select-none">Correo</label> -->
+          <input
+            type="email"
+            name="correo"
+            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            placeholder="Correo@gmail.com"
+            required
+          />
+
+          <!-- <label class="text-base sm:text-lg font-bold select-none">Teléfono</label> -->
           <input
             type="tel"
             name="telefono"
@@ -77,18 +88,10 @@ const { link = "" } = Astro.props as ModalProps;
             required
           />
 
-          <label class="text-base sm:text-lg font-bold select-none">Correo</label>
-          <input
-            type="email"
-            name="correo"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
-            placeholder="Correo@gmail.com"
-            required
-          />
           <button
             id="modal-submit-btn"
             type="submit"
-            class="mt-4 py-2 rounded-lg text-white font-bold transition-colors"
+            class="mt-4 py-2 rounded-lg text-white font-bold transition-colors shadow-lg"
           >
             buttonText
           </button>
@@ -100,7 +103,6 @@ const { link = "" } = Astro.props as ModalProps;
 </div>
 
 <script>
-
   import { config } from "config";
 
   declare global {
@@ -113,24 +115,25 @@ const { link = "" } = Astro.props as ModalProps;
   // --- CONFIGURACIÓN POR SECCIÓN ---
   const secciones = {
     NEGOCIOS: {
-      gradient: "from-sky-400 to-sky-600",
-      title:
-        "DESCARGA MÁS INFORMACIÓN GRATIS",
-      btn: "bg-sky-400 hover:bg-sky-500 cursor-pointer",
+      gradient:
+        "linear-gradient(to left, #004C6B 0%, #127CA7 63%, rgba(35,172,227,0.3) 100%)",
+      title: "DESCARGA MÁS INFORMACIÓN GRATIS",
+      btn: "bg-[#14617F] hover:bg-[#1c85ab] cursor-pointer",
       buttonText: "¡SÍ, QUIERO CRECER!",
     },
     MAQUINARIA: {
-      gradient: "from-emerald-400 to-teal-600",
+      gradient:
+        "linear-gradient(to left, #005340 0%, #028365 63%, rgba(4,179,138,0.3) 100%)",
       title:
         "DESCARGA TU <span class='scrollmodal-title'>GUÍA TÉCNICA GRATIS</span>",
-      btn: "bg-emerald-400 hover:bg-emerald-500 cursor-pointer",
-      buttonText: "¡SÍ, QUIERO MI GUÍA!",
+      btn: "bg-[#064133] hover:bg-[#096653] cursor-pointer",
+      buttonText: "¡SÍ, QUIERO CRECER!",
     },
     DECORACIÓN: {
-      gradient: "from-violet-500 to-indigo-700",
-      title:
-        "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS",
-      btn: "bg-violet-500 hover:bg-violet-600 cursor-pointer",
+      gradient:
+        "linear-gradient(to left, #2702AA 6%, #431FD5 55%, rgba(96,60,255,0.2) 100%)",
+      title: "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS",
+      btn: "bg-[#281184] hover:bg-[#3c2eb1] cursor-pointer",
       buttonText: "¡SÍ, QUIERO CRECER!",
     },
   };
@@ -168,7 +171,9 @@ const { link = "" } = Astro.props as ModalProps;
    */
   async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
-    const modalImg = document.getElementById("modal-product-img") as HTMLImageElement | null;
+    const modalImg = document.getElementById(
+      "modal-product-img"
+    ) as HTMLImageElement | null;
 
     if (!container || !modalImg) return;
 
@@ -179,7 +184,9 @@ const { link = "" } = Astro.props as ModalProps;
     // Cargar producto desde API si no está en caché
     if (!window.__detalleProducto && productLink) {
       try {
-        const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${productLink}`);
+        const response = await fetch(
+          `${config.apiUrl}/api/v1/productos/link/${productLink}`
+        );
         if (response.ok) {
           const result = await response.json();
           window.__detalleProducto = result.data || result;
@@ -191,19 +198,23 @@ const { link = "" } = Astro.props as ModalProps;
 
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
-      
+
       // Buscar imagen con tipo 'popup'
       const imagenPopup = producto.producto_imagenes?.find(
-        (img: any) => img.tipo === 'popup'
+        (img: any) => img.tipo === "popup"
       );
-      
+
       if (imagenPopup?.url_imagen) {
         imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
-        imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
+        imagenAlt =
+          imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
       } else if (producto.imagenes && producto.imagenes.length > 0) {
         // Fallback: primera imagen de galería
         imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
-        imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre || "Imagen del producto";
+        imagenAlt =
+          producto.imagenes[0].texto_alt_SEO ||
+          producto.nombre ||
+          "Imagen del producto";
       }
     }
 
@@ -222,8 +233,6 @@ const { link = "" } = Astro.props as ModalProps;
     );
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
-
-
 
   const closeBtn = document.getElementById("close-modal-cotizacion");
   if (closeBtn) {
@@ -246,17 +255,21 @@ const { link = "" } = Astro.props as ModalProps;
       const nombre = data.get("nombre");
       const telefono = "+51 " + data.get("telefono");
       const correo = data.get("correo");
-      const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
+      const productLink = document.getElementById("modal-form-container")
+        ?.dataset.productLink;
       const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
       const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
 
       // Enviar mensaje a WhatsApp
       try {
-        await fetch(`${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ telefono, comentario: mensaje }),
-        });
+        await fetch(
+          `${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ telefono, comentario: mensaje }),
+          }
+        );
         if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
       } catch (error) {
         // Error silencioso
@@ -264,44 +277,46 @@ const { link = "" } = Astro.props as ModalProps;
 
       // Enviar correo electrónico
       try {
-        const response = await fetch(`${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: nombre, celular: telefono, email: correo, link: productLink }),
-        });
+        const response = await fetch(
+          `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: nombre,
+              celular: telefono,
+              email: correo,
+              link: productLink,
+            }),
+          }
+        );
 
         if (response.ok) {
           if (mensajeEl) mensajeEl.textContent = "Correo enviado con éxito ✅";
         } else {
-          if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
+          if (mensajeEl)
+            mensajeEl.textContent =
+              "Error al enviar el correo. Intenta nuevamente.";
         }
       } catch (error) {
-        if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
+        if (mensajeEl)
+          mensajeEl.textContent =
+            "Error al enviar el correo. Intenta nuevamente.";
       }
-      
+
       form.reset();
     };
   }
 
   function aplicarConfig() {
+    const backgroundModal = document.getElementById("background-modal");
     const formContainer = document.getElementById("modal-form-container");
     const title = document.getElementById("modal-title");
     const btn = document.getElementById("modal-submit-btn");
     const buttonText = document.getElementById("modal-submit-btn");
 
-    if (formContainer) {
-      formContainer.classList.remove(
-        "from-sky-400",
-        "to-sky-600",
-        "from-emerald-400",
-        "to-teal-600",
-        "from-violet-500",
-        "to-indigo-700"
-      );
-      formContainer.classList.add(
-        "bg-gradient-to-b",
-        ...sectionConfig.gradient.split(" ")
-      );
+    if (backgroundModal) {
+      backgroundModal.style.background = sectionConfig.gradient;
     }
 
     if (title) {
@@ -339,11 +354,19 @@ const { link = "" } = Astro.props as ModalProps;
   window.addEventListener("open-scroll-modal", async () => {
     await showCotizacionModal();
   });
-  
-  window.addEventListener("scroll", async () => {
-    const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
 
-    if (scrollPercentage > 30 && !scrollActivado && puedeMostrarModal() && !modalMostrado) {
+  window.addEventListener("scroll", async () => {
+    const scrollPercentage =
+      (window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight)) *
+      100;
+
+    if (
+      scrollPercentage > 30 &&
+      !scrollActivado &&
+      puedeMostrarModal() &&
+      !modalMostrado
+    ) {
       scrollActivado = true;
       await showCotizacionModal();
     }
@@ -355,10 +378,18 @@ const { link = "" } = Astro.props as ModalProps;
     if (!container) return;
 
     const rawSection = container.dataset.seccion || "NEGOCIOS";
-    const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-    const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
+    const normalized = rawSection
+      .normalize?.("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+    const keyMap = {
+      NEGOCIOS: "NEGOCIOS",
+      MAQUINARIA: "MAQUINARIA",
+      DECORACION: "DECORACIÓN",
+    } as const;
 
-    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
+    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
+      "NEGOCIOS") as keyof typeof secciones;
     sectionConfig = secciones[productoSeccion] || secciones.NEGOCIOS;
 
     aplicarConfig();
@@ -385,7 +416,7 @@ const { link = "" } = Astro.props as ModalProps;
 
   // Inicializar
   document.addEventListener("DOMContentLoaded", async function () {
-    localStorage.removeItem('asesoriaModalLastClosedDetalle');
+    localStorage.removeItem("asesoriaModalLastClosedDetalle");
 
     updateSectionFromDataset();
     await actualizarImagenDesdeLink();
