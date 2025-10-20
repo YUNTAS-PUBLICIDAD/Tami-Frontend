@@ -27,14 +27,18 @@ function NavBar() {
       return;
     }
     setLoading(true);
-    fetch('/api/productos')
-      .then(res => res.json())
-      .then(json => {
+    fetch("/api/productos")
+      .then((res) => res.json())
+      .then((json) => {
         const todos: Producto[] = json.data ?? [];
         const query = search.trim().toLowerCase();
         const filtered = todos.filter((producto: Producto) =>
-          [producto.nombre, producto.titulo, producto.subtitulo, producto.descripcion]
-            .some(campo => campo && campo.toLowerCase().includes(query))
+          [
+            producto.nombre,
+            producto.titulo,
+            producto.subtitulo,
+            producto.descripcion,
+          ].some((campo) => campo && campo.toLowerCase().includes(query))
         );
         setSuggestions(filtered.slice(0, 6));
         setShowSuggestions(true);
@@ -50,8 +54,8 @@ function NavBar() {
         setShowSuggestions(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -74,7 +78,7 @@ function NavBar() {
 
     // Agregar listener con passive para mejor rendimiento
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();;
+    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -92,19 +96,20 @@ function NavBar() {
   const handleSuggestionClick = (producto: Producto) => {
     setShowSuggestions(false);
     setSearch("");
-    window.location.href = `/productos/detalle/?link=${encodeURIComponent(producto.link)}`;
+    window.location.href = `/productos/detalle/?link=${encodeURIComponent(
+      producto.link
+    )}`;
   };
 
   return (
-       <header
+    <header
       className={`
         fixed w-full top-0 z-50 transition-colors duration-300
-        ${isScrolled ? 'bg-[#07625b] shadow-lg' : 'bg-transparent'} 
+        ${isScrolled ? "bg-[#07625b] shadow-lg" : "bg-transparent"} 
       `}
     >
       <div className="max-w-[1834px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
-          
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="/" title="Ir a la sección de inicio">
@@ -112,7 +117,6 @@ function NavBar() {
                 src={logoTami.src}
                 alt="Logo de Tami"
                 title="Logo de Tami"
-             
                 className="h-16 w-auto object-contain"
                 fetchPriority="high"
               />
@@ -158,8 +162,12 @@ function NavBar() {
           </div>
         </div>
       </div>
-      
-      <SideMenu links={navLinks} isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
+      <SideMenu
+        links={navLinks}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </header>
   );
 }

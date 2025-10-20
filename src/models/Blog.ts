@@ -21,4 +21,6 @@ export default interface Blog {
     meta_titulo: string;
     meta_descripcion: string;
   }
+  created_at?: string | null
+  updated_at?: string | null
 }

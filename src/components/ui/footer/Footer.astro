@@ -6,73 +6,138 @@ import mascotaTami from "@images/logos/tami-mascota.webp";
 import CopyText from "./CopyText.astro";
 ---
 
-
 <footer class="bg-teal-700 text-white py-12">
-  <div class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center lg:items-start text-center lg:text-left">
+  <div
+    class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-12 text-center lg:text-left h-full"
+  >
     <!-- Separacion en 3 bloques-->
-  <div class="flex flex-col lg:flex-row items-center lg:items-start gap-8 w-full mb-8 lg:mb-0">
-      <img
-        src={logoTami.src}
-        alt="Logo de Tami"
-        title="Logo de Tami"
-        loading="lazy"
-        width={120}
-        height={60}
-        class="shrink-0"
-      />
-      <div>
-        <h4 class="uppercase font-bold text-xl mb-5 tracking-wide">NAVEGACIÓN</h4>
-        <ul class="space-y-2 font-semibold text-base">
-          <li><a href="/" class="hover:text-orange-300 transition-colors">Inicio</a></li>
-          <li><a href="/sobre-nosotros" class="hover:text-orange-300 transition-colors">Nosotros</a></li>
-          <li><a href="/productos" class="hover:text-orange-300 transition-colors">Productos</a></li>
-          <li><a href="/politicas-de-envio" class="hover:text-orange-300 transition-colors">Políticas de Envíos</a></li>
-          <li><a href="/blog" class="hover:text-orange-300 transition-colors">Blogs</a></li>
+    <div
+      class="flex flex-col lg:flex-row items-center lg:items-stretch gap-6 lg:gap-12 gap-y-6 w-full mb-8 lg:mb-0"
+    >
+      <!-- Logo -->
+      <div class="flex items-center justify-center lg:justify-start">
+        <img
+          src={logoTami.src}
+          alt="Logo de Tami"
+          title="Logo de Tami"
+          loading="lazy"
+          width={120}
+          height={60}
+          class="shrink-0"
+        />
+      </div>
+
+      <!-- Barra vertical blanca -->
+      <div class="hidden lg:block border-l-2 border-white opacity-70 h-[200px]">
+      </div>
+
+      <!-- Enlaces -->
+      <div
+        class="flex items-center lg:items-start justify-center lg:justify-start pl-8"
+      >
+        <ul class="space-y-4 font-semibold text-base text-center lg:text-left">
+          <li>
+            <a href="/" class="hover:text-orange-300 transition-colors"
+              >Inicio</a
+            >
+          </li>
+          <li>
+            <a
+              href="/sobre-nosotros"
+              class="hover:text-orange-300 transition-colors">Nosotros</a
+            >
+          </li>
+          <li>
+            <a href="/productos" class="hover:text-orange-300 transition-colors"
+              >Productos</a
+            >
+          </li>
+          <li>
+            <a
+              href="/politicas-de-envio"
+              class="hover:text-orange-300 transition-colors"
+              >Políticas de Envíos</a
+            >
+          </li>
+          <li>
+            <a href="/blog" class="hover:text-orange-300 transition-colors"
+              >Blogs</a
+            >
+          </li>
         </ul>
       </div>
     </div>
+
+    <!-- Bloque 2: Horario de atención -->
     <div class="flex justify-center mb-8 lg:mb-0">
-      <div class="text-center lg:text-left">
-        <h4 class="uppercase font-bold text-xl mb-5 tracking-wide">CONTACTO</h4>
-        <p class="font-bold mb-1 text-base">Horario de atención</p>
-        <p class="mb-4 text-base">Lunes a Viernes<br />9:00 am a 9:00 pm</p>
-        <p class="font-bold mb-1 text-base">Email</p>
-        <CopyText>informestami01@gmail.com</CopyText>
-        <p class="font-bold mt-4 mb-1 text-base">Teléfono</p>
-        <CopyText>+51978883199</CopyText>
+      <div
+        class="flex flex-col justify-between text-center lg:text-left h-[200px]"
+      >
+        <!-- Arriba: Horario de atención -->
+        <div>
+          <p class="font-semibold mb-1 text-base">Horario de atención</p>
+          <p class="text-base">Lunes a Viernes<br />9:00 am a 9:00 pm</p>
+        </div>
+
+        <!-- Abajo: Información de contacto -->
+        <div>
+          <p class="font-semibold mb-1 text-base">Para mayor información</p>
+          <CopyText>informestami01@gmail.com</CopyText>
+          <CopyText>+51978883199</CopyText>
+        </div>
       </div>
     </div>
-  <div class="flex flex-col items-center space-y-8">
-      <img
-        src={mascotaTami.src}
-        title="Mascota Tami"
-        alt="Mascota Tami"
-        loading="lazy"
-        width={100}
-        height={100}
-        class="mx-auto"
-      />
+
+    <div
+      class="flex flex-col items-center justify-center space-y-6 h-full text-white py-8 px-4"
+    >
       <button
         type="button"
         title="Abrir formulario de asesoría"
-        class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full transition-colors duration-300 cursor-pointer text-base shadow-md"
+        class="cursor-pointer text-lg font-bold tracking-wide hover:opacity-80 transition-opacity"
         id="open-scroll-btn"
       >
         ¡CONTÁCTANOS!
       </button>
+
       <div class="w-full text-center">
-        <h4 class="uppercase font-bold text-xl mb-4 tracking-wide">SÍGUENOS</h4>
-        <div class="flex gap-7 mt-2 justify-center flex-wrap">
-          {socialMediaLinks.map((item) => (
-            <NavSocialMediaLink
-              socialMediaName={item.socialMediaName}
-              image={item.image.src}
-              url={item.url}
-              imageTitle={item.imageTitle}
-              linkTitle={item.linkTitle}
-            />
-          ))}
+        <div class="flex gap-4 justify-center flex-wrap">
+          {
+            socialMediaLinks.map((item) => (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={item.linkTitle}
+                class="w-10 h-10 bg-black rounded-full flex items-center justify-center"
+              >
+                <img
+                  src={item.image.src}
+                  alt={item.imageTitle}
+                  class="w-6 h-6"
+                />
+              </a>
+            ))
+          }
         </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-center">
+        <span class="text-base font-bold">Libro de reclamaciones</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-10 h-10"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+          ></path>
+        </svg>
       </div>
     </div>
   </div>

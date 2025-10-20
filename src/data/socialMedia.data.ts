@@ -5,26 +5,19 @@ import facebookIcon from "@icons/smi_facebook.svg";
 import whatsappIcon from "@icons/smi_whatsapp.svg";
 
 const socialMediaLinks = [
+  //  {
+  //   url: "https://www.tiktok.com/@tami_maquinarias",
+  //   socialMediaName: "Tiktok",
+  //   image: tiktokIcon,
+  //   imageTitle: "Tiktok de Tami Maquinarias",
+  //   linkTitle: "Visita nuestro perfil de TikTok", 
+  // },
    {
-    url: "https://www.tiktok.com/@tami_maquinarias",
-    socialMediaName: "Tiktok",
-    image: tiktokIcon,
-    imageTitle: "Tiktok de Tami Maquinarias",
-    linkTitle: "Visita nuestro perfil de TikTok", 
-  },
-  {
-    url: "https://www.instagram.com/tami2_02590/?igsh=MWZoYnZjM3FxYXN5cQ%3D%3D",
-    socialMediaName: "Instagram",
-    image: instagramIcon,
-    imageTitle: "Instagram de Tami Maquinarias",
-    linkTitle: "Síguenos en Instagram",
-  },
-  {
-    url: "https://x.com/Tami_Maquinaria",
-    socialMediaName: "Twitter",
-    image: twitterIcon,
-    imageTitle: "Twitter de Tami Maquinarias",
-    linkTitle: "Síguenos en Twitter", 
+    url: "https://api.whatsapp.com/send?phone=51978883199",
+    socialMediaName: "Whatsapp",
+    image: whatsappIcon,
+    imageTitle: "Whatsapp de Tami Maquinarias",
+    linkTitle: "Contáctanos por WhatsApp", 
   },
   {
     url: "https://www.facebook.com/tamiperu01",
@@ -33,13 +26,22 @@ const socialMediaLinks = [
     imageTitle: "Facebook de Tami Maquinarias",
     linkTitle: "Visita nuestra página de Facebook", 
   },
-  {
-    url: "https://api.whatsapp.com/send?phone=51978883199",
-    socialMediaName: "Whatsapp",
-    image: whatsappIcon,
-    imageTitle: "Whatsapp de Tami Maquinarias",
-    linkTitle: "Contáctanos por WhatsApp", 
+
+   {
+    url: "https://www.instagram.com/tami2_02590/?igsh=MWZoYnZjM3FxYXN5cQ%3D%3D",
+    socialMediaName: "Instagram",
+    image: instagramIcon,
+    imageTitle: "Instagram de Tami Maquinarias",
+    linkTitle: "Síguenos en Instagram",
   },
+   {
+    url: "https://x.com/Tami_Maquinaria",
+    socialMediaName: "Twitter",
+    image: twitterIcon,
+    imageTitle: "Twitter de Tami Maquinarias",
+    linkTitle: "Síguenos en Twitter", 
+  },
+ 
 ];
 
 export default socialMediaLinks;
