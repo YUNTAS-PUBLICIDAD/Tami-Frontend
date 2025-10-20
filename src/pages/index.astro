@@ -11,6 +11,7 @@ import trabajo from "@images/index/personas-manos-hablando.webp";
 import ProductSlideshow from "src/components/index/ProductSlideshow.tsx";
 import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
 import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
+const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
 import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
 // import ScrollModal from "../components/ui/ScrollModal.tsx";
@@ -80,6 +81,7 @@ import Testimonials from "../components/index/Slideshow";
       </h2>
 
       <a
+        href={whatsappLink}
         title="Enviar mensaje por WhatsApp"
         target="_blank"
         rel="noopener noreferrer"
