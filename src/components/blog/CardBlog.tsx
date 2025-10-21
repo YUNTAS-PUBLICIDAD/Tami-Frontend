@@ -64,5 +64,6 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
     </a>
   );
 });
+  
 
 export default CardBlog;
