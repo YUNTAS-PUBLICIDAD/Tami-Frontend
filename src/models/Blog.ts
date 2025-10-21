@@ -2,6 +2,7 @@ export default interface Blog {
   id: number;
   titulo: string;
   nombre_producto?: string | null;
+  producto_id: number;
   link: string;
   subtitulo1: string;
   subtitulo2: string;
@@ -10,6 +11,7 @@ export default interface Blog {
   video_url: string;
   video_titulo: string;
   miniatura: string;
+  created_at: EpochTimeStamp;
   imagenes: {
     ruta_imagen: string;
     texto_alt: string | null;

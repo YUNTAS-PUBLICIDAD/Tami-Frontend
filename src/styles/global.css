@@ -45,6 +45,7 @@
               box-shadow 0.3s ease-in-out !important;
 }
 
+
 :root {
   --text-color: #1f2937;
   --background-color: #ffffff;
@@ -340,3 +341,6 @@ a.relative.group:hover::after {
 .dialog-title{
   @apply text-xl md:text-2xl text-center font-bold text-white
 }
+
+
+

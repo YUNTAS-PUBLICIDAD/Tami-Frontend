@@ -1,3 +1,5 @@
+// src/components/blog/CardBlog.tsx
+
 import React from "react";
 import type Blog from "src/models/Blog";
 import { config } from "config";
@@ -6,13 +8,13 @@ interface CardBlogProps {
   blog: Blog;
 }
 
-const apiUrl = config.apiUrl;
-
 const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
-  const miniatura = blog.miniatura
-    ? `${apiUrl}${blog.miniatura}`
+
+  const imageUrl = blog.miniatura
+    ? `${config.apiUrl}${blog.miniatura}`
     : "/images/default-blog.webp";
-  const altImg = blog.titulo || "Imagen del blog";
+  
+  const altText = blog.titulo || "Imagen del blog";
 
   return (
     <a
@@ -25,9 +27,9 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
           <div className="md:w-1/3 w-full p-4 md:p-6 flex items-center justify-center">
             <figure className="w-full h-48 md:h-56 bg-gray-300 rounded-lg overflow-hidden">
               <img
-                src={miniatura}
-                alt={altImg}
-                title={altImg}
+                src={imageUrl} 
+                alt={altText} 
+                title={altText} 
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
@@ -62,5 +64,6 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
     </a>
   );
 });
+  
 
 export default CardBlog;
