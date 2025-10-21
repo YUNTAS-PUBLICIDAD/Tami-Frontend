@@ -29,10 +29,10 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     }, [producto]); 
 
     const getDimensionBgColor = (letter: string) => {
-        if (letter === 'H') return 'bg-blue-500'; 
-        if (letter === 'L') return 'bg-green-500'; 
-        if (letter === 'A') return 'bg-red-500';   
-        return 'bg-gray-500';
+        if (letter === 'H') return 'bg-[#00b6ff]'; 
+        if (letter === 'L') return 'bg-[#00b6ff]'; 
+        if (letter === 'A') return 'bg-[#00b6ff]';   
+        return 'bg-[#00b6ff]';
     };
 
     const relatedProducts = producto.productos_relacionados || [];
@@ -41,67 +41,64 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     return (
         <div className="w-full bg-gray-50"> {/* Fondo general gris claro */}
             {/* -------------------- HERO Section -------------------- */}
-                        <div className="
-                        relative pt-32 md:pt-40 pb-20 min-h-screen 
-                        text-white overflow-hidden flex items-center
-                        bg-gradient-to-r from-[#041119] to-[#003d56] 
-                        ">
-                        <div className="max-w-7xl mx-auto px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                            
-                            <div className="flex flex-col justify-center text-left">
-                            <h1 className="text-5xl md:text-7xl font-extrabold uppercase mb-6">
-                                {producto.titulo.split(' ')[0]}
-                                <span className="block text-[#2DCCFF]">{producto.titulo.split(' ').slice(1).join(' ')}</span>
-                            </h1>
+                <div className="
+                    relative pt-32 md:pt-40 pb-20 min-h-screen 
+                    text-white overflow-hidden flex items-center
+                    bg-gradient-to-r from-[#041119] to-[#003d56] 
+                ">
+                    <div className="w-full px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">                    
+                   
+                    <div className="flex flex-col justify-center text-left">
+                        <h1 className="text-5xl md:text-8xl font-extrabold uppercase mb-6">
+                        {producto.titulo.split(' ')[0]}
+                        <span className="block text-[#2DCCFF]">{producto.titulo.split(' ').slice(1).join(' ')}</span>
+                        </h1>
 
-                            <p className="text-xl md:text-3xl opacity-90 mb-10 max-w-lg uppercase tracking-wider font-light">
-                                {producto.subtitulo}
-                            </p>
+                        <p className="text-xl md:text-4xl opacity-90 mb-10 max-full uppercase tracking-wider font-light">
+                        {producto.subtitulo}
+                        </p>
 
+                        <button
+                        id="btnQuotationHero"
+                        className="w-fit
+                            bg-[#00b6ff] text-white 
+                            px-10 py-3 rounded-lg
+                            font-bold text-lg uppercase 
+                            shadow-lg 
+                            border border-white
+                            transform transition-all duration-150 ease-in-out
+                            hover:brightness-110 
+                            active:brightness-95"
+                        >
+                        ¡Cotízalo!
+                        </button>
+                    </div>
+
+                    <div className="relative flex items-center justify-center h-full w-full">
                         
-                            <button
-                                id="btnQuotationHero"
-                                className="w-fit
-                                bg-[#00b6ff] text-white 
-                                px-10 py-3 rounded-lg /* Ajustado el radio del borde */
-                                font-bold text-lg uppercase 
-                                shadow-lg 
-                                border border-white /* Borde completo como en la imagen */
-                                transform transition-all duration-150 ease-in-out
-                                hover:brightness-110 
-                                active:brightness-95 /* Efecto 'active' más simple */"
-                            >
-                                ¡Cotízalo!
-                            </button>
-                            </div>
-
-                            {/* --- CAMBIO 2: Reestructuración de la Imagen (Derecha) --- */}
-                            <div className="relative flex items-center justify-center h-full w-full">
-                            
-                            <div className="relative w-full max-w-[871px] aspect-square">
-
-                             
-                                <div className="absolute inset-0 bg-white rounded-full shadow-2xl" />
-
-                                <img
-                                src={`${config.apiUrl}${producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png'}`}
-                                alt={producto.nombre}
-                                title={producto.nombre}
-                                className="relative w-full h-full object-contain"
-                                fetchPriority="high"
-                                />
-                            </div>
-                            </div>
-                            
+                        <div className="relative w-[90%] aspect-square">
+                        
+                        <div className="absolute inset-0 bg-white rounded-full shadow-2xl" />
+                        
+                        <img
+                            src={`${config.apiUrl}${producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png'}`}
+                            alt={producto.nombre}
+                            title={producto.nombre}
+                            className="relative w-full h-full object-contain"
+                            fetchPriority="high"
+                        />
                         </div>
-                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
 
             {/* -------------------- MAIN PRODUCT DETAILS Section -------------------- */}
-                <div className="max-w-[1701px] mx-auto px-4 md:px-8 py-12 -mt-20 relative z-20">
-                    <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-200">
+                <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20 ">
+                    <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400 ">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
                             <div className="flex flex-col items-center">
-                                <div className="w-full max-w-lg aspect-square bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
+                                <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
                                     <img
                                         title={producto.nombre}
                                         src={`${config.apiUrl}${productViewer}`}
@@ -110,11 +107,11 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                                         loading="lazy"
                                     />
                                 </div>
-                                <div className="grid grid-cols-4 gap-4 w-full max-w-lg">
+                                <div className="grid grid-cols-4 gap-4 w-full max-w-xl">
                                     {producto.imagenes?.slice(0, 4).map((image) => (
                                         <div
                                             key={image.url_imagen}
-                                            className={`aspect-square bg-white rounded-xl overflow-hidden cursor-pointer flex items-center justify-center p-2 border-2 ${image.url_imagen === productViewer ? 'border-blue-500' : 'border-gray-200'} transition-all duration-300`}
+                                            className={`aspect-square  bg-white rounded-xl overflow-hidden shadow-xl cursor-pointer flex items-center justify-center p-2 border-2 ${image.url_imagen === productViewer ? 'border-blue-500' : 'border-gray-200'} transition-all duration-300`}
                                             onClick={() => setProductViewer(image.url_imagen)}
                                         >
                                             <img
@@ -129,19 +126,19 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                                 </div>
                             </div>
 
-                            <div>
-                                <h2 className="text-3xl md:text-4xl font-extrabold text-[#07625b] uppercase mb-4">
+                            <div >
+                                <h2 className="text-center text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4">
                                     {producto.titulo}
                                 </h2>
                                 
                                 <div className="mb-6">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">Información del producto:</h3>
+                                    <h3 className="text-center text-3xl font-bold text-[#00b6ff] mb-2">Información del producto:</h3>
                                     <p className="text-gray-600 text-base leading-relaxed">
                                         {producto.descripcion}
                                     </p>
                                 </div>
 
-                                <div className="bg-gray-100 rounded-xl p-6 mb-8 border border-gray-200">
+                                <div className="bg-gray-100  rounded-xl p-6 mb-8 border border-gray-200">
                                     <h3 className="font-bold text-xl text-gray-900 mb-4">Detalles del producto</h3>
                                     
                                     <h4 className="font-semibold text-lg text-gray-800 mb-2">Especificaciones técnicas:</h4>
@@ -179,12 +176,6 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                                     </div>
                                 </div>
 
-                                <button
-                                    id="btnQuotationDetail"
-                                    className="w-full bg-[#0A1F33] text-white py-4 rounded-full font-bold text-xl hover:bg-opacity-90 transition"
-                                >
-                                    COTIZACIÓN
-                                </button>
                             </div>
                         </div>
                     </div>
