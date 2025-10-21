@@ -42,10 +42,10 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
   }
 
   return (
-    <div className="w-full bg-gray-10 py-16">
-      <div className="max-w-7xl mx-auto ">
+    <div className="w-full bg-gray-10 py-16 ">
+      <div className="max-w-full mx-auto  ">
         
-        <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+        <div className="flex flex-col lg:flex-row gap-8 items-stretch ">
 
           <div className="flex-grow w-full lg:w-0 px-4 md:px-8">
             {relatedBlogs.length > 1 ? (
