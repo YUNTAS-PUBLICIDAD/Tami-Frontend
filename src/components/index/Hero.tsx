@@ -8,33 +8,23 @@ const Hero = () => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % heroArray.length);
     }, 5000);
-
     return () => clearInterval(interval);
-  }, [heroArray.length]);
-
-  function moveToSectionCards() {
-    const element = document.getElementById("sectionCards");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  }
+  }, []);
 
   return (
     <section
-      className="relative w-full min-h-screen aspect-[16/9] md:aspect-[21/9] overflow-hidden"
+      className="relative w-full min-h-screen flex flex-col justify-between pb-20"
       aria-label="Hero carousel"
     >
+      {/* Fondo del carrusel */}
       <div className="absolute inset-0 w-full h-full">
         {heroArray.map((hero, index) => {
-          // Solo renderiza la imagen actual y las adyacentes para performance
           const isVisible = index === currentIndex;
           const isAdjacent =
             index === (currentIndex + 1) % heroArray.length ||
             index === (currentIndex - 1 + heroArray.length) % heroArray.length;
 
-          if (!isVisible && !isAdjacent) {
-            return null; // No renderizar imágenes muy lejanas
-          }
+          if (!isVisible && !isAdjacent) return null;
 
           return (
             <img
@@ -58,24 +48,27 @@ const Hero = () => {
         })}
       </div>
 
-      <div className="gradient-hero md:block relative pt-20 px-8 lg:pl-32 z-10 bg-gradient-to-b from-teal-700/75 to-black/75 h-full content-center">
-      <div className="inline-block backdrop-blur-md bg-white/20 rounded-3xl shadow-2xl p-8 md:p-12 lg:p-16 animate-fadeInUpHero" style={{animationDuration:'1.2s'}}>
-          <h1
-            className="mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-7xl leading-tight font-extrabold whitespace-pre-line transform-none drop-shadow-2xl shadow-black"
-            aria-live="polite"
-          >
-            {heroArray[currentIndex].title}
-          </h1>
-          <button
-            onClick={moveToSectionCards}
-            className="cursor-pointer bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 px-4 py-3 lg:px-6 lg:py-2 2xl:px-10 2xl:py-4 text-lg lg:text-xl xl:text-2xl 2xl:text-3xl mt-8 w-fit shadow-xl shadow-black hover:shadow-2xl"
-            aria-label="Descubre más sobre productos destacados"
-          >
-            Descubre más
-          </button>
+      {/* Texto sobre la imagen */}
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-4 sm:px-6 md:px-10 bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight sm:leading-snug drop-shadow-lg max-w-[90%] sm:max-w-3xl">
+          Innovación y Soluciones para cada Proyecto
+        </h1>
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-[90%] sm:max-w-3xl drop-shadow-md leading-relaxed">
+          Calidad respaldada por nuestra garantía, mostrando nuestro compromiso
+          con la satisfacción de nuestros clientes.
+        </p>
+      </div>
+
+      {/* Card inferior flotante */}
+      <div className="absolute bottom-0 left-0 right-0 z-40 w-full flex justify-center">
+        <div className="bg-[#FFF8F8] backdrop-blur-sm shadow-xl rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-16 md:py-6 mx-4 sm:mx-6 md:mx-8 text-[#00786F] font-black text-center text-xs sm:text-sm md:text-lg tracking-wide uppercase translate-y-1/2 font-inter flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-12">
+          <span>Negocio</span>
+          <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
+          <span>Maquinarias</span>
+          <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
+          <span>Decoración</span>
         </div>
       </div>
-      {/* La animación se define globalmente en index.astro */}
     </section>
   );
 };

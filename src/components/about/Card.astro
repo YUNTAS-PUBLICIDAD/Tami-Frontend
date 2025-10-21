@@ -10,7 +10,7 @@ const { image, title, paragraph, imageTitle } = Astro.props;
 ---
 
 <div
-    class="relative w-[180px] sm:w-[220px] md:w-[240px] lg:w-[260px] xl:w-[280px] 2xl:w-[300px] h-48 sm:h-52 md:h-60 lg:h-64 xl:h-72 rounded-3xl overflow-hidden my-2 sm:my-4"
+  class="relative w-full max-w-[280px] sm:max-w-[300px] md:max-w-none h-80 sm:h-96 md:h-[26rem] lg:h-[28rem] xl:h-[30rem] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
 >
   <img
     src={image}
@@ -18,18 +18,23 @@ const { image, title, paragraph, imageTitle } = Astro.props;
     title={imageTitle}
     class="absolute z-0 w-full h-full object-cover object-center"
     width="300"
-    height="300"
+    height="400"
     loading="lazy"
     decoding="async"
   />
+
   <div
-      class="relative flex flex-col justify-end bg-gradient-to-t from-teal-700 via-teal-600/90 w-full h-full text-white text-center pb-3 px-2"
+    class="relative flex flex-col justify-end w-full h-full text-white text-center pb-6 px-4"
   >
-    <span class="grid grid-rows-[auto_1fr] gap-1">
-      <h3 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold mt-4">
+    <span class="grid gap-3">
+      <h3
+        class="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold drop-shadow-lg"
+      >
         {title}
       </h3>
-      <p class="hidden md:block text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg font-medium">
+      <p
+        class="hidden md:block text-sm sm:text-base md:text-base lg:text-lg xl:text-xl font-medium px-2 drop-shadow-md leading-relaxed"
+      >
         {paragraph}
       </p>
     </span>

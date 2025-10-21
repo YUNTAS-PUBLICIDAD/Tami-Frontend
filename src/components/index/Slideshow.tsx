@@ -13,7 +13,7 @@ const testimonials: Testimonial[] = [
   {
     avatar: "/images/persona-sonriente-feliz.webp",
     name: "Carlos Pérez",
-    alt:"testimonio de Carlos Pérez",
+    alt: "testimonio de Carlos Pérez",
     rating: 5,
     text: "Compré mi selladora de vasos con TAMI y la experiencia fue excelente. Me asesoraron bien desde el comienzo y resolvieron mis dudas. ¡Satisfecho con mi compra!",
     title: "Testimonio de Carlos Pérez",
@@ -21,7 +21,7 @@ const testimonials: Testimonial[] = [
   {
     avatar: "/images/chica-guiño-ojo.webp",
     name: "María López",
-    alt:"testimonio de María López",
+    alt: "testimonio de María López",
     rating: 4,
     text: "Compré la mesa LED alta para mi discoteca y fue la sensación desde el primer día. Los colores se adaptan al ambiente y crean una experiencia única para los clientes. ¡Totalmente recomendada!",
     title: "Testimonio de María López",
@@ -29,7 +29,7 @@ const testimonials: Testimonial[] = [
   {
     avatar: "/images/persona-camisa-risa.webp",
     name: "Javier Gómez",
-    alt:"testimonio de Javier Gómez",
+    alt: "testimonio de Javier Gómez",
     rating: 5,
     text: "La selladora de bolsas para salsas me ha salvado en el restaurante. Antes se nos regaban las cremas en los pedidos, ahora todo llega perfecto.",
     title: "Testimonio de Javier Gómez",
@@ -49,11 +49,11 @@ const Testimonials: React.FC = () => {
 
   if (isMobile) {
     return (
-      <div className="flex justify-center px-8 mb-20 relative min-h-[280px] h-[320px]">
+      <div className="flex justify-center px-10 mb-20 relative min-h-[280px] h-[340px]">
         {testimonials.map((testimonial, index) => (
           <div
             key={index}
-            className={`w-72 p-6 rounded-3xl border border-teal-400 flex flex-col transition-all duration-500 absolute ${
+            className={`w-72 p-6 bg-white rounded-3xl border border-teal-400 flex flex-col transition-all duration-500 absolute ${
               slideIndex === index
                 ? "opacity-100 scale-100 relative"
                 : "opacity-0 scale-95 pointer-events-none"
@@ -61,9 +61,9 @@ const Testimonials: React.FC = () => {
           >
             <div className="flex items-center gap-x-4">
               <img
-                src={testimonial.avatar || "https://placehold.co/64x64"}
-                alt="Avatar"
-                title="Avatar"
+                src={testimonial.avatar}
+                alt={testimonial.alt}
+                title={testimonial.title}
                 width={64}
                 height={64}
                 className="w-16 h-16 rounded-full object-cover"
@@ -83,7 +83,7 @@ const Testimonials: React.FC = () => {
           </div>
         ))}
 
-        {/* Flechas de navegación */}
+        {/* Flechas navegación */}
         <button
           onClick={() =>
             setSlideIndex(
@@ -108,8 +108,8 @@ const Testimonials: React.FC = () => {
           {testimonials.map((_, i) => (
             <span
               key={i}
-              className={`h-3 w-3 rounded-full bg-gray-300 ${
-                slideIndex === i ? "bg-teal-600" : ""
+              className={`h-3 w-3 rounded-full ${
+                slideIndex === i ? "bg-teal-600" : "bg-gray-300"
               }`}
             />
           ))}
@@ -118,35 +118,38 @@ const Testimonials: React.FC = () => {
     );
   }
 
-  // Vista normal para pantallas grandes
+  // Desktop
   return (
-    <div className="flex justify-center gap-8 px-8 md:gap-14 flex-wrap mb-20">
+    <div className="flex justify-evenly gap-4 px-10 md:gap-4 flex-wrap mb-20">
       {testimonials.map((testimonial, index) => (
         <div
           key={index}
-          className="w-full sm:w-80 p-4 px-6 rounded-4xl border border-teal-400 flex flex-col"
+          className="w-full sm:w-[380px] bg-white p-6 rounded-3xl border border-teal-400 flex flex-col gap-4"
         >
-          <div className="flex items-center gap-x-4">
+          <div className="flex items-center justify-between gap-x-4">
+            {/* Texto a la izquierda */}
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-teal-600 tracking-widest">
+                {testimonial.name}
+              </h3>
+              <div className="text-orange-300 text-2xl">
+                {"★".repeat(testimonial.rating) +
+                  "☆".repeat(5 - testimonial.rating)}
+              </div>
+            </div>
+
+            {/* Imagen a la derecha */}
             <img
-              src={testimonial.avatar || "https://via.placeholder.com/64"}
-              alt="Avatar"
-              title="Avatar"
+              src={testimonial.avatar}
+              alt={testimonial.alt}
+              title={testimonial.title}
               width={64}
               height={64}
               className="w-16 h-16 rounded-full object-cover"
               loading="lazy"
             />
-            <div>
-              <h3 className="text-xl font-bold text-teal-600 tracking-widest">
-                {testimonial.name}
-              </h3>
-              <div className="text-orange-300 text-2xl md:text-4xl">
-                {"★".repeat(testimonial.rating) +
-                  "☆".repeat(5 - testimonial.rating)}
-              </div>
-            </div>
           </div>
-          <p className="mt-2">{testimonial.text}</p>
+          <p className="text-gray-700">{testimonial.text}</p>
         </div>
       ))}
     </div>

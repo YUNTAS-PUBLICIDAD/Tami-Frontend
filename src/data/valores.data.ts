@@ -1,7 +1,7 @@
-import imgResponsabilidad from "@images/about/card_responsabilidad.webp";
-import imgCalidad from "@images/about/card_calidad.webp";
-import imgTranspariencia from "@images/about/card_transpariencia.webp";
-import imgCompromiso from "@images/about/card_compromiso.webp";
+import imgResponsabilidad from "@images/about/card_mujer.webp";
+import imgCalidad from "@images/about/card_gerente.webp";
+import imgTranspariencia from "@images/about/card_profesionales.webp";
+import imgCompromiso from "@images/about/card_personas.webp";
 
 const valoresArray = [
   {

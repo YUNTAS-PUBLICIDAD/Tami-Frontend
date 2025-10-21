@@ -1,6 +1,6 @@
-import bg_card1 from "@images/index/cards/personas-chalecos-hablando.webp";
-import bg_card2 from "@images/index/cards/pared-decoración-objetos.webp";
-import bg_card3 from "@images/index/cards/sillas-madera-comedor.webp";
+import bg_card1 from "@images/index/cards/negocio.png";
+import bg_card2 from "@images/index/cards/decoracion.png";
+import bg_card3 from "@images/index/cards/maquinarias.png";
 
 const sectionCards = [
   {
@@ -23,7 +23,7 @@ const sectionCards = [
   },
   {
     id: "Maquinaria",
-    title: "MAQUINARIA",
+    title: "MAQUINARIAS",
     alt:"Sillas de madera organizadas en comedor",
     paragraph:
       "Herramientas innovadoras\nque impulsan el crecimiento\nde tu negocio.",
