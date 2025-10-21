@@ -263,29 +263,35 @@ const ScrollModal = () => {
       className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn"
     >
       <div
-        className={`bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative rounded-3xl border border-teal-400 transition-all duration-500 ${
-          isClosing ? "animate-slideOut" : "animate-slideIn"
-        }`}
+        className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative rounded-xl transition-all duration-500 h-[480px] ${isClosing ? "animate-slideOut" : "animate-slideIn"
+          }`}
       >
         {/* Imagen */}
-        <div className="hidden sm:block w-2/4 relative animate-fadeInLeft">
+        <div className="absolute inset-0 sm:flex w-[80%] justify-center items-center bg-gray-100 overflow-hidden">
           <img
             src={asesoriaImg.src}
             alt="Asesoría"
             title="Asesoría"
             className="w-full h-full object-cover select-none scale-105 transition-transform duration-700"
           />
+        </div>
+
+        <div className="absolute inset-0 " style={{
+          background: "linear-gradient(to left, #00786F 0%, #018C86 45%, rgba(1, 160, 158, 0.6) 100%)"
+        }}></div>
+
+        <div className="hidden sm:flex sm:w-6/12 justify-center items-center relative z-10">
           <img
             src={Logo.src}
             alt="LogoTami"
             title="Logo Tami"
-            className="absolute top-40 left-4 w-80 h-80 object-contain select-none drop-shadow-2xl animate-fadeIn"
+            className="w-60 h-60 object-contain select-none drop-shadow-2xl animate-fadeIn z-20"
           />
         </div>
 
         {/* Contenido */}
-        <div className="w-full sm:w-3/5 bg-gradient-to-b from-[#01A09E] to-[#00D6D3] text-white relative animate-fadeInRight">
-          <div className="py-6 sm:py-10 mx-2 sm:mx-8 min-h-[420px]">
+        <div className="w-full sm:w-6/12 text-white relative animate-fadeInRight h-full">
+          <div className="sm:py-10 p-10 sm:px-8 h-full space-y-10">
             <button
               onClick={closeModal}
               aria-label="Cerrar modal"
@@ -294,7 +300,7 @@ const ScrollModal = () => {
               X
             </button>
 
-            <h2 className="scrollmodal-body select-none text-2xl sm:text-3xl font-extrabold mb-6 animate-fadeInUp">
+            <h2 className="scrollmodal-body select-none font-semibold animate-fadeInUp">
               DESCARGA{" "}
               <span className="scrollmodal-title text-yellow-200">GRATIS</span>{" "}
               NUESTRO{" "}
@@ -307,9 +313,7 @@ const ScrollModal = () => {
               onSubmit={handleSubmit}
               className="flex flex-col gap-1 animate-fadeInUp"
             >
-              <h3 className="text-base sm:text-lg font-bold select-none">
-                Nombre
-              </h3>
+
               <input
                 type="text"
                 placeholder="Nombres y Apellidos"
@@ -317,13 +321,11 @@ const ScrollModal = () => {
                 onChange={(e) => setNombre(e.target.value)}
                 className="p-2 rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               />
-              <p className="text-sm text-yellow-100 mb-3 h-5 transition-opacity duration-300">
+              <p className="text-sm text-yellow-100 transition-opacity duration-300">
                 {errors.nombre || "\u00A0"}
               </p>
 
-              <h3 className="text-base sm:text-lg font-bold select-none">
-                Teléfono
-              </h3>
+
               <input
                 type="tel"
                 placeholder="Teléfono: 905 876 524"
@@ -331,13 +333,10 @@ const ScrollModal = () => {
                 onChange={(e) => setTelefono(e.target.value)}
                 className="p-2 rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               />
-              <p className="text-sm text-yellow-100 mb-3 h-5 transition-opacity duration-300">
+              <p className="text-sm text-yellow-100 transition-opacity duration-300">
                 {errors.telefono || "\u00A0"}
               </p>
 
-              <h3 className="text-base sm:text-lg font-bold select-none">
-                Correo
-              </h3>
               <input
                 type="email"
                 placeholder="Correo@gmail.com"
@@ -346,13 +345,12 @@ const ScrollModal = () => {
                 className="p-2 rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               />
               <p
-                className={`text-sm text-center mb-3 h-5 transition-opacity duration-300 ${
-                  errors.correo || errors.general
-                    ? "text-red-100"
-                    : successMessage
+                className={`text-sm text-center transition-opacity duration-300 ${errors.correo || errors.general
+                  ? "text-red-100"
+                  : successMessage
                     ? "text-green-100"
                     : "text-yellow-100"
-                }`}
+                  }`}
               >
                 {errors.correo || errors.general || successMessage || "\u00A0"}
               </p>
@@ -360,7 +358,7 @@ const ScrollModal = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#01A09E] rounded-2xl text-white w-full sm:max-w-fit p-3 sm:p-4 text-xl sm:text-3xl font-bold mx-auto shadow-[0_4px_10px_rgba(255,255,255,0.6)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                className="bg-[#01A09E] rounded text-white w-full sm:max-w-fit py-2 px-8 text-lg font-bold mx-auto shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
