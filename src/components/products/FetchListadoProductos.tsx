@@ -1,10 +1,11 @@
 import { config, getApiUrl } from "config";
 import { useEffect, useState, useCallback, useMemo, useRef, type JSX } from "react";
 import React from "react";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import type Producto from "src/models/Product";
 
-const CACHE_KEY = 'productos_cache';
-const CACHE_DURATION = 5 * 60 * 1000;
+const CACHE_KEY = "productos_cache";
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 interface CacheData {
   data: Producto[];
@@ -15,15 +16,12 @@ const getCachedData = (): Producto[] | null => {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (!cached) return null;
-    
+
     const { data, timestamp }: CacheData = JSON.parse(cached);
-    const now = Date.now();
-    
-    if (now - timestamp > CACHE_DURATION) {
+    if (Date.now() - timestamp > CACHE_DURATION) {
       localStorage.removeItem(CACHE_KEY);
       return null;
     }
-    
     return data;
   } catch {
     return null;
@@ -32,398 +30,353 @@ const getCachedData = (): Producto[] | null => {
 
 const setCachedData = (data: Producto[]) => {
   try {
-    const cacheData: CacheData = {
-      data,
-      timestamp: Date.now()
-    };
+    const cacheData: CacheData = { data, timestamp: Date.now() };
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
   } catch {
-    // Si el localStorage está lleno, lo ignoramos
+    // Si localStorage está lleno, lo ignoramos
   }
 };
 
 const ApiUrl = config.apiUrl;
 
-interface SeccionProps {
-  nombreSeccion: string;
-  productosDeLaSeccion: Producto[];
-}
-
-interface Props {
-  producto: Producto;
-}
-
 export default function ListadoDeProductos() {
-  const [mostrar, setMostrar] = useState<JSX.Element[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Filtros
+  const [filtroNombre, setFiltroNombre] = useState("");
+  const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
+  const [mostrarCategorias, setMostrarCategorias] = useState(true);
+
   const obtenerDatos = useCallback(async (useCache = true) => {
     try {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-
+      abortControllerRef.current?.abort();
       setLoading(true);
       setError(null);
       setRefreshing(true);
 
+      // Usar caché si está vigente
       if (useCache) {
         const cachedData = getCachedData();
         if (cachedData) {
-          const seccionesArray = procesarSecciones(cachedData);
-          setMostrar(seccionesArray.map((seccion, i) => 
-            <MemoizedSeccion key={`${seccion.nombreSeccion}-${i}`} {...seccion} />
-          ));
+          setProductos(cachedData);
           setLoading(false);
           setRefreshing(false);
           return;
         }
       }
 
-      // Crear nuevo AbortController para esta request
       abortControllerRef.current = new AbortController();
-
-      // Usar el endpoint original que sí funciona
       const response = await fetch(getApiUrl(config.endpoints.productos.list), {
-        signal: abortControllerRef.current.signal
+        signal: abortControllerRef.current.signal,
       });
-      
+
       if (!response.ok) throw new Error("Error al obtener productos");
 
       const data = await response.json();
-      // Con el endpoint original, los productos están directamente en data
-      const productos = data;
 
-      // Mapeamos los datos del backend al modelo `Product`
-      const productosMapeados: Producto[] = productos.map((producto: any) => {
-        // El backend devuelve las imágenes en producto.imagenes (puede ser array de objetos)
-        let imagenes = [];
-        if (Array.isArray(producto.imagenes)) {
-          imagenes = producto.imagenes.map((img: any) => ({
-            url_imagen: img.url_imagen || img.url || '',
-            texto_alt_SEO: img.texto_alt_SEO || img.alt || '',
-            imageTitle: img.imageTitle || ''
-          }));
-        }
-        return {
-          id: producto.id,
-          nombre: producto.nombre,
-          link: producto.link,
-          titulo: producto.titulo,
-          subtitulo: producto.subtitulo,
-          lema: producto.lema,
-          descripcion: producto.descripcion,
-          especificaciones: producto.especificaciones || {},
-          productos_relacionados: producto.productos_relacionados || [],
-          imagenes,
-          stock: producto.stock,
-          precio: parseFloat(producto.precio),
-          seccion: producto.seccion,
-          createdAt: producto.created_at
-        };
-      });
+      // Mapear productos a tu modelo
+      const productosMapeados: Producto[] = data.map((producto: any) => ({
+        id: producto.id,
+        nombre: producto.nombre,
+        link: producto.link,
+        titulo: producto.titulo,
+        subtitulo: producto.subtitulo,
+        lema: producto.lema,
+        descripcion: producto.descripcion,
+        especificaciones: producto.especificaciones || {},
+        productos_relacionados: producto.productos_relacionados || [],
+        imagenes: Array.isArray(producto.imagenes)
+          ? producto.imagenes.map((img: any) => ({
+            url_imagen: img.url_imagen || img.url || "",
+            texto_alt_SEO: img.texto_alt_SEO || img.alt || "",
+            imageTitle: img.imageTitle || "",
+          }))
+          : [],
+        stock: producto.stock,
+        precio: parseFloat(producto.precio),
+        seccion: producto.seccion,
+        createdAt: producto.created_at,
+      }));
 
-      // Guardar en cache
       setCachedData(productosMapeados);
-
-      // Construir secciones optimizadas
-      const seccionesArray = procesarSecciones(productosMapeados);
-
-      // Generar los componentes Seccion y actualizar el estado `mostrar`
-      setMostrar(
-        seccionesArray.map((seccion, i) => 
-          <MemoizedSeccion key={`${seccion.nombreSeccion}-${i}`} {...seccion} />
-        )
-      );
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-        // Request fue cancelada, no mostrar error
-        return;
+      setProductos(productosMapeados);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error("Error cargando productos:", err);
+        setError("Error al cargar los productos. Por favor, intenta nuevamente.");
       }
-      console.error("Error cargando productos:", error);
-      setError("Error al cargar los productos. Por favor, intenta nuevamente.");
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, []);
 
-  const procesarSecciones = useMemo(() => (productos: Producto[]): SeccionProps[] => {
-    const secciones = ["Negocio", "Decoración", "Maquinaria"];
-    return secciones.map(nombreSeccion => ({
-      nombreSeccion,
-      productosDeLaSeccion: productos.filter(p => p.seccion === nombreSeccion)
-    }));
-  }, []);
-
-  const debouncedRefetch = useCallback(() => {
-    if (refreshing) return;
-    obtenerDatos(false); 
-  }, [obtenerDatos, refreshing]);
-
   useEffect(() => {
     obtenerDatos();
-    
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
+    return () => abortControllerRef.current?.abort();
   }, [obtenerDatos]);
 
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
+  const procesarSecciones = useCallback(
+    (productos: Producto[]) => {
+      const secciones = ["Negocio", "Decoración", "Maquinaria"];
+      return secciones.map((nombreSeccion) => ({
+        productosDeLaSeccion: productos.filter((p) => p.seccion === nombreSeccion),
+      }));
+    },
+    []
+  );
+
+  /* -------------------- FILTROS -------------------- */
+  const productosFiltrados = useMemo(() => {
+    let filtrados = [...productos];
+    if (filtroNombre.trim()) {
+      filtrados = filtrados.filter((p) =>
+        p.nombre.toLowerCase().includes(filtroNombre.toLowerCase())
+      );
+    }
+    if (filtroCategoria) {
+      filtrados = filtrados.filter((p) => p.seccion === filtroCategoria);
+    }
+    return filtrados;
+  }, [productos, filtroNombre, filtroCategoria]);
+
+  const seccionesArray = useMemo(
+    () => procesarSecciones(productosFiltrados),
+    [productosFiltrados, procesarSecciones]
+  );
+
+  if (loading) return <LoadingSkeleton />;
 
   if (error) {
     return (
       <section className="w-full flex flex-col items-center justify-center py-16">
-        <div className="text-center">
-          <p className="text-red-600 text-lg mb-4">{error}</p>
-          <button 
-            onClick={debouncedRefetch}
-            disabled={refreshing}
-            className={`px-6 py-2 rounded-lg transition-colors ${
-              refreshing 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-teal-600 hover:bg-teal-700 text-white'
+        <p className="text-red-600 text-lg mb-4">{error}</p>
+        <button
+          onClick={() => obtenerDatos(false)}
+          disabled={refreshing}
+          className={`px-6 py-2 rounded-lg transition-colors ${refreshing
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-teal-600 hover:bg-teal-700 text-white"
             }`}
-          >
-            {refreshing ? 'Cargando...' : 'Reintentar'}
-          </button>
-        </div>
+        >
+          {refreshing ? "Cargando..." : "Reintentar"}
+        </button>
       </section>
     );
   }
 
-  return <section className="w-full grid grid-rows-auto">{mostrar}</section>;
-}
-
-// Componente de Loading Skeleton
-function LoadingSkeleton() {
   return (
-    <section className="w-full grid grid-rows-auto">
-      {[1, 2, 3].map((seccion) => (
-        <div key={seccion} className="flex justify-center relative py-6 sm:py-8 md:py-10">
-          <div className="relative w-[95%] xs:w-[90%] sm:w-4/5 place-self-center">
-            {/* Skeleton del título */}
-            <div className="bg-gray-300 animate-pulse h-10 w-48 mb-6 rounded"></div>
-            
-            {/* Grid de productos skeleton */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 xs:gap-4 sm:gap-6 md:gap-8 mt-4 sm:mt-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                <div key={item} className="my-4 sm:my-6 md:my-10 flex flex-col items-center">
-                  {/* Skeleton de imagen */}
-                  <div className="bg-gray-300 animate-pulse rounded-[15%] w-4/5 h-4/5 md:h-56 md:w-56 mb-3"></div>
-                  {/* Skeleton del título */}
-                  <div className="bg-gray-300 animate-pulse h-4 w-3/4 rounded"></div>
-                </div>
-              ))}
-            </div>
+    <div className="flex flex-col md:flex-row gap-8 p-10">
+      {/* FILTROS */}
+      <aside className="md:w-4/12 xl:w-3/12">
+        <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] space-y-4">
+          <h1 className="uppercase underline text-teal-700 font-bold text-center text-3xl">
+            Filtros
+          </h1>
+          {/* Filtro nombre */}
+          <div>
+            <h2 className="font-bold text-teal-700 text-lg uppercase">Nombre</h2>
+            <input
+              type="text"
+              value={filtroNombre}
+              onChange={(e) => setFiltroNombre(e.target.value)}
+              placeholder="Buscar..."
+              className="p-2 shadow-md rounded-md w-full outline-none focus:ring-2 focus:ring-teal-400"
+            />
+          </div>
+          {/* Categorías */}
+          <div>
+            <button
+              type="button"
+              className="w-full flex justify-between items-center text-teal-700 hover:cursor-pointer"
+              onClick={() => setMostrarCategorias((prev) => !prev)}
+            >
+              <h2 className="font-bold text-lg uppercase">Categorías</h2>
+              {mostrarCategorias ? <FaChevronDown /> : <FaChevronUp />}
+            </button>
+
+            {mostrarCategorias && (
+              <div className="flex flex-wrap gap-3 text-white font-semibold pt-3">
+                {[
+                  { name: "Negocio", color: "#00B6FF" },
+                  { name: "Decoración", color: "#5D39FB" },
+                  { name: "Maquinaria", color: "#04B088" },
+                ].map(({ name, color }) => (
+                  <button
+                    key={name}
+                    onClick={() =>
+                      setFiltroCategoria(filtroCategoria === name ? null : name)
+                    }
+                    style={{
+                      backgroundColor: filtroCategoria === name ? "#fff" : color,
+                      color: filtroCategoria === name ? color : ''
+                    }}
+                    className={`py-2 px-5 rounded-xl text-lg uppercase shadow-md hover:opacity-90 transition-all}`}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Limpiar filtros */}
+          <div className="flex justify-center pt-10">
+            <button
+              onClick={() => {
+                setFiltroNombre("");
+                setFiltroCategoria(null);
+              }}
+              className="py-2 px-4 uppercase bg-white text-teal-700 border-2 border-teal-500 font-bold text-lg rounded-lg shadow-md hover:bg-teal-50 transition"
+            >
+              Limpiar filtros
+            </button>
           </div>
         </div>
-      ))}
+      </aside>
+
+      {/* PRODUCTOS */}
+      <section className="w-full xl:w-9/12 grid grid-rows-auto space-y-6 md:space-y-10">
+        {seccionesArray.map(
+          (seccion, i) =>
+            seccion.productosDeLaSeccion.length > 0 && (
+              <MemoizedSeccion key={`${i}`} {...seccion} />
+            )
+        )}
+      </section>
+    </div>
+  );
+}
+
+/* -------------------- SKELETON -------------------- */
+function LoadingSkeleton() {
+  return (
+    <section className="flex justify-between gap-6 p-10">
+      <div className="bg-gray-300 animate-pulse h-56 w-3/12 rounded"></div>
+      <div className="w-9/12 grid grid-rows-auto">
+        {[1, 2, 3].map((seccion) => (
+          <div key={seccion} className="flex justify-center relative">
+            <div className="relative w-full place-self-center">
+              {/* Grid de productos skeleton */}
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-2 xs:gap-3 sm:gap-6 md:gap-8">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+                  <div key={item} className="my-4 sm:my-6 md:my-10 flex flex-col items-center">
+                    {/* Skeleton de imagen */}
+                    <div className="bg-gray-300 animate-pulse rounded-[15%] w-4/5 h-4/5 md:h-56 md:w-56 mb-3"></div>
+                    {/* Skeleton del título */}
+                    <div className="bg-gray-300 animate-pulse h-4 w-3/4 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
 
-// Componente de sección memoizado para evitar re-renders innecesarios
-const Seccion = React.memo(function Seccion({ nombreSeccion, productosDeLaSeccion }: SeccionProps) {
-  // Memoizar la lista de productos para evitar recrear ProductCards innecesariamente
+/* -------------------- SECCIÓN -------------------- */
+const Seccion = React.memo(function Seccion({
+  productosDeLaSeccion,
+}: {
+  productosDeLaSeccion: Producto[];
+}) {
   const productCards = useMemo(() => {
-    if (productosDeLaSeccion.length === 0) {
-      return (
-        <p className="text-gray-400 text-lg col-span-full text-center py-8">
-          No hay productos en esta sección.
-        </p>
-      );
-    }
-    
     return productosDeLaSeccion.map((producto) => (
       <MemoizedProductCard key={producto.id} producto={producto} />
     ));
   }, [productosDeLaSeccion]);
 
   return (
-      <div className="flex justify-center relative py-6 sm:py-8 md:py-10" id={nombreSeccion}>
-        <div className="relative w-[95%] xs:w-[90%] sm:w-4/5 place-self-center">
-          {/* Título de sección con gradiente - responsivo en todos los tamaños */}
-          <h2 className="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-2 sm:py-3
-                       w-fit text-xl xs:text-2xl sm:text-3xl font-bold
-                       ps-3 xs:ps-4 sm:ps-5 lg:ps-10
-                       pe-8 xs:pe-12 sm:pe-16 lg:pe-28">
-            {nombreSeccion}
-          </h2>
-
-          {/* Grid de productos - de 1 columna en móvil pequeño a 4 columnas en desktop */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4
-                       gap-2 xs:gap-4 sm:gap-6 md:gap-8
-                       mt-4 sm:mt-6">
-            {productCards}
-          </div>
-        </div>
-      </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {productCards}
+    </div>
   );
 });
-
-
 const MemoizedSeccion = Seccion;
 
+/* -------------------- PRODUCT CARD -------------------- */
 function useIntersectionObserver(options = {}) {
-  const [isIntersecting, setIsIntersecting] = useState(false);
   const [hasIntersected, setHasIntersected] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const target = targetRef.current;
     if (!target) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsIntersecting(entry.isIntersecting);
-        if (entry.isIntersecting && !hasIntersected) {
-          setHasIntersected(true);
-        }
+        if (entry.isIntersecting) setHasIntersected(true);
       },
-      {
-        threshold: 0.1,
-        rootMargin: '100px',
-        ...options
-      }
+      { threshold: 0.1, rootMargin: "100px", ...options }
     );
-
     observer.observe(target);
+    return () => observer.unobserve(target);
+  }, [options]);
 
-    return () => {
-      observer.unobserve(target);
-    };
-  }, [hasIntersected, options]);
-
-  return { targetRef, isIntersecting, hasIntersected };
+  return { targetRef, hasIntersected };
 }
 
-const ProductCard = React.memo(function ProductCard({ producto }: Props) {
+const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const { targetRef, hasIntersected } = useIntersectionObserver();
 
   const imageSrc = useMemo(() => {
-    if (producto.imagenes && producto.imagenes.length > 0 && producto.imagenes[0].url_imagen) {
-      const url = producto.imagenes[0].url_imagen;
-      if (url.startsWith("http")) return url;
-      return `${ApiUrl.replace(/\/$/, "")}${url}`;
-    }
-    return `https://placehold.co/300x300/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
+    const img = producto.imagenes?.[0]?.url_imagen;
+    return img
+      ? img.startsWith("http")
+        ? img
+        : `${ApiUrl.replace(/\/$/, "")}${img}`
+      : `https://placehold.co/300x300/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
   }, [producto.imagenes, producto.nombre]);
 
-  const imageProps = useMemo(() => ({
-    alt: producto.imagenes[0]?.texto_alt_SEO || producto.nombre,
-    title: producto.imagenes[0]?.texto_alt_SEO || producto.imagenes[0]?.imageTitle
-  }), [producto.imagenes, producto.nombre]);
+  const gradientColors: Record<string, string> = {
+    Negocio: "from-[#00B6FF]/50 to-white text-[#0374A2]",
+    Decoración: "from-[#5D39FB]/50 to-white text-[#5D39FB]",
+    Maquinaria: "from-[#00786F]/50 to-white text-[#00786F]",
+    Default: "from-[#0374A2]/50 to-white text-[#0374A2]",
+  };
 
-  const handleImageLoad = useCallback(() => setImageLoaded(true), []);
-  const handleImageError = useCallback(() => {
-    setImageError(true);
-    setImageLoaded(true);
-  }, []);
+  const gradient = gradientColors[producto.seccion] || gradientColors.Default;
 
   return (
     <a
-      href={`/productos/detalle?link=${producto.link}`}
+      href={`/productos/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
-      className="my-4 sm:my-6 md:my-10 flex flex-col items-center group hover:cursor-pointer w-full"
+      className="flex flex-col items-center group hover:cursor-pointer w-full relative h-[360px]"
     >
-      <div 
-        ref={targetRef}
-        className="bg-gray-300 rounded-[15%] place-self-center w-4/5 h-4/5 md:h-56 md:w-56 md:p-0 mb-3 overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300 relative"
-      >
-        {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-            </svg>
-          </div>
+      <div ref={targetRef} className="w-full h-full">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center rounded-xl" />
         )}
-        
-        {/* Solo cargar la imagen cuando esté cerca del viewport */}
         {hasIntersected && (
           <img
             src={imageSrc}
-            alt={imageProps.alt}
-            title={imageProps.title}
+            alt={producto.nombre}
             loading="lazy"
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            className={`h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-110 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{
-              // Prevenir layout shift mientras carga
-              aspectRatio: '1',
-            }}
+            onLoad={() => setImageLoaded(true)}
+            className={`rounded-xl object-cover w-full h-[360px] transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            style={{ aspectRatio: "1" }}
           />
         )}
-      </div>
-      <div className="flex flex-row justify-center items-center text-teal-700 mt-3">
-        <svg
-          viewBox="0 0 25 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
+        <div
+          className={`absolute bottom-0 w-full flex justify-center bg-gradient-to-b ${gradient} shadow-lg rounded-xl backdrop-blur-xs`}
         >
-          <path
-        d="M16 4L8 12L16 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(-2, 0)"
-          ></path>
-          <path
-        d="M16 4L8 12L16 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(5, 0)"
-          ></path>
-        </svg>
-        <div className="flex-grow text-center group w-full px-2">
-          <h3 className="text-base sm:text-lg font-bold text-teal-700 leading-snug break-words whitespace-normal group-hover:scale-105 transition-transform duration-300 ease-in-out">
-            {producto.nombre}
-          </h3>
+          <div className="flex justify-between items-center gap-2 w-full p-3 min-h-[100px]">
+            <h3 className="text-sm sm:text-base font-bold uppercase">{producto.nombre}</h3>
+            <button className="bg-white py-1 px-3 rounded-md font-semibold text-sm shadow hover:bg-gray-100">
+              Comprar
+            </button>
+          </div>
         </div>
-        <svg
-          viewBox="0 0 25 25"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="group-hover:scale-75 transition-transform duration-300 ease-in-out w-[40px] h-[40px] md:w-[50px] md:h-[50px]"
-        >
-          <path
-        d="M8 4L16 12L8 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(2, 0)"
-          ></path>
-          <path
-        d="M8 4L16 12L8 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform="translate(-5, 0)"
-          ></path>
-        </svg>
       </div>
     </a>
   );
 });
-
-// Alias memoizado para usar en el componente Seccion
 const MemoizedProductCard = ProductCard;
