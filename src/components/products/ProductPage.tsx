@@ -41,15 +41,14 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     return (
         <div className="w-full bg-gray-50"> {/* Fondo general gris claro */}
             {/* -------------------- HERO Section -------------------- */}
-                <div className="
-                    relative pt-32 md:pt-40 pb-20 min-h-screen 
-                    text-white overflow-hidden flex items-center
-                    bg-gradient-to-r from-[#041119] to-[#003d56] 
-                ">
-                    <div className="max-w-7xl mx-auto px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        
-                        {/* Contenido de texto del Hero (Izquierda) */}
-                        <div className="flex flex-col justify-center text-left">
+                        <div className="
+                        relative pt-32 md:pt-40 pb-20 min-h-screen 
+                        text-white overflow-hidden flex items-center
+                        bg-gradient-to-r from-[#041119] to-[#003d56] 
+                        ">
+                        <div className="max-w-7xl mx-auto px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            
+                            <div className="flex flex-col justify-center text-left">
                             <h1 className="text-5xl md:text-7xl font-extrabold uppercase mb-6">
                                 {producto.titulo.split(' ')[0]}
                                 <span className="block text-[#2DCCFF]">{producto.titulo.split(' ').slice(1).join(' ')}</span>
@@ -59,43 +58,43 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                                 {producto.subtitulo}
                             </p>
 
+                        
                             <button
                                 id="btnQuotationHero"
                                 className="w-fit
-                                    bg-[#00b6ff] text-[#ffffff]  
-                                    px-10 py-3 rounded-xl       
-                                    font-bold text-lg uppercase  
-                                    shadow-lg                   
-                                    border-b-4 border-[#ffffff]  
-                                    transform transition-all duration-150 ease-in-out
-                                    hover:brightness-110         
-                                    active:translate-y-1 active:border-b-2"
+                                bg-[#00b6ff] text-white 
+                                px-10 py-3 rounded-lg /* Ajustado el radio del borde */
+                                font-bold text-lg uppercase 
+                                shadow-lg 
+                                border border-white /* Borde completo como en la imagen */
+                                transform transition-all duration-150 ease-in-out
+                                hover:brightness-110 
+                                active:brightness-95 /* Efecto 'active' más simple */"
                             >
                                 ¡Cotízalo!
                             </button>
-                        </div>
-
-                        {/* Imagen del Producto (Derecha) */}
-                        <div className="relative flex items-center justify-center h-full w-full">
-                            <div className="relative flex items-center justify-center h-full w-full">                                <div className="relative w-full max-w-[871px]
-                                    aspect-square 
-                                    bg-white rounded-full  
-                                    flex items-center justify-center overflow-hidden
-                                    shadow-2xl">
-                                    <img
-                                        src={`${config.apiUrl}${producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png'}`}
-                                        alt={producto.nombre}
-                                        title={producto.nombre}
-                                        className="w-full h-full object-contain p-8"
-                                        fetchPriority="high"
-                                    />
-                                    
-                                
-                                </div>
                             </div>
+
+                            {/* --- CAMBIO 2: Reestructuración de la Imagen (Derecha) --- */}
+                            <div className="relative flex items-center justify-center h-full w-full">
+                            
+                            <div className="relative w-full max-w-[871px] aspect-square">
+
+                             
+                                <div className="absolute inset-0 bg-white rounded-full shadow-2xl" />
+
+                                <img
+                                src={`${config.apiUrl}${producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png'}`}
+                                alt={producto.nombre}
+                                title={producto.nombre}
+                                className="relative w-full h-full object-contain"
+                                fetchPriority="high"
+                                />
+                            </div>
+                            </div>
+                            
                         </div>
-                    </div>
-                </div>
+                        </div>
 
             {/* -------------------- MAIN PRODUCT DETAILS Section -------------------- */}
                 <div className="max-w-[1701px] mx-auto px-4 md:px-8 py-12 -mt-20 relative z-20">
@@ -195,55 +194,84 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
             
                 <RelatedBlogs productId={producto.id} />
 
+
+
+
             {/* -------------------- PRODUCTOS SIMILARES Section -------------------- */}
-           <div className="bg-gradient-to-b from-[#015e81] to-[#011821] py-12 md:py-16">
+            <div className="bg-gradient-to-b from-[#015e81] to-[#011821] py-12 md:py-16 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 md:px-8">
                     
                     <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-10">
-                        PRODUCTOS SIMILARES
+                    PRODUCTOS SIMILARES
                     </h2>
+
                     <div className="relative">
+                    
+                    <div 
+                        className="
+                        absolute top-0 left-0 
+                        w-20 md:w-1/6 lg:w-1/5 h-full 
+                        bg-gradient-to-r from-[#1e5970] to-transparent 
+                        z-10 pointer-events-none
+                        " 
+                        aria-hidden="true" 
+                    />
+                    <div 
+                        className="
+                        absolute top-0 right-0 
+                        w-20 md:w-1/6 lg:w-1/5 h-full 
+                        bg-gradient-to-l from-[#1e5970] to-transparent 
+                        z-10 pointer-events-none
+                        " 
+                        aria-hidden="true" 
+                    />
 
-                        {/* 3. Difuminado izquierdo: Un 'div' absoluto posicionado a la izquierda */}
-                        <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-[#015e81] to-transparent  z-10 pointer-events-none" />
+                    {relatedProducts.length > carouselThreshold ? (
                         
-                        {/* 4. Difuminado derecho: Un 'div' absoluto posicionado a la derecha */}
-                        <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-[#011821] to-transparent z-10 pointer-events-none" />
+                        <Swiper
+                        modules={[Navigation, Pagination]}
+                        spaceBetween={24}
+                        slidesPerView={1}
+                        pagination={{ 
+                            clickable: true,
+                            bulletClass: 'swiper-pagination-bullet-custom',
+                            bulletActiveClass: 'swiper-pagination-bullet-active-custom'
+                        }}
+                        navigation={{
+                            nextEl: '.swiper-button-next-custom',
+                            prevEl: '.swiper-button-prev-custom',
+                        }}
+                        loop={relatedProducts.length > 3}
+                        breakpoints={{
+                            640: { slidesPerView: 2 },
+                            1024: { slidesPerView: 3 }, 
+                        }}
+                        className="w-full pb-10" 
+                        >
+                        {relatedProducts.map((related) => (
+                            <SwiperSlide key={related.id} className="h-auto">
+                            <SimilarProductCard product={related} />
+                            </SwiperSlide>
+                        ))}
+                        
+                    
+                        <div className="swiper-button-prev-custom"></div>
+                        <div className="swiper-button-next-custom"></div>
+                        
+                        </Swiper>
 
-                        {/* 5. Lógica Condicional (Swiper o Grid) */}
-                                {relatedProducts.length > carouselThreshold ? (
-                                    
-                                    <Swiper
-                                        modules={[Navigation, Pagination]}
-                                        spaceBetween={24}
-                                        slidesPerView={1}
-                                        pagination={{ clickable: true }}
-                                        navigation={true}
-                                        breakpoints={{
-                                            640: { slidesPerView: 2 },
-                                            1024: { slidesPerView: 3 }, 
-                                        }}
-                                        className="w-full pb-10"
-                                    >
-                                        {relatedProducts.map((related) => (
-                                            <SwiperSlide key={related.id} className="h-auto">
-                                                <SimilarProductCard product={related} />
-                                            </SwiperSlide>
-                                        ))}
-                                    </Swiper>
-
-                                ) : (
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {relatedProducts.map((related) => (
-                                            <SimilarProductCard key={related.id} product={related} />
-                                        ))}
-                                    </div>
-                                )}
+                    ) : (
+                        
+                  
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {relatedProducts.map((related) => (
+                            <SimilarProductCard key={related.id} product={related} />
+                        ))}
                         </div>
+                    )}
+                    </div>
                 </div>
-    
-            </div>
+                </div>
         </div>
         
     );
