@@ -44,14 +44,10 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
           bg-gradient-to-t from-white to-cyan-400/40
           backdrop-blur-sm
         "
-       
       >
-        
         <h3 className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2">
           {product.nombre}
         </h3>
-
-       
         <span
           className="
             flex-shrink-0 bg-gray-100/90 text-[#003e56] 

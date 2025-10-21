@@ -18,7 +18,6 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
   const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ... tu useEffect (que ya sabemos que funciona) ...
   useEffect(() => {
     const fetchAndFilterBlogs = async () => {
       try {
@@ -26,10 +25,9 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
         const response = await fetch(`${config.apiUrl}${config.endpoints.blogs.list}`);
         const result = await response.json();
         const allBlogs: Blog[] = result.data || result || [];
-        // console.log(`[Debug] Buscando blogs para el ID de producto: ${productId}`);
         const filtered = allBlogs.filter(blog => Number(blog.producto_id) === Number(productId));
-        // console.log(`[Debug] Blogs encontrados: ${filtered.length}`);
         setRelatedBlogs(filtered);
+        
       } catch (error) {
         console.error("Error al cargar los blogs relacionados:", error);
       } finally {
@@ -80,8 +78,6 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
                   </SwiperSlide>
                 ))}
 
-                <div className="swiper-button-prev-custom"></div>
-                <div className="swiper-button-next-custom"></div>
               </Swiper>
             ) : (
               <div className="flex justify-center items-center h-full">

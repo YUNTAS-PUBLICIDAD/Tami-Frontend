@@ -7,7 +7,7 @@ import { config } from 'config';
 import RelatedBlogs from './RelatedBlogs';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -220,7 +220,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                     {relatedProducts.length > carouselThreshold ? (
                         
                         <Swiper
-                        modules={[Navigation, Pagination]}
+                        modules={[Navigation, Pagination, Autoplay]}
                         spaceBetween={24}
                         slidesPerView={1}
                         pagination={{ 
@@ -237,6 +237,10 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                             640: { slidesPerView: 2 },
                             1024: { slidesPerView: 3 }, 
                         }}
+                        autoplay={{
+                            delay: 2000, 
+                            disableOnInteraction: false, 
+                        }}
                         className="w-full pb-10" 
                         >
                         {relatedProducts.map((related) => (
@@ -244,10 +248,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                             <SimilarProductCard product={related} />
                             </SwiperSlide>
                         ))}
-                        
                     
-                        <div className="swiper-button-prev-custom"></div>
-                        <div className="swiper-button-next-custom"></div>
                         
                         </Swiper>
 
