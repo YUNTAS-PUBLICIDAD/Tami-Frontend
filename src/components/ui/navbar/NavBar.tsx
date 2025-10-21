@@ -78,7 +78,10 @@ function NavBar() {
 
     // Agregar listener con passive para mejor rendimiento
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    
+    // Esta es la línea que estaba en conflicto.
+    // Se elimina el punto y coma doble (;;) de tu versión HEAD.
+    handleScroll(); 
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -101,6 +104,8 @@ function NavBar() {
     )}`;
   };
 
+  // Se usa la versión de 'pre-main' que usa comillas dobles
+  // y tiene una ligera corrección de indentación.
   return (
     <header
       className={`
@@ -110,6 +115,7 @@ function NavBar() {
     >
       <div className="max-w-[1834px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
+          
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="/" title="Ir a la sección de inicio">
@@ -117,6 +123,7 @@ function NavBar() {
                 src={logoTami.src}
                 alt="Logo de Tami"
                 title="Logo de Tami"
+                // Se eliminó la línea en blanco que estaba en tu versión HEAD
                 className="h-16 w-auto object-contain"
                 fetchPriority="high"
               />
@@ -163,6 +170,8 @@ function NavBar() {
         </div>
       </div>
 
+      {/* Se usa la versión de 'pre-main' que formatea el 
+          componente en múltiples líneas para mejor lectura */}
       <SideMenu
         links={navLinks}
         isOpen={isOpen}
