@@ -217,20 +217,19 @@ a.relative.group:hover::after {
 
 /* Scroll Modal */
 .scrollmodal-title {
-    font-weight: bold;
-    color: white;
-    font-size: 2.2rem;
-    display: inline-block;
-    word-break: break-word;
+  font-weight: bold;
+  color: white;
+  font-size: 1.7rem;
+  display: inline-block;
+  word-break: break-word;
 }
 
 .scrollmodal-body {
-    font-size: 1.8rem;
-    max-width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    line-height: 1.3;
-    padding: 0 15px;
+  font-size: 1.5rem;
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0 15px;
 }
 
 /* Versión responsive para pantallas pequeñas */
@@ -402,3 +401,29 @@ a.relative.group:hover::after {
   @apply bg-[#015f86] scale-125;
 }
 
+/* gradints popups */
+.custom-gradient-negocio {
+  background: linear-gradient(to bottom,rgba(0, 76, 107, 0.6) 0%, #23ACE3 100%)
+}
+
+.custom-gradient-maquinaria {
+  background: linear-gradient(to bottom,rgba(0, 83, 64, 0.5) 0%, #04B38A 100%)
+}
+
+.custom-gradient-decoracion {
+  background: linear-gradient(to bottom,rgba(39, 2, 170, 0.5) 6%, #603CFF 100%)
+}
+
+@media (min-width: 1024px) {
+  .custom-gradient-negocio {
+    background: linear-gradient(to left, #004C6B 0%, #127CA7 63%, rgba(35, 172, 227, 0.3) 100%);
+  }
+
+  .custom-gradient-maquinaria {
+    background: linear-gradient(to left, #005340 0%, #028365 63%, rgba(4, 179, 138, 0.3) 100%);
+  }
+
+  .custom-gradient-decoracion {
+    background: linear-gradient(to left, #2702AA 6%, #431FD5 55%, rgba(96, 60, 255, 0.2) 100%);
+  }
+}
