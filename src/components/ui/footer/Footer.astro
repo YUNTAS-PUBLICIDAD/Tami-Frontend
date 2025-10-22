@@ -1,18 +1,16 @@
 ---
 import logoTami from "@images/logos/logo-blanco-tami.gif";
 import socialMediaLinks from "@data/socialMedia.data";
-import NavSocialMediaLink from "../sideMenu/NavSocialMediaLink";
-import mascotaTami from "@images/logos/tami-mascota.webp";
 import CopyText from "./CopyText.astro";
 ---
 
-<footer class="bg-teal-700 text-white py-12">
+<footer class="bg-teal-700 text-white py-12 sm:px-16">
   <div
-    class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-12 text-center lg:text-left h-full"
+    class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 text-center lg:text-left h-full"
   >
     <!-- Separacion en 3 bloques-->
     <div
-      class="flex flex-col lg:flex-row items-center lg:items-stretch gap-6 lg:gap-12 gap-y-6 w-full mb-8 lg:mb-0"
+      class="flex flex-row items-center justify-center lg:items-stretch gap-6 lg:gap-12 gap-y-6 w-full lg:mb-0 "
     >
       <!-- Logo -->
       <div class="flex items-center justify-center lg:justify-start">
@@ -28,12 +26,12 @@ import CopyText from "./CopyText.astro";
       </div>
 
       <!-- Barra vertical blanca -->
-      <div class="hidden lg:block border-l-2 border-white opacity-70 h-[200px]">
+      <div class="border-l-2 border-white opacity-70 h-[200px]">
       </div>
 
       <!-- Enlaces -->
       <div
-        class="flex items-center lg:items-start justify-center lg:justify-start pl-8"
+        class="flex items-center lg:items-start justify-center lg:justify-start p-0 sm:pl-8"
       >
         <ul class="space-y-4 font-semibold text-base text-center lg:text-left">
           <li>
@@ -69,7 +67,7 @@ import CopyText from "./CopyText.astro";
     </div>
 
     <!-- Bloque 2: Horario de atención -->
-    <div class="flex justify-center mb-8 lg:mb-0">
+    <div class="flex justify-center lg:mb-0">
       <div
         class="flex flex-col justify-between text-center lg:text-left h-[200px]"
       >
@@ -89,7 +87,7 @@ import CopyText from "./CopyText.astro";
     </div>
 
     <div
-      class="flex flex-col items-center justify-center space-y-6 h-full text-white py-8 px-4"
+      class="flex flex-col items-center justify-center space-y-6 h-full text-white "
     >
       <button
         type="button"
