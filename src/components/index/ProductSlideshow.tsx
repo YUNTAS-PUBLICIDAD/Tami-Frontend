@@ -60,7 +60,7 @@ const ProductSlideshow = () => {
   if (productsArray.length === 0) return null;
 
   const getLinkHref = (item: Producto) =>
-    `/productos/detalle?link=${item.link ?? slugify(item.titulo)}`;
+    `/productos/${item.link ?? slugify(item.titulo)}`;
 
   if (isLoading) {
     return (
@@ -246,7 +246,7 @@ const ProductSlideshow = () => {
           {/* Duplicar productos para efecto infinito */}
           {productsArray.map((item) => (
             <div
-              key={`duplicate-${item.id}`}
+              key={item.id}
               className="flex-shrink-0 w-1/3 px-3"
             >
               <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
