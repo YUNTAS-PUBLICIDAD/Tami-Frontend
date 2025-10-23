@@ -1,4 +1,4 @@
-import slide1 from "@images/products/hero_productos.webp";
+import slide1 from "@images/products/hero-products-v2.webp";
 import slide2 from "@images/products/selladora_vasos.webp";
 import slide3 from "@images/products/soldadora_spark.webp";
 import slide4 from "@images/products/ventilador_holografico.webp";
