@@ -23,11 +23,12 @@ const HeroProducts = () => {
         style={{
           backgroundImage:
             currentSlide === 0
-              ? `linear-gradient(to bottom, rgba(0, 120, 111, .7), rgba(0,0,0,.7)), url(${heroProductsArray[0].image})`
-              : `linear-gradient(to bottom, rgba(0,0,0,0) 85%, rgba(0,0,0,.5) 100%), url(${fondoSlider.src})`,
+              ? `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(4,4,4,0.5) 100%), url(${heroProductsArray[0].image})`
+              : `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(4,4,4,0.5) 100%), url(${fondoSlider.src})`,
         }}
       >
-        <div className="w-full h-11/12 pt-20 grid grid-rows-1 grid-cols-2 lg:grid-cols-12 items-center">
+        <div className="absolute inset-0 backdrop-blur-xs"></div>
+        <div className="w-full h-11/12 pt-20 grid grid-rows-1 grid-cols-2 lg:grid-cols-12 items-center z-10">
           <button
             onClick={handlePrev}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit cursor-pointer"
