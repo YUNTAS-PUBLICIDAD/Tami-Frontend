@@ -352,7 +352,7 @@ const Seccion = React.memo(function Seccion({
       <MemoizedProductCard key={producto.id} producto={producto} />
     ));
   }, [productosDeLaSeccion]);
-
+  
   return (
     <div
       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6 ">
