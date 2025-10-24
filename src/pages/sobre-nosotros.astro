@@ -101,7 +101,7 @@ import bg_card4 from "@images/about/nosotrostami.webp";
     </div>
   </section>
 
-  {/* 🔹 Franja con mensaje “Sobre nuestros propósitos y metas” */}
+  {/* 🔹 Franja con mensaje "Sobre nuestros propósitos y metas" */}
   <div
     class="bg-cover bg-center h-auto py-16 flex flex-col justify-center items-center"
   >
@@ -111,7 +111,7 @@ import bg_card4 from "@images/about/nosotrostami.webp";
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl px-6 w-full">
       <div
-        class="bg-white rounded-3xl shadow-lg p-12 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80"
+        class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80 flex flex-col justify-center"
       >
         <h3 class="text-3xl font-bold text-teal-600 mb-6 text-center">
           MISIÓN
@@ -122,7 +122,7 @@ import bg_card4 from "@images/about/nosotrostami.webp";
         </p>
       </div>
       <div
-        class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300"
+        class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80 flex flex-col justify-center"
       >
         <h3 class="text-3xl font-bold text-teal-600 mb-6 text-center">
           VISIÓN
@@ -134,7 +134,8 @@ import bg_card4 from "@images/about/nosotrostami.webp";
       </div>
     </div>
   </div>
-  {/* 🔹 Sección de Valores */}
+
+  {/* 🔹 Sección de Valores - Modificada para ser un carrusel en móvil */}
   <section class="bg-white py-6 lg:py-12 px-4 lg:px-8 mb-12">
     <h2
       class="text-center text-teal-600 text-2xl sm:text-4xl md:text-5xl font-extrabold mb-16"
@@ -142,8 +143,9 @@ import bg_card4 from "@images/about/nosotrostami.webp";
       VALORES
     </h2>
 
+    {/* Grid para desktop */}
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-8xl mx-auto"
+      class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-8xl mx-auto"
     >
       {
         valoresArray.map((valor: any) => (
@@ -166,5 +168,117 @@ import bg_card4 from "@images/about/nosotrostami.webp";
         ))
       }
     </div>
+
+    {/* Carrusel para móvil */}
+    <div class="md:hidden valores-carousel-container relative">
+      <div class="swiper valoresSwiper">
+        <div class="swiper-wrapper">
+          {
+            valoresArray.map((valor: any) => (
+              <div class="swiper-slide">
+                <div class="flex flex-col items-center w-full px-4">
+                  <Card
+                    image={valor.image}
+                    title={valor.title}
+                    imageTitle={valor.imageTitle}
+                    paragraph={valor.paragraph}
+                  />
+                  <div class="w-full px-4 mt-3">
+                    <p class="text-sm text-teal-700 font-medium text-center leading-relaxed">
+                      {valor.paragraph}
+                    </p>
+                    <hr class="border-t border-teal-800 my-3 w-3/4 mx-auto" />
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+        <!-- Paginación -->
+        <div class="swiper-pagination valores-swiper-pagination"></div>
+      </div>
+    </div>
   </section>
+
+  <!-- Estilos para el carrusel -->
+  <style>
+    .valores-carousel-container {
+      padding: 0 10px;
+    }
+    
+    .valoresSwiper {
+      width: 100%;
+      height: 100%;
+      padding-bottom: 40px;
+    }
+    
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .valores-swiper-pagination {
+      bottom: 0;
+    }
+    
+    .valores-swiper-pagination .swiper-pagination-bullet {
+      background: #0C998A;
+      opacity: 0.5;
+      width: 10px;
+      height: 10px;
+    }
+    
+    .valores-swiper-pagination .swiper-pagination-bullet-active {
+      opacity: 1;
+    }
+  </style>
+
+  <!-- Script para inicializar el carrusel -->
+  <script>
+    // Cargar Swiper solo cuando sea necesario (en móvil)
+    if (window.innerWidth < 768) {
+      // Cargar dinámicamente Swiper
+      const swiperScript = document.createElement('script');
+      swiperScript.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+      swiperScript.onload = function() {
+        // Inicializar el carrusel de valores
+        const valoresSwiper = new Swiper('.valoresSwiper', {
+          loop: false,
+          slidesPerView: 1,
+          spaceBetween: 20,
+          centeredSlides: true,
+          pagination: {
+            el: '.valores-swiper-pagination',
+            clickable: true,
+          },
+          autoplay: {
+            delay: 2000, // 2 segundos
+            disableOnInteraction: false,
+          },
+          breakpoints: {
+            640: {
+              slidesPerView: 1.2,
+            }
+          }
+        });
+        
+        // Lógica simple para reiniciar al llegar al final
+        valoresSwiper.on('slideChange', function() {
+          if (this.isEnd) {
+            setTimeout(() => {
+              this.slideTo(0, 500);
+            }, 2000);
+          }
+        });
+      };
+      document.head.appendChild(swiperScript);
+      
+      // Cargar también los estilos de Swiper
+      const swiperStyles = document.createElement('link');
+      swiperStyles.rel = 'stylesheet';
+      swiperStyles.href = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
+      document.head.appendChild(swiperStyles);
+    }
+  </script>
 </Layout>
