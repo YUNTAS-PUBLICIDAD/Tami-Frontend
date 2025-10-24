@@ -1,6 +1,6 @@
 /**
  * @file SideMenu.tsx
- * @description Componente de menú lateral para la navegación en dispositivos móviles (despliegue desde la derecha + soporte logueado/no logueado)
+ * @description Componente de menú lateral para la navegación en dispositivos móviles (clic en icono de usuario → dashboard + botón de login destacado)
  */
 
 import { lazy, useEffect, useState } from "react";
@@ -29,64 +29,47 @@ interface UserInfo {
 const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
   const [user, setUser] = useState<UserInfo | null>(null);
 
-  // Verificar autenticación cada vez que el menú se abre
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userInfoStr = localStorage.getItem("userInfo");
-    
+
     if (token && userInfoStr) {
       try {
         const userInfo: UserInfo = JSON.parse(userInfoStr);
         setUser(userInfo);
-      } catch (error) {
-        // Si hay error al parsear, usar valores por defecto
-        setUser({
-          name: "Usuario",
-          role: "Usuario"
-        });
+      } catch {
+        setUser({ name: "Usuario", role: "Usuario" });
       }
     } else if (token) {
-      // Token existe pero no hay info de usuario
-      setUser({
-        name: "Usuario",
-        role: "Usuario"
-      });
+      setUser({ name: "Usuario", role: "Usuario" });
     } else {
       setUser(null);
     }
   }, [isOpen]);
 
-  // También escuchar cambios en localStorage (para cuando el login ocurre en otra pestaña)
   useEffect(() => {
     const handleStorageChange = () => {
       const token = localStorage.getItem("token");
       const userInfoStr = localStorage.getItem("userInfo");
-      
+
       if (token && userInfoStr) {
         try {
           const userInfo: UserInfo = JSON.parse(userInfoStr);
           setUser(userInfo);
-        } catch (error) {
-          setUser({
-            name: "Usuario",
-            role: "Usuario"
-          });
+        } catch {
+          setUser({ name: "Usuario", role: "Usuario" });
         }
       } else if (token) {
-        setUser({
-          name: "Usuario",
-          role: "Usuario"
-        });
+        setUser({ name: "Usuario", role: "Usuario" });
       } else {
         setUser(null);
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Cerrar con la tecla Escape
   useEffect(() => {
     const handleEscape = (e: any) => {
       if (e.key === "Escape") onClose();
@@ -102,24 +85,23 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
     window.location.href = "/";
   };
 
+  const handleUserClick = () => {
+    if (user) {
+      window.location.href = "/admin/inicio";
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="md:hidden">
-      {/* Overlay de fondo */}
-      <div 
-        className="fixed inset-0 bg-black/30 z-40"
-        onClick={onClose}
-      />
-      
-      {/* Menú lateral */}
+      <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
       <div
         className="fixed right-0 top-[72px] w-[85vw] max-w-[300px] h-[calc(100vh-100px)] shadow-2xl z-50 overflow-y-auto rounded-l-2xl
                bg-[#0F766E]/95 backdrop-blur-sm
                transition-transform duration-300 ease-in-out px-1 py-6
                border border-emerald-800/80"
       >
-        {/* Enlaces del menú */}
         <nav className="space-y-0">
           {links.map((item, index) => (
             <div key={index} className="border-b border-white/20 last:border-b-0">
@@ -136,10 +118,8 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
           ))}
         </nav>
 
-        {/* Separador */}
         <div className="my-1 border-t border-white/30 w-4/5 mx-auto" />
 
-        {/* Redes sociales */}
         <div className="py-1">
           <p className="font-semibold text-center text-white text-lg mb-4">
             Síguenos
@@ -158,26 +138,32 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
           </div>
         </div>
 
-        {/* Separador */}
         <div className="my-6 border-t border-white/30 w-4/5 mx-auto" />
 
-        {/* Sección de autenticación */}
         <div className="pt-2">
           {!user ? (
-            <div className="border-b border-white/20">
-              <div className="block py-4 text-center text-white font-medium text-lg hover:bg-white/10 transition-colors rounded-lg mx-2">
-                <NavLink
-                  isForNavBar={false}
-                  to="/auth/sign-in"
-                  title="Iniciar sesión en Tami Maquinarias"
+            <div className="text-center">
+              <NavLink
+                isForNavBar={false}
+                to="/auth/sign-in"
+                title="Iniciar sesión en Tami Maquinarias"
+              >
+                <div
+                  className="inline-block w-4/5 mx-auto bg-white text-[#0F766E] font-bold py-3 rounded-xl 
+                             shadow-md hover:shadow-lg hover:bg-teal-50 active:scale-95 
+                             transition-all duration-200"
                 >
                   INICIAR SESIÓN
-                </NavLink>
-              </div>
+                </div>
+              </NavLink>
             </div>
           ) : (
             <div className="text-center space-y-3">
-              <div className="flex justify-center mb-2">
+              <div
+                className="flex justify-center mb-2 cursor-pointer hover:scale-105 transition-transform"
+                onClick={handleUserClick}
+                title="Ir al panel de administración"
+              >
                 <img
                   src={userIcon.src}
                   width={48}
