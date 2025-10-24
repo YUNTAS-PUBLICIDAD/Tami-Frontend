@@ -4,206 +4,269 @@ import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import type Producto from '../../models/Product'
 import { insertJsonLd } from "../../utils/schema-markup-generator";
 import { config } from 'config';
+import RelatedBlogs from './RelatedBlogs';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import SimilarProductCard from './SimilarProductCard';
+
 
 interface Props {
     producto: Producto
 }
 
 const ProductPage: React.FC<Props> = ({ producto }) => {
-    const [productViewer, setProductViewer] = useState<string>(producto.imagenes[0].url_imagen);
+    const [productViewer, setProductViewer] = useState<string>(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
+ 
     useEffect(() => {
+ 
+        setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
         insertJsonLd("product", producto);
-    }, [producto]);
+    }, [producto]); 
+
+    const getDimensionBgColor = (letter: string) => {
+        if (letter === 'H') return 'bg-[#00b6ff]'; 
+        if (letter === 'L') return 'bg-[#00b6ff]'; 
+        if (letter === 'A') return 'bg-[#00b6ff]';   
+        return 'bg-[#00b6ff]';
+    };
+
+    const relatedProducts = producto.productos_relacionados || [];
+    const carouselThreshold = 3;
 
     return (
-        <div className="w-full">
-            {/* -------------------- HERO -------------------- */}
-            <div
-                className="pt-16 md:pt-32 md:pb-16 bg-gradient-to-b from-teal-700 to-teal-400 text-white relative overflow-hidden xl:h-screen"
-            >
-                <div className="max-w-6xl md:w-1/2 px-4 md:px-24 py-8 md:py-12 relative z-10">
-                    <div className="flex items-center gap-6 mb-4">
-                        <div className="w-5 md:w-6 h-5 md:h-6">
-                            <img
-                                src={ArrowProducts.src}
-                                alt="Flecha"
-                                title="Flecha"
-                                className="w-full h-full"
-                                loading="lazy"
-                            />
-                        </div>
-                        <h2 className="text-xl uppercase md:text-2xl font-bold">
-                            {producto.titulo}
-                        </h2>
-                    </div>
+        <div className="w-full bg-gray-50"> {/* Fondo general gris claro */}
+            {/* -------------------- HERO Section -------------------- */}
+                <div className="
+                    relative pt-32 md:pt-40 pb-20 min-h-screen 
+                    text-white overflow-hidden flex items-center
+                    bg-gradient-to-r from-[#041119] to-[#003d56] 
+                ">
+                    <div className="w-full px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">                    
+                   
+                    <div className="flex flex-col justify-center text-left">
+                        <h1 className="text-5xl md:text-8xl font-extrabold uppercase mb-6">
+                        {producto.titulo.split(' ')[0]}
+                        <span className="block text-[#2DCCFF]">{producto.titulo.split(' ').slice(1).join(' ')}</span>
+                        </h1>
 
-                    <h1
-                        className="text-2xl md:text-4xl/14 uppercase font-bold mb-6 md:mb-8"
-                        id="product-subtitle"
-                    >
+                        <p className="text-xl md:text-4xl opacity-90 mb-10 max-full uppercase tracking-wider font-light">
                         {producto.subtitulo}
-                    </h1>
+                        </p>
 
-                    <button
+                        <button
                         id="btnQuotationHero"
-                        className="bg-white text-teal-600 px-8 md:px-12 py-2 md:py-3 w-full rounded-full font-bold text-lg md:text-3xl hover:bg-opacity-90 transition cursor-pointer"
-                    >
-                        ¡COTÍZALO!
-                    </button>
-                </div>
-
-                {/* Imagen decorativa derecha */}
-                <div
-                    className="hidden md:flex absolute right-0 top-32 w-full md:w-1/2 h-full bg-white
-                  rounded-bl-[30%] md:rounded-bl-[50%] rounded-tl-[40%] md:rounded-tl-[60%]
-                  rounded-tr-[15%] md:rounded-tr-[25%] items-center justify-center"
-                >
-                    <img
-                        src={`${config.apiUrl}${producto.imagenes[0].url_imagen || "/placeholder.png"}`}
-                        alt={producto.nombre}
-                        title={producto.nombre}
-                        className="w-3/4 md:w-4/5 h-3/4 md:h-4/5 object-contain mx-auto"
-                        loading="lazy"
-                    />
-                </div>
-            </div>
-
-            {/* -------------------- MAIN CONTENT -------------------- */}
-            <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 mt-6 md:py-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    {/* Galería izquierda */}
-                    <div className="space-y-4 w-full max-w-[440px]">
-                        {/* Imagen principal */}
-                        <div
-                            className="w-full aspect-[1/1] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center"
+                        className="w-fit
+                            bg-[#00b6ff] text-white 
+                            px-10 py-3 rounded-lg
+                            font-bold text-lg uppercase 
+                            shadow-lg 
+                            border border-white
+                            transform transition-all duration-150 ease-in-out
+                            hover:brightness-110 
+                            active:brightness-95"
                         >
-                            <img
-                                title={producto.nombre}
-                                src={`${config.apiUrl}${productViewer}`}
-                                alt={producto.titulo}
-                                className="w-full h-full object-contain "
-                                loading="lazy"
-                            />
-                        </div>
-                        {/* Miniaturas */}
-                        <div className="grid grid-cols-4 gap-2 w-full">
-                            {
-                                producto.imagenes.slice(0, 4).map((image, index) => (
-                                    <div
-                                        key={index}
-                                        className={`aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 ${image.url_imagen === productViewer && 'border-2 border-teal-700'}`}
-                                        onClick={() => {
-                                            setProductViewer(image.url_imagen)
-                                        }}
-                                    >
-                                        <img
-                                            title={image.imageTitle || image.texto_alt_SEO}
-                                            src={`${config.apiUrl}${image.url_imagen}`}
-                                            alt={`${image.texto_alt_SEO}`}
-                                            className="w-full h-full object-cover"
-                                            loading="lazy"
-                                        />
-                                    </div>
-                                ))
-                            }
-                        </div>
-
+                        ¡Cotízalo!
+                        </button>
                     </div>
 
-                    {/* Información producto */}
-                    <div>
-                        <div className="mb-6">
-                            <h3 className="text-3xl font-black mb-2 text-teal-800">
-                                {producto.titulo}
-                            </h3>
-                            <h1 className="font-bold mb-2 text-lg">Información del producto:</h1>
-                            <p className="text-gray-700 text-justify break-words">
-                                {producto.descripcion}
-                            </p>
+                    <div className="relative flex items-center justify-center h-full w-full">
+                        
+                        <div className="relative w-[90%] aspect-square">
+                        
+                        <div className="absolute inset-0 bg-white rounded-full shadow-2xl" />
+                        
+                        <img
+                            src={`${config.apiUrl}${producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png'}`}
+                            alt={producto.nombre}
+                            title={producto.nombre}
+                            className="relative w-full h-full object-contain"
+                            fetchPriority="high"
+                        />
                         </div>
+                    </div>
+                    
+                    </div>
+                </div>
 
-                        {/* Especificaciones */}
-                        <div className="bg-gray-100 rounded-lg mb-6 p-4 md:p-8">
-                            <h3 className="font-bold mb-2 text-lg">Detalles del producto</h3>
-                            <h3 className="font-bold mb-2">Especificaciones técnicas:</h3>
-                            <ul className="list-disc pl-5 space-y-2 text-gray-700" id="specs-list">
-                                {producto.especificaciones.map((spec) => <li>{spec.valor}</li>)}
-                            </ul>
-
-                            <h3 className="font-bold mt-4 mb-4">Dimensiones:</h3>
-                            <div className="flex items-start gap-4 md:gap-12">
-                                <div className="w-24 md:w-32">
+            {/* -------------------- MAIN PRODUCT DETAILS Section -------------------- */}
+                <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20 ">
+                    <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400 ">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+                            <div className="flex flex-col items-center">
+                                <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
                                     <img
-                                        src={boxSize.src}
-                                        title="Box Size"
-                                        alt="Box Size"
-                                        className="w-full h-auto"
+                                        title={producto.nombre}
+                                        src={`${config.apiUrl}${productViewer}`}
+                                        alt={producto.titulo}
+                                        className="w-full h-full object-contain"
                                         loading="lazy"
                                     />
                                 </div>
-                                <ul className="space-y-2 md:space-y-4" id="product-dimensions">
-                                    <li className="flex items-center gap-2">
-                                        <span className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">H</span>
-                                        Alto - {producto.dimensiones.alto} cm
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <span className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">L</span>
-                                        Largo - {producto.dimensiones.largo} cm
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <span className="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">A</span>
-                                        Ancho - {producto.dimensiones.ancho} cm
-                                    </li>
-                                </ul>
+                                <div className="grid grid-cols-4 gap-4 w-full max-w-xl">
+                                    {producto.imagenes?.slice(0, 4).map((image) => (
+                                        <div
+                                            key={image.url_imagen}
+                                            className={`aspect-square  bg-white rounded-xl overflow-hidden shadow-xl cursor-pointer flex items-center justify-center p-2 border-2 ${image.url_imagen === productViewer ? 'border-blue-500' : 'border-gray-200'} transition-all duration-300`}
+                                            onClick={() => setProductViewer(image.url_imagen)}
+                                        >
+                                            <img
+                                                title={image.texto_alt_SEO || producto.nombre}
+                                                src={`${config.apiUrl}${image.url_imagen}`}
+                                                alt={image.texto_alt_SEO || `Vista de ${producto.nombre}`}
+                                                className="w-full h-full object-contain"
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div >
+                                <h2 className="text-center text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4">
+                                    {producto.titulo}
+                                </h2>
+                                
+                                <div className="mb-6">
+                                    <h3 className="text-center text-3xl font-bold text-[#00b6ff] mb-2">Información del producto:</h3>
+                                    <p className="text-gray-600 text-base leading-relaxed">
+                                        {producto.descripcion}
+                                    </p>
+                                </div>
+
+                                <div className="bg-gray-100  rounded-xl p-6 mb-8 border border-gray-200">
+                                    <h3 className="font-bold text-xl text-gray-900 mb-4">Detalles del producto</h3>
+                                    
+                                    <h4 className="font-semibold text-lg text-gray-800 mb-2">Especificaciones técnicas:</h4>
+                                    <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
+                                        {producto.especificaciones?.map((spec, index) => (
+                                            <li key={index}>{spec.valor}</li>
+                                        ))}
+                                    </ul>
+
+                                    <h4 className="font-semibold text-lg text-gray-800 mb-4">Dimensiones:</h4>
+                                    <div className="flex items-center gap-8">
+                                        <div className="w-24 md:w-32 flex-shrink-0">
+                                            <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
+                                        </div>
+                                        <ul className="space-y-3">
+                                            {producto.dimensiones?.alto && (
+                                                <li className="flex items-center gap-3 text-gray-700 text-lg">
+                                                    <span className={`w-8 h-8 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-base font-bold`}>H</span>
+                                                    Alto - {producto.dimensiones.alto} cm
+                                                </li>
+                                            )}
+                                            {producto.dimensiones?.largo && (
+                                                <li className="flex items-center gap-3 text-gray-700 text-lg">
+                                                    <span className={`w-8 h-8 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-base font-bold`}>L</span>
+                                                    Largo - {producto.dimensiones.largo} cm
+                                                </li>
+                                            )}
+                                            {producto.dimensiones?.ancho && (
+                                                <li className="flex items-center gap-3 text-gray-700 text-lg">
+                                                    <span className={`w-8 h-8 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-base font-bold`}>A</span>
+                                                    Ancho - {producto.dimensiones.ancho} cm
+                                                </li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-
-                        <button
-                            id="btnQuotationDetail"
-                            className="w-full bg-teal-500 text-white py-4 rounded-full font-bold text-xl hover:bg-teal-600 transition cursor-pointer"
-                        >
-                            COTIZACIÓN
-                        </button>
                     </div>
                 </div>
 
-                {/* -------------------- PRODUCTOS SIMILARES -------------------- */}
-                <div className="mt-8 md:mt-12">
-                    <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-teal-500">
-                        PRODUCTOS SIMILARES
+            {/* -------------------- SECCIÓN DE BLOG (Tecnología e Innovación) -------------------- */}
+            
+                <RelatedBlogs productId={producto.id} />
+
+
+
+
+            {/* -------------------- PRODUCTOS SIMILARES Section -------------------- */}
+            <div className="bg-gradient-to-b from-[#015e81] to-[#011821] py-12 md:py-16 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 md:px-8">
+                    
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-10">
+                    PRODUCTOS SIMILARES
                     </h2>
-                    <div
-                        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6"
-                        id="related-products-container"
-                    >
-                        {
-                            producto?.productos_relacionados?.map((related) => (
-                                <a
-                                    href={`/productos/${related.link}`}
-                                    className="group cursor-pointer"
-                                    title={`Ver detalles de ${producto.titulo}`}
-                                >
-                                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2">
-                                        <img
-                                            src={`${config.apiUrl}${related.imagenes?.[0]?.url_imagen || "/placeholder.png"}`}
-                                            alt={related.nombre}
-                                            title={related.nombre}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition"
-                                            loading="lazy"
-                                        />
-                                    </div>
-                                    <h3 className="text-center font-bold text-xs md:text-sm">
-                                        {related.nombre}
-                                    </h3>
-                                </a>
-                            ))
-                        }
+
+                    <div className="relative">
+                    
+                    <div 
+                        className="
+                        absolute top-0 left-0 
+                        w-20 md:w-1/6 lg:w-1/5 h-full 
+                        bg-gradient-to-r from-[#1e5970] to-transparent 
+                        z-10 pointer-events-none
+                        " 
+                        aria-hidden="true" 
+                    />
+                    <div 
+                        className="
+                        absolute top-0 right-0 
+                        w-20 md:w-1/6 lg:w-1/5 h-full 
+                        bg-gradient-to-l from-[#1e5970] to-transparent 
+                        z-10 pointer-events-none
+                        " 
+                        aria-hidden="true" 
+                    />
+
+                    {relatedProducts.length > carouselThreshold ? (
+                        
+                        <Swiper
+                        modules={[Navigation, Pagination, Autoplay]}
+                        spaceBetween={24}
+                        slidesPerView={1}
+                        pagination={{ 
+                            clickable: true,
+                            bulletClass: 'swiper-pagination-bullet-custom',
+                            bulletActiveClass: 'swiper-pagination-bullet-active-custom'
+                        }}
+                        navigation={{
+                            nextEl: '.swiper-button-next-custom',
+                            prevEl: '.swiper-button-prev-custom',
+                        }}
+                        loop={relatedProducts.length > 3}
+                        breakpoints={{
+                            640: { slidesPerView: 2 },
+                            1024: { slidesPerView: 3 }, 
+                        }}
+                        autoplay={{
+                            delay: 2000, 
+                            disableOnInteraction: false, 
+                        }}
+                        className="w-full pb-10" 
+                        >
+                        {relatedProducts.map((related) => (
+                            <SwiperSlide key={related.id} className="h-auto">
+                            <SimilarProductCard product={related} />
+                            </SwiperSlide>
+                        ))}
+                    
+                        
+                        </Swiper>
+
+                    ) : (
+                        
+                  
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {relatedProducts.map((related) => (
+                            <SimilarProductCard key={related.id} product={related} />
+                        ))}
+                        </div>
+                    )}
                     </div>
                 </div>
-            </div>
+                </div>
         </div>
-    )
+        
+    );
 }
 
-export default ProductPage
+export default ProductPage;

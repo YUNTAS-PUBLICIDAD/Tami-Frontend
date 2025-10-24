@@ -380,6 +380,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             // lista de strings para transformar en Array
             const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
 
+            // Extraer imágenes popup y email de producto_imagenes
+            const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
+            const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
+
             setFormData({
                 nombre: product.nombre,
                 titulo: product.titulo,
@@ -406,6 +410,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     ancho: product.dimensiones?.ancho || "",
                 },
                 video_url: product.video_url || "",
+                imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
+                texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
+                imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
+                texto_alt_email: imagenEmail?.texto_alt_SEO || "",
             });
         }
     }, [showModal, product]);
@@ -841,17 +849,45 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="form-input">
                                         <label>Imagen Pop-up:</label>
                                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                name="imagen_popup"
-                                                onChange={e => {
-                                                    if (e.target.files?.[0]) {
-                                                        setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
-                                                    }
-                                                }}
-                                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                                            />
+                                            {formData.imagen_popup ? (
+                                                <div className="flex items-center gap-4">
+                                                    <img
+                                                        src={
+                                                            typeof formData.imagen_popup === "string"
+                                                                ? formData.imagen_popup
+                                                                : URL.createObjectURL(formData.imagen_popup)
+                                                        }
+                                                        alt={formData.texto_alt_popup || "Imagen popup"}
+                                                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                    />
+                                                    <label className="text-sm text-blue-600 underline cursor-pointer">
+                                                        Reemplazar
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            name="imagen_popup"
+                                                            onChange={e => {
+                                                                if (e.target.files?.[0]) {
+                                                                    setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
+                                                                }
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    name="imagen_popup"
+                                                    onChange={e => {
+                                                        if (e.target.files?.[0]) {
+                                                            setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
+                                                        }
+                                                    }}
+                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                     <div className="form-input">
@@ -876,17 +912,45 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="form-input">
                                         <label>Imagen Email:</label>
                                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                name="imagen_email"
-                                                onChange={e => {
-                                                    if (e.target.files?.[0]) {
-                                                        setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
-                                                    }
-                                                }}
-                                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                                            />
+                                            {formData.imagen_email ? (
+                                                <div className="flex items-center gap-4">
+                                                    <img
+                                                        src={
+                                                            typeof formData.imagen_email === "string"
+                                                                ? formData.imagen_email
+                                                                : URL.createObjectURL(formData.imagen_email)
+                                                        }
+                                                        alt={formData.texto_alt_email || "Imagen email"}
+                                                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                    />
+                                                    <label className="text-sm text-blue-600 underline cursor-pointer">
+                                                        Reemplazar
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            name="imagen_email"
+                                                            onChange={e => {
+                                                                if (e.target.files?.[0]) {
+                                                                    setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
+                                                                }
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    name="imagen_email"
+                                                    onChange={e => {
+                                                        if (e.target.files?.[0]) {
+                                                            setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
+                                                        }
+                                                    }}
+                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                     <div className="form-input">
