@@ -1,9 +1,9 @@
 /**
  * @file SideMenu.tsx
- * @description Componente de menú lateral para la navegación en dispositivos móviles
+ * @description Componente de menú lateral para la navegación en dispositivos móviles (clic en icono de usuario → dashboard + botón de login destacado)
  */
 
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, useState } from "react";
 import NavSocialMediaLink from "./NavSocialMediaLink";
 import socialMediaLinks from "@data/socialMedia.data";
 import userIcon from "@icons/icon_user.webp";
@@ -21,60 +21,110 @@ interface SideMenuProps {
   links: NavLink[];
 }
 
+interface UserInfo {
+  name: string;
+  role: string;
+}
+
 const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
-  // Cerrar con la tecla Escape
+  const [user, setUser] = useState<UserInfo | null>(null);
+
   useEffect(() => {
-    const handleEscape = (e: any) => {
-      if (e.key === 'Escape') {
-        onClose();
+    const token = localStorage.getItem("token");
+    const userInfoStr = localStorage.getItem("userInfo");
+
+    if (token && userInfoStr) {
+      try {
+        const userInfo: UserInfo = JSON.parse(userInfoStr);
+        setUser(userInfo);
+      } catch {
+        setUser({ name: "Usuario", role: "Usuario" });
+      }
+    } else if (token) {
+      setUser({ name: "Usuario", role: "Usuario" });
+    } else {
+      setUser(null);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem("token");
+      const userInfoStr = localStorage.getItem("userInfo");
+
+      if (token && userInfoStr) {
+        try {
+          const userInfo: UserInfo = JSON.parse(userInfoStr);
+          setUser(userInfo);
+        } catch {
+          setUser({ name: "Usuario", role: "Usuario" });
+        }
+      } else if (token) {
+        setUser({ name: "Usuario", role: "Usuario" });
+      } else {
+        setUser(null);
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-    }
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
+  useEffect(() => {
+    const handleEscape = (e: any) => {
+      if (e.key === "Escape") onClose();
     };
+    if (isOpen) document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+    setUser(null);
+    window.location.href = "/";
+  };
+
+  const handleUserClick = () => {
+    if (user) {
+      window.location.href = "/admin/inicio";
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="md:hidden">
-      
-      <div className="fixed left-0 bottom-0 w-[80vw] sm:w-[65vw] md:w-[50vw] max-w-xs sm:max-w-sm shadow-xl z-50 overflow-y-auto rounded-r-[50px] h-[calc(100vh-72px)] bg-gradient-to-t from-teal-700 to-slate-600 transition-transform duration-700 ease-in-outp px-4">
-        <div className="py-5 flex items-center gap-4 border-b-2 border-white/50 ">
-          <img
-            src={userIcon.src} width={48} height={48}
-            className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-            alt="Icono de usuario"
-            loading="lazy"
-          />
-          <p className="text-3xl font-semibold leading-tight sm:text-4xl sm:font-bold">
-            Bienvenido
-            <br />
-            <span className="font-extrabold text-white drop-shadow-sm">Usuario</span>!
-          </p>
-        </div>
-        <nav className="pt-2 pb-4 space-y-1">
+      <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
+      <div
+        className="fixed right-0 top-[72px] w-[85vw] max-w-[300px] h-[calc(100vh-100px)] shadow-2xl z-50 overflow-y-auto rounded-l-2xl
+               bg-[#0F766E]/95 backdrop-blur-sm
+               transition-transform duration-300 ease-in-out px-1 py-6
+               border border-emerald-800/80"
+      >
+        <nav className="space-y-0">
           {links.map((item, index) => (
-            <NavLink key={index} isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
-              {item.texto}
-            </NavLink>
+            <div key={index} className="border-b border-white/20 last:border-b-0">
+              <div className="block py-1 text-center text-white font-medium text-lg hover:bg-white/10 transition-colors rounded-lg mx-2">
+                <NavLink
+                  isForNavBar={false}
+                  to={item.url}
+                  title={item.title || `Ir a ${item.texto}`}
+                >
+                  {item.texto}
+                </NavLink>
+              </div>
+            </div>
           ))}
-          <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
-            INICIAR SESIÓN
-          </NavLink>
         </nav>
 
-        {/* Redes sociales */}
-        <div className="border-y-2 border-white/50 py-4">
-          <p className="font-semibold text-center text-xl">
-            Síguenos en nuestras redes
+        <div className="my-1 border-t border-white/30 w-4/5 mx-auto" />
+
+        <div className="py-1">
+          <p className="font-semibold text-center text-white text-lg mb-4">
+            Síguenos
           </p>
-          <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between gap-3">
+          <div className="flex flex-wrap justify-center gap-4 px-2">
             {socialMediaLinks.map((item, index) => (
               <NavSocialMediaLink
                 key={index}
@@ -88,21 +138,51 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
           </div>
         </div>
 
-        {/* Información de contacto */}
-        <div className="pt-4">
-          <p className="font-semibold text-lg">Horario de atención</p>
-          <div className="text-lg mt-2">
-            <p>
-              Lunes a Viernes
-              <br />
-              de <span className="italic font-semibold">9:00 AM</span> a{" "}
-              <span className="italic font-semibold">9:00 PM</span>
-              <br />
-              informestami01@gmail.com
-              <br />
-              +51 978 883 199
-            </p>
-          </div>
+        <div className="my-6 border-t border-white/30 w-4/5 mx-auto" />
+
+        <div className="pt-2">
+          {!user ? (
+            <div className="text-center">
+              <NavLink
+                isForNavBar={false}
+                to="/auth/sign-in"
+                title="Iniciar sesión en Tami Maquinarias"
+              >
+                <div
+                  className="inline-block w-4/5 mx-auto bg-white text-[#0F766E] font-bold py-3 rounded-xl 
+                             shadow-md hover:shadow-lg hover:bg-teal-50 active:scale-95 
+                             transition-all duration-200"
+                >
+                  INICIAR SESIÓN
+                </div>
+              </NavLink>
+            </div>
+          ) : (
+            <div className="text-center space-y-3">
+              <div
+                className="flex justify-center mb-2 cursor-pointer hover:scale-105 transition-transform"
+                onClick={handleUserClick}
+                title="Ir al panel de administración"
+              >
+                <img
+                  src={userIcon.src}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 object-contain"
+                  alt="Icono de usuario"
+                  loading="lazy"
+                />
+              </div>
+              <p className="text-white font-bold text-lg">{user.name}</p>
+              <p className="text-white font-bold text-lg capitalize">{user.role}</p>
+              <button
+                onClick={handleLogout}
+                className="w-4/5 mx-auto text-center bg-red-600 hover:bg-red-700 transition-colors py-3 rounded-xl font-bold text-white text-sm"
+              >
+                CERRAR SESIÓN
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -110,115 +190,3 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
 };
 
 export default SideMenu;
-
-// import { lazy, useState } from "react";
-// const NavLink = lazy(() => import("../navbar/NavLink"));
-
-// interface NavLink {
-//   url: string;
-//   texto: string;
-//   title?: string;
-// }
-
-// interface SideMenuProps {
-//   links: NavLink[];
-// }
-
-// const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
-//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-//   const changeSideBarStatus = () => {
-//     setIsSidebarOpen((x) => !x);
-//   };
-
-//   return (
-//       <>
-//         <button className="w-9 h-9 lg:hidden" title="Abrir Menú" onClick={changeSideBarStatus}>
-//           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-//             <path d="M4 18L20 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-//             <path d="M4 12L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-//             <path d="M4 6L20 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-//           </svg>
-//         </button>
-
-//         <div
-//             className={`fixed top-20 left-0 z-20 border-2 border-l-0 px-4 py-6 rounded-r-[50px] h-[calc(100vh-7rem)] overflow-y-auto bg-gradient-to-t from-teal-700 to-slate-600 transition-transform duration-700 ease-in-out 
-//         w-[80vw] sm:w-[65vw] md:w-[50vw] max-w-xs sm:max-w-sm -translate-x-full
-//         lg:hidden ${isSidebarOpen ? "translate-x-0" : ""}`}
-//         >
-//           {/* Usuario */}
-//           <div className="border-b-2 border-white pb-5 flex items-center gap-4 pl-2">
-//             <img
-//                 src={userIcon.src}
-//                 width={48}
-//                 height={48}
-//                 className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-//                 alt="Icono de usuario"
-//                 loading="lazy"
-//             />
-//             <p className="text-4xl font-semibold leading-tight sm:text-5xl sm:font-bold">
-//               Bienvenido
-//               <br />
-//               <span className="font-extrabold text-white drop-shadow-sm">Usuario</span>!
-//             </p>
-//           </div>
-
-//           {/* Navegación */}
-//           <ul className="text-xl mt-5">
-//             {links.map((item, index: number) => (
-//                 <li key={index}>
-//                   <NavLink isForNavBar={false} to={item.url} title={item.title || `Ir a ${item.texto}`} >
-//                     {item.texto}
-//                   </NavLink>
-//                 </li>
-//             ))}
-//           {/* Botón de Iniciar Sesión */}
-//             <li>
-//               <NavLink isForNavBar={false} to="/auth/sign-in" title="Iniciar sesión en Tami Maquinarias">
-//                 INICIAR SESIÓN
-//               </NavLink>
-//             </li>
-
-//           </ul>
-
-//           {/* Redes sociales */}
-//           <div className="border-y-2 py-4 mt-6">
-//             <p className="font-semibold text-center text-xl">
-//               Síguenos en nuestras redes
-//             </p>
-//             <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between gap-3">
-//               {socialMediaLinks.map((item, index) => (
-//                   <NavSocialMediaLink
-//                       key={index}
-//                       image={item.image.src}
-//                       url={item.url}
-//                       socialMediaName={item.socialMediaName}
-//                       imageTitle={item.imageTitle}
-//                       linkTitle={item.linkTitle}
-//                   />
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Información de contacto */}
-//           <div className="pt-4">
-//             <p className="font-semibold text-xl">Horario de atención</p>
-//             <div className="text-xl mt-2">
-//               <p>
-//                 Lunes a Viernes
-//                 <br />
-//                 de <span className="italic font-semibold">9:00 AM</span> a{" "}
-//                 <span className="italic font-semibold">9:00 PM</span>
-//                 <br />
-//                 informestami01@gmail.com
-//                 <br />
-//                 +51 978 883 199
-//               </p>
-//             </div>
-//           </div>
-//         </div>
-//       </>
-//   );
-// };
-
-// export default SideMenu;

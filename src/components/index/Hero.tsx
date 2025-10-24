@@ -59,9 +59,9 @@ const Hero = () => {
         </p>
       </div>
 
-      {/* Card inferior flotante */}
+      {/* Card inferior */}
       <div className="absolute bottom-0 left-0 right-0 z-40 w-full flex justify-center">
-        <div className="bg-[#FFF8F8] backdrop-blur-sm shadow-xl rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-16 md:py-6 mx-4 sm:mx-6 md:mx-8 text-[#00786F] font-black text-center text-xs sm:text-sm md:text-lg tracking-wide uppercase translate-y-1/2 font-inter flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-12">
+        <div className="bg-[#FFF8F8] backdrop-blur-sm shadow-xl rounded-xl px-8 py-4 md:px-16 md:py-6 mx-4 md:mx-8 text-[#00786F] font-black text-center text-sm md:text-lg tracking-wide uppercase translate-y-1/2 font-inter flex items-center gap-6 md:gap-12">
           <span>Negocio</span>
           <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
           <span>Maquinarias</span>
