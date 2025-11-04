@@ -24,10 +24,11 @@ const { link = "" } = Astro.props as ModalProps;
     <div class="absolute inset-0 sm:flex w-full sm:w-[50%] justify-center items-center bg-gray-100 overflow-hidden">
       <img
           id="modal-product-img"
-          src={DEFAULT_IMAGE}
-          alt="Imagen del producto"
-          title="Imagen del producto"
-          class="h-full w-full object-cover"
+          src={modalImage}
+          alt={`Imagen para ${link}`}
+          title={`Imagen para ${link}`}
+          class="h-full w-auto object-cover"
+          loading="lazy"
           onerror="this.onerror=null; this.src='/images/popup/default.webp'"
         />
     </div>
@@ -166,57 +167,50 @@ const { link = "" } = Astro.props as ModalProps;
    */
   async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
-    const modalImg = document.getElementById(
-      "modal-product-img"
-    ) as HTMLImageElement | null;
+    const modalImg = document.getElementById("modal-product-img") as HTMLImageElement | null;
 
     if (!container || !modalImg) return;
 
     const productLink = container.dataset.productLink || "";
-    let imagen = DEFAULT_IMAGE;
-    let imagenAlt = "Imagen del producto";
+    console.log("Link del producto desde dataset:", productLink);
 
-    // Cargar producto desde API si no está en caché
-    if (!window.__detalleProducto && productLink) {
-      try {
-        const response = await fetch(
-          `${config.apiUrl}/api/v1/productos/link/${productLink}`
-        );
-        if (response.ok) {
-          const result = await response.json();
-          window.__detalleProducto = result.data || result;
-        }
-      } catch (error) {
-        // Usar imagen default
-      }
-    }
+    // Intentar obtener la imagen desde el producto cargado en la API
+    let imagen = linkImages["default"];
+    let imagenAlt = "Imagen por defecto";
 
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
-
-      // Buscar imagen con tipo 'popup'
+      // Buscar imagen con tipo 'popup' en producto_imagenes
       const imagenPopup = producto.producto_imagenes?.find(
         (img: any) => img.tipo === "popup"
       );
 
       if (imagenPopup?.url_imagen) {
         imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
-        imagenAlt =
-          imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
-      } else if (producto.imagenes && producto.imagenes.length > 0) {
-        // Fallback: primera imagen de galería
-        imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
-        imagenAlt =
-          producto.imagenes[0].texto_alt_SEO ||
-          producto.nombre ||
-          "Imagen del producto";
+        imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
+        console.log("Imagen popup encontrada desde API:", imagen);
+      } else {
+        // Fallback: usar imagen hardcodeada si existe, sino usar default
+        imagen = linkImages[productLink] || linkImages["default"];
+        imagenAlt = `Imagen para ${productLink}`;
+        console.log("Usando imagen hardcodeada o default:", imagen);
       }
+    } else {
+      // Si no hay producto cargado, usar imagen hardcodeada
+      imagen = linkImages[productLink] || linkImages["default"];
+      imagenAlt = `Imagen para ${productLink}`;
+      console.log("Producto no cargado, usando imagen hardcodeada:", imagen);
     }
 
-    modalImg.src = imagen;
-    modalImg.alt = imagenAlt;
-    modalImg.onerror = function () {
-      modalImg.src = DEFAULT_IMAGE;
+    // Verificar si la imagen existe
+    const testImage = new Image();
+    testImage.onload = function () {
+      modalImg.src = imagen;
+      modalImg.alt = imagenAlt;
+    };
+    testImage.onerror = function () {
+      console.error("Error al cargar la imagen:", imagen);
+      modalImg.src = linkImages["default"];
       modalImg.alt = "Imagen por defecto";
     };
   }
@@ -227,6 +221,13 @@ const { link = "" } = Astro.props as ModalProps;
       10
     );
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
+  }
+
+  function programarModal() {
+    if (modalTimeout) clearTimeout(modalTimeout);
+    if (puedeMostrarModal() && !modalMostrado) {
+      modalTimeout = setTimeout(() => showCotizacionModal(), 2000);
+    }
   }
 
   const closeBtn = document.getElementById("close-modal-cotizacion");
@@ -250,55 +251,58 @@ const { link = "" } = Astro.props as ModalProps;
       const nombre = data.get("nombre");
       const telefono = "+51 " + data.get("telefono");
       const correo = data.get("correo");
-      const productLink = document.getElementById("modal-form-container")
-        ?.dataset.productLink;
-      const mensaje = `Hola, me llamo ${nombre}. Teléfono: ${telefono}, Correo: ${correo}. Me interesa recibir asesoría.`;
-      const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
-
-      // Enviar mensaje a WhatsApp
+      const productLink = document.getElementById("modal-form-container")?.dataset.productLink;
+      
       try {
-        await fetch(
-          `${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ telefono, comentario: mensaje }),
-          }
-        );
-        if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
+        const responseWhatsApp = await fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phone: telefono,
+            email: correo,
+            link: productLink
+          }),
+        });
+
+        if (responseWhatsApp.ok) {
+          const responseData = await responseWhatsApp.json();
+          console.log('Mensaje enviado con éxito:', responseData);
+        } else {
+          const errorData = await responseWhatsApp.json();
+          console.error('Error al enviar mensaje:', errorData);
+        }
       } catch (error) {
         // Error silencioso
       }
 
       // Enviar correo electrónico
       try {
-        const response = await fetch(
-          `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: nombre,
-              celular: telefono,
-              email: correo,
-              link: productLink,
-            }),
-          }
-        );
+        const response = await fetch(`${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: nombre,
+            celular: telefono,
+            email: correo,
+            link: productLink
+          }),
+        });
 
         if (response.ok) {
           if (mensajeEl) mensajeEl.textContent = "Correo enviado con éxito ✅";
         } else {
-          if (mensajeEl)
-            mensajeEl.textContent =
-              "Error al enviar el correo. Intenta nuevamente.";
+          const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+          if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
         }
       } catch (error) {
-        if (mensajeEl)
-          mensajeEl.textContent =
-            "Error al enviar el correo. Intenta nuevamente.";
+        console.error("Error al enviar el formulario:", error);
+        const mensajeEl = document.getElementById("modal-cotizacion-mensaje");
+        if (mensajeEl) mensajeEl.textContent = "Error al enviar el correo. Intenta nuevamente.";
       }
-
       form.reset();
     };
   }
@@ -346,23 +350,16 @@ const { link = "" } = Astro.props as ModalProps;
     });
   }
 
-  // Mostrar modal por evento o scroll
-  window.addEventListener("open-scroll-modal", async () => {
-    await showCotizacionModal();
-  });
-
-  window.addEventListener("scroll", async () => {
+  // --- MOSTRAR EN SCROLL ---
+  window.addEventListener("open-scroll-modal", showCotizacionModal);
+  window.addEventListener("scroll", () => {
+    // Mostrar modal después de hacer scroll del 30% de la página
     const scrollPercentage =
       (window.scrollY /
         (document.documentElement.scrollHeight - window.innerHeight)) *
       100;
 
-    if (
-      scrollPercentage > 30 &&
-      !scrollActivado &&
-      puedeMostrarModal() &&
-      !modalMostrado
-    ) {
+    if (scrollPercentage > 30 && !scrollActivado && puedeMostrarModal() && !modalMostrado) {
       scrollActivado = true;
       await showCotizacionModal();
     }
@@ -374,18 +371,10 @@ const { link = "" } = Astro.props as ModalProps;
     if (!container) return;
 
     const rawSection = container.dataset.seccion || "NEGOCIOS";
-    const normalized = rawSection
-      .normalize?.("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toUpperCase();
-    const keyMap = {
-      NEGOCIOS: "NEGOCIOS",
-      MAQUINARIA: "MAQUINARIA",
-      DECORACION: "DECORACIÓN",
-    } as const;
+    const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
 
-    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
-      "NEGOCIOS") as keyof typeof secciones;
+    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
     sectionConfig = secciones[productoSeccion] || secciones.NEGOCIOS;
 
     aplicarConfig();
@@ -411,8 +400,8 @@ const { link = "" } = Astro.props as ModalProps;
   }
 
   // Inicializar
-  document.addEventListener("DOMContentLoaded", async function () {
-    localStorage.removeItem("asesoriaModalLastClosedDetalle");
+  document.addEventListener("DOMContentLoaded", function () {
+    localStorage.removeItem('asesoriaModalLastClosedDetalle');
 
     updateSectionFromDataset();
     await actualizarImagenDesdeLink();
