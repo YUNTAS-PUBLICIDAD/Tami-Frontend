@@ -173,67 +173,66 @@ export default function ListadoDeProductos() {
     <div className="flex flex-col md:flex-row gap-8 p-8">
       {/* FILTROS DESKTOP*/}
       <aside className="md:w-4/12 xl:w-3/12 hidden sm:block">
-        <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] space-y-4">
-          <h1 className="uppercase underline text-teal-700 font-bold text-center text-3xl">
-            Filtros
+        <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00B6FF] space-y-4" style={{ borderColor: '#00B6FF' }}>
+          <h1 className="uppercase text-[#009688] font-bold text-center text-3xl mb-2" style={{ textDecoration: 'underline', textUnderlineOffset: '6px' }}>
+            FILTROS
           </h1>
           {/* Filtro nombre */}
           <div>
-            <h2 className="font-bold text-teal-700 text-lg uppercase">Nombre</h2>
+            <h2 className="font-bold text-[#009688] text-lg uppercase mb-1">NOMBRE</h2>
             <input
               type="text"
               value={filtroNombre}
               onChange={(e) => setFiltroNombre(e.target.value)}
-              placeholder="Buscar..."
-              className="p-2 shadow-md rounded-md w-full outline-none focus:ring-2 focus:ring-teal-400"
+              placeholder="Buscar"
+              className="p-3 shadow rounded-lg w-full outline-none focus:ring-2 focus:ring-[#009688] text-[#009688] font-semibold bg-white mb-4"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
             />
           </div>
           {/* Categorías */}
           <div>
-            <button
-              type="button"
-              className="w-full flex justify-between items-center text-teal-700 hover:cursor-pointer"
-              onClick={() => setMostrarCategorias((prev) => !prev)}
-            >
-              <h2 className="font-bold text-lg uppercase">Categorías</h2>
-              {mostrarCategorias ? <FaChevronDown /> : <FaChevronUp />}
-            </button>
-
-            {mostrarCategorias && (
-              <div className="flex flex-wrap gap-3 text-white font-semibold pt-3">
-                {[
-                  { name: "Negocio", color: "#00B6FF" },
-                  { name: "Decoración", color: "#5D39FB" },
-                  { name: "Maquinaria", color: "#04B088" },
-                ].map(({ name, color }) => (
-                  <button
-                    key={name}
-                    onClick={() =>
-                      setFiltroCategoria(filtroCategoria === name ? null : name)
-                    }
-                    style={{
-                      backgroundColor: filtroCategoria === name ? "#fff" : color,
-                      color: filtroCategoria === name ? color : ''
-                    }}
-                    className={`py-2 px-5 rounded-xl text-lg uppercase shadow-md hover:opacity-90 transition-all}`}
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="font-bold text-[#009688] text-lg uppercase">CATEGORIAS</h2>
+              <span className="text-[#009688] text-xl font-bold">&#9660;</span>
+            </div>
+            <div className="flex flex-col gap-4">
+              <button
+                type="button"
+                onClick={() => setFiltroCategoria(filtroCategoria === 'Negocio' ? null : 'Negocio')}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Negocio' ? 'ring-2 ring-white' : ''}`}
+                style={{ background: '#00B6FF', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+              >
+                NEGOCIO
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltroCategoria(filtroCategoria === 'Maquinaria' ? null : 'Maquinaria')}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Maquinaria' ? 'ring-2 ring-white' : ''}`}
+                style={{ background: '#04B088', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+              >
+                MAQUINARIA
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltroCategoria(filtroCategoria === 'Decoración' ? null : 'Decoración')}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Decoración' ? 'ring-2 ring-white' : ''}`}
+                style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+              >
+                DECORACIÓN
+              </button>
+            </div>
           </div>
-
           {/* Limpiar filtros */}
-          <div className="flex justify-center pt-10">
+          <div className="flex justify-center pt-8">
             <button
               onClick={() => {
                 setFiltroNombre("");
                 setFiltroCategoria(null);
               }}
-              className="py-2 px-4 uppercase bg-white text-teal-700 border-2 border-teal-500 font-bold text-lg rounded-lg shadow-md hover:bg-teal-50 transition"
+              className="py-3 px-6 uppercase bg-white text-[#009688] font-bold text-lg rounded-xl shadow-md transition-all duration-150 hover:bg-[#e0f7fa] hover:shadow-lg active:scale-95 border border-[#009688]"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
             >
-              Limpiar filtros
+              LIMPIAR FILTROS
             </button>
           </div>
         </div>
@@ -383,6 +382,17 @@ function useIntersectionObserver(options = {}) {
   return { targetRef, hasIntersected };
 }
 
+const getCategoriaColor = (categoria: string) => {
+  switch (categoria) {
+    case 'Negocio': return '#00B6FF';
+    case 'Decoración': return '#5D39FB';
+    case 'Maquinaria': return '#04B088';
+    default: return '#0374A2';
+  }
+};
+
+const CARD_RADIUS = 16;
+
 const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { targetRef, hasIntersected } = useIntersectionObserver();
@@ -396,14 +406,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
       : `https://placehold.co/300x300/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
   }, [producto.imagenes, producto.nombre]);
 
-  const gradientColors: Record<string, string> = {
-    Negocio: "from-[#00B6FF]/50 to-white text-[#0374A2]",
-    Decoración: "from-[#5D39FB]/50 to-white text-[#5D39FB]",
-    Maquinaria: "from-[#00786F]/50 to-white text-[#00786F]",
-    Default: "from-[#0374A2]/50 to-white text-[#0374A2]",
-  };
-
-  const gradient = gradientColors[producto.seccion] || gradientColors.Default;
+  const categoriaColor = getCategoriaColor(producto.seccion);
 
   return (
     <a
@@ -411,30 +414,48 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
       title={`Ver detalles de ${producto.nombre}`}
       className="flex flex-col items-center group hover:cursor-pointer w-full relative h-[150px] md:h-[360px]"
     >
-      <div ref={targetRef} className="h-full w-full relative">
-        {!imageLoaded && (
-          <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center rounded-xl" />
-        )}
-        {hasIntersected && (
-          <img
-            src={imageSrc}
-            alt={producto.nombre}
-            loading="lazy"
-            onLoad={() => setImageLoaded(true)}
-            className={`rounded-xl object-contain w-full h-[150px] md:h-[360px] transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"
-              }`}
-            style={{ aspectRatio: "1" }}
-          />
-        )}
-        <div
-          className={`absolute bottom-0 w-full flex justify-center bg-gradient-to-b ${gradient} shadow-lg rounded-xl backdrop-blur-xs`}
-        >
-          <div className="flex justify-between items-center gap-2 w-full p-3 min-h-[40px] md:min-h-[100px]">
-            <h3 className="text-xs md:text-base font-bold uppercase">{producto.nombre}</h3>
-            <button className="bg-white py-1 px-3 rounded-md font-semibold text-xs sm:text-sm shadow hover:bg-gray-100">
-              Comprar
-            </button>
+      <div
+        className="flex flex-col items-center group hover:cursor-pointer w-full max-w-[380px] min-h-[340px] bg-white rounded-xl shadow-md border relative"
+        style={{ aspectRatio: "1.2/1", borderColor: categoriaColor, boxShadow: '0 4px 16px rgba(0,0,0,0.10)', borderRadius: CARD_RADIUS }}
+      >
+        <div ref={targetRef} className="w-full h-[250px] flex items-center justify-center pt-2 pb-2">
+          {!imageLoaded && (
+            <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center rounded-xl" />
+          )}
+          {hasIntersected && (
+            <img
+              src={imageSrc}
+              alt={producto.nombre}
+              loading="lazy"
+              onLoad={() => setImageLoaded(true)}
+              className={`object-contain w-[95%] h-[95%] transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              style={{ background: "#f8f8f8", borderRadius: '12px' }}
+            />
+          )}
+        </div>
+        <div className="w-full absolute left-0 bottom-0 overflow-hidden" style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`, height: '80px', minHeight: '80px', position: 'absolute', left: 0, bottom: 0, width: '100%', display: 'flex', alignItems: 'center', margin: 0, padding: 0 }}>
+          <div className="flex flex-row w-full h-full items-center" style={{ height: '100%' }}>
+            <div className="flex items-center pl-4" style={{ maxWidth: '65%', flex: '0 0 65%', height: '100%' }}>
+              <h3 className="text-base font-bold uppercase text-white break-words whitespace-normal">
+                {producto.nombre}
+              </h3>
+            </div>
           </div>
+          <button
+            className="bg-white font-bold text-lg text-[#0374A2] px-5 py-2 shadow border-none"
+            style={{
+              minWidth: '120px',
+              minHeight: '48px',
+              borderRadius: '16px 0 16px 0',
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+              margin: 0,
+              padding: 0,
+            }}
+          >
+            Comprar
+          </button>
         </div>
       </div>
     </a>
