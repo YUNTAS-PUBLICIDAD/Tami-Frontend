@@ -1,44 +1,41 @@
 ---
-import { config, getApiUrl } from "config";
-import type Producto from "src/models/Product";
+import { getApiUrl } from "@utils/getApiUrl";
+import type { Producto } from "@models/Product";
+import { config } from "config";
 
 let productsArray: Producto[] = [];
 
 try {
-  const response = await fetch(getApiUrl(config.endpoints.productos.list));
-  if (!response.ok) {
-    throw new Error(`Error en la petición: ${response.status}`);
-  }
-  const data = await response.json();
-  productsArray = data.data;
-} catch (error) {
-  console.error("Error al obtener los productos:", error);
+  const res = await fetch(getApiUrl(config.endpoints.productos.list));
+  if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
+  const data = await res.json();
+  productsArray = Array.isArray(data.data) ? data.data : [];
+} catch (err) {
+  console.error("Error al obtener productos destacados:", err);
   productsArray = [];
 }
 ---
 
 <ul class="pd-container">
   {
-    productsArray
-      .slice(productsArray.length - 3, productsArray.length)
-      .map((item) => {
-        return (
-          <li class="pd-container__content group">
-            <a
-              href={`/productos/details?id=${item.id}`}
-              class="pd-container__link"
-            >
-              <img
-                src={item.image}
-                alt={item.nombreProducto}
-                class="pd-container__img"
-              />
-              {item.nombreProducto}
-              <div class="pd-container__btn-info">Información</div>
-            </a>
-          </li>
-        );
-      })
+    productsArray.slice(-3).map((item) => (
+      <li class="pd-container__content group">
+        <a
+          href={`/productos/details?id=${item.id}`}
+          class="pd-container__link"
+        >
+          <img
+            src={item.image}
+            alt={item.nombreProducto}
+            loading="lazy"
+            decoding="async"
+            class="pd-container__img"
+          />
+          <span>{item.nombreProducto}</span>
+          <div class="pd-container__btn-info">Información</div>
+        </a>
+      </li>
+    ))
   }
 </ul>
 
@@ -46,22 +43,22 @@ try {
   @import "tailwindcss";
 
   .pd-container__btn-info {
-    @apply my-8 place-self-center border border-teal-700 rounded-full px-5 py-2 w-fit group-hover:cursor-pointer group-hover:bg-teal-700 group-hover:text-white transition-colors duration-300;
+    @apply my-8 place-self-center border border-teal-700 rounded-full px-5 py-2 w-fit group-hover:bg-teal-700 group-hover:text-white transition-all duration-300;
   }
 
   .pd-container {
-    @apply w-full grid grid-cols-3 gap-8 overflow-x-auto lg:overflow-visible scroll-smooth px-4;
+    @apply w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 overflow-x-auto lg:overflow-visible scroll-smooth px-4;
   }
 
   .pd-container__content {
-    @apply bg-gradient-to-b to-white text-center justify-items-center text-teal-700 h-full group-hover:cursor-pointer;
+    @apply bg-gradient-to-b to-white text-center justify-items-center text-teal-700 h-full hover:cursor-pointer;
   }
 
   .pd-container__img {
-    @apply w-4/5 place-self-center group-hover:scale-100 ease-in-out transition-transform duration-300 mb-10;
+    @apply w-4/5 mx-auto transition-transform duration-300 group-hover:scale-105 mb-6;
   }
 
   .pd-container__link {
-    @apply w-full h-full font-extrabold text-xl;
+    @apply w-full h-full font-extrabold text-xl flex flex-col items-center;
   }
 </style>

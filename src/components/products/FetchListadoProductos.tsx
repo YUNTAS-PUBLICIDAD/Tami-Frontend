@@ -159,8 +159,8 @@ export default function ListadoDeProductos() {
           onClick={() => obtenerDatos(false)}
           disabled={refreshing}
           className={`px-6 py-2 rounded-lg transition-colors ${refreshing
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-teal-600 hover:bg-teal-700 text-white"
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-teal-600 hover:bg-teal-700 text-white"
             }`}
         >
           {refreshing ? "Cargando..." : "Reintentar"}
@@ -170,9 +170,9 @@ export default function ListadoDeProductos() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 p-10">
-      {/* FILTROS */}
-      <aside className="md:w-4/12 xl:w-3/12">
+    <div className="flex flex-col md:flex-row gap-8 p-8">
+      {/* FILTROS DESKTOP*/}
+      <aside className="md:w-4/12 xl:w-3/12 hidden sm:block">
         <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] space-y-4">
           <h1 className="uppercase underline text-teal-700 font-bold text-center text-3xl">
             Filtros
@@ -239,8 +239,68 @@ export default function ListadoDeProductos() {
         </div>
       </aside>
 
+      {/* FILTROS MOBILE */}
+      <div className="block w-full m-auto sm:hidden relative">
+        <div className="p-4 flex items-center gap-4 border rounded shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] space-y-4 ">
+          <button
+            type="button"
+            className="flex items-center gap-5 text-teal-700 hover:cursor-pointer mb-0"
+            onClick={() => setMostrarCategorias((prev) => !prev)}
+          >
+            <h1 className="uppercase underline text-teal-700 font-bold text-center text-xs mb-0">Filtros</h1>
+            {mostrarCategorias ? <FaChevronDown size={12} /> : <FaChevronUp size={12} />}
+          </button>
+
+          {mostrarCategorias && (
+            <div className="absolute left-0 top-20 flex flex-col gap-3 font-semibold px-8 py-2 bg-white border rounded-4xl z-10 shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] ">
+              <h2 className="font-bold text-2xl uppercase text-[#00786F] text-center">Categorías</h2>
+              {[
+                { name: "Negocio", color: "#00B6FF" },
+                { name: "Decoración", color: "#5D39FB" },
+                { name: "Maquinaria", color: "#04B088" },
+              ].map(({ name, color }) => (
+                <button
+                  key={name}
+                  onClick={() =>
+                    setFiltroCategoria(filtroCategoria === name ? null : name)
+                  }
+                  style={{
+                    backgroundColor: filtroCategoria === name ? "#fff" : color,
+                    color: filtroCategoria === name ? color : ''
+                  }}
+                  className={`py-2 px-5 text-white rounded text-xl uppercase shadow-md hover:opacity-90 transition-all}`}
+                >
+                  {name}
+                </button>
+              ))}
+              {/* Limpiar filtros */}
+              <div className="flex justify-center py-4">
+                <button
+                  onClick={() => {
+                    setFiltroNombre("");
+                    setFiltroCategoria(null);
+                  }}
+                  className="p-2 uppercase bg-white text-teal-700 border-2 border-teal-500 font-bold text-xs rounded shadow-md hover:bg-teal-50 transition"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            </div>
+          )}
+
+          <input
+            type="text"
+            value={filtroNombre}
+            onChange={(e) => setFiltroNombre(e.target.value)}
+            placeholder="Buscar..."
+            className="py-1.5 px-6 shadow-lg text-xs rounded-md w-full outline-none focus:ring-2 focus:ring-teal-400"
+          />
+        </div>
+      </div>
+
       {/* PRODUCTOS */}
-      <section className="w-full xl:w-9/12 grid grid-rows-auto space-y-6 md:space-y-10">
+      <section className="w-full xl:w-9/12 grid grid-rows-auto space-y-6 md:space-y-10 p-4
+      rounded-md shadow-[0_0_7px_rgba(0,0,0,0.25)] shadow-[#00786F] sm:shadow-none sm:rounded-none m-auto">
         {seccionesArray.map(
           (seccion, i) =>
             seccion.productosDeLaSeccion.length > 0 && (
@@ -292,10 +352,11 @@ const Seccion = React.memo(function Seccion({
       <MemoizedProductCard key={producto.id} producto={producto} />
     ));
   }, [productosDeLaSeccion]);
-
+  
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {productCards}
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6 ">
+      {productCards}
     </div>
   );
 });
@@ -348,9 +409,9 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
     <a
       href={`/productos/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
-      className="flex flex-col items-center group hover:cursor-pointer w-full relative h-[360px]"
+      className="flex flex-col items-center group hover:cursor-pointer w-full relative h-[150px] md:h-[360px]"
     >
-      <div ref={targetRef} className="w-full h-full">
+      <div ref={targetRef} className="h-full w-full relative">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center rounded-xl" />
         )}
@@ -360,7 +421,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
             alt={producto.nombre}
             loading="lazy"
             onLoad={() => setImageLoaded(true)}
-            className={`rounded-xl object-cover w-full h-[360px] transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"
+            className={`rounded-xl object-contain w-full h-[150px] md:h-[360px] transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"
               }`}
             style={{ aspectRatio: "1" }}
           />
@@ -368,9 +429,9 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
         <div
           className={`absolute bottom-0 w-full flex justify-center bg-gradient-to-b ${gradient} shadow-lg rounded-xl backdrop-blur-xs`}
         >
-          <div className="flex justify-between items-center gap-2 w-full p-3 min-h-[100px]">
-            <h3 className="text-sm sm:text-base font-bold uppercase">{producto.nombre}</h3>
-            <button className="bg-white py-1 px-3 rounded-md font-semibold text-sm shadow hover:bg-gray-100">
+          <div className="flex justify-between items-center gap-2 w-full p-3 min-h-[40px] md:min-h-[100px]">
+            <h3 className="text-xs md:text-base font-bold uppercase">{producto.nombre}</h3>
+            <button className="bg-white py-1 px-3 rounded-md font-semibold text-xs sm:text-sm shadow hover:bg-gray-100">
               Comprar
             </button>
           </div>

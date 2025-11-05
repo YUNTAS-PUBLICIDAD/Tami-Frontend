@@ -16,8 +16,6 @@ const SignIn: React.FC = () => {
     const email = String(formData.get("email") || "");
     const password = String(formData.get("password") || "");
 
-    console.log("Intentando iniciar sesión con:", email, password);
-
     setIsLoading(true);
     try {
       const response = await fetch(getApiUrl(config.endpoints.auth.login), {
@@ -29,10 +27,26 @@ const SignIn: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.data.token); // Guardar token
-        window.location.href = "/admin/inicio"; // Redirigir al dashboard
+        // Guardar token en localStorage
+        localStorage.setItem("token", data.data.token);
+        
+        // Guardar información del usuario en localStorage (sin información sensible)
+        const userInfo = {
+          name: data.data.user?.name || 
+                data.data.user?.username || 
+                data.data.user?.email?.split('@')[0] || // Solo muestra la parte antes del @
+                "Usuario",
+          role: data.data.user?.role || 
+                data.data.user?.rol || 
+                data.data.user?.tipo || 
+                "Usuario"
+        };
+        
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        
+        // Redirigir al dashboard
+        window.location.href = "/admin/inicio";
       } else {
-        console.error("Error en la respuesta del servidor:", data.message);
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -47,7 +61,7 @@ const SignIn: React.FC = () => {
       });
     } finally {
       setIsLoading(false);
-      setError(null); // Limpiar error al finalizar
+      setError(null);
     }
   };
 
@@ -115,7 +129,6 @@ const SignIn: React.FC = () => {
               "INGRESAR"
             )}
           </button>
-
         </div>
       </form>
     </div>
