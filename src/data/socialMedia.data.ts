@@ -3,6 +3,7 @@ import instagramIcon from "@icons/smi_instagram.svg";
 import twitterIcon from "@icons/smi_twitter.svg";
 import facebookIcon from "@icons/smi_facebook.svg";
 import whatsappIcon from "@icons/smi_whatsapp.svg";
+import YoutubeIcon from "@icons/smi_youtube.svg";
 
 const socialMediaLinks = [
   //  {
@@ -41,7 +42,13 @@ const socialMediaLinks = [
     imageTitle: "Twitter de Tami Maquinarias",
     linkTitle: "Síguenos en Twitter", 
   },
- 
+  {
+    url: "https://www.youtube.com/@TamiPeru",
+    socialMediaName: "Youtube",
+    image: YoutubeIcon,
+    imageTitle: "Canal de Youtube de Tami Maquinarias",
+    linkTitle: "Síguenos en Youtube", 
+  },
 ];
 
 export default socialMediaLinks;
