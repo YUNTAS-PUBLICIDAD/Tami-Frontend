@@ -173,6 +173,7 @@ export default function ListadoDeProductos() {
     <div className="flex flex-col md:flex-row gap-8 p-8">
       {/* FILTROS DESKTOP*/}
       <aside className="md:w-4/12 xl:w-3/12 hidden sm:block">
+
         <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00B6FF] space-y-4" style={{ borderColor: '#00B6FF' }}>
           <h1 className="uppercase text-[#009688] font-bold text-center text-3xl mb-2" style={{ textDecoration: 'underline', textUnderlineOffset: '6px' }}>
             FILTROS
@@ -180,17 +181,21 @@ export default function ListadoDeProductos() {
           {/* Filtro nombre */}
           <div>
             <h2 className="font-bold text-[#009688] text-lg uppercase mb-1">NOMBRE</h2>
+
             <input
               type="text"
               value={filtroNombre}
               onChange={(e) => setFiltroNombre(e.target.value)}
+
               placeholder="Buscar"
               className="p-3 shadow rounded-lg w-full outline-none focus:ring-2 focus:ring-[#009688] text-[#009688] font-semibold bg-white mb-4"
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+
             />
           </div>
           {/* Categorías */}
           <div>
+
             <div className="flex items-center justify-between mb-2">
               <h2 className="font-bold text-[#009688] text-lg uppercase">CATEGORIAS</h2>
               <span className="text-[#009688] text-xl font-bold">&#9660;</span>
@@ -224,15 +229,18 @@ export default function ListadoDeProductos() {
           </div>
           {/* Limpiar filtros */}
           <div className="flex justify-center pt-8">
+
             <button
               onClick={() => {
                 setFiltroNombre("");
                 setFiltroCategoria(null);
               }}
+
               className="py-3 px-6 uppercase bg-white text-[#009688] font-bold text-lg rounded-xl shadow-md transition-all duration-150 hover:bg-[#e0f7fa] hover:shadow-lg active:scale-95 border border-[#009688]"
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
             >
               LIMPIAR FILTROS
+
             </button>
           </div>
         </div>
@@ -240,11 +248,14 @@ export default function ListadoDeProductos() {
 
       {/* FILTROS MOBILE */}
       <div className="block w-full m-auto sm:hidden relative">
+
         <div className="p-4 flex flex-col gap-4 border rounded shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] bg-white">
+
           <input
             type="text"
             value={filtroNombre}
             onChange={(e) => setFiltroNombre(e.target.value)}
+
             placeholder="Buscar"
             className="p-3 shadow rounded-lg w-full outline-none focus:ring-2 focus:ring-[#009688] text-[#009688] font-semibold bg-white mb-2"
             style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
@@ -296,6 +307,7 @@ export default function ListadoDeProductos() {
               </button>
             </div>
           )}
+
         </div>
       </div>
 
@@ -384,6 +396,7 @@ function useIntersectionObserver(options = {}) {
   return { targetRef, hasIntersected };
 }
 
+
 const getCategoriaColor = (categoria: string) => {
   switch (categoria) {
     case 'Negocio': return '#00B6FF';
@@ -394,6 +407,7 @@ const getCategoriaColor = (categoria: string) => {
 };
 
 const CARD_RADIUS = 16;
+
 
 const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -408,12 +422,15 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
       : `https://placehold.co/300x300/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
   }, [producto.imagenes, producto.nombre]);
 
+
   const categoriaColor = getCategoriaColor(producto.seccion);
+
 
   return (
     <a
       href={`/productos/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
+
       className="w-full"
     >
       <div
@@ -518,6 +535,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 padding: 0,
               }}
             >
+
               Comprar
             </button>
           </div>
