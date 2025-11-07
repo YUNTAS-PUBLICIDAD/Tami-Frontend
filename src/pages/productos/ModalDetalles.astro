@@ -166,9 +166,7 @@ const { link = "" } = Astro.props as ModalProps;
    */
   async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
-    const modalImg = document.getElementById(
-      "modal-product-img"
-    ) as HTMLImageElement | null;
+    const modalImg = document.getElementById("modal-product-img") as HTMLImageElement | null;
 
     if (!container || !modalImg) return;
 
@@ -357,12 +355,7 @@ const { link = "" } = Astro.props as ModalProps;
         (document.documentElement.scrollHeight - window.innerHeight)) *
       100;
 
-    if (
-      scrollPercentage > 30 &&
-      !scrollActivado &&
-      puedeMostrarModal() &&
-      !modalMostrado
-    ) {
+    if (scrollPercentage > 30 && !scrollActivado && puedeMostrarModal() && !modalMostrado) {
       scrollActivado = true;
       await showCotizacionModal();
     }
@@ -374,18 +367,10 @@ const { link = "" } = Astro.props as ModalProps;
     if (!container) return;
 
     const rawSection = container.dataset.seccion || "NEGOCIOS";
-    const normalized = rawSection
-      .normalize?.("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toUpperCase();
-    const keyMap = {
-      NEGOCIOS: "NEGOCIOS",
-      MAQUINARIA: "MAQUINARIA",
-      DECORACION: "DECORACIÓN",
-    } as const;
+    const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
 
-    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
-      "NEGOCIOS") as keyof typeof secciones;
+    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
     sectionConfig = secciones[productoSeccion] || secciones.NEGOCIOS;
 
     aplicarConfig();
