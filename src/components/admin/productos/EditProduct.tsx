@@ -281,12 +281,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             });
 
             // Agregar imagen popup y texto alt popup al FormData
-if (formData.imagen_popup && formData.imagen_popup instanceof File) {                formDataToSend.append('imagen_popup', formData.imagen_popup);
+            if (formData.imagen_popup && formData.imagen_popup instanceof File) {                formDataToSend.append('imagen_popup', formData.imagen_popup);
                 formDataToSend.append('texto_alt_popup', formData.texto_alt_popup || '');
             }
 
             // Agregar imagen email y texto alt email al FormData
-if (formData.imagen_email && formData.imagen_email instanceof File) {                formDataToSend.append('imagen_email', formData.imagen_email);
+             if (formData.imagen_email && formData.imagen_email instanceof File) {                formDataToSend.append('imagen_email', formData.imagen_email);
                 formDataToSend.append('texto_alt_email', formData.texto_alt_email || '');
             }
             if (formData.imagen_whatsapp && formData.imagen_whatsapp instanceof File) {                formDataToSend.append('imagen_whatsapp', formData.imagen_whatsapp);
