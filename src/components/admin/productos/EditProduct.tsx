@@ -281,15 +281,20 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             });
 
             // Agregar imagen popup y texto alt popup al FormData
-            if (formData.imagen_popup && formData.imagen_popup instanceof File) {                formDataToSend.append('imagen_popup', formData.imagen_popup);
+            if (formData.imagen_popup && formData.imagen_popup instanceof File) {                
+                formDataToSend.append('imagen_popup', formData.imagen_popup);
                 formDataToSend.append('texto_alt_popup', formData.texto_alt_popup || '');
             }
 
             // Agregar imagen email y texto alt email al FormData
-             if (formData.imagen_email && formData.imagen_email instanceof File) {                formDataToSend.append('imagen_email', formData.imagen_email);
-                formDataToSend.append('texto_alt_email', formData.texto_alt_email || '');
+             if (formData.imagen_email && formData.imagen_email instanceof File) {                
+                formDataToSend.append('imagen_email', formData.imagen_email);   
             }
-            if (formData.imagen_whatsapp && formData.imagen_whatsapp instanceof File) {                formDataToSend.append('imagen_whatsapp', formData.imagen_whatsapp);
+
+            formDataToSend.append('asunto', formData.asunto || '');
+            
+            if (formData.imagen_whatsapp && formData.imagen_whatsapp instanceof File) {                
+                formDataToSend.append('imagen_whatsapp', formData.imagen_whatsapp);
                 formDataToSend.append('texto_alt_whatsapp', formData.texto_alt_whatsapp || '');
             }
             // Agregar URL del video si existe
@@ -410,7 +415,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
                 imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
-                texto_alt_email: imagenEmail?.texto_alt_SEO || "",
+                asunto: imagenEmail?.asunto || "",
             });
         }
     }, [showModal, product]);
@@ -917,7 +922,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 ? formData.imagen_email
                                                                 : URL.createObjectURL(formData.imagen_email)
                                                         }
-                                                        alt={formData.texto_alt_email || "Imagen email"}
+                                                        alt={formData.asunto || "Imagen email"}
                                                         className="w-16 h-16 object-cover rounded border-2 border-gray-200"
                                                     />
                                                     <label className="text-sm text-blue-600 underline cursor-pointer">
@@ -950,16 +955,19 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             )}
                                         </div>
                                     </div>
-                                    <div className="form-input">
-                                        <label>Texto ALT Imagen Email (opcional):</label>
-                                        <input
-                                            type="text"
-                                            name="texto_alt_email"
-                                            value={formData.texto_alt_email || ''}
-                                            onChange={e => setFormData(prev => ({ ...prev, texto_alt_email: e.target.value }))}
-                                            placeholder="Texto alternativo para SEO..."
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                                        />
+                                   <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Asunto del Email
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        value={formData.asunto}
+                                        onChange={(e) =>
+                                        setFormData(prev => ({ ...prev, asunto: e.target.value }))}
+                                
+                                        placeholder="Ej: Empecemos a crear juntos ✨"
+                                    />
                                     </div>
                                     <div className="form-input">
                                         <label>URL del Video (opcional):</label>

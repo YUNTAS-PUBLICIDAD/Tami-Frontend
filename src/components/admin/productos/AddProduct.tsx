@@ -324,8 +324,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       // Agregar imagen email y texto alt email al FormData
       if (formData.imagen_email) {
         formDataToSend.append('imagen_email', formData.imagen_email);
-        formDataToSend.append('texto_alt_email', formData.texto_alt_email || '');
+        
       }
+
+      formDataToSend.append('asunto', formData.asunto || '');
       
       // Agregar imagen Whatsapp y texto alt Whatsapp al FormData
       if (formData.imagen_whatsapp) {
@@ -806,17 +808,20 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       />
                     </div>
                   </div>
-                  <div className="form-input">
-                    <label>Texto ALT Imagen Email (opcional):</label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Asunto del Email
+                    </label>
                     <input
-                      type="text"
-                      name="texto_alt_email"
-                      value={formData.texto_alt_email || ''}
-                      onChange={e => setFormData(prev => ({ ...prev, texto_alt_email: e.target.value }))}
-                      placeholder="Texto alternativo para SEO..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                    />
-                  </div>
+                       type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        value={formData.asunto}
+                        onChange={(e) =>
+                        setFormData(prev => ({ ...prev, asunto: e.target.value }))}
+                                
+                         placeholder="Ej: Empecemos a crear juntos ✨"
+                          />
+                   </div>
                   <div className="form-input">
                     <label>URL del Video (opcional):</label>
                     <input
