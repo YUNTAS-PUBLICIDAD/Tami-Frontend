@@ -38,7 +38,7 @@ export interface ProductFormularioPOST {
   imagen_popup?: File | string | null;
   texto_alt_popup?: string;
   imagen_email?: File | string | null;
-  texto_alt_email?: string;
+  asunto: string; 
   imagen_whatsapp?: File | null;
   texto_alt_whatsapp?: string;
   video_url?: string;
@@ -54,6 +54,7 @@ export interface ImagenBack {
   url_imagen: string;
   texto_alt_SEO: string;
   imageTitle?: string;
+  asunto?: string; 
   tipo?: string; // 'galeria', 'popup', 'email'
 }
 
@@ -140,6 +141,8 @@ export const defaultValuesProduct: ProductFormularioPOST = {
   imagen_popup: null,
   texto_alt_popup: "",
   imagen_email: null,
-  texto_alt_email: "",
+  asunto: "",
+  imagen_whatsapp: null,
+  texto_alt_whatsapp: "",
   video_url: ""
 };
