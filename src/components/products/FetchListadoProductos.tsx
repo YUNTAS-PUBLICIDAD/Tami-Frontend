@@ -51,6 +51,15 @@ export default function ListadoDeProductos() {
   const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
   const [mostrarCategorias, setMostrarCategorias] = useState(true);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const categoriaUrl = params.get("categoria"); 
+    
+    if (categoriaUrl) {
+      setFiltroCategoria(categoriaUrl);
+}
+  }, [])
+
   const obtenerDatos = useCallback(async (useCache = true) => {
     try {
       abortControllerRef.current?.abort();
@@ -171,6 +180,7 @@ export default function ListadoDeProductos() {
 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-8">
+
       {/* FILTROS DESKTOP*/}
       <aside className="md:w-4/12 xl:w-3/12 hidden sm:block">
 
