@@ -2,6 +2,7 @@
 import HeroProducts from "src/components/products/HeroProducts";
 import Layout from "src/layouts/Layout.astro";
 import ListadoDeProductos from "../../src/components/products/FetchListadoProductos";
+import Hero from "src/components/index/Hero";
 ---
 
 <Layout 
@@ -9,6 +10,8 @@ import ListadoDeProductos from "../../src/components/products/FetchListadoProduc
   description="Explora nuestra línea de maquinaria industrial y equipos para emprendedores. Venta de productos confiables para negocios en todo el Perú."
   canonicalUrl="https://tamimaquinarias.com/productos/"
 >
-  <HeroProducts client:load />
-  <ListadoDeProductos client:load />
+    <HeroProducts client:load />
+
+    <ListadoDeProductos client:load />
+ 
 </Layout>
