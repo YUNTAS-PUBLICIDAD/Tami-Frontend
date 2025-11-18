@@ -37,21 +37,26 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
 
     const relatedProducts = producto.productos_relacionados || [];
     const carouselThreshold = 3;
-    const handleWhatsAppClick = () => {
+   const handleWhatsAppClick = () => {
         
         const phoneNumber = "51978883199"; 
-        
         const productName = producto.titulo; 
-        const productDescription = producto.descripcion; 
+        
+        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
+        
+        const textoFinal = whatsappConfig?.texto_alt_SEO 
+            ? whatsappConfig.texto_alt_SEO 
+            : `Descripción: ${producto.descripcion}`;
 
-        const message = `¡Hola! Estoy interesado en cotizar el producto: *${productName}*. \n\nDescripción: ${productDescription}`;
+        const message = `🔥 ¡Excelente elección! \n Te presentamos la : *${productName}*⚡ \n\n${textoFinal}\n 
+👉 ¿Quieres que te enviemos la ficha técnica completa y una cotización personalizada? `;
         
         const encodedMessage = encodeURIComponent(message);
         
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-        };
+    };
 
     return (
         <div className="w-full bg-gray-50"> {/* Fondo general gris claro */}
