@@ -332,9 +332,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       // Agregar imagen Whatsapp y texto alt Whatsapp al FormData
       if (formData.imagen_whatsapp) {
         formDataToSend.append('imagen_Whatsapp', formData.imagen_whatsapp);
-        formDataToSend.append('texto_alt_Whatsapp', formData.texto_alt_whatsapp || '');
       }
-
+      formDataToSend.append('texto_alt_Whatsapp', formData.texto_alt_whatsapp || '');
       // Agregar URL del video si existe
       if (formData.video_url) {
         formDataToSend.append('video_url', formData.video_url);
@@ -846,10 +845,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       <input
                         type="file"
                         accept="image/*"
-                        name="imagen_Whatsapp"
+                        name="imagen_whatsapp"
                         onChange={e => {
                           if (e.target.files?.[0]) {
-                            setFormData(prev => ({ ...prev, imagen_Whatsapp: e.target.files![0] }));
+                            setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
                           }
                         }}
                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
@@ -857,14 +856,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     </div>
                   </div>
                   <div className="form-input">
-                    <label>Texto ALT Imagen Whatsapp (opcional):</label>
-                    <input
-                      type="text"
-                      name="texto_alt_popup"
-                      value={formData.texto_alt_popup || ''}
-                      onChange={e => setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }))}
-                      placeholder="Texto alternativo para SEO..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                    <label>Texto personalizado para cotizar (Whatsapp):</label>
+                    <textarea
+                      //type="text"
+                      name="texto_alt_whatsapp"
+                      value={formData.texto_alt_whatsapp || ''}
+                      onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
+                      placeholder="Texto para el mensaje de Whatsapp..."
+                      rows={4}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
                     />
                   </div>
                 </div>
