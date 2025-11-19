@@ -295,9 +295,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             
             if (formData.imagen_whatsapp && formData.imagen_whatsapp instanceof File) {                
                 formDataToSend.append('imagen_whatsapp', formData.imagen_whatsapp);
-                formDataToSend.append('texto_alt_whatsapp', formData.texto_alt_whatsapp || '');
             }
-            // Agregar URL del video si existe
+            formDataToSend.append('texto_alt_whatsapp', formData.texto_alt_whatsapp || '');
+            
             if (formData.video_url) {
                 formDataToSend.append('video_url', formData.video_url);
             }
@@ -981,37 +981,67 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         />
                                     </div>
                                 </div>
-                                 {/* Imagen para Pop Up */}
+                                 {/* Imagen para whatsapp*/}
                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Whatsapp</h5>
                                     <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
                                         <p className="font-medium">ℹ️ Esta imagen se usará únicamente en el Whatsapp del producto.</p>
                                     </div>
                                     <div className="form-input">
-                                        <label>Imagen Whatsaap:</label>
+                                        <label>Imagen Whatsapp:</label>
                                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                name="imagen_Whatsapp"
-                                                onChange={e => {
-                                                    if (e.target.files?.[0]) {
-                                                        setFormData(prev => ({ ...prev, imagen_Whatsapp: e.target.files![0] }));
-                                                    }
-                                                }}
-                                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                                            />
+                                            {formData.imagen_whatsapp ? (
+                                                <div className="flex items-center gap-4">
+                                                    <img
+                                                        src={
+                                                            typeof formData.imagen_whatsapp === "string"
+                                                                ? formData.imagen_whatsapp
+                                                                : URL.createObjectURL(formData.imagen_whatsapp)
+                                                        }
+                                                        alt={formData.asunto || "Imagen Whatsapp"}
+                                                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                    />
+                                                    <label className="text-sm text-blue-600 underline cursor-pointer">
+                                                        Reemplazar
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            name="imagen_whatsapp"
+                                                            onChange={e => {
+                                                                if (e.target.files?.[0]) {
+                                                                    setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
+                                                                }
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    name="imagen_whatsapp"
+                                                    onChange={e => {
+                                                        if (e.target.files?.[0]) {
+                                                            setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
+                                                        }
+                                                    }}
+                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                                />
+                                            )}
                                         </div>
+                
                                     </div>
                                     <div className="form-input">
-                                        <label>Texto ALT Imagen Whatsapp (opcional):</label>
-                                        <input
-                                            type="text"
-                                            name="texto_alt_popup"
-                                            value={formData.texto_alt_whatsapp || ''}
-                                            onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
-                                            placeholder="Texto alternativo para SEO..."
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                        <textarea
+                                        //type="text"
+                                        name="texto_alt_whatsapp"
+                                        value={formData.texto_alt_whatsapp || ''}
+                                        onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
+                                        placeholder="Texto para el mensaje de Whatsapp..."
+                                        rows={4}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
+
                                         />
                                     </div>
                                 </div>                   
