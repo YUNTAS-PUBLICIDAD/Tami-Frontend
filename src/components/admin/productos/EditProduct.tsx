@@ -1042,6 +1042,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         placeholder="Texto para el mensaje de Whatsapp..."
                                         rows={4}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
+
                                         />
                                     </div>
                                 </div>                   
