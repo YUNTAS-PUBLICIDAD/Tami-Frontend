@@ -42,18 +42,20 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
         const phoneNumber = "51978883199"; 
         const productName = producto.titulo; 
         
-        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
+        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'galeria');
         
-        const textoFinal = whatsappConfig?.texto_alt_SEO 
-            ? whatsappConfig.texto_alt_SEO 
+        const textoFinal = whatsappConfig?.whatsapp_mensaje 
+            ? whatsappConfig.whatsapp_mensaje 
             : `Descripción: ${producto.descripcion}`;
 
-        const message = `🔥 ¡Excelente elección! \n Te presentamos la : *${productName}*⚡ \n\n${textoFinal}\n 
-👉 ¿Quieres que te enviemos la ficha técnica completa y una cotización personalizada? `;
-        
-        const encodedMessage = encodeURIComponent(message);
-        
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+      const line1 = "🔥 ¡Excelente elección!";
+        const line2 = `Te presentamos la: *${productName}* ⚡`;
+        const line3 = textoFinal;
+        const line4 = "👉 ¿Quieres que te enviemos la ficha técnica completa y una cotización personalizada?";
+
+        const message = `${line1}\n${line2}\n\n${line3}\n\n${line4}`;
+
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     };
