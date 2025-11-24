@@ -448,16 +448,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                 Editar Producto
                             </h4>
                         </div>
+                        {/* Formulario con contenedor relativo para evitar espacios en blanco entre páginas */}
                         <form onSubmit={handleSubmit} className="relative">
                             {/* Primera página del formulario */}
+                            {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
+                            
                             <div
-                                className={`absolute w-full transition-all duration-500 ${isExiting && formPage === 1
-                                    ? "-translate-x-full opacity-0 pointer-events-none"
-                                    : ""
-                                    } ${!isExiting && formPage === 1
-                                        ? "translate-x-0 opacity-100 pointer-events-auto"
-                                        : "opacity-0 pointer-events-none"
-                                    }`}
+                                className={`w-full transition-all duration-500 ${
+                                    formPage !== 1 ? "hidden" : ""
+                                } ${isExiting && formPage === 1
+                                    ? "opacity-0"
+                                    : "opacity-100"
+                                }`}
                             >
                                 <div className="space-y-4">
                                     <div className="form-input">
@@ -767,14 +769,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                             </div>
 
                             {/* Segunda página del formulario */}
+                            {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
+                            
                             <div
-                                className={`absolute w-full transition-all duration-500 ${isExiting && formPage === 2
-                                    ? "-translate-x-full opacity-0 pointer-events-none"
-                                    : ""
-                                    } ${!isExiting && formPage === 2
-                                        ? "translate-x-0 opacity-100 pointer-events-auto"
-                                        : "opacity-0 pointer-events-none"
-                                    }`}
+                                className={`w-full transition-all duration-500 ${
+                                    formPage !== 2 ? "hidden" : ""
+                                } ${isExiting && formPage === 2
+                                    ? "opacity-0"
+                                    : "opacity-100"
+                                }`}
                             >
                                 <div className="card">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
@@ -1071,14 +1074,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                             </div>
 
                             {/* Tercera página del form */}
+                            {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
+                            
                             <div
-                                className={`absolute w-full transition-all duration-500 ${isExiting && formPage === 3
-                                    ? "-translate-x-full opacity-0 pointer-events-none"
-                                    : ""
-                                    } ${!isExiting && formPage === 3
-                                        ? "translate-x-0 opacity-100 pointer-events-auto"
-                                        : "opacity-0 pointer-events-none"
-                                    }`}
+                                className={`w-full transition-all duration-500 ${
+                                    formPage !== 3 ? "hidden" : ""
+                                } ${isExiting && formPage === 3
+                                    ? "opacity-0"
+                                    : "opacity-100"
+                                }`}
                             >
                                 <div className="form-input mb-6">
                                     <label>Productos Relacionados:</label>
