@@ -918,7 +918,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         <label>Imagen Email:</label>
                                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
                                             {formData.imagen_email ? (
-                                                <div className="flex items-center gap-4">
+                                                <div className="flex flex-col items-center gap-2"> {/* se agrego flex*/}
                                                     <img
                                                         src={
                                                             typeof formData.imagen_email === "string"
@@ -926,7 +926,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 : URL.createObjectURL(formData.imagen_email)
                                                         }
                                                         alt={formData.asunto || "Imagen email"}
-                                                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                        className="w-full max-w-2xl h-auto object-scale-down rounded border-2 border-gray-200"
                                                     />
                                                     <label className="text-sm text-blue-600 underline cursor-pointer">
                                                         Reemplazar
@@ -958,7 +958,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             )}
                                         </div>
                                     </div>
-                                   <div>
+                                    <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Asunto del Email
                                     </label>
@@ -984,7 +984,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         />
                                     </div>
                                 </div>
-                                 {/* Imagen para whatsapp*/}
+                                    {/* Imagen para whatsapp*/}
                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Whatsapp</h5>
                                     <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
@@ -1036,7 +1036,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 
                                     </div>
                                     <div className="form-input">
-                                         <label>Texto personalizado para cotizar (Whatsapp):</label>
+                                            <label>Texto personalizado para cotizar (Whatsapp):</label>
                                         <textarea
                                         //type="text"
                                         name="texto_alt_whatsapp"
