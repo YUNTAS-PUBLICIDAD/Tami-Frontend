@@ -200,8 +200,7 @@ const ProductSlideshow = (): JSX.Element | null => {
         aria-label="Carrusel productos destacado - móvil"
       >
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#2A938B]/35 to-transparent z-20 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#2A938B]/35 to-transparent z-20 pointer-events-none" />
-
+        {/* se elimino el div de la derecha */}
         <div 
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
