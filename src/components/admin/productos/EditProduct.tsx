@@ -1036,7 +1036,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 
                                     </div>
                                     <div className="form-input">
-                                            <label>Texto personalizado para cotizar (Whatsapp):</label>
+                                         <label>Texto personalizado para cotizar (Whatsapp):</label>
                                         <textarea
                                         //type="text"
                                         name="texto_alt_whatsapp"
