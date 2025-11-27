@@ -36,7 +36,7 @@ const Hero = () => {
               title={hero.alt || ""}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
-              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
+              className={`absolute inset-0 w-full h-full sm:object-cover object-contain sm:object-center transition-opacity duration-1000 ${
                 isVisible
                   ? "opacity-100 z-10 pointer-events-auto"
                   : "opacity-0 z-0 pointer-events-none"
@@ -83,7 +83,7 @@ const Hero = () => {
             Decoración
           </a>
         </div>
-       
+        
       </div>
     </section>
   );
