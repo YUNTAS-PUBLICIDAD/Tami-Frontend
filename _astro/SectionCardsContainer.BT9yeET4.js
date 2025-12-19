@@ -1,4 +1,4 @@
-import{j as t}from"./jsx-runtime.D_zvdyIk.js";import{r as a}from"./index.Be8AcK8B.js";const b={src:"/_astro/negocio.Dr2qpAMP.png",width:509,height:704,format:"png"},w={src:"/_astro/decoracion.BTqnybrx.png",width:510,height:704,format:"png"},v={src:"/_astro/maquinarias.Cxlf-RRk.png",width:514,height:704,format:"png"},o=[{id:"Negocio",title:"NEGOCIO",alt:"Personas con chalecos hablando en ambiente de negocios",paragraph:`Equipos diseñados para
+import{j as t}from"./jsx-runtime.D_zvdyIk.js";import{r as a}from"./index.BmW6Ki2V.js";const b={src:"/_astro/negocio.Dr2qpAMP.png",width:509,height:704,format:"png"},w={src:"/_astro/decoracion.BTqnybrx.png",width:510,height:704,format:"png"},v={src:"/_astro/maquinarias.Cxlf-RRk.png",width:514,height:704,format:"png"},o=[{id:"Negocio",title:"NEGOCIO",alt:"Personas con chalecos hablando en ambiente de negocios",paragraph:`Equipos diseñados para
 optimizar y agilizar tus
 procesos laborales.`,image:b,imageTitle:"Personal charlando"},{id:"Decoración",title:"DECORACIÓN",alt:"Pared decorada con objetos ornamentales",paragraph:`Productos que combinan
 funcionalidad y estilo para

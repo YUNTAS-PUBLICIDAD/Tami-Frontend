@@ -1,4 +1,4 @@
-import{j as e}from"./jsx-runtime.D_zvdyIk.js";import{r}from"./index.Be8AcK8B.js";const s=[{imageDesktop:"/images/hero/zonas-comercial-urbano.webp",imageMobile:"/images/hero/zonas-comercial-urbano-750.webp",title:`Innovación y
+import{j as e}from"./jsx-runtime.D_zvdyIk.js";import{r}from"./index.BmW6Ki2V.js";const s=[{imageDesktop:"/images/hero/zonas-comercial-urbano.webp",imageMobile:"/images/hero/zonas-comercial-urbano-750.webp",title:`Innovación y
 soluciones para
 cada proyecto`,alt:"Zonas comerciales urbanas"},{imageDesktop:"/images/hero/impulso-negocios-tecnologia.webp",imageMobile:"/images/hero/impulso-negocios-tecnologia-750.webp",title:`Equipos de alta
 tecnología para
