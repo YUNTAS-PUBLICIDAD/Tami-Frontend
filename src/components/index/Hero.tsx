@@ -13,7 +13,7 @@ const Hero = () => {
 
   return (
     <section
-      className="relative w-full min-h-screen flex flex-col justify-between pb-20"
+      className="relative w-full min-h-[410px] sm:min-h-screen flex flex-col justify-between pb-10 sm:pb-20"
       aria-label="Hero carousel"
     >
       {/* Fondo del carrusel */}
@@ -36,7 +36,8 @@ const Hero = () => {
               title={hero.alt || ""}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
-              className={`absolute inset-0 w-full h-full sm:object-cover object-contain sm:object-center transition-opacity duration-1000 ${
+              className={`absolute inset-0 w-full h-[45vh] sm:h-full object-cover object-center 
+              transition-opacity duration-1000 ${
                 isVisible
                   ? "opacity-100 z-10 pointer-events-auto"
                   : "opacity-0 z-0 pointer-events-none"
@@ -60,8 +61,16 @@ const Hero = () => {
       </div>
 
       {/* Card inferior flotante — oculto en móvil */}
-      <div className="hidden sm:flex absolute bottom-0 left-0 right-0 z-40 w-full justify-center">
-        <div className="bg-[#FFF8F8] backdrop-blur-sm shadow-xl rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-16 md:py-6 mx-4 sm:mx-6 md:mx-8 text-[#00786F] font-black text-center text-xs sm:text-sm md:text-lg tracking-wide uppercase translate-y-1/2 font-inter flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-12">
+      <div className="flex absolute bottom-0 left-0 right-0 z-40 w-full justify-center">
+        <div className=" bg-[#FFF8F8] backdrop-blur-sm shadow-xl rounded-xl 
+  px-4 py-3                     /* 👈 MÁS GRANDE EN MÓVIL */
+  sm:px-6 sm:py-4 md:px-16 md:py-6 
+  mx-4 sm:mx-6 md:mx-8 
+  text-[#00786F] font-black text-center 
+  text-[12px] sm:text-sm md:text-lg  /* 👈 letra un poco mayor en móvil */
+  tracking-wide uppercase font-inter 
+  flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-12 
+  translate-y-1/2">
           <a
             href="/productos?categoria=Negocio"
             className="hover:text-teal-700 transition-colors"
