@@ -15,6 +15,13 @@ interface EditProductProps {
     onProductUpdated: () => Promise<void> | void;
 }
 
+type ImagenForm = {
+  url_imagen: string | File
+  texto_alt_SEO?: string
+  cacheKey?: number
+}
+
+
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -24,13 +31,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
 
     const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
-
+    
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
         >
     ) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    
     };
 
     const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,21 +117,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }));
     };
 
-    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const handleImagesChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      index: number
+    ) => {
+      const file = e.target.files?.[0]
+      if (!file) return
 
-        const nuevasImagenes = [...formData.imagenes];
-        nuevasImagenes[index] = {
-            ...nuevasImagenes[index],
-            url_imagen: file, // Reemplaza imagen existente
-        };
+      const nuevasImagenes = [...formData.imagenes]
 
-        setFormData((prev) => ({
-            ...prev,
-            imagenes: nuevasImagenes,
-        }));
+      nuevasImagenes[index] = {
+      ...nuevasImagenes[index],
+      url_imagen: file,
+      cacheKey: Date.now(), // ✅ SOLO para preview local
     };
+
+      setFormData((prev) => ({
+        ...prev,
+        imagenes: nuevasImagenes,
+      }))
+    }
+
 
     const handleImagesTextoSEOChange = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -367,10 +382,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         if (showModal && product) {
             // Transformar imágenes existentes
             let imagenesTransformadas =
-                product.imagenes?.map((img) => ({
-                    url_imagen: `${config.apiUrl}${img.url_imagen}`,
-                    texto_alt_SEO: img.texto_alt_SEO || "",
-                })) || [];
+              product.imagenes?.map((img) => ({
+                url_imagen: `${config.apiUrl}${img.url_imagen}`,
+                texto_alt_SEO: img.texto_alt_SEO || "",
+                // ✅ NO cacheKey para imágenes existentes
+              })) || [];
+
 
             while (imagenesTransformadas.length < 5) {
                 imagenesTransformadas.push({ url_imagen: "", texto_alt_SEO: "" });
@@ -799,15 +816,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     {img.url_imagen ? (
                                                         <div className="flex items-center gap-4">
                                                             <img
-                                                                src={
-                                                                    typeof img.url_imagen === "string"
-                                                                        ? img.url_imagen.startsWith("http")
-                                                                            ? img.url_imagen
-                                                                            : `https://apitami.tamimaquinarias.com${img.url_imagen}`
-                                                                        : URL.createObjectURL(img.url_imagen)
-                                                                }
-                                                                alt={img.texto_alt_SEO || `Imagen ${index + 1}`}
-                                                                className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                              src={
+                                                                typeof img.url_imagen === "string"
+                                                                  ? img.url_imagen
+                                                                  : URL.createObjectURL(img.url_imagen)
+                                                              }
+                                                              loading="lazy"
+                                                              decoding="async" 
+                                                              className="w-16 h-16 object-cover rounded border-2 border-gray-200"
                                                             />
 
                                                             {/* Botón para reemplazar imagen */}
