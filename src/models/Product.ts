@@ -63,6 +63,7 @@ export interface ImagenForm {
   url_imagen: File | string | null;
   texto_alt_SEO: string;
   imageTitle?: string;
+  cacheKey?: number;
 }
 
 export default interface Producto {
