@@ -42,7 +42,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
         const phoneNumber = "51978883199"; 
         const productName = producto.titulo; 
         
-        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'galeria');
+        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
         
         const textoFinal = whatsappConfig?.whatsapp_mensaje 
             ? whatsappConfig.whatsapp_mensaje 

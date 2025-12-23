@@ -15,6 +15,13 @@ interface EditProductProps {
     onProductUpdated: () => Promise<void> | void;
 }
 
+type ImagenForm = {
+  url_imagen: string | File
+  texto_alt_SEO?: string
+  cacheKey?: number
+}
+
+
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -24,13 +31,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
 
     const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
-
+    
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
         >
     ) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    
     };
 
     const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,21 +117,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }));
     };
 
-    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const handleImagesChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      index: number
+    ) => {
+      const file = e.target.files?.[0]
+      if (!file) return
 
-        const nuevasImagenes = [...formData.imagenes];
-        nuevasImagenes[index] = {
-            ...nuevasImagenes[index],
-            url_imagen: file, // Reemplaza imagen existente
-        };
+      const nuevasImagenes = [...formData.imagenes]
 
-        setFormData((prev) => ({
-            ...prev,
-            imagenes: nuevasImagenes,
-        }));
+      nuevasImagenes[index] = {
+      ...nuevasImagenes[index],
+      url_imagen: file,
+      cacheKey: Date.now(), // ✅ SOLO para preview local
     };
+
+      setFormData((prev) => ({
+        ...prev,
+        imagenes: nuevasImagenes,
+      }))
+    }
+
 
     const handleImagesTextoSEOChange = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -367,10 +382,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         if (showModal && product) {
             // Transformar imágenes existentes
             let imagenesTransformadas =
-                product.imagenes?.map((img) => ({
-                    url_imagen: `${config.apiUrl}${img.url_imagen}`,
-                    texto_alt_SEO: img.texto_alt_SEO || "",
-                })) || [];
+              product.imagenes?.map((img) => ({
+                url_imagen: `${config.apiUrl}${img.url_imagen}`,
+                texto_alt_SEO: img.texto_alt_SEO || "",
+                // ✅ NO cacheKey para imágenes existentes
+              })) || [];
+
 
             while (imagenesTransformadas.length < 5) {
                 imagenesTransformadas.push({ url_imagen: "", texto_alt_SEO: "" });
@@ -448,16 +465,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                 Editar Producto
                             </h4>
                         </div>
+                        {/* Formulario con contenedor relativo para evitar espacios en blanco entre páginas */}
                         <form onSubmit={handleSubmit} className="relative">
                             {/* Primera página del formulario */}
+                            {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
+                            
                             <div
-                                className={`absolute w-full transition-all duration-500 ${isExiting && formPage === 1
-                                    ? "-translate-x-full opacity-0 pointer-events-none"
-                                    : ""
-                                    } ${!isExiting && formPage === 1
-                                        ? "translate-x-0 opacity-100 pointer-events-auto"
-                                        : "opacity-0 pointer-events-none"
-                                    }`}
+                                className={`w-full transition-all duration-500 ${
+                                    formPage !== 1 ? "hidden" : ""
+                                } ${isExiting && formPage === 1
+                                    ? "opacity-0"
+                                    : "opacity-100"
+                                }`}
                             >
                                 <div className="space-y-4">
                                     <div className="form-input">
@@ -767,14 +786,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                             </div>
 
                             {/* Segunda página del formulario */}
+                            {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
+                            
                             <div
-                                className={`absolute w-full transition-all duration-500 ${isExiting && formPage === 2
-                                    ? "-translate-x-full opacity-0 pointer-events-none"
-                                    : ""
-                                    } ${!isExiting && formPage === 2
-                                        ? "translate-x-0 opacity-100 pointer-events-auto"
-                                        : "opacity-0 pointer-events-none"
-                                    }`}
+                                className={`w-full transition-all duration-500 ${
+                                    formPage !== 2 ? "hidden" : ""
+                                } ${isExiting && formPage === 2
+                                    ? "opacity-0"
+                                    : "opacity-100"
+                                }`}
                             >
                                 <div className="card">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
@@ -796,15 +816,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     {img.url_imagen ? (
                                                         <div className="flex items-center gap-4">
                                                             <img
-                                                                src={
-                                                                    typeof img.url_imagen === "string"
-                                                                        ? img.url_imagen.startsWith("http")
-                                                                            ? img.url_imagen
-                                                                            : `https://apitami.tamimaquinarias.com${img.url_imagen}`
-                                                                        : URL.createObjectURL(img.url_imagen)
-                                                                }
-                                                                alt={img.texto_alt_SEO || `Imagen ${index + 1}`}
-                                                                className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                              src={
+                                                                typeof img.url_imagen === "string"
+                                                                  ? img.url_imagen
+                                                                  : URL.createObjectURL(img.url_imagen)
+                                                              }
+                                                              loading="lazy"
+                                                              decoding="async" 
+                                                              className="w-16 h-16 object-cover rounded border-2 border-gray-200"
                                                             />
 
                                                             {/* Botón para reemplazar imagen */}
@@ -915,7 +934,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         <label>Imagen Email:</label>
                                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
                                             {formData.imagen_email ? (
-                                                <div className="flex items-center gap-4">
+                                                <div className="flex flex-col items-center gap-2"> {/* se agrego flex*/}
                                                     <img
                                                         src={
                                                             typeof formData.imagen_email === "string"
@@ -923,7 +942,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 : URL.createObjectURL(formData.imagen_email)
                                                         }
                                                         alt={formData.asunto || "Imagen email"}
-                                                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                        className="w-full max-w-2xl h-auto object-scale-down rounded border-2 border-gray-200"
                                                     />
                                                     <label className="text-sm text-blue-600 underline cursor-pointer">
                                                         Reemplazar
@@ -955,7 +974,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             )}
                                         </div>
                                     </div>
-                                   <div>
+                                    <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Asunto del Email
                                     </label>
@@ -981,7 +1000,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         />
                                     </div>
                                 </div>
-                                 {/* Imagen para whatsapp*/}
+                                    {/* Imagen para whatsapp*/}
                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Whatsapp</h5>
                                     <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
@@ -1071,14 +1090,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                             </div>
 
                             {/* Tercera página del form */}
+                            {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
+                            
                             <div
-                                className={`absolute w-full transition-all duration-500 ${isExiting && formPage === 3
-                                    ? "-translate-x-full opacity-0 pointer-events-none"
-                                    : ""
-                                    } ${!isExiting && formPage === 3
-                                        ? "translate-x-0 opacity-100 pointer-events-auto"
-                                        : "opacity-0 pointer-events-none"
-                                    }`}
+                                className={`w-full transition-all duration-500 ${
+                                    formPage !== 3 ? "hidden" : ""
+                                } ${isExiting && formPage === 3
+                                    ? "opacity-0"
+                                    : "opacity-100"
+                                }`}
                             >
                                 <div className="form-input mb-6">
                                     <label>Productos Relacionados:</label>
