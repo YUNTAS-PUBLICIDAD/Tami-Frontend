@@ -21,18 +21,6 @@ interface ImagenFormState {
   isNew: boolean; 
   isDeleted?: boolean; 
 }
-type ImagenForms= {
-  url_imagen: string | File
-  texto_alt_SEO?: string
-  cacheKey?: number
-}
-
-
-type ImagenForm = {
-  url_imagen: string | File
-  texto_alt_SEO?: string
-  cacheKey?: number
-}
 
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
