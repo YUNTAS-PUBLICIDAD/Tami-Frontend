@@ -28,6 +28,13 @@ type ImagenForms= {
 }
 
 
+type ImagenForm = {
+  url_imagen: string | File
+  texto_alt_SEO?: string
+  cacheKey?: number
+}
+
+
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -123,9 +130,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }));
     };
 
-    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const handleImagesChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      index: number
+    ) => {
+      const file = e.target.files?.[0]
+      if (!file) return
+
 
         const nuevasImagenes = [...formData.imagenes];
         nuevasImagenes[index] = {
