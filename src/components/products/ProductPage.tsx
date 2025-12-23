@@ -42,8 +42,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
         const phoneNumber = "51978883199"; 
         const productName = producto.titulo; 
         
-
-        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'galeria');
+        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
         
         const textoFinal = whatsappConfig?.whatsapp_mensaje 
             ? whatsappConfig.whatsapp_mensaje 
@@ -132,7 +131,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 gap-4 w-full max-w-xl">
-                                    {producto.imagenes?.slice(0, 4).map((image) => (
+                                    {producto.imagenes?.slice(1, 5).map((image) => (
                                         <div
                                             key={image.url_imagen}
                                             className={`aspect-square  bg-white rounded-xl overflow-hidden shadow-xl cursor-pointer flex items-center justify-center p-2 border-2 ${image.url_imagen === productViewer ? 'border-blue-500' : 'border-gray-200'} transition-all duration-300`}
