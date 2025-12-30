@@ -7,7 +7,7 @@ interface ImagenAdicional {
   parrafo: string;
   url?: string;
 }
-
+ 
 interface BlogPOST {
   titulo: string;
   link: string;
