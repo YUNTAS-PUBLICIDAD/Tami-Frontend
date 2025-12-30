@@ -36,7 +36,7 @@ const LENGTHS = {
   titulo: 120,
   parrafo: 100, // subtitulo1
   descripcion: 255, // subtitulo2
-  videoTitulo: 40,
+  videoTitulo: 125,
   videoUrl: 255,
   metaTitulo: 60, // recomendado (no bloqueante)
   metaDescripcion: 160, // recomendado (no bloqueante)
