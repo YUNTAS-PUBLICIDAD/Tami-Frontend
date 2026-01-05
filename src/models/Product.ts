@@ -39,7 +39,7 @@ export interface ProductFormularioPOST {
   texto_alt_popup?: string;
   imagen_email?: File | string | null;
   asunto: string; 
-  imagen_whatsapp?: File | null;
+  imagen_whatsapp?: File |string| null;
   texto_alt_whatsapp?: string;
   video_url?: string;
   etiqueta: {
@@ -51,18 +51,23 @@ export interface ProductFormularioPOST {
 
 // Usado en la base de datos o en el GET
 export interface ImagenBack {
+  id: number;
   url_imagen: string;
   texto_alt_SEO: string;
   imageTitle?: string;
   asunto?: string; 
   tipo?: string; // 'galeria', 'popup', 'email'
+  whatsapp_mensaje?: string;
 }
 
 // Usado para el formulario de creación/edición
 export interface ImagenForm {
+  id?: number;
   url_imagen: File | string | null;
+  original_path?: string;
   texto_alt_SEO: string;
   imageTitle?: string;
+  cacheKey?: number;
 }
 
 export default interface Producto {

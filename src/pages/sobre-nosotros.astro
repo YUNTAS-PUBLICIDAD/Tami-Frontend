@@ -9,8 +9,10 @@ import valoresArray from "@data/valores.data";
 import Card from "../components/about/Card.astro";
 import bg_card4 from "@images/about/nosotrostami.webp";
 import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
-
 ---
+
+<!-- Cargar CSS de Swiper temprano -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <Layout
   title="¿Quiénes Somos? | Tami Maquinarias para Emprendedores"
@@ -19,81 +21,58 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
 >
   {/* 🔹 Banner principal */}
   <section
-    class="relative bg-cover bg-center h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
+    class="relative bg-cover bg-center h-[30vh] sm:h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
     style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${aboutHero.src})`}
   >
     <div
-      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6 bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6 
+  pt-10 sm:pt-0
+  bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
     >
       <h2
-        class="text-6xl sm:text-5xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 sm:mb-4 max-w-5xl mb-8 leading-relaxed drop-shadow-lg"
+        class="text-3xl sm:text-5xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 mb-4 sm:mb-4 max-w-5xl leading-snug drop-shadow-lg"
       >
         SOBRE NOSOTROS
       </h2>
 
-      <p
-        class="text-base sm:text-lg md:text-xl font-medium max-w-5xl drop-shadow-md leading-relaxed"
-      >
+
+      <p class="text-sm sm:text-lg md:text-xl font-medium max-w-4xl drop-shadow-md leading-snug px-4 sm:px-0">
+
         Buscamos ayudar en tu negocio, mediante la comercialización de productos
         para emprendimiento, trabajo y decoración, cumpliendo con los estándares
         de calidad.
       </p>
     </div>
   </section>
+
   <style>
     @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
-    .animate-fadeInUp {
-      animation: fadeInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1);
-    }
+    .animate-fadeInUp { animation: fadeInUp 1.2s cubic-bezier(0.23,1,0.32,1); }
   </style>
 
   {/* 🔹 Sección Identidad y CTA */}
   <section class="w-full px-0">
-    <div
-
-      class="relative overflow-hidden flex items-end md:items-center justify-center md:justify-start md:h-[1000px]"
-    >
-      <!-- 🔹 Fondo versión MOBILE -->
-      <img
-        src={bg_card4_mobile.src}
-        alt="Fondo Tami"
-        class="block md:hidden w-full h-auto object-contain object-center"
-      />
-
-      <!-- 🔹 Fondo versión DESKTOP -->
-      <div
-        class="hidden md:block absolute inset-0 bg-no-repeat bg-cover bg-center"
-        style={`background-image: url('${bg_card4.src}');`}
-      ></div>
+    <div class="relative overflow-hidden flex items-end md:items-center justify-center md:justify-start md:h-[1000px]">
+      <!-- Fondo mobile -->
+      <img src={bg_card4_mobile.src} alt="Fondo Tami" class="block md:hidden w-full h-auto object-contain object-center" />
+      <!-- Fondo desktop -->
+      <div class="hidden md:block absolute inset-0 bg-no-repeat bg-cover bg-center" style={`background-image: url('${bg_card4.src}');`}></div>
 
       <!-- Oscurecido -->
       <div class="absolute inset-0 bg-black/45 z-0"></div>
 
       <!-- Contenido -->
       <div
-        class="absolute z-10 text-white text-center md:text-left w-full md:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 md:ml-8 lg:ml-16 
-        pb-5 md:pb-0 md:py-8 flex flex-col justify-end md:justify-center"
+        class="absolute z-10 text-white text-center md:text-left w-full md:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 md:ml-8 lg:ml-16 pb-5 md:pb-0 md:py-8 flex flex-col justify-end md:justify-center"
       >
-        <h2
-          class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-8 leading-tight drop-shadow-md uppercase"
-
-        >
+        <h2 class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-8 leading-tight drop-shadow-md uppercase">
           ¿POR QUÉ ELEGIR TAMI?
         </h2>
 
-        <p
-
-          class="text-sm sm:text-base md:text-lg font-light mb-5 md:mb-10 opacity-95 leading-relaxed text-center md:text-justify"
-        >
+        <p class="text-sm sm:text-base md:text-lg font-light mb-5 md:mb-10 opacity-95 leading-relaxed text-center md:text-justify">
           En <span class="font-bold">Tami</span> nos especializamos en soluciones
           de maquinaria y tecnología para empresas y emprendedores que buscan
           eficiencia, innovación y confianza. Nuestra misión es acompañar a
@@ -102,11 +81,7 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
         </p>
 
         <div class="flex justify-center md:justify-start mb-3 md:mb-0">
-          <a
-            href="/productos"
-            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-md"
-
-          >
+          <a href="/productos" class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-md">
             CONTÁCTANOS
           </a>
         </div>
@@ -115,98 +90,59 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
   </section>
 
   {/* 🔹 Franja con mensaje "Sobre nuestros propósitos y metas" */}
-  <div
-    class="bg-cover bg-center h-auto py-16 flex flex-col justify-center items-center"
-  >
-    <h2 class="text-4xl font-extrabold mb-12 text-center text-teal-600">
-      Sobre nuestros propósitos y metas
-    </h2>
+  <div class="bg-cover bg-center h-auto py-16 flex flex-col justify-center items-center">
+    <h2 class="text-4xl font-extrabold mb-12 text-center text-teal-600">Sobre nuestros propósitos y metas</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl px-6 w-full">
-      <div
-        class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80 flex flex-col justify-center"
-      >
-        <h3 class="text-3xl font-bold text-teal-600 mb-6 text-center">
-          MISIÓN
-        </h3>
-        <p class="text-gray-700 text-center text-lg leading-relaxed">
-          Entregar soluciones a emprendedores peruanos que compartan nuestro
-          deseo de crecer.
-        </p>
+      <div class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80 flex flex-col justify-center">
+        <h3 class="text-3xl font-bold text-teal-600 mb-6 text-center">MISIÓN</h3>
+        <p class="text-gray-700 text-center text-lg leading-relaxed">Entregar soluciones a emprendedores peruanos que compartan nuestro deseo de crecer.</p>
       </div>
-      <div
-        class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80 flex flex-col justify-center"
-      >
-        <h3 class="text-3xl font-bold text-teal-600 mb-6 text-center">
-          VISIÓN
-        </h3>
-        <p class="text-gray-700 text-center text-lg leading-relaxed">
-          Aspiramos a ser la solución confiable más valorada por nuestros
-          clientes.
-        </p>
+      <div class="bg-white rounded-3xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300 min-h-80 flex flex-col justify-center">
+        <h3 class="text-3xl font-bold text-teal-600 mb-6 text-center">VISIÓN</h3>
+        <p class="text-gray-700 text-center text-lg leading-relaxed">Aspiramos a ser la solución confiable más valorada por nuestros clientes.</p>
       </div>
     </div>
   </div>
 
-  {/* 🔹 Sección de Valores - Modificada para ser un carrusel en móvil */}
+  {/* 🔹 Sección de Valores - Carrusel en móvil */}
   <section class="bg-white py-6 lg:py-12 px-4 lg:px-8 mb-12">
-    <h2
-      class="text-center text-teal-600 text-2xl sm:text-4xl md:text-5xl font-extrabold mb-16"
-    >
-      VALORES
-    </h2>
+    <h2 class="text-center text-teal-600 text-2xl sm:text-4xl md:text-5xl font-extrabold mb-16">VALORES</h2>
 
-    {/* Grid para desktop */}
-    <div
-      class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-8xl mx-auto"
-    >
+    {/* Grid desktop */}
+    <div class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-8xl mx-auto">
       {
         valoresArray.map((valor: any) => (
-          <div class="flex flex-col items-center w-full">
+          <div class="flex flex-col items-center w-full" key={valor.title}>
             <Card
               image={valor.image}
               title={valor.title}
               imageTitle={valor.imageTitle}
               paragraph={valor.paragraph}
             />
-
-            {/* Texto adicional solo en móviles */}
-            <div class="block md:hidden w-full px-4 mt-3">
-              <p class="text-sm text-teal-700 font-medium text-center leading-relaxed">
-                {valor.paragraph}
-              </p>
-              <hr class="border-t border-teal-800 my-3 w-3/4 mx-auto" />
-            </div>
           </div>
         ))
       }
     </div>
 
-    {/* Carrusel para móvil */}
+    {/* Carrusel móvil */}
     <div class="md:hidden valores-carousel-container relative">
-      <div class="swiper valoresSwiper">
+      <div class="swiper valoresSwiper w-full">
         <div class="swiper-wrapper">
           {
             valoresArray.map((valor: any) => (
-              <div class="swiper-slide">
-                <div class="flex flex-col items-center w-full px-4">
-                  <Card
-                    image={valor.image}
-                    title={valor.title}
-                    imageTitle={valor.imageTitle}
-                    paragraph={valor.paragraph}
-                  />
-                  <div class="w-full px-4 mt-3">
-                    <p class="text-sm text-teal-700 font-medium text-center leading-relaxed">
-                      {valor.paragraph}
-                    </p>
-                    <hr class="border-t border-teal-800 my-3 w-3/4 mx-auto" />
-                  </div>
-                </div>
+              <div class="swiper-slide flex justify-center px-4" key={valor.title}>
+                <Card
+                  image={valor.image}
+                  title={valor.title}
+                  imageTitle={valor.imageTitle}
+                  paragraph={valor.paragraph}
+                />
               </div>
             ))
           }
         </div>
+
         <!-- Paginación -->
         <div class="swiper-pagination valores-swiper-pagination"></div>
       </div>
@@ -215,84 +151,93 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
 
   <!-- Estilos para el carrusel -->
   <style>
-    .valores-carousel-container {
-      padding: 0 10px;
-    }
-    
-    .valoresSwiper {
-      width: 100%;
-      height: 100%;
-      padding-bottom: 40px;
-    }
-    
-    .swiper-slide {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .valores-swiper-pagination {
-      bottom: 0;
-    }
-    
-    .valores-swiper-pagination .swiper-pagination-bullet {
-      background: #0C998A;
-      opacity: 0.5;
-      width: 10px;
-      height: 10px;
-    }
-    
-    .valores-swiper-pagination .swiper-pagination-bullet-active {
-      opacity: 1;
-    }
+    .valores-carousel-container { padding: 0 10px; }
+    .valoresSwiper { width: 100%; height: 100%; padding-bottom: 40px; }
+    .swiper-slide { display: flex; justify-content: center; align-items: center; }
+    .valores-swiper-pagination { bottom: 0; position: relative; margin-top: 8px; }
+    .valores-swiper-pagination .swiper-pagination-bullet { background: #0C998A; opacity: 0.5; width: 10px; height: 10px; }
+    .valores-swiper-pagination .swiper-pagination-bullet-active { opacity: 1; }
   </style>
 
-  <!-- Script para inicializar el carrusel -->
-  <script>
-    // Cargar Swiper solo cuando sea necesario (en móvil)
-    if (window.innerWidth < 768) {
-      // Cargar dinámicamente Swiper
-      const swiperScript = document.createElement('script');
-      swiperScript.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
-      swiperScript.onload = function() {
-        // Inicializar el carrusel de valores
-        const valoresSwiper = new Swiper('.valoresSwiper', {
-          loop: false,
-          slidesPerView: 1,
-          spaceBetween: 20,
-          centeredSlides: true,
-          pagination: {
-            el: '.valores-swiper-pagination',
-            clickable: true,
-          },
-          autoplay: {
-            delay: 2000, // 2 segundos
-            disableOnInteraction: false,
-          },
-          breakpoints: {
-            640: {
-              slidesPerView: 1.2,
-            }
-          }
-        });
-        
-        // Lógica simple para reiniciar al llegar al final
-        valoresSwiper.on('slideChange', function() {
-          if (this.isEnd) {
-            setTimeout(() => {
-              this.slideTo(0, 500);
-            }, 2000);
-          }
-        });
-      };
-      document.head.appendChild(swiperScript);
-      
-      // Cargar también los estilos de Swiper
-      const swiperStyles = document.createElement('link');
-      swiperStyles.rel = 'stylesheet';
-      swiperStyles.href = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
-      document.head.appendChild(swiperStyles);
-    }
-  </script>
+  <!-- Swiper JS + Inicialización robusta (espera a que Swiper esté disponible) -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
 
+  <script client:load>
+    (function () {
+      // Inicializador que espera hasta que window.Swiper exista
+      function waitForSwiperAndInit(maxAttempts = 50, interval = 100) {
+        let attempts = 0;
+        const timer = setInterval(() => {
+          attempts++;
+          if (window.Swiper) {
+            clearInterval(timer);
+            initSwiper();
+            return;
+          }
+          if (attempts >= maxAttempts) {
+            clearInterval(timer);
+            console.warn("Swiper no cargó a tiempo.");
+          }
+        }, interval);
+      }
+
+      function initSwiper() {
+        // Solo inicializar para móviles (si lo deseas). Si quieres siempre, quita el if.
+        if (window.innerWidth >= 768) return;
+
+        // Evitar múltiples inicializaciones
+        if (window._valoresSwiperInitialized) return;
+        window._valoresSwiperInitialized = true;
+
+        try {
+          const swiper = new Swiper(".valoresSwiper", {
+            loop: false,
+            slidesPerView: 1,
+            spaceBetween: 20,
+            centeredSlides: true,
+            pagination: {
+              el: ".valores-swiper-pagination",
+              clickable: true,
+            },
+            autoplay: {
+              delay: 2000,
+              disableOnInteraction: false,
+            },
+            breakpoints: {
+              640: { slidesPerView: 1.2 }
+            }
+          });
+
+          swiper.on("slideChange", function () {
+            if (this.isEnd) {
+              setTimeout(() => {
+                this.slideTo(0, 500);
+              }, 2000);
+            }
+          });
+        } catch (err) {
+          console.error("Error inicializando Swiper:", err);
+        }
+      }
+
+      // Ejecutar
+      if (window.Swiper) {
+        initSwiper();
+      } else {
+        waitForSwiperAndInit();
+      }
+
+      // Re-inicializar si el usuario cambia tamaño y pasa a vista móvil (útil en inspector)
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          // reinicializar solo si ahora es móvil y no estaba inicializado
+          if (window.innerWidth < 768 && !window._valoresSwiperInitialized) {
+            if (window.Swiper) initSwiper();
+          }
+        }, 200);
+      });
+    })();
+  </script>
 </Layout>

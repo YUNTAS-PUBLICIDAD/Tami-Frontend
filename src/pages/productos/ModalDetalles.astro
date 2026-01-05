@@ -21,13 +21,15 @@ const { link = "" } = Astro.props as ModalProps;
     <div id="background-modal" class="absolute inset-0 z-20"></div>
 
     <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
-    <div class="absolute inset-0 sm:flex w-full sm:w-[50%] justify-center items-center bg-gray-100 overflow-hidden">
+
+    <div class="img-container-mobile sm:absolute sm:inset-0 sm:flex w-full sm:w-[50%] justify-center items-center overflow-hidden img-white-zone">
+
       <img
           id="modal-product-img"
           src={DEFAULT_IMAGE}
           alt="Imagen del producto"
           title="Imagen del producto"
-          class="h-full w-full object-cover"
+          class="h-full w-full object-contain "
           onerror="this.onerror=null; this.src='/images/popup/default.webp'"
         />
     </div>
@@ -44,14 +46,16 @@ const { link = "" } = Astro.props as ModalProps;
         <button
           id="close-modal-cotizacion"
           aria-label="Cerrar modal"
-          class="absolute top-4 right-5 text-md text-white hover:text-gray-300 cursor-pointer"
+          class="absolute top-4 text-black right-5 text-md  hover:text-red-300 cursor-pointer"
         >
           X
         </button>
 
         <h2
           id="modal-title"
-          class="text-2xl sm:text-3xl font-semibold text-center sm:mt-3 mb-8 select-none"
+
+          class="text-2xl text-white sm:text-3xl font-semibold text-center sm:mt-3 mb-8 select-none"
+
         >
         </h2>
 
@@ -60,7 +64,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="text"
             name="nombre"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            class="p-2 rounded-lg bg-white  text-black  border-2  mb-1 "
             placeholder="Nombre y Apellidos"
             required
           />
@@ -69,7 +73,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="email"
             name="correo"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            class="p-2 rounded-lg bg-white text-black  border-2 mb-1"
             placeholder="Correo@gmail.com"
             required
           />
@@ -78,7 +82,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="tel"
             name="telefono"
-            class="p-2 rounded-lg bg-white text-black outline-none mb-1"
+            class="p-2 rounded-lg bg-white text-black border-2 mb-1"
             placeholder="Teléfono: 905 876 524"
             required
           />
@@ -120,7 +124,7 @@ const { link = "" } = Astro.props as ModalProps;
       gradient:
         "custom-gradient-maquinaria",
       title:
-        "DESCARGA TU <span class='scrollmodal-title'>GUÍA TÉCNICA GRATIS</span>",
+        "DESCARGA TU <span class='scrollmodal-title ' style='color:black '>GUÍA TÉCNICA GRATIS</span>",
       btn: "bg-[#064133] hover:bg-[#096653] cursor-pointer",
       buttonText: "¡SÍ, QUIERO CRECER!",
     },
@@ -394,7 +398,7 @@ const { link = "" } = Astro.props as ModalProps;
       attributeFilter: ["data-seccion", "data-product-link"],
     });
   }
-
+  
   // Inicializar
   document.addEventListener("DOMContentLoaded", async function () {
     localStorage.removeItem("asesoriaModalLastClosedDetalle");
@@ -404,3 +408,87 @@ const { link = "" } = Astro.props as ModalProps;
     configurarBotonesCotizacion();
   });
 </script>
+ <style>
+    .custom-gradient-negocio {
+      background: linear-gradient(
+        270deg,
+        rgba(0, 54, 75, 0.95) 0%, 
+        rgba(10, 94, 127, 0.9) 40%,
+        rgba(18, 125, 167, 0.46) 70%,
+        rgba(35, 173, 227, 0.37) 100%
+      );
+    }
+    .custom-gradient-maquinaria {
+      background: linear-gradient(
+        90deg,
+        rgba(4, 179, 138, 0.28) 0%,     
+        rgba(2, 131, 101, 0.95) 55%,     
+        rgba(0, 83, 64, 1) 100%          
+      );
+    }
+    .custom-gradient-decoracion {
+      background: linear-gradient(
+        90deg,
+        rgba(40, 82, 222, 0.35) 0%,     
+        rgba(42, 45, 193, 0.61) 35%,    
+        rgba(42, 25, 234, 0.95) 75%,  
+        rgba(17, 27, 215, 1) 100%      
+      );
+    }
+
+
+    #background-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 1; 
+      pointer-events: none;
+    }
+
+    #modal-product-img {
+      position: relative;
+      z-index: 2;
+    }
+    /* --- Ajustes SOLO para móvil, sin tocar tus estilos actuales --- */
+@media (max-width: 640px) {
+
+  /* Imagen más pequeña + margen arriba */
+  #modal-product-img {
+    max-height: 180px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    margin: 20px auto 0 auto !important; /* 👈 margen arriba */
+    display: block !important;
+  }
+
+  /* El modal no debe ocupar toda la altura */
+  .modal-content {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    border-radius: 12px !important;
+  }
+
+  /* Botón de cerrar más grande y visible */
+    .modal-close-btn {
+      font-size: 32px !important;
+      color: #ffffff !important;
+      z-index: 9999 !important;
+      top: 12px !important;
+      right: 12px !important;
+    }
+  }
+    .img-white-zone {
+      position: relative;
+      background: white; /* 👈 blanco real */
+      z-index: 25;       /* encima del gradiente */
+    }
+
+    /* Desktop: solo la mitad izquierda blanca */
+    @media (min-width: 640px) {
+      .img-white-zone {
+        width: 50%;
+      }
+    }
+
+
+  </style>
+

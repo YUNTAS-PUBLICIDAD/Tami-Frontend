@@ -7,6 +7,11 @@ interface ImagenAdicional {
   parrafo: string;
   url?: string;
 }
+ 
+
+//prueba
+
+
 
 interface BlogPOST {
   titulo: string;
@@ -36,7 +41,7 @@ const LENGTHS = {
   titulo: 120,
   parrafo: 100, // subtitulo1
   descripcion: 255, // subtitulo2
-  videoTitulo: 40,
+  videoTitulo: 125,
   videoUrl: 255,
   metaTitulo: 60, // recomendado (no bloqueante)
   metaDescripcion: 160, // recomendado (no bloqueante)
@@ -347,7 +352,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const after = parrafoActual.substring(end);
 
     const productUrl = `/productos/detalle?link=${productoSeleccionado.link}`;
-    const linkedProductText = `<a href="${productUrl}" style="text-decoration: underline;" title="${productoSeleccionado.link}">${selectedText}</a>`;
+    const linkedProductText = `<a href="${productUrl}" style="font-weight: bold;" title="${productoSeleccionado.link}">${selectedText}</a>`;
     const newValue = before + linkedProductText + after;
 
     const nuevosParrafos = [...formData.imagenes];
@@ -383,7 +388,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const before = parrafoActual.substring(0, start);
     const after = parrafoActual.substring(end);
 
-    const linkedText = `<a href="${link.trim()}" style="text-decoration: underline;" title="${selectedText}">${selectedText}</a>`;
+    const linkedText = `<a href="${link.trim()}" style="font-weight: bold;" title="${selectedText}">${selectedText}</a>`;
     const newValue = before + linkedText + after;
 
     const nuevosParrafos = [...formData.imagenes];
