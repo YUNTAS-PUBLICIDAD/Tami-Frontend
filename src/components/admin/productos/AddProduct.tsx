@@ -722,8 +722,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
                       <li>Al menos <strong>1 imagen es obligatoria</strong>.</li>
                       <li>Cada imagen debe tener un <strong>Texto SEO</strong> descriptivo (importante para buscadores).</li>
-                      <li>Las imágenes deben ser en formato <code>JPG</code> o <code>PNG</code>.</li>
-                      <li>Si es un producto de 4 imágenes no subir nada en los campos de la 5ta imagen</li>
+                      <li>Las imágenes deben ser en formato <code>WEBP.</code></li>
+                      <li>Se recomienda un tamaño máximo de <strong>2MB</strong> por imagen para optimizar la carga.</li>
                     </ul>
                   </div>
                   <div className="space-y-4">

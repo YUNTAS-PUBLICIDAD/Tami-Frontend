@@ -812,6 +812,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             <li>Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
                                             <li>Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
                                             <li>Si es que no quieres cambiar nada conforme a las imágenes, ignorar esta página. </li>
+                                            <li>Regla de subida de imagenes: peso menor de 2MB y en formato WEBP. </li>
                                         </ul>
                                     </div>
                                     <div className="space-y-4">
