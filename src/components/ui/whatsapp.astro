@@ -1,7 +1,38 @@
 ---
 import { Image } from "astro:assets";
 import whatsappIcon from "../../assets/icons/icon_whatsapp.webp";
+
+const pathname = Astro.url.pathname;
+if (pathname.startsWith("/admin")) return null;
+
+const phoneNumber = "51978883199";
+const message =
+  "Hola Yuntas, quisiera más información sobre sus servicios.";
+
+const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+  message
+)}`;
 ---
-<a href="https://api.whatsapp.com/send?phone=+51978883199" class="fixed w-15 h-15 bottom-10 right-10 z-100 transition duration-200 ease-in-out transform hover:scale-120" target="_blank" rel="noopener noreferrer" >
-    <Image class="w-full h-full" src={whatsappIcon} alt="Connect with me" height={48} width={48} loading={'lazy'}/>
+
+<a
+  href={whatsappUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Chat en WhatsApp"
+  class="fixed bottom-8 right-8 z-50"
+>
+  <span class="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+
+  <div
+    class="relative flex items-center justify-center w-20 h-20 bg-[#25D366] rounded-full shadow-2xl hover:bg-[#20bd5a] transition-colors duration-300"
+  >
+    <Image
+      src={whatsappIcon}
+      alt="Chat en WhatsApp"
+      width={50}
+      height={50}
+      loading="lazy"
+      class="w-full h-full"
+    />
+  </div>
 </a>
