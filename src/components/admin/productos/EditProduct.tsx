@@ -8,12 +8,27 @@ import type Product from "src/models/Product";
 import { IoMdCloseCircle } from "react-icons/io";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
-
+import type { ImagenForm } from "../../../models/Product";
 
 interface EditProductProps {
     product: Product;
     onProductUpdated: () => Promise<void> | void;
 }
+interface ImagenFormState {
+  id?: number; 
+  url_imagen: string | File; 
+  texto_alt_SEO: string;
+  isNew: boolean; 
+  isDeleted?: boolean; 
+
+}
+type ImagenForms= {
+  url_imagen: string | File
+  texto_alt_SEO?: string
+  cacheKey?: number
+
+}
+
 
 type ImagenForm = {
   url_imagen: string | File
@@ -117,43 +132,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }));
     };
 
-    const handleImagesChange = (
-      e: React.ChangeEvent<HTMLInputElement>,
-      index: number
-    ) => {
-      const file = e.target.files?.[0]
-      if (!file) return
+    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const nuevasImagenes = [...formData.imagenes];
+        nuevasImagenes[index] = {
+        ...nuevasImagenes[index],
+        url_imagen: file,
+        // texto_alt_SEO
+        };
 
-      const nuevasImagenes = [...formData.imagenes]
 
-      nuevasImagenes[index] = {
-      ...nuevasImagenes[index],
-      url_imagen: file,
-      cacheKey: Date.now(), // ✅ SOLO para preview local
+        setFormData((prev) => ({ ...prev, imagenes: nuevasImagenes }));
     };
 
-      setFormData((prev) => ({
-        ...prev,
-        imagenes: nuevasImagenes,
-      }))
-    }
 
-
-    const handleImagesTextoSEOChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        index: number
-    ) => {
-        if (e.target.value) {
-            const nuevoArray = [...formData.imagenes];
-
-            // Agregar el archivo y su parrafo
-            nuevoArray[index] = {
-                ...nuevoArray[index],
-                texto_alt_SEO: e.target.value,
-            };
-
-            setFormData({ ...formData, imagenes: nuevoArray });
-        }
+    const handleImagesTextoSEOChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const nuevasImagenes = [...formData.imagenes];
+        nuevasImagenes[index] = {
+        ...nuevasImagenes[index],
+        texto_alt_SEO: e.target.value,
+        };
+        setFormData((prev) => ({ ...prev, imagenes: nuevasImagenes }));
     };
 
     // Referencia al contenedor del formulario
@@ -164,34 +164,34 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     }
 
     function closeModal() {
-        setFormPage(1); // Resetea el número de página
+        setFormPage(1);
         setShowModal(false);
         setFormData(defaultValuesProduct);
     }
 
     function goNextForm() {
-        setIsExiting(true); // Inicia la animación de salida
+        setIsExiting(true); 
         setTimeout(() => {
-            setFormPage((prevPage) => prevPage + 1); // Incrementa el número de página
-            setIsExiting(false); // Resetea el estado de salida
-            scrollToTop(); // Desplaza el scroll hacia arriba
-        }, 500); // Duración de la animación (en milisegundos)
+            setFormPage((prevPage) => prevPage + 1); 
+            setIsExiting(false); 
+            scrollToTop(); 
+        }, 500); 
     }
 
     function goBackForm() {
-        setIsExiting(true); // Inicia la animación de salida
+        setIsExiting(true); 
         setTimeout(() => {
-            setFormPage((prevPage) => prevPage - 1); // Decrementa el número de página
-            setIsExiting(false); // Resetea el estado de salida
-            scrollToTop(); // Desplaza el scroll hacia arriba
-        }, 500); // Duración de la animación (en milisegundos)
+            setFormPage((prevPage) => prevPage - 1);
+            setIsExiting(false); 
+            scrollToTop(); 
+        }, 500); 
     }
 
     function scrollToTop() {
         if (formContainerRef.current) {
             formContainerRef.current.scrollTo({
                 top: 0,
-                behavior: "smooth", // Desplazamiento suave
+                behavior: "smooth", 
             });
         }
     }
@@ -223,8 +223,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
+    e.preventDefault();
+    setIsLoading(true);
 
         // Validación
         if (
@@ -279,43 +279,54 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
-                if (imagen.url_imagen instanceof File) {
-                    // Nueva imagen subida
+               if (imagen.url_imagen instanceof File) {
                     formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
                     formDataToSend.append(`textos_alt[${index}]`, altText);
-                } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen) {
-                    // Imagen existente (URL) → la mandamos también
-                    formDataToSend.append(`imagenes_existentes[${index}]`, imagen.url_imagen);
+            
+                } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen !== "") {
+                    
+                    let urlFinal = imagen.original_path; 
+                    
+                    if (!urlFinal) {
+                        urlFinal = imagen.url_imagen.replace(config.apiUrl, ''); 
+                    }
+
+                    formDataToSend.append(`imagenes_existentes[${index}]`, urlFinal);
+                    
+                    if (imagen.id) {
+                        formDataToSend.append(`imagenes_ids[${index}]`, imagen.id.toString());
+                    }
+                    
                     formDataToSend.append(`textos_alt[${index}]`, altText);
                 }
-                // Si es null no se envía nada en ese índice
-            });
+             });
 
             formData.relacionados.forEach((item, index) => {
                 formDataToSend.append(`relacionados[${index}]`, item.toString());
             });
-
-            // Agregar imagen popup y texto alt popup al FormData
-            if (formData.imagen_popup && formData.imagen_popup instanceof File) {                
-                formDataToSend.append('imagen_popup', formData.imagen_popup);
-                formDataToSend.append('texto_alt_popup', formData.texto_alt_popup || '');
-            }
-
-            // Agregar imagen email y texto alt email al FormData
-             if (formData.imagen_email && formData.imagen_email instanceof File) {                
-                formDataToSend.append('imagen_email', formData.imagen_email);   
-            }
-
+            const appendSingleImage = (key: string, fileOrUrl: string | File | null | undefined, altKey?: string, altText?: string) => {
+                if (!fileOrUrl) return;
+                
+                if (fileOrUrl instanceof File) {
+                    formDataToSend.append(key, fileOrUrl);
+                } 
+                
+                /*
+                else if (typeof fileOrUrl === 'string') {
+                    formDataToSend.append(`${key}_existente`, fileOrUrl.replace(config.apiUrl, ''));
+                }
+                */
+                
+                if (altKey && altText !== undefined) {
+                    formDataToSend.append(altKey, altText);
+                }
+            };
+            appendSingleImage('imagen_popup', formData.imagen_popup, 'texto_alt_popup', formData.texto_alt_popup);
+            appendSingleImage('imagen_email', formData.imagen_email); 
             formDataToSend.append('asunto', formData.asunto || '');
-            
-            if (formData.imagen_whatsapp && formData.imagen_whatsapp instanceof File) {                
-                formDataToSend.append('imagen_whatsapp', formData.imagen_whatsapp);
-            }
-            formDataToSend.append('texto_alt_whatsapp', formData.texto_alt_whatsapp || '');
-            
-            if (formData.video_url) {
-                formDataToSend.append('video_url', formData.video_url);
-            }
+            appendSingleImage('imagen_whatsapp', formData.imagen_whatsapp, 'texto_alt_whatsapp', formData.texto_alt_whatsapp);
+
+            if (formData.video_url) formDataToSend.append('video_url', formData.video_url);
 
             formDataToSend.append("_method", "PUT");
 
@@ -380,60 +391,62 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
     useEffect(() => {
         if (showModal && product) {
-            // Transformar imágenes existentes
-            let imagenesTransformadas =
-              product.imagenes?.map((img) => ({
-                url_imagen: `${config.apiUrl}${img.url_imagen}`,
-                texto_alt_SEO: img.texto_alt_SEO || "",
-                // ✅ NO cacheKey para imágenes existentes
-              })) || [];
+        const refreshCache = Date.now();
+        let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
+            id: img.id, 
+            url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
+            texto_alt_SEO: img.texto_alt_SEO || "",
+            original_path: img.url_imagen
+        })) || [];
+        while (imagenesTransformadas.length < 5) {
+        imagenesTransformadas.push({ 
+            url_imagen: "", 
+            texto_alt_SEO: "" 
+            
+                });
+        }   
 
+        const relacionadosIds = product.productos_relacionados?.map((rel: any) => rel.id) || [];
+        const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
+        
+        const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
+        const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
+        const imagenWhatsapp = product.producto_imagenes?.find((img) => img.tipo === "whatsapp"); 
 
-            while (imagenesTransformadas.length < 5) {
-                imagenesTransformadas.push({ url_imagen: "", texto_alt_SEO: "" });
-            }
-
-            const relacionadosIds =
-                product.productos_relacionados?.map((rel) => (rel as { id: number }).id) || [];
-
-            // lista de strings para transformar en Array
-            const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
-
-            // Extraer imágenes popup y email de producto_imagenes
-            const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
-            const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
-
-            setFormData({
-                nombre: product.nombre,
-                titulo: product.titulo,
-                subtitulo: product.subtitulo,
-                link: product.link,
-                descripcion: product.descripcion,
-                etiqueta: {
-                    keywords: keywordsArray || [""],
-                    meta_titulo: product.etiqueta?.meta_titulo || "",
-                    meta_descripcion: product.etiqueta?.meta_descripcion || "",
-                },
-                stock: product.stock,
-                precio: product.precio,
-                seccion: product.seccion,
-                especificaciones: Array.isArray(product.especificaciones)
-                    ? product.especificaciones.map((e: any) => e.valor)
-                    : [],
-                relacionados: relacionadosIds,
-                imagenes: imagenesTransformadas,
-                textos_alt: product.imagenes?.map((img) => img.texto_alt_SEO) || [],
-                dimensiones: {
-                    largo: product.dimensiones?.largo || "",
-                    alto: product.dimensiones?.alto || "",
-                    ancho: product.dimensiones?.ancho || "",
-                },
-                video_url: product.video_url || "",
-                imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
-                texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-                imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
-                asunto: imagenEmail?.asunto || "",
-            });
+        setFormData({
+            ...defaultValuesProduct, 
+            nombre: product.nombre,
+            titulo: product.titulo,
+            subtitulo: product.subtitulo,
+            link: product.link,
+            descripcion: product.descripcion,
+            etiqueta: {
+                keywords: keywordsArray || [""],
+                meta_titulo: product.etiqueta?.meta_titulo || "",
+                meta_descripcion: product.etiqueta?.meta_descripcion || "",
+            },
+            stock: product.stock,
+            precio: product.precio,
+            seccion: product.seccion,
+            especificaciones: Array.isArray(product.especificaciones)
+                ? product.especificaciones.map((e: any) => e.valor)
+                : [],
+            relacionados: relacionadosIds,
+            // @ts-ignore: Ajuste temporal de tipos si tu interfaz ProductFormularioPOST no tiene 'original_path'
+            imagenes: imagenesTransformadas,
+            dimensiones: {
+                largo: product.dimensiones?.largo || "",
+                alto: product.dimensiones?.alto || "",
+                ancho: product.dimensiones?.ancho || "",
+            },
+            video_url: product.video_url || "",
+            imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
+            texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
+            imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
+            asunto: imagenEmail?.asunto || "",
+            imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
+            texto_alt_whatsapp: imagenWhatsapp?.texto_alt_SEO || "" // Asegúrate que tu back mande esto
+        });
         }
     }, [showModal, product]);
 
@@ -806,59 +819,57 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             <li>Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
                                             <li>Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
                                             <li>Si es que no quieres cambiar nada conforme a las imágenes, ignorar esta página. </li>
+                                            <li>Regla de subida de imagenes: peso menor de 2MB y en formato WEBP. </li>
                                         </ul>
                                     </div>
                                     <div className="space-y-4">
                                         {formData.imagenes.map((img, index) => (
-                                            <div key={index} className="form-input">
+                                            <div key={index} className="form-input"> 
                                                 <label>Imagen {index + 1}:</label>
-                                                <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                                                
+                                                <div className="border border-dashed border-gray-300 rounded-lg p-4 ...">
                                                     {img.url_imagen ? (
                                                         <div className="flex items-center gap-4">
                                                             <img
-                                                              src={
-                                                                typeof img.url_imagen === "string"
-                                                                  ? img.url_imagen
-                                                                  : URL.createObjectURL(img.url_imagen)
-                                                              }
-                                                              loading="lazy"
-                                                              decoding="async" 
-                                                              className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                                src={
+                                                                    typeof img.url_imagen === "string"
+                                                                        ? img.url_imagen
+                                                                        : URL.createObjectURL(img.url_imagen) 
+                                                                }
+                                                                className="w-16 h-16 object-cover rounded border"
+                                                                alt="Preview"
                                                             />
-
-                                                            {/* Botón para reemplazar imagen */}
-                                                            <label className="text-sm text-blue-600 underline cursor-pointer">
+                                                            <label className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
                                                                 Reemplazar
                                                                 <input
                                                                     type="file"
                                                                     accept="image/*"
-                                                                    onChange={(e) => handleImagesChange(e, index)}
                                                                     className="hidden"
+                                                                    onChange={(e) => handleImagesChange(e, index)}
                                                                 />
                                                             </label>
-                                                            <p>* Obligatorio</p>
                                                         </div>
                                                     ) : (
                                                         <input
                                                             type="file"
                                                             accept="image/*"
+                                                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 ..."
                                                             onChange={(e) => handleImagesChange(e, index)}
-                                                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                                         />
                                                     )}
                                                 </div>
-                                                <label>Texto SEO Imagen {index + 1}:</label>
-                                                <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70">
-                                                    <input
-                                                        type="text"
-                                                        onChange={(e) => handleImagesTextoSEOChange(e, index)}
-                                                        value={img.texto_alt_SEO ? img.texto_alt_SEO : ""}
-                                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 outline-none"
-                                                    />
-                                                </div>
+
+                                                <label className="mt-2 block text-sm">Texto SEO Imagen {index + 1}:</label>
+                                                <input
+                                                    type="text"
+                                                    value={img.texto_alt_SEO || ""}
+                                                    onChange={(e) => handleImagesTextoSEOChange(e, index)}
+                                                    className="w-full border p-2 rounded outline-none"
+                                                    placeholder="Descripción para Google..."
+                                                />
                                             </div>
                                         ))}
-                                    </div>
+                                         </div>
                                 </div>
 
                                 {/* Imagen para Pop Up */}

@@ -36,8 +36,15 @@ const Hero = () => {
               title={hero.alt || ""}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
+<<<<<<< HEAD
               className={`absolute inset-0 w-full h-[45vh] sm:h-full object-cover object-center 
               transition-opacity duration-1000 ${
+=======
+
+              className={`absolute inset-0 w-full h-[45vh] sm:h-full object-cover object-center 
+              transition-opacity duration-1000 ${
+
+>>>>>>> 5696fbe8d5c0cc2328daa0b1231888fd55bd7616
                 isVisible
                   ? "opacity-100 z-10 pointer-events-auto"
                   : "opacity-0 z-0 pointer-events-none"
