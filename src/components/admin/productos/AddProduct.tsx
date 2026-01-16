@@ -724,6 +724,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       <li>Cada imagen debe tener un <strong>Texto SEO</strong> descriptivo (importante para buscadores).</li>
                       <li>Las imágenes deben ser en formato <code>WEBP.</code></li>
                       <li>Se recomienda un tamaño máximo de <strong>2MB</strong> por imagen para optimizar la carga.</li>
+                      <li>Regla de subida de tamaño de imagen: 800-800 px. </li>
                     </ul>
                   </div>
                   <div className="space-y-4">
