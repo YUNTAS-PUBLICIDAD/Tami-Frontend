@@ -43,17 +43,15 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
         const productName = producto.titulo; 
         
         const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
-        
-        const textoFinal = whatsappConfig?.whatsapp_mensaje 
-            ? whatsappConfig.whatsapp_mensaje 
-            : `Descripción: ${producto.descripcion}`;
 
-      const line1 = "🔥 ¡Excelente elección!";
-        const line2 = `Te presentamos la: *${productName}* ⚡`;
-        const line3 = textoFinal;
-        const line4 = "👉 ¿Quieres que te enviemos la ficha técnica completa y una cotización personalizada?";
-
-        const message = `${line1}\n${line2}\n\n${line3}\n\n${line4}`;
+        let message = "";
+        if (whatsappConfig?.texto_alt_SEO){
+            message = whatsappConfig.texto_alt_SEO;
+        } else {
+            message += `Hola 👋, estoy interesado en el producto: *${productName}* ⚡.`;
+            message += `\nDescripción: ${producto.descripcion}`;
+            message += `\n👉 ¿Podrían enviarme la ficha técnica completa y una cotización personalizada?`;
+        }
 
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         
