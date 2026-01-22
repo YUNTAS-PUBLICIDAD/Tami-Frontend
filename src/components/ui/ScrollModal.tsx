@@ -250,8 +250,24 @@ const ScrollModal = () => {
         {/* Contenido Formulario */}
         <div className="w-full sm:w-6/12 text-white relative animate-fadeInRight h-full">
           <div className="sm:py-10 p-10 sm:px-8 h-full space-y-10">
-            <button onClick={closeModal} className="absolute top-4 right-5 text-md text-white hover:text-gray-300 transition-colors duration-300 cursor-pointer">X</button>
-
+           
+           
+            <button 
+              onClick={closeModal} 
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
+              aria-label="Cerrar modal"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                strokeWidth={2.5} 
+                stroke="currentColor" 
+                className="w-5 h-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <h2 className="scrollmodal-body select-none font-semibold animate-fadeInUp">
               DESCARGA <span className="scrollmodal-title text-yellow-200">GRATIS</span> NUESTRO <span className="scrollmodal-title text-yellow-200">CATÁLOGO</span>
             </h2>
