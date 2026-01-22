@@ -722,9 +722,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
                       <li>Al menos <strong>1 imagen es obligatoria</strong>.</li>
                       <li>Cada imagen debe tener un <strong>Texto SEO</strong> descriptivo (importante para buscadores).</li>
-                      <li>Las imágenes deben ser en formato <code>WEBP.</code></li>
-                      <li>Se recomienda un tamaño máximo de <strong>2MB</strong> por imagen para optimizar la carga.</li>
-                      <li>Regla de subida de tamaño de imagen: 800-800 px. </li>
+                      <li>Las imágenes deben ser en formato <strong>WEBP.</strong></li>
+                      <li>Se recomienda un peso máximo de <strong>2MB</strong> por imagen para optimizar la carga.</li>
+                      <li>Regla de subida de tamaño recomendado de imagen: <strong>800-800 px.</strong></li>
+                      <li>Subir la imagen sin fondo <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a> para convertir imagen</li>
+                      <li>Subir el tamaño de imagen recomendado  <a href="https://www.iloveimg.com/es/redimensionar-imagen/jpg-cambiar-tamano" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a></li>
+                    
                     </ul>
                   </div>
                   <div className="space-y-4">
