@@ -9,7 +9,7 @@ interface Props {
 }
 
 const SimilarProductCard: React.FC<Props> = ({ product }) => {
-  const imgUrl = product.imagenes?.[0]?.url_imagen;
+  const imgUrl = product.imagenes.filter(img => img.tipo === 'galeria')[0]?.url_imagen;
   const cacheBuster = `?t=${Date.now()}`;
   const finalImageSrc = imgUrl 
     ? `${config.apiUrl}${imgUrl}${cacheBuster}` 
