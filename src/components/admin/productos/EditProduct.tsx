@@ -30,6 +30,13 @@ type ImagenForms= {
 }
 
 
+type ImagenForm = {
+  url_imagen: string | File
+  texto_alt_SEO?: string
+  cacheKey?: number
+}
+
+
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -438,7 +445,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
             asunto: imagenEmail?.asunto || "",
             imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
-            texto_alt_whatsapp: imagenWhatsapp?.texto_alt_SEO || "" // Asegúrate que tu back mande esto
+            texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "" // Asegúrate que tu back mande esto
         });
         }
     }, [showModal, product]);
