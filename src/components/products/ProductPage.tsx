@@ -38,15 +38,15 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     const relatedProducts = producto.productos_relacionados || [];
     const carouselThreshold = 3;
    const handleWhatsAppClick = () => {
-        
+        console.log("Cotización solicitada para el producto:", producto);
         const phoneNumber = "51978883199"; 
         const productName = producto.titulo; 
         
         const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
 
         let message = "";
-        if (whatsappConfig?.texto_alt_SEO){
-            message = whatsappConfig.texto_alt_SEO;
+        if (whatsappConfig?.whatsapp_mensaje){
+            message = whatsappConfig.whatsapp_mensaje;
         } else {
             message += `Hola 👋, estoy interesado en el producto: *${productName}* ⚡.`;
             message += `\nDescripción: ${producto.descripcion}`;
