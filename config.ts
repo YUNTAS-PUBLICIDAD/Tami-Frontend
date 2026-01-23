@@ -53,15 +53,8 @@ export const config = {
     },
     whatsapp: {
       //Endpoints de whatsapp
-      info: "/api/v1/whatsapp/solicitar-info-producto",
       requestQR: "/api/v1/whatsapp/request-qr",
       resetSession: "/api/v1/whatsapp/reset-session",
-      sendCampana: "/api/v1/whatsapp/send-whatsapp-campana",
-      sendOne: "/api/v1/whatsapp/send-whatsapp", // Assuming this is the one for single sending
-      save: "/api/v1/whatsapp/save",
-      saveDefault: "/api/v1/whatsapp/save-default",
-      getOneByProduct: (id: number | string) => `/api/v1/whatsapp/get-one-by-product/${id}`,
-      getOneDefault: "/api/v1/whatsapp/get-one-default",
     },
   },
   socket: {

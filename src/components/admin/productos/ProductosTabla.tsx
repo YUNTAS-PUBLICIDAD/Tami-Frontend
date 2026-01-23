@@ -144,7 +144,7 @@ const ProductosTabla = () => {
                                 className="flex items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
                             >
                                 <FaWhatsapp className="h-5 w-5" />
-                                Envío de WhatsApp
+                                Conexión WhatsApp
                             </button>
                             <button
                                 onClick={fetchData}
@@ -164,7 +164,6 @@ const ProductosTabla = () => {
                     >
                         <WhatsappFormWithTabs
                             onClose={() => setIsWhatsappModalOpen(false)}
-                            products={productos}
                         />
                     </GenericModal>
 
