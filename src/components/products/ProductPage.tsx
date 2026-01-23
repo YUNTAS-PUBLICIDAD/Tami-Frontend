@@ -38,7 +38,7 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     const relatedProducts = producto.productos_relacionados || [];
     const carouselThreshold = 3;
    const handleWhatsAppClick = () => {
-        console.log("Cotización solicitada para el producto:", producto);
+
         const phoneNumber = "51978883199"; 
         const productName = producto.titulo; 
         
