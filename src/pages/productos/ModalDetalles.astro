@@ -68,7 +68,7 @@ const { link = "" } = Astro.props as ModalProps;
 
         <h2
           id="modal-title"
-          class="text-2xl text-white sm:text-3xl font-semibold text-center sm:mt-3 mb-8 select-none"
+          class="text-2xl text-white sm:text-3xl font-light italic text-center sm:mt-3 mb-8 select-none"
         >
         </h2>
 
@@ -103,10 +103,16 @@ const { link = "" } = Astro.props as ModalProps;
           <button
             id="modal-submit-btn"
             type="submit"
-            class="mt-4 py-2 rounded-lg text-white font-bold transition-colors shadow-lg"
+            class="mt-4 py-2 rounded-lg text-white font-bold transition-all duration-300 shadow-lg"
           >
             buttonText
           </button>
+          <p
+              id="modal-negocios-text"
+              class="text-center mt-3 text-base sm:text-lg text-white hidden font-bold tracking-wide"
+            >
+            Asesoría gratuita
+          </p>
         </form>
         <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
       </div>
@@ -128,22 +134,22 @@ const { link = "" } = Astro.props as ModalProps;
   const secciones = {
     NEGOCIOS: {
       gradient: "custom-gradient-negocio",
-      title: "DESCARGA MÁS INFORMACIÓN GRATIS",
-      btn: "bg-[#14617F] hover:bg-[#1c85ab] cursor-pointer",
-      buttonText: "¡SÍ, QUIERO CRECER!",
+      title: "Descubre tu guía exclusiva de decoración TOTALMENTE GRATIS",
+      btn: "btn-gradient-negocio-fix border border-white cursor-pointer", // Cambiado aquí
+      buttonText: "¡COTIZA AHORA!",
     },
     MAQUINARIA: {
       gradient: "custom-gradient-maquinaria",
       title:
-        "DESCARGA TU <span class='scrollmodal-title ' style='color:black '>GUÍA TÉCNICA GRATIS</span>",
-      btn: "bg-[#064133] hover:bg-[#096653] cursor-pointer",
-      buttonText: "¡SÍ, QUIERO CRECER!",
+        "Descubre tu guía exclusiva de decoración TOTALMENTE GRATIS",
+      btn: "btn-gradient-negocio-fix border border-white cursor-pointer",
+      buttonText: "¡COTIZA AHORA!",
     },
     DECORACIÓN: {
       gradient: "custom-gradient-decoracion",
-      title: "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS",
-      btn: "bg-[#281184] hover:bg-[#3c2eb1] cursor-pointer",
-      buttonText: "¡SÍ, QUIERO CRECER!",
+      title: "Descubre tu guía exclusiva de decoración TOTALMENTE GRATIS",
+      btn: "btn-gradient-negocio-fix border border-white cursor-pointer",
+      buttonText: "¡COTIZA AHORA!",
     },
   };
 
@@ -167,11 +173,18 @@ const { link = "" } = Astro.props as ModalProps;
     await actualizarImagenDesdeLink(); // Esperar a que cargue la imagen
     const modal = document.getElementById("modal-cotizacion-producto");
     const mensaje = document.getElementById("modal-cotizacion-mensaje");
+    const imgZone = document.querySelector(".img-white-zone");
+
     if (modal && mensaje) {
       modal.classList.remove("hidden");
       mensaje.textContent = "";
       modalMostrado = true;
     }
+    if (imgZone) {
+  imgZone.classList.add("img-negocios-bg");
+}
+
+
   }
 
   /**
@@ -333,31 +346,39 @@ const { link = "" } = Astro.props as ModalProps;
     const formContainer = document.getElementById("modal-form-container");
     const title = document.getElementById("modal-title");
     const btn = document.getElementById("modal-submit-btn");
-    const buttonText = document.getElementById("modal-submit-btn");
 
     // GRADIENTE DE FONDO
     if (backgroundModal) {
+      // Limpiar gradientes anteriores antes de agregar el nuevo
+      backgroundModal.classList.remove("custom-gradient-negocio", "custom-gradient-maquinaria", "custom-gradient-decoracion");
       backgroundModal.classList.add(sectionConfig.gradient);
     }
 
     if (title) {
-      title.innerHTML = sectionConfig.title;
-    }
+  title.innerHTML = sectionConfig.title.replace(
+    "GRATIS",
+    "<span class='font-extrabold'>GRATIS</span>",
+  );
+}
+
+
+    const negociosText = document.getElementById("modal-negocios-text");
+
+      if (negociosText) {
+          negociosText.classList.remove("hidden");
+      }
+
 
     if (btn) {
-      btn.classList.remove(
-        "bg-sky-400",
-        "hover:bg-sky-500",
-        "bg-emerald-400",
-        "hover:bg-emerald-500",
-        "bg-violet-500",
-        "hover:bg-violet-600",
-      );
-      btn.classList.add(...sectionConfig.btn.split(" "), "text-white");
-    }
-    if (buttonText) {
-      buttonText.textContent = sectionConfig.buttonText || "Enviar";
-      buttonText.classList.add("font-bold");
+      // Resetear clases de botón completamente para evitar conflictos de Tailwind
+      btn.className = "mt-4 py-2 rounded-lg text-white transition-all duration-300 shadow-lg font-bold";
+      
+      // Aplicar las clases específicas de la sección
+      const extraClasses = sectionConfig.btn.split(" ");
+      btn.classList.add(...extraClasses);
+      
+      // Aplicar texto
+      btn.textContent = sectionConfig.buttonText || "¡COTIZA AHORA!";
     }
   }
 
@@ -444,32 +465,20 @@ const { link = "" } = Astro.props as ModalProps;
     configurarBotonesCotizacion();
   });
 </script>
+
 <style>
-  .custom-gradient-negocio {
-    background: linear-gradient(
-      270deg,
-      rgba(0, 54, 75, 0.95) 0%,
-      rgba(10, 94, 127, 0.9) 40%,
-      rgba(18, 125, 167, 0.46) 70%,
-      rgba(35, 173, 227, 0.37) 100%
-    );
+  /* GRADIENTES DEL MODAL */
+  .custom-gradient-negocio,  .custom-gradient-maquinaria, .custom-gradient-decoracion {
+      background: radial-gradient(circle at top, #4287e1 0%, #1f3a7a 40%, #0c1142 85%);
   }
-  .custom-gradient-maquinaria {
-    background: linear-gradient(
-      90deg,
-      rgba(4, 179, 138, 0.28) 0%,
-      rgba(2, 131, 101, 0.95) 55%,
-      rgba(0, 83, 64, 1) 100%
-    );
+  
+
+  /* --- FIX GRADIENTE BOTÓN--- */
+  :global(.btn-gradient-negocio-fix) {
+    background: linear-gradient(90deg, #4287e1 0%, #1f3a7a 100%) !important;
   }
-  .custom-gradient-decoracion {
-    background: linear-gradient(
-      90deg,
-      rgba(40, 82, 222, 0.35) 0%,
-      rgba(42, 45, 193, 0.61) 35%,
-      rgba(42, 25, 234, 0.95) 75%,
-      rgba(17, 27, 215, 1) 100%
-    );
+  :global(.btn-gradient-negocio-fix:hover) {
+    background: linear-gradient(90deg, #1f3a7a 0%, #4287e1 100%) !important;
   }
 
   #background-modal {
@@ -483,14 +492,13 @@ const { link = "" } = Astro.props as ModalProps;
     position: relative;
     z-index: 2;
   }
-  /* --- Ajustes SOLO para móvil, sin tocar tus estilos actuales --- */
+  
   @media (max-width: 640px) {
-    /* Imagen más pequeña + margen arriba */
     #modal-product-img {
       max-height: 180px !important;
       width: auto !important;
       object-fit: contain !important;
-      margin: 20px auto 0 auto !important; /* 👈 margen arriba */
+      margin: 20px auto 0 auto !important;
       display: block !important;
     }
 
@@ -510,16 +518,18 @@ const { link = "" } = Astro.props as ModalProps;
       color: #4b5563 !important; 
     }
   }
+
   .img-white-zone {
     position: relative;
-    background: white; /* 👈 blanco real */
-    z-index: 25; /* encima del gradiente */
+    background: white;
+    z-index: 25;
   }
 
-  /* Desktop: solo la mitad izquierda blanca */
   @media (min-width: 640px) {
-    .img-white-zone {
-      width: 50%;
-    }
+    .img-white-zone { width: 50%; }
+  }
+
+  .img-negocios-bg {
+    background-color: #0c1142 !important;
   }
 </style>

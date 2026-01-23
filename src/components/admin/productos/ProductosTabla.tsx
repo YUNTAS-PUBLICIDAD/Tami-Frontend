@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EditProduct from "./EditProduct";
 import { deleteProduct, getProducts } from "src/hooks/admin/productos/productos";
 import type Product from "src/models/Product";
-import { FaTrash, FaSearch, FaSyncAlt, FaPlus, FaTags } from "react-icons/fa";
+import { FaTrash, FaSearch, FaSyncAlt, FaPlus, FaTags, FaWhatsapp } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import AddProduct from "./AddProduct";
 import Swal from "sweetalert2";
@@ -11,6 +11,8 @@ import LoadingComponent from "src/components/admin/ui/LoadingComponent";
 import { SearchInput } from "src/components/admin/ui/SearchInput";
 import Paginator from "src/components/admin/ui/Paginator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "src/components/admin/ui/Table";
+import GenericModal from "src/components/admin/ui/GenericModal";
+import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWithTabs";
 
 const getApiUrl = config.apiUrl;
 
@@ -21,6 +23,7 @@ const ProductosTabla = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [isWhatsappModalOpen, setIsWhatsappModalOpen] = useState(false);
     const itemsPerPage = 5;
 
     const fetchData = async () => {
@@ -135,15 +138,34 @@ const ProductosTabla = () => {
                 <div className="p-8 space-y-6">
                     <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
                         <SearchInput placeholder="Buscar productos..." value={searchTerm} onChange={setSearchTerm} />
-                        <button
-                            onClick={fetchData}
-                            disabled={isLoading}
-                            className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
-                        >
-                            <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-                            {isLoading ? "Cargando..." : "Actualizar Catálogo"}
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <button
+                                onClick={() => setIsWhatsappModalOpen(true)}
+                                className="flex items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                            >
+                                <FaWhatsapp className="h-5 w-5" />
+                                Conexión WhatsApp
+                            </button>
+                            <button
+                                onClick={fetchData}
+                                disabled={isLoading}
+                                className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                            >
+                                <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                                {isLoading ? "Cargando..." : "Actualizar Catálogo"}
+                            </button>
+                        </div>
                     </div>
+
+                    <GenericModal
+                        isOpen={isWhatsappModalOpen}
+                        onClose={() => setIsWhatsappModalOpen(false)}
+                        title="Canal de Comunicación WhatsApp"
+                    >
+                        <WhatsappFormWithTabs
+                            onClose={() => setIsWhatsappModalOpen(false)}
+                        />
+                    </GenericModal>
 
                     <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
                         <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
@@ -237,17 +259,17 @@ const ProductosTabla = () => {
                 </Table>
 
                 {/* Paginación */}
-                        {filteredProductos.length > 0 && (
-                        <div className="flex justify-center gap-2 mt-8 px-4 pb-6">
-                            <button
+                {filteredProductos.length > 0 && (
+                    <div className="flex justify-center gap-2 mt-8 px-4 pb-6">
+                        <button
                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
                             className={`${currentPage === 1 ? '' : 'cursor-pointer'} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
-                            >
+                        >
                             Anterior
-                            </button>
+                        </button>
 
-                            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                             let pageToShow: number;
                             if (totalPages <= 5) {
                                 pageToShow = i + 1;
@@ -261,27 +283,27 @@ const ProductosTabla = () => {
 
                             return (
                                 <button
-                                key={i}
-                                onClick={() => setCurrentPage(pageToShow)}
-                                className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${currentPage === pageToShow
-                                    ? "bg-teal-500 text-white border-teal-500"
-                                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                    }`}
+                                    key={i}
+                                    onClick={() => setCurrentPage(pageToShow)}
+                                    className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${currentPage === pageToShow
+                                        ? "bg-teal-500 text-white border-teal-500"
+                                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                        }`}
                                 >
-                                {pageToShow}
+                                    {pageToShow}
                                 </button>
                             );
-                            })}
+                        })}
 
-                            <button
+                        <button
                             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
                             className={`${currentPage === totalPages ? '' : 'cursor-pointer'} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
-                            >
+                        >
                             Siguiente
-                            </button>
-                        </div>
-                        )}
+                        </button>
+                    </div>
+                )}
 
             </div>
         </div>
