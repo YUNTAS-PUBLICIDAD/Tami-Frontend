@@ -30,12 +30,6 @@ type ImagenForms= {
 }
 
 
-type ImagenForm = {
-  url_imagen: string | File
-  texto_alt_SEO?: string
-  cacheKey?: number
-}
-
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -819,7 +813,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             <li>Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
                                             <li>Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
                                             <li>Si es que no quieres cambiar nada conforme a las imágenes, ignorar esta página. </li>
-                                            <li>Regla de subida de imagenes: peso menor de 2MB y en formato WEBP. </li>
+                                            <li>Regla de subida de peso y formato: <strong>2MB</strong> y <strong>WEBP</strong>. </li>
+                                            <li>Regla de subida de tamaño: <strong>800-800 px</strong>. </li>
+                                            <li>Subir la imagen sin fondo <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a> para convertir imagen</li>
+                      <li>Subir el tamaño de imagen recomendado  <a href="https://www.iloveimg.com/es/redimensionar-imagen/jpg-cambiar-tamano" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a></li>
                                         </ul>
                                     </div>
                                     <div className="space-y-4">
