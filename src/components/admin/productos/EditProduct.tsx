@@ -30,12 +30,6 @@ type ImagenForms= {
 }
 
 
-type ImagenForm = {
-  url_imagen: string | File
-  texto_alt_SEO?: string
-  cacheKey?: number
-}
-
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
     const [isLoading, setIsLoading] = useState(false);
