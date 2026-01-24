@@ -46,6 +46,7 @@ export interface ProductFormularioPOST {
     keywords: string[];
     meta_titulo: string;
     meta_descripcion: string;
+    popup_estilo: string;
   };
 }
 
@@ -90,6 +91,7 @@ export default interface Producto {
     keywords: string
     meta_titulo: string;
     meta_descripcion: string;
+    popup_estilo: string;
   };
   dimensiones: {
     largo: string;
@@ -113,6 +115,7 @@ export const defaultValuesProduct: ProductFormularioPOST = {
     keywords: [""],
     meta_titulo: "",
     meta_descripcion: "",
+    popup_estilo: ""
   },
   relacionados: [],
   imagenes: [

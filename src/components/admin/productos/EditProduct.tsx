@@ -9,6 +9,9 @@ import { IoMdCloseCircle } from "react-icons/io";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
 import type { ImagenForm } from "../../../models/Product";
+import imagenEstilo1 from "@images/popup/estilo1.webp";
+import imagenEstilo2 from "@images/popup/estilo2.webp";
+import imagenEstilo3 from "@images/popup/estilo3.webp";
 
 interface EditProductProps {
     product: Product;
@@ -28,6 +31,7 @@ type ImagenForms= {
   cacheKey?: number
 
 }
+const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
 
 
@@ -264,6 +268,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[meta_descripcion]",
                 formData.etiqueta.meta_descripcion
             );
+            formDataToSend.append(
+                "etiqueta[popup_estilo]",
+                formData.etiqueta.popup_estilo || "estilo1"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -418,6 +426,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 keywords: keywordsArray || [""],
                 meta_titulo: product.etiqueta?.meta_titulo || "",
                 meta_descripcion: product.etiqueta?.meta_descripcion || "",
+                popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
             },
             stock: product.stock,
             precio: product.precio,
@@ -562,7 +571,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="card">
                                         <h4 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Keywords:</h4>
                                         {formData.etiqueta.keywords.map((k, index) => (
-                                            <div className="form-input flex justify-between gap-2">
+                                            <div key={"key"+ index} className="form-input flex justify-between gap-2">
                                                 <input type="text" id="keywords" value={k}
                                                     onChange={(e) => handleKeywordsChange(index, e)}
                                                 />
@@ -929,6 +938,36 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             placeholder="Texto alternativo para SEO..."
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                         />
+                                    </div>
+                                    {/** estilos de popup*/}
+                                    <div className="form-input">
+                                        <label>Estilo de Popup:</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
+                                                <label key={"radio"+estilo} className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors">
+                                                    <img src={imagenEstilos[index]} alt={`Estilo ${index + 1}`} className="w-full h-auto rounded" />
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="radio"
+                                                            name="popup_estilo"
+                                                            value={estilo}
+                                                            checked={formData.etiqueta.popup_estilo === estilo}
+                                                            onChange={(e) =>
+                                                                setFormData((prev) => ({
+                                                                    ...prev,
+                                                                    etiqueta: {
+                                                                        ...prev.etiqueta,
+                                                                        popup_estilo: e.target.value,
+                                                                    },
+                                                                }))
+                                                            }
+                                                            className="w-4 h-4 text-teal-600 focus:ring-teal-500"
+                                                        />
+                                                        <span className="font-medium">Estilo {index + 1}</span>
+                                                    </div>
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
