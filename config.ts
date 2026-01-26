@@ -55,7 +55,7 @@ export const config = {
       //Endpoints de whatsapp
       info: "/api/v1/whatsapp/solicitar-info-producto",
       requestQR: "/api/v1/whatsapp/request-qr",
-      resetSession: "/api/v1/whatsapp/reset-session",
+      resetSession: "/api/v1/whatsapp/reset",
     },
   },
   socket: {
