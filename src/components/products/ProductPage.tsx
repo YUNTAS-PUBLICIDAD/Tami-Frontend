@@ -18,9 +18,27 @@ interface Props {
     producto: Producto
 }
 
-const ProductPage: React.FC<Props> = ({ producto }) => {
+const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
+    const [producto, setProducto] = useState<Producto>(initialProducto);
     const [productViewer, setProductViewer] = useState<string>(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
+    // Cargar datos frescos del producto
+    useEffect(() => {
+        const fetchFreshProductData = async () => {
+            try {
+                const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${initialProducto.link}`);
+                if (response.ok) {
+                    const freshData = await response.json();
+                    setProducto(freshData.data);
+                    setProductViewer(freshData.data.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+                }
+            } catch (error) {
+                console.error('Error al cargar datos frescos del producto:', error);
+            }
+        };
+
+        fetchFreshProductData();
+    }, [initialProducto.link]);
  
     useEffect(() => {
  
@@ -70,8 +88,8 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                    
                     <div className="flex flex-col justify-center text-left">
                         <h1 className="text-5xl md:text-8xl font-extrabold uppercase mb-6">
-                        {producto.titulo.split(' ')[0]}
-                        <span className="block text-[#2DCCFF]">{producto.titulo.split(' ').slice(1).join(' ')}</span>
+                        {producto.titulo?.split(' ')[0]}
+                        <span className="block text-[#2DCCFF]">{producto.titulo?.split(' ').slice(1).join(' ')}</span>
                         </h1>
 
                         <p className="text-xl md:text-4xl opacity-90 mb-10 max-full uppercase tracking-wider font-light">
