@@ -13,41 +13,41 @@ const socialMediaLinks = [
   //   imageTitle: "Tiktok de Tami Maquinarias",
   //   linkTitle: "Visita nuestro perfil de TikTok", 
   // },
-   {
+  {
     url: "https://api.whatsapp.com/send?phone=51978883199",
     socialMediaName: "Whatsapp",
     image: whatsappIcon,
     imageTitle: "Whatsapp de Tami Maquinarias",
-    linkTitle: "Contáctanos por WhatsApp", 
+    linkTitle: "Contáctanos por WhatsApp",
   },
   {
     url: "https://www.facebook.com/tamiperu01",
     socialMediaName: "Facebook",
     image: facebookIcon,
     imageTitle: "Facebook de Tami Maquinarias",
-    linkTitle: "Visita nuestra página de Facebook", 
+    linkTitle: "Visita nuestra página de Facebook",
   },
 
-   {
-    url: "https://www.instagram.com/tami2_02590/?igsh=MWZoYnZjM3FxYXN5cQ%3D%3D",
+  {
+    url: "https://www.instagram.com/tami_maquinarias_",
     socialMediaName: "Instagram",
     image: instagramIcon,
     imageTitle: "Instagram de Tami Maquinarias",
     linkTitle: "Síguenos en Instagram",
   },
-   {
+  {
     url: "https://x.com/Tami_Maquinaria",
     socialMediaName: "Twitter",
     image: twitterIcon,
     imageTitle: "Twitter de Tami Maquinarias",
-    linkTitle: "Síguenos en Twitter", 
+    linkTitle: "Síguenos en Twitter",
   },
   {
     url: "https://www.youtube.com/@TamiPeru",
     socialMediaName: "Youtube",
     image: YoutubeIcon,
     imageTitle: "Canal de Youtube de Tami Maquinarias",
-    linkTitle: "Síguenos en Youtube", 
+    linkTitle: "Síguenos en Youtube",
   },
 ];
 
