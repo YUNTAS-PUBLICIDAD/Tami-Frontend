@@ -1,0 +1,204 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Libro de Reclamaciones | Tami"
+    description="Hoja de reclamación de Tami. Déjanos tus comentarios o reclamos para mejorar nuestro servicio."
+>
+    <main
+        class="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900"
+    >
+        <div class="max-w-4xl mx-auto">
+            {/* Encabezado */}
+            <div class="text-center mb-12">
+                <h1
+                    class="text-3xl md:text-5xl font-extrabold text-teal-700 dark:text-teal-500 mb-4 uppercase tracking-tight"
+                >
+                    Libro de Reclamaciones
+                </h1>
+                <p
+                    class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto italic"
+                >
+                    Conforme a lo establecido en el Código de Protección y
+                    Defensa del Consumidor, Tami pone a su disposición este
+                    libro virtual.
+                </p>
+            </div>
+
+            <form class="space-y-12">
+                {/* SECCIÓN 1: Datos Personales */}
+                <section
+                    class="bg-white dark:bg-gray-800 p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
+                >
+                    <div class="flex items-center gap-4 mb-8">
+                        <span
+                            class="bg-teal-700 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl"
+                            >1</span
+                        >
+                        <h2
+                            class="text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-wide"
+                        >
+                            Datos de la persona que presenta el reclamo
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-input">
+                            <label for="nombres">Nombre</label>
+                            <input
+                                type="text"
+                                id="nombres"
+                                name="nombres"
+                                placeholder="ej: Jose Miguel"
+                                required
+                            />
+                        </div>
+                        <div class="form-input">
+                            <label for="apellidos">Apellido</label>
+                            <input
+                                type="text"
+                                id="apellidos"
+                                name="apellidos"
+                                placeholder="ej: Rojas Vasquez"
+                                required
+                            />
+                        </div>
+                        <div class="form-input">
+                            <label for="tipo_doc">Tipo de Documento*</label>
+                            <select id="tipo_doc" name="tipo_doc" required>
+                                <option value="" disabled selected
+                                    >--- Selecciona una opción ---</option
+                                >
+                                <option value="DNI"
+                                    >DNI (Documento Nacional de Identidad)</option
+                                >
+                                <option value="CE">Carné de Extranjería</option>
+                                <option value="RUC"
+                                    >RUC (Registro Único de Contribuyente)</option
+                                >
+                                <option value="PASSPORT">Pasaporte</option>
+                            </select>
+                        </div>
+                        <div class="form-input">
+                            <label for="num_doc">Número de documento</label>
+                            <input
+                                type="text"
+                                id="num_doc"
+                                name="num_doc"
+                                placeholder="ej: 76798589"
+                                required
+                            />
+                        </div>
+                        <div class="form-input">
+                            <label for="email">Correo Electrónico</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="ej: JoseM20@gmail.com"
+                                required
+                            />
+                        </div>
+                        <div class="form-input">
+                            <label for="telefono">Teléfono</label>
+                            <input
+                                type="tel"
+                                id="telefono"
+                                name="telefono"
+                                placeholder="ej: 987654321"
+                                required
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                {/* SECCIÓN 2: Información del Reclamo */}
+                <section
+                    class="bg-white dark:bg-gray-800 p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
+                >
+                    <div class="flex items-center gap-4 mb-8">
+                        <span
+                            class="bg-teal-700 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl"
+                            >2</span
+                        >
+                        <h2
+                            class="text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-wide"
+                        >
+                            Información de reclamo
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-input">
+                            <label for="fecha_compra">Fecha de Compra</label>
+                            <input
+                                type="date"
+                                id="fecha_compra"
+                                name="fecha_compra"
+                                required
+                            />
+                        </div>
+                        <div class="form-input">
+                            <label for="producto">Productos</label>
+                            <select id="producto" name="producto" required>
+                                <option value="" disabled selected
+                                    >--- Selecciona una opción ---</option
+                                >
+                                <option value="negocio">Negocio</option>
+                                <option value="maquinaria">Maquinaria</option>
+                                <option value="decoracion">Decoración</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="form-input md:col-span-2">
+                            <label for="detalle"
+                                >Detalle de la reclamación</label
+                            >
+                            <textarea
+                                id="detalle"
+                                name="detalle"
+                                rows="4"
+                                placeholder="Detalle su reclamo aquí"
+                                required></textarea>
+                        </div>
+                        <div class="form-input">
+                            <label for="monto">Monto Reclamado</label>
+                            <div class="relative">
+                                <span
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 opacity-60"
+                                    >S/</span
+                                >
+                                <input
+                                    type="number"
+                                    id="monto"
+                                    name="monto"
+                                    step="0.01"
+                                    class="pl-10!"
+                                    placeholder="ej: 200.5"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 flex justify-center">
+                        <button
+                            type="submit"
+                            class="admin-act-btn w-full md:w-auto px-16 py-4 text-xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                        >
+                            ENVIAR
+                        </button>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </main>
+</Layout>
+
+<style>
+    /* Personalización extra sobre las clases globales si es necesario */
+    .form-input input[type="date"] {
+        min-height: 42px;
+    }
+</style>
