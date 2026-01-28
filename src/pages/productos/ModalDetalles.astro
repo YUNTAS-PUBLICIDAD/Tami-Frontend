@@ -168,24 +168,67 @@ const { link = "" } = Astro.props as ModalProps;
   let modalMostrado = false;
   let scrollActivado = false;
 
+  async function obtenerProductoActual() {
+    const container = document.getElementById("modal-form-container");
+    const productLink = container?.dataset.productLink;
+
+    if (!productLink) return null;
+
+    if (window.__detalleProducto) return window.__detalleProducto;
+
+    try {
+      const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${productLink}`);
+      if (response.ok) {
+        const result = await response.json();
+        window.__detalleProducto = result.data || result;
+        return window.__detalleProducto;
+      }
+    } catch (e) {}
+
+    return null;
+  }
+
+  function cerrarTodosLosModales() {
+    document.getElementById("modal-cotizacion-producto")?.classList.add("hidden");
+    document.getElementById("modal-detalles-2")?.classList.add("hidden");
+    document.getElementById("modal-detalles-3")?.classList.add("hidden");
+  }
+
   async function showCotizacionModal() {
+    const producto = await obtenerProductoActual();
+    await actualizarImagenDesdeLink();
+
+    cerrarTodosLosModales();
+
+    const popupEstilo =
+      producto?.etiqueta?.popup_estilo ||
+      "estilo1";
+
+
+    console.log("🎯 Estilo de modal detectado:", popupEstilo);
+
+    if (popupEstilo === "estilo2") {
+      document.getElementById("modal-detalles-2")?.classList.remove("hidden");
+      return;
+    }
+
+    if (popupEstilo === "estilo3") {
+      document.getElementById("modal-detalles-3")?.classList.remove("hidden");
+      return;
+    }
+
+    // ---- ESTILO 1 (TU MODAL ACTUAL) ----
     aplicarConfig();
-    await actualizarImagenDesdeLink(); // Esperar a que cargue la imagen
+
     const modal = document.getElementById("modal-cotizacion-producto");
     const mensaje = document.getElementById("modal-cotizacion-mensaje");
-    const imgZone = document.querySelector(".img-white-zone");
 
     if (modal && mensaje) {
       modal.classList.remove("hidden");
       mensaje.textContent = "";
-      modalMostrado = true;
     }
-    if (imgZone) {
-  imgZone.classList.add("img-negocios-bg");
-}
-
-
   }
+
 
   /**
    * Actualiza la imagen del modal popup desde la BD.
@@ -488,6 +531,7 @@ const { link = "" } = Astro.props as ModalProps;
     pointer-events: none;
   }
 
+
   #modal-product-img {
     position: relative;
     z-index: 2;
@@ -521,7 +565,7 @@ const { link = "" } = Astro.props as ModalProps;
 
   .img-white-zone {
     position: relative;
-    background: white;
+    background: #0c1142;
     z-index: 25;
   }
 
@@ -529,7 +573,5 @@ const { link = "" } = Astro.props as ModalProps;
     .img-white-zone { width: 50%; }
   }
 
-  .img-negocios-bg {
-    background-color: #0c1142 !important;
-  }
+  
 </style>

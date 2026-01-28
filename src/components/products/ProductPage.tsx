@@ -13,6 +13,12 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import SimilarProductCard from './SimilarProductCard';
 
+declare global {
+  interface Window {
+    __detalleProducto?: any;
+  }
+}
+
 
 interface Props {
     producto: Producto
@@ -31,6 +37,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     const freshData = await response.json();
                     setProducto(freshData.data);
                     setProductViewer(freshData.data.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+                    window.__detalleProducto = freshData.data;
                 }
             } catch (error) {
                 console.error('Error al cargar datos frescos del producto:', error);
@@ -44,6 +51,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
  
         setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
         insertJsonLd("product", producto);
+        window.__detalleProducto = producto;
     }, [producto]); 
 
     const getDimensionBgColor = (letter: string) => {
