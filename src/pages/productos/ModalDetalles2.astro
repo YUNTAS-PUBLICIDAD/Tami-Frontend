@@ -1,0 +1,146 @@
+---
+import { config } from "config";
+
+interface ModalProps {
+  seccion?: string;
+  link?: string;
+}
+
+const numeroWhatsApp = "51978883199";
+const DEFAULT_IMAGE = "/images/popup/default.webp";
+const { link = "", seccion = "" } = Astro.props as ModalProps;
+---
+
+<div id="modal-detalles-2" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden">
+  <div class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl rounded-2xl overflow-hidden shadow-2xl animate-slideIn">
+
+    <button id="close-modal-detalles-2"
+      class="absolute top-4 right-4 bg-white text-gray-600 hover:text-black w-10 h-10 rounded-full shadow-xl transition hover:scale-110 z-50">
+      ✕
+    </button>
+
+    <div class="w-full sm:w-1/2 bg-white flex items-center justify-center p-6 relative z-20">
+      <img id="modal-product-img"
+        src={DEFAULT_IMAGE}
+        alt="Imagen"
+        class="object-contain max-h-[380px]" />
+    </div>
+
+    <div id="modal-form-container"
+      class="w-full sm:w-1/2 p-8 sm:p-12 text-white flex flex-col justify-center relative z-30 modal-blue-panel"
+      data-product-link={link}
+      data-seccion={seccion}
+      data-whatsapp={numeroWhatsApp}
+    >
+      <h2 class="text-3xl sm:text-4xl font-light text-center leading-snug mb-8">
+        Tu guía de decoración exclusiva,<br>
+        <span class="font-extrabold">Gratis</span>
+      </h2>
+
+      <form id="form-cotizacion-producto" class="flex flex-col gap-4">
+        <input type="text" name="nombre" placeholder="Nombre y Apellidos" required class="input-style" />
+        <input type="email" name="correo" placeholder="Correo@gmail.com" required class="input-style" />
+        <input type="tel" name="telefono" placeholder="Teléfono: 905 876 524" required class="input-style" />
+
+        <button type="submit" class="btn-white-pill mt-4 font-bold text-base self-center w-auto px-14 text-3xl">
+          ¡Cotiza ahora!
+        </button>
+
+      </form>
+
+      <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-blue-panel {
+  background: linear-gradient(
+    180deg,
+    #002ade 0%,
+    #003a9f 40%,
+    #004c5d 100%
+  );
+}
+
+
+
+.input-style {
+  background: white;
+  color: #111;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #7aa2ff;
+  box-shadow: 0 0 0 3px rgba(122,162,255,.15);
+}
+
+.btn-white-pill {
+  background: white;
+  color: #2702aa;
+  padding: 0.6rem 3.5rem !important; /* fuerza a ganar */
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 1.5rem; /* controla altura visual */
+  line-height: 1.2;
+  transition: .3s;
+}
+
+.btn-white-pill:hover { transform: scale(1.05); }
+</style>
+
+<script>
+import { config } from "config";
+
+window.__detalleProducto = window.__detalleProducto || null;
+
+async function actualizarImagenModal2() {
+  const container = document.querySelector("#modal-detalles-2 #modal-form-container");
+  const modalImg = document.querySelector("#modal-detalles-2 #modal-product-img");
+  if (!container || !modalImg) return;
+
+  const productLink = container.dataset.productLink || "";
+  let imagen = "/images/popup/default.webp";
+  let imagenAlt = "Imagen del producto";
+
+  if (!window.__detalleProducto && productLink) {
+    try {
+      const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${productLink}`);
+      if (response.ok) {
+        const result = await response.json();
+        window.__detalleProducto = result.data || result;
+      }
+    } catch {}
+  }
+
+  if (window.__detalleProducto) {
+    const producto = window.__detalleProducto;
+    const imagenPopup = producto.producto_imagenes?.find(img => img.tipo === "popup");
+
+    if (imagenPopup?.url_imagen) {
+      imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
+      imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre;
+    } else if (producto.imagenes?.length > 0) {
+      imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
+      imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
+    }
+  }
+
+  modalImg.src = imagen;
+  modalImg.alt = imagenAlt;
+}
+
+const modal2 = document.getElementById("modal-detalles-2");
+const closeBtn = document.getElementById("close-modal-detalles-2");
+
+if (closeBtn) {
+  closeBtn.onclick = () => modal2?.classList.add("hidden");
+}
+
+const observer = new MutationObserver(async () => {
+  if (!modal2.classList.contains("hidden")) {
+    await actualizarImagenModal2();
+  }
+});
+
+observer.observe(modal2, { attributes: true, attributeFilter: ["class"] });
+</script>
