@@ -56,7 +56,17 @@ export const config = {
       info: "/api/v1/whatsapp/solicitar-info-producto",
       requestQR: "/api/v1/whatsapp/request-qr",
       resetSession: "/api/v1/whatsapp/reset",
+      
     },
+    reclamaciones: {
+      // Endpoints de reclamaciones
+      list: "/api/v1/admin/claims",
+      detail: (id: number | string) => `/api/v1/admin/claims/${id}`,
+      updateStatus: (id: number | string) => `/api/v1/admin/claims/${id}/status`,
+      create : "/api/v1/claims",
+      // Endpoint para obtener estadísticas de reclamaciones
+      all: "api/v1/claim-form-data",
+  },
   },
   socket: {
     whatsapp: import.meta.env.PUBLIC_WHATSAPP_SOCKET_URL || "https://apitami.tamimaquinarias.com",

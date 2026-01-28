@@ -54,34 +54,38 @@ const ReclamacionesTable = () => {
   const handleStatusChange = async (newStatusId: number) => {
     if (!selectedReclamacion) return;
 
+    // Obtenemos la URL base del .env
+    const baseUrl = import.meta.env.PUBLIC_API_URL;
+
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/admin/claims/${selectedReclamacion.id}/status`, {
+      // Reemplazamos la URL fija por la variable
+      const response = await fetch(`${baseUrl}/api/v1/admin/claims/${selectedReclamacion.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ status_id: newStatusId }) 
+        body: JSON.stringify({ status_id: newStatusId })
       });
 
       const result = await response.json();
 
       if (result.success) {
         const statusNames: Record<number, string> = { 1: 'Pendiente', 2: 'En Proceso', 3: 'Atendido' };
-        
+
         setSelectedReclamacion((prev: Reclamacion | null) => {
           if (!prev) return null;
           return {
             ...prev,
             claim_status_id: newStatusId,
-            claim_status: { 
-                ...prev.claim_status, 
-                id: newStatusId,
-                name: statusNames[newStatusId] || prev.claim_status?.name 
+            claim_status: {
+              ...prev.claim_status,
+              id: newStatusId,
+              name: statusNames[newStatusId] || prev.claim_status?.name
             }
           } as Reclamacion;
         });
-        
+
         // Refrescamos la tabla para que el cambio se vea en la lista principal
         handleRefetch();
       } else {
@@ -108,12 +112,12 @@ const ReclamacionesTable = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-8 space-y-6">
-      
+
       {/* MODAL (DETALLE) */}
       {isModalOpen && selectedReclamacion && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all">
           <div className="bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-200">
-            
+
             {/* Cabecera Modal */}
             <div className="bg-red-600 px-8 py-6 flex justify-between items-center text-white">
               <div>
@@ -132,7 +136,11 @@ const ReclamacionesTable = () => {
                 <InfoItem icon={<FaEnvelope />} label="Email" value={selectedReclamacion.email} />
                 <InfoItem icon={<FaIdCard />} label="Documento" value={`${selectedReclamacion.document_type?.code || ''} - ${selectedReclamacion.document_number}`} />
                 <InfoItem icon={<FaPhone />} label="Teléfono" value={selectedReclamacion.phone} />
-                <InfoItem icon={<FaCalendarAlt />} label="Fecha Compra" value={selectedReclamacion.purchase_date ? new Date(selectedReclamacion.purchase_date.split('T')[0]).toLocaleDateString('es-PE') : '---'} />
+                <InfoItem icon={<FaCalendarAlt />} label="Fecha Compra" value={
+                  selectedReclamacion.purchase_date
+                    ? selectedReclamacion.purchase_date.split('T')[0].split('-').reverse().join('/')
+                    : '---'
+                } />
                 <InfoItem icon={<FaExclamationTriangle />} label="Tipo de Reclamo" value={selectedReclamacion.claim_type?.name} />
               </div>
 
@@ -162,10 +170,10 @@ const ReclamacionesTable = () => {
 
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-bold text-gray-400 uppercase pt-4 border-t border-gray-100 dark:border-gray-800">
                 <span>
-                    Estado actual: 
-                    <span className={`ml-2 ${selectedReclamacion.claim_status?.id === 1 ? 'text-yellow-500' : selectedReclamacion.claim_status?.id === 2 ? 'text-blue-500' : 'text-green-500'}`}>
-                        {selectedReclamacion.claim_status?.name}
-                    </span>
+                  Estado actual:
+                  <span className={`ml-2 ${selectedReclamacion.claim_status?.id === 1 ? 'text-yellow-500' : selectedReclamacion.claim_status?.id === 2 ? 'text-blue-500' : 'text-green-500'}`}>
+                    {selectedReclamacion.claim_status?.name}
+                  </span>
                 </span>
                 <span>Registrado: {new Date(selectedReclamacion.created_at).toLocaleString()}</span>
               </div>
@@ -186,7 +194,7 @@ const ReclamacionesTable = () => {
 
       {/* --- VISTA PRINCIPAL (TABLA) --- */}
       <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-        
+
         <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-white">
           <div>
             <h2 className="text-3xl font-black flex items-center gap-3 tracking-tighter uppercase">
