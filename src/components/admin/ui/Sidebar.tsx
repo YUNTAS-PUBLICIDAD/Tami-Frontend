@@ -62,6 +62,7 @@ const Sidebar = () => {
     { name: "Usuarios", path: "/admin/usuarios" },
     { name: "Productos", path: "/admin/productos" },
     { name: "Blog", path: "/admin/blog" },
+    { name: "Reclamaciones", path: "/admin/reclamaciones" },
   ];
 
   return (
