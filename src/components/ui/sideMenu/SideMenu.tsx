@@ -120,25 +120,7 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
 
         <div className="my-1 border-t border-white/30 w-4/5 mx-auto" />
 
-        <div className="py-1">
-          <p className="font-semibold text-center text-white text-lg mb-4">
-            Síguenos
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 px-2">
-            {socialMediaLinks.map((item, index) => (
-              <NavSocialMediaLink
-                key={index}
-                image={item.image.src}
-                url={item.url}
-                socialMediaName={item.socialMediaName}
-                imageTitle={item.imageTitle}
-                linkTitle={item.linkTitle}
-              />
-            ))}
-          </div>
-        </div>
 
-        <div className="my-6 border-t border-white/30 w-4/5 mx-auto" />
 
         <div className="pt-2">
           {!user ? (
@@ -177,12 +159,35 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
               <p className="text-white font-bold text-lg capitalize">{user.role}</p>
               <button
                 onClick={handleLogout}
-                className="w-4/5 mx-auto text-center bg-red-600 hover:bg-red-700 transition-colors py-3 rounded-xl font-bold text-white text-sm"
+                className="w-4/5 mx-auto text-center bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 transition-all duration-300 py-3 rounded-xl font-bold text-white text-sm shadow-sm hover:shadow"
               >
                 CERRAR SESIÓN
               </button>
             </div>
           )}
+        </div>
+
+        {/* --- ESPACIO DE SEPARACIÓN AJUSTABLE --- */}
+        <div className="mt-8" id="spacer-social-networks"></div>
+        {/* --------------------------------------- */}
+
+        <div className="my-6 border-t border-white/30 w-4/5 mx-auto" />
+        <div className="py-1">
+          <p className="font-semibold text-center text-white text-lg mb-4">
+            Síguenos
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 px-2">
+            {socialMediaLinks.map((item, index) => (
+              <NavSocialMediaLink
+                key={index}
+                image={item.image.src}
+                url={item.url}
+                socialMediaName={item.socialMediaName}
+                imageTitle={item.imageTitle}
+                linkTitle={item.linkTitle}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
