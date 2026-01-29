@@ -13,7 +13,8 @@
   src: url('/fonts/montserrat-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
-  font-display: swap; /* Mejora el rendimiento */
+  font-display: swap;
+  /* Mejora el rendimiento */
 }
 
 @font-face {
@@ -33,16 +34,16 @@
 }
 
 @theme {
-    --font-montserrat: "Montserrat", sans-serif;
-    --color-sunset: #ffc68a;
+  --font-montserrat: "Montserrat", sans-serif;
+  --color-sunset: #ffc68a;
 }
 
 /* --- Variables y transiciones globales para Dark Mode --- */
 * {
-  transition: background-color 0.4s ease-in-out, 
-              color 0.4s ease-in-out, 
-              border-color 0.3s ease-in-out,
-              box-shadow 0.3s ease-in-out !important;
+  transition: background-color 0.4s ease-in-out,
+    color 0.4s ease-in-out,
+    border-color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out !important;
 }
 
 
@@ -95,95 +96,166 @@ body {
   font-weight: 400;
 }
 
-header, nav, aside, main {
-  transition: background-color 0.4s ease-in-out, 
-              color 0.4s ease-in-out,
-              background-image 0.4s ease-in-out !important;
+header,
+nav,
+aside,
+main {
+  transition: background-color 0.4s ease-in-out,
+    color 0.4s ease-in-out,
+    background-image 0.4s ease-in-out !important;
 }
 
-a, button {
-  transition: background-color 0.3s ease-in-out, 
-              color 0.3s ease-in-out,
-              border-color 0.3s ease-in-out,
-              transform 0.2s ease-in-out !important;
+a,
+button {
+  transition: background-color 0.3s ease-in-out,
+    color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out,
+    transform 0.2s ease-in-out !important;
 }
 
-input, textarea, select {
-  transition: background-color 0.3s ease-in-out, 
-              color 0.3s ease-in-out,
-              border-color 0.3s ease-in-out !important;
+input,
+textarea,
+select {
+  transition: background-color 0.3s ease-in-out,
+    color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out !important;
 }
 
 div {
-  transition: background-color 0.4s ease-in-out, 
-              color 0.4s ease-in-out !important;
-} 
+  transition: background-color 0.4s ease-in-out,
+    color 0.4s ease-in-out !important;
+}
 
-.no-dark-transition, .no-dark-transition * {
+.no-dark-transition,
+.no-dark-transition * {
   transition: transform 0.2s ease-in-out !important;
 }
 
-.bg-gradient-to-b, .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t {
+.bg-gradient-to-b,
+.bg-gradient-to-r,
+.bg-gradient-to-l,
+.bg-gradient-to-t {
   transition: background-image 0.5s ease-in-out !important;
 }
 
 /* --- Tus clases personalizadas --- */
-.pagination-btn { @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-600 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200; }
-.admin-act-btn { @apply bg-teal-800 hover:bg-teal-950 transition-colors hover:cursor-pointer text-white text-lg px-10 py-1.5 rounded-full; }
-.cancel-btn { @apply bg-red-700 hover:bg-red-900 transition-colors hover:cursor-pointer rounded-full px-8; }
-
-@keyframes slideIn { from { opacity: 0; transform: translateY(50px);} to { opacity: 1; transform: translateY(0);} }
-@keyframes slideOut { from { opacity: 1; transform: translateY(0);} to { opacity: 0; transform: translateY(50px);} }
-
-.modal-overlay { animation: fadeIn 0.3s ease-in-out; }
-@keyframes fadeIn { from { opacity: 0;} to { opacity: 1;} }
-
-.animate-slideIn { animation: slideIn 0.3s ease-in-out; }
-.animate-slideOut { animation: slideOut 0.3s ease-in-out; }
-
-.form-input > input[type="text"], .form-input > input[type="number"], .form-input > input[type="file"], .form-input > select, .form-input > textarea {
-    @apply w-full border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic focus:ring-2 focus:ring-teal-500 outline-none appearance-none;
+.pagination-btn {
+  @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-600 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
 }
 
-.form-input > label { @apply text-gray-700 dark:text-gray-400 font-semibold mb-2 block text-sm; }
-.form-input { @apply mb-3; }
-.form-input > select > option { @apply text-gray-500 dark:text-gray-300; }
-.group-form { @apply grid auto-cols-auto grid-flow-col gap-4; }
+.admin-act-btn {
+  @apply bg-teal-800 hover:bg-teal-950 transition-colors hover:cursor-pointer text-white text-lg px-10 py-1.5 rounded-full;
+}
+
+.cancel-btn {
+  @apply bg-red-700 hover:bg-red-900 transition-colors hover:cursor-pointer rounded-full px-8;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+}
+
+.modal-overlay {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.animate-slideOut {
+  animation: slideOut 0.3s ease-in-out;
+}
+
+.form-input>input[type="text"],
+.form-input>input[type="number"],
+.form-input>input[type="file"],
+.form-input>select,
+.form-input>textarea {
+  @apply w-full border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 rounded-md px-4 py-2 focus:outline-none focus:border-gray-300 dark:focus:border-gray-500 transition-colors duration-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:italic focus:ring-2 focus:ring-teal-500 outline-none appearance-none;
+}
+
+.form-input>label {
+  @apply text-gray-700 dark:text-gray-400 font-semibold mb-2 block text-sm;
+}
+
+.form-input {
+  @apply mb-3;
+}
+
+.form-input>select>option {
+  @apply text-gray-500 dark:text-gray-300;
+}
+
+.group-form {
+  @apply grid auto-cols-auto grid-flow-col gap-4;
+}
 
 .neutral-btn {
-    @apply bg-transparent border text-white border-gray-300 hover:bg-white hover:text-black dark:hover:bg-gray-700 dark:hover:text-white transition-colors hover:cursor-pointer text-lg px-10 py-1.5 rounded-full;
+  @apply bg-transparent border text-white border-gray-300 hover:bg-white hover:text-black dark:hover:bg-gray-700 dark:hover:text-white transition-colors hover:cursor-pointer text-lg px-10 py-1.5 rounded-full;
 }
 
-input[type="checkbox"]:checked + label {
-    color: whitesmoke;
-    font-weight: bold;
+input[type="checkbox"]:checked+label {
+  color: whitesmoke;
+  font-weight: bold;
 }
 
 /* Hero */
 .gradient-hero {
-    min-height: 100vh;
-    contain: layout style paint;
-    transform: translateZ(0);
+  min-height: 100vh;
+  contain: layout style paint;
+  transform: translateZ(0);
 
-    /* @media (max-width: 768px) {
+  /* @media (max-width: 768px) {
         display: none !important;
     } */
-    @media (min-width: 769px) {
-        display: block;
-        height: 100%;
-        min-height: 100vh;
-    }
+  @media (min-width: 769px) {
+    display: block;
+    height: 100%;
+    min-height: 100vh;
+  }
 }
 
 .hero-section {
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  contain: layout style paint;
+  overflow: hidden;
+
+  @supports not (height: 100dvh) {
     min-height: 100vh;
-    min-height: 100dvh;
-    contain: layout style paint;
-    overflow: hidden;
-    @supports not (height: 100dvh) {
-        min-height: 100vh;
-    }
+  }
 }
 
 /* Navbar */
@@ -217,30 +289,31 @@ a.relative.group:hover::after {
 
 /* Scroll Modal */
 .scrollmodal-title {
-    font-weight: bold;
-    color: white;
-    font-size: 2.2rem;
-    display: inline-block;
-    word-break: break-word;
+  font-weight: bold;
+  color: white;
+  font-size: 2.2rem;
+  display: inline-block;
+  word-break: break-word;
 }
 
 .scrollmodal-body {
-    font-size: 1.8rem;
-    max-width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    line-height: 1.3;
-    padding: 0 15px;
+  font-size: 1.8rem;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0 15px;
 }
 
 /* Versión responsive para pantallas pequeñas */
 @media (max-width: 768px) {
-    .scrollmodal-title {
-        font-size: 1.6rem;
-    }
-    .scrollmodal-body {
-        font-size: 1.4rem;
-    }
+  .scrollmodal-title {
+    font-size: 1.6rem;
+  }
+
+  .scrollmodal-body {
+    font-size: 1.4rem;
+  }
 }
 
 @theme inline {
@@ -319,27 +392,38 @@ a.relative.group:hover::after {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
 
-.card{
+.card {
   @apply bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700
 }
+
 /* Modales para dashboards (dialogs) */
-.dialog-overlay{
+.dialog-overlay {
   @apply fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 md:p-6 lg:p-8 overflow-y-auto
 }
-.dialog{
-  @apply bg-white dark:bg-gray-800 w-full max-w-md md:max-w-2xl lg:max-w-4xl rounded-2xl shadow-2xl p-6 md:p-8 relative transition-all duration-500 overflow-y-auto
+
+.dialog {
+  @apply bg-white dark:bg-gray-800 w-full max-w-md md:max-w-2xl lg:max-w-4xl rounded-2xl shadow-2xl p-6 md:p-8 relative transition-all duration-500 overflow-y-auto overflow-x-hidden
 }
-.dialog-header{
+
+.dialog-header {
   @apply bg-teal-600 -mx-6 md:-mx-8 -mt-6 md:-mt-8 mb-6 p-4 md:p-6 rounded-t-2xl
 }
-.dialog-title{
+
+.dialog-title {
   @apply text-xl md:text-2xl text-center font-bold text-white
+}
+
+.dialog p, .dialog li, .dialog span {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 /* --- Estilos para las flechas de Swiper --- */
@@ -347,27 +431,19 @@ a.relative.group:hover::after {
 
 .swiper-button-next-custom,
 .swiper-button-prev-custom {
-  @apply 
-    absolute top-1/2 -translate-y-1/2 z-10
-    w-11 h-11 
-    bg-white text-[#015f86] 
-    border border-gray-200
-    shadow-md rounded-full 
-    flex items-center justify-center 
-    cursor-pointer 
-    transition-all duration-300
-    hover:bg-[#015f86] hover:text-white
-    focus:outline-none focus:ring-2 focus:ring-[#015f86];
+  @apply absolute top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white text-[#015f86] border border-gray-200 shadow-md rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#015f86] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#015f86];
 }
 
 .swiper-button-prev-custom {
-  @apply left-0; 
+  @apply left-0;
 }
+
 .swiper-button-next-custom {
   @apply right-0;
 }
 
 @media (max-width: 768px) {
+
   .swiper-button-next-custom,
   .swiper-button-prev-custom {
     @apply hidden;
@@ -378,28 +454,22 @@ a.relative.group:hover::after {
 .swiper-button-next-custom::after,
 .swiper-button-prev-custom::after {
   @apply text-lg font-extrabold;
-  font-family: 'swiper-icons'; 
+  font-family: 'swiper-icons';
 }
+
 .swiper-button-prev-custom::after {
   content: 'prev';
 }
+
 .swiper-button-next-custom::after {
   content: 'next';
 }
 
 /* --- Estilos para la paginación (puntos) de Swiper --- */
 .swiper-pagination-bullet-custom {
-  @apply 
-    w-2.5 h-2.5 
-    bg-gray-300 
-    rounded-full 
-    opacity-100
-    transition-all duration-300
-    cursor-pointer
-    mx-1; 
+  @apply w-2.5 h-2.5 bg-gray-300 rounded-full opacity-100 transition-all duration-300 cursor-pointer mx-1;
 }
 
 .swiper-pagination-bullet-active-custom {
   @apply bg-[#015f86] scale-125;
 }
-
