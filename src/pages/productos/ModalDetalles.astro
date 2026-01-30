@@ -134,14 +134,14 @@ const { link = "" } = Astro.props as ModalProps;
   const secciones = {
     NEGOCIOS: {
       gradient: "custom-gradient-negocio",
-      title: "Descubre tu guía exclusiva de decoración TOTALMENTE GRATIS",
+      title: "Descubre tu guía exclusiva de negocio TOTALMENTE GRATIS",
       btn: "btn-gradient-negocio-fix border border-white cursor-pointer", // Cambiado aquí
       buttonText: "¡COTIZA AHORA!",
     },
     MAQUINARIA: {
       gradient: "custom-gradient-maquinaria",
       title:
-        "Descubre tu guía exclusiva de decoración TOTALMENTE GRATIS",
+        "Descubre tu guía exclusiva de maquinaria TOTALMENTE GRATIS",
       btn: "btn-gradient-negocio-fix border border-white cursor-pointer",
       buttonText: "¡COTIZA AHORA!",
     },
@@ -383,6 +383,80 @@ const { link = "" } = Astro.props as ModalProps;
       form.reset();
     };
   }
+
+   // ====== CONECTAR OTROS MODALES AL MISMO ENVÍO ======
+const extraForms = document.querySelectorAll(".form-cotizacion-producto");
+
+extraForms.forEach((formExtra) => {
+  if (formExtra.id === "form-cotizacion-producto") return; // evitar duplicar el principal
+
+  formExtra.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const container = formExtra.closest("[data-product-link]");
+    const mensajeEl = container?.querySelector(".modal-cotizacion-mensaje");
+
+    const data = new FormData(formExtra);
+    const nombre = data.get("nombre");
+    const telefono = "+51 " + data.get("telefono");
+    const correo = data.get("correo");
+    const productLink = container?.dataset.productLink;
+
+    // === WHATSAPP (MISMA LÓGICA QUE YA USAS) ===
+    try {
+      await fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          link: productLink,
+          phone: telefono,
+          email: correo ?? null,
+        }),
+      });
+
+      if (mensajeEl) mensajeEl.textContent = "WhatsApp enviado ✅";
+    } catch (error) {
+      if (mensajeEl) mensajeEl.textContent = "WhatsApp falló ❌";
+    }
+
+    // === EMAIL ===
+    try {
+      const response = await fetch(
+        `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: nombre,
+            celular: telefono,
+            email: correo,
+            link: productLink,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        if (mensajeEl)
+          mensajeEl.textContent += mensajeEl.textContent
+            ? " | Correo enviado ✅"
+            : "Correo enviado ✅";
+      } else {
+        if (mensajeEl)
+          mensajeEl.textContent += mensajeEl.textContent
+            ? " | Correo falló ❌"
+            : "Correo falló ❌";
+      }
+    } catch {
+      if (mensajeEl)
+        mensajeEl.textContent += mensajeEl.textContent
+          ? " | Correo falló ❌"
+          : "Correo falló ❌";
+    }
+
+    formExtra.reset();
+  });
+});
+
 
   function aplicarConfig() {
     const backgroundModal = document.getElementById("background-modal");
