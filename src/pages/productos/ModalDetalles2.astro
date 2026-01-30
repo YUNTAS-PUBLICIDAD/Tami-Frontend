@@ -12,22 +12,23 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 ---
 
 <div id="modal-detalles-2" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden">
-  <div class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl rounded-2xl overflow-hidden shadow-2xl animate-slideIn">
+  <div class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn">
+
 
     <button id="close-modal-detalles-2"
       class="absolute top-4 right-4 bg-white text-gray-600 hover:text-black w-10 h-10 rounded-full shadow-xl transition hover:scale-110 z-50">
       ✕
     </button>
 
-    <div class="w-full sm:w-1/2 bg-white flex items-center justify-center p-6 relative z-20">
+    <div class="w-full sm:w-1/2 bg-white flex items-center justify-center p-6 sm:p-10 relative z-20">
       <img id="modal2-product-img"
         src={DEFAULT_IMAGE}
         alt="Imagen"
-        class="object-contain max-h-[380px]" />
+        class="object-contain max-h-[160px] sm:max-h-[420px] w-full" />
     </div>
 
     <div id="modal2-form-container"
-      class="w-full sm:w-1/2 p-8 sm:p-12 text-white flex flex-col justify-center relative z-30 modal-blue-panel"
+      class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
@@ -42,7 +43,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         <input type="email" name="correo" placeholder="Correo@gmail.com" required class="input-style" />
         <input type="tel" name="telefono" placeholder="Teléfono: 905 876 524" required class="input-style" />
 
-        <button type="submit" class="btn-white-pill mt-4 font-bold text-base self-center w-auto px-14 text-3xl">
+        <button type="submit" class="btn-white-pill mt-4 font-bold text-lg sm:text-3xl self-center w-auto px-10 sm:px-14">
           ¡Cotiza ahora!
         </button>
       </form>
@@ -74,15 +75,18 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 .btn-white-pill {
   background: white;
   color: #2702aa;
-  padding: 0.6rem 3.5rem !important;
   border-radius: 999px;
   font-weight: bold;
-  font-size: 1.5rem;
   line-height: 1.2;
   transition: .3s;
+  padding: 0.7rem 2.2rem; /* más equilibrado */
+  font-size: 1rem; /* base móvil */
 }
 
+
 .btn-white-pill:hover { transform: scale(1.05); }
+
+
 </style>
 
 <script>

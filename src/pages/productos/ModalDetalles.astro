@@ -16,8 +16,9 @@ const { link = "" } = Astro.props as ModalProps;
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn rounded-xl"
-  >
+  class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-4xl relative animate-slideIn rounded-xl"
+>
+
 
     <button
       id="close-modal-cotizacion"
@@ -40,22 +41,23 @@ const { link = "" } = Astro.props as ModalProps;
     <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
 
     <div
-      class="img-container-mobile sm:absolute sm:inset-0 sm:flex w-full sm:w-[50%] justify-center items-center overflow-hidden img-white-zone"
-    >
-      <img
-        id="modal-product-img"
-        src={DEFAULT_IMAGE}
-        alt="Imagen del producto"
-        title="Imagen del producto"
-        class="h-full w-full object-contain"
-        onerror="this.onerror=null; this.src='/images/popup/default.webp'"
-      />
-    </div>
+        class="w-full sm:w-1/2 flex justify-center items-center overflow-hidden img-white-zone"
+      >
+        <img
+          id="modal-product-img"
+          src={DEFAULT_IMAGE}
+          alt="Imagen del producto"
+          title="Imagen del producto"
+          class="w-full h-full object-contain p-6"
+          onerror="this.onerror=null; this.src='/images/popup/default.webp'"
+        />
+      </div>
+
 
     <!-- Formulario dinámico -->
     <div
       id="modal-form-container"
-      class="w-full sm:w-3/5 p-6 text-white relative z-30 ml-auto"
+      class="w-full sm:w-1/2 p-6 text-white relative z-30 ml-auto"
       data-product-link={link}
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
