@@ -6,112 +6,112 @@ import { useWhatsapp } from 'src/hooks/admin/whatsapp/useWhatsapp';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 interface WhatsappConnectionProps {
-  onConnectionChange?: (connected: boolean) => void;
+    onConnectionChange?: (connected: boolean) => void;
 }
 
 export default function WhatsappConnection({ onConnectionChange }: WhatsappConnectionProps) {
-  const { requestQR, resetSession, isRequesting } = useWhatsapp();
+    const { requestQR, resetSession, isRequesting } = useWhatsapp();
 
-  const [qrCode, setQrCode] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [socketStatus, setSocketStatus] =
-    useState<'connecting' | 'connected' | 'disconnected'>('connecting');
-  const [isWaitingQR, setIsWaitingQR] = useState(false);
+    const [qrCode, setQrCode] = useState<string | null>(null);
+    const [isConnected, setIsConnected] = useState(false);
+    const [socketStatus, setSocketStatus] =
+        useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+    const [isWaitingQR, setIsWaitingQR] = useState(false);
 
-  const socketRef = useRef<Socket | null>(null);
+    const socketRef = useRef<Socket | null>(null);
 
-  useEffect(() => {
-    console.log('🔌 Conectando a socket:', config.socket.whatsapp);
+    useEffect(() => {
+        console.log('🔌 Conectando a socket:', config.socket.whatsapp);
 
-    const socket = io(config.socket.whatsapp, {
-      transports: ['websocket', 'polling'], // MUY IMPORTANTE
-      withCredentials: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 2000,
-      timeout: 10000,
-    });
+        const socket = io(config.socket.whatsapp, {
+            transports: ['websocket', 'polling'], // MUY IMPORTANTE
+            withCredentials: true,
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 2000,
+            timeout: 10000,
+        });
 
-    socketRef.current = socket;
+        socketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('🟢 Socket conectado:', socket.id);
-      setSocketStatus('connected');
-    });
+        socket.on('connect', () => {
+            console.log('🟢 Socket conectado:', socket.id);
+            setSocketStatus('connected');
+        });
 
-    socket.on('qr-update', (data) => {
-      console.log('📡 QR update recibido:', data);
+        socket.on('qr-update', (data) => {
+            console.log('📡 QR update recibido:', data);
 
-      const connected = data.connectionStatus === 'connected';
+            const connected = data.connectionStatus === 'connected';
 
-      setIsWaitingQR(false);
-      setIsConnected(connected);
-      setQrCode(connected ? null : data.qrData?.image || null);
+            setIsWaitingQR(false);
+            setIsConnected(connected);
+            setQrCode(connected ? null : data.qrData?.image || null);
 
-      onConnectionChange?.(connected);
-    });
+            onConnectionChange?.(connected);
+        });
 
-    socket.on('disconnect', (reason) => {
-      console.warn('🟠 Socket desconectado:', reason);
-      setSocketStatus('disconnected');
-    });
+        socket.on('disconnect', (reason) => {
+            console.warn('🟠 Socket desconectado:', reason);
+            setSocketStatus('disconnected');
+        });
 
-    socket.on('connect_error', (error) => {
-      console.error('🔴 Error de conexión socket:', error.message);
-      setSocketStatus('disconnected');
-    });
+        socket.on('connect_error', (error) => {
+            console.error('🔴 Error de conexión socket:', error.message);
+            setSocketStatus('disconnected');
+        });
 
-    return () => {
-      console.log('🧹 Cerrando socket');
-      socket.disconnect();
-      socketRef.current = null;
+        return () => {
+            console.log('🧹 Cerrando socket');
+            socket.disconnect();
+            socketRef.current = null;
+        };
+    }, [onConnectionChange]);
+
+    const handleResetSession = async () => {
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Deseas reiniciar la sesión de WhatsApp?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#14b8a6',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Sí, reiniciar',
+            cancelButtonText: 'Cancelar',
+        });
+
+        if (!result.isConfirmed) return;
+
+        setQrCode(null);
+        setIsConnected(false);
+        setIsWaitingQR(true);
+        onConnectionChange?.(false);
+
+        const resetResult = await resetSession();
+        if (!resetResult.success) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: resetResult.message || 'Error al reiniciar la sesión',
+                confirmButtonColor: '#14b8a6',
+            });
+            setIsWaitingQR(false);
+            return;
+        }
+
+        const qrResult = await requestQR();
+        if (!qrResult.success) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: qrResult.message || 'Error al solicitar código QR',
+                confirmButtonColor: '#14b8a6',
+            });
+            setIsWaitingQR(false);
+        }
     };
-  }, [onConnectionChange]);
 
-  const handleResetSession = async () => {
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: '¿Deseas reiniciar la sesión de WhatsApp?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#14b8a6',
-      cancelButtonColor: '#ef4444',
-      confirmButtonText: 'Sí, reiniciar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    if (!result.isConfirmed) return;
-
-    setQrCode(null);
-    setIsConnected(false);
-    setIsWaitingQR(true);
-    onConnectionChange?.(false);
-
-    const resetResult = await resetSession();
-    if (!resetResult.success) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: resetResult.message || 'Error al reiniciar la sesión',
-        confirmButtonColor: '#14b8a6',
-      });
-      setIsWaitingQR(false);
-      return;
-    }
-
-    const qrResult = await requestQR();
-    if (!qrResult.success) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: qrResult.message || 'Error al solicitar código QR',
-        confirmButtonColor: '#14b8a6',
-      });
-      setIsWaitingQR(false);
-    }
-  };
-
-  const isLoading = isRequesting || isWaitingQR;
+    const isLoading = isRequesting || isWaitingQR;
 
     return (
         <div className="space-y-6">
@@ -124,7 +124,7 @@ export default function WhatsappConnection({ onConnectionChange }: WhatsappConne
                     <div className="flex items-center gap-3">
                         <div className={`w-4 h-4 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.6)]'} animate-pulse`} />
                         <span className="font-bold text-gray-700 dark:text-gray-200">
-                            {isConnected ? 'WhatsApp Conectado' : 'WhatsApp Desconatado'}
+                            {isConnected ? 'WhatsApp Conectado' : 'WhatsApp Desconectado'}
                         </span>
                     </div>
 
