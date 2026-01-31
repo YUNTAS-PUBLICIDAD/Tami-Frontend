@@ -46,9 +46,13 @@ export default function WhatsappConnection({ onConnectionChange }: WhatsappConne
 
             setIsWaitingQR(false);
             setIsConnected(connected);
-            setQrCode(connected ? null : data.qrData?.image || null);
+            setQrCode(data.qrData?.image || null);
 
             onConnectionChange?.(connected);
+
+            if (connected) {
+                setQrCode(null);
+            }
         });
 
         socket.on('disconnect', (reason) => {
