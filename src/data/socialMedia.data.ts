@@ -14,7 +14,7 @@ const socialMediaLinks = [
   //   linkTitle: "Visita nuestro perfil de TikTok", 
   // },
   {
-    url: "https://api.whatsapp.com/send?phone=51978883199",
+    url: "https://api.whatsapp.com/send?phone=51978883199&text=Hola%20Tami%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20servicios.",
     socialMediaName: "Whatsapp",
     image: whatsappIcon,
     imageTitle: "Whatsapp de Tami Maquinarias",

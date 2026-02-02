@@ -8,9 +8,10 @@ import Layout from "../layouts/Layout.astro";
 >
   <main class="min-h-screen pt-28 pb-20 px-4 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-4xl mx-auto">
-
       <header class="text-center mb-16">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-wide text-teal-700 dark:text-teal-400 uppercase mb-4">
+        <h1
+          class="text-4xl md:text-5xl font-extrabold tracking-wide text-teal-700 dark:text-teal-400 uppercase mb-4"
+        >
           Libro de Reclamaciones
         </h1>
         <p class="text-gray-600 dark:text-gray-400 italic max-w-xl mx-auto">
@@ -19,200 +20,300 @@ import Layout from "../layouts/Layout.astro";
       </header>
 
       <form id="claim-form" class="space-y-16">
-
-        <section class="bg-white dark:bg-gray-800 p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <section
+          class="bg-white dark:bg-gray-800 p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700"
+        >
           <h2 class="text-2xl font-bold mb-10 text-gray-800 dark:text-gray-100">
             1. Datos personales
           </h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nombres</label>
-              <input name="first_name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-600" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Nombres</label
+              >
+              <input
+                name="first_name"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-600"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Apellidos</label>
-              <input name="last_name" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Apellidos</label
+              >
+              <input
+                name="last_name"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Tipo de documento</label>
-              <select id="document_type_id" name="document_type_id" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none">
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Tipo de documento</label
+              >
+              <select
+                id="document_type_id"
+                name="document_type_id"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              >
                 <option value="">Cargando...</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Número de documento</label>
-              <input name="document_number" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Número de documento</label
+              >
+              <input
+                name="document_number"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Correo electrónico</label>
-              <input type="email" name="email" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Correo electrónico</label
+              >
+              <input
+                type="email"
+                name="email"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Teléfono (opcional)</label>
-              <input name="phone" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Teléfono (opcional)</label
+              >
+              <input
+                name="phone"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              />
             </div>
           </div>
         </section>
 
-        <section class="bg-white dark:bg-gray-800 p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <section
+          class="bg-white dark:bg-gray-800 p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700"
+        >
           <h2 class="text-2xl font-bold mb-10 text-gray-800 dark:text-gray-100">
             2. Información del reclamo
           </h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Fecha de compra</label>
-              <input type="date" name="purchase_date" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Fecha de compra</label
+              >
+              <input
+                type="date"
+                name="purchase_date"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Producto (opcional)</label>
-              <select id="producto_id" name="producto_id" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none">
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Producto (opcional)</label
+              >
+              <select
+                id="producto_id"
+                name="producto_id"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              >
                 <option value="">Selecciona un producto</option>
               </select>
             </div>
 
-            <div id="product-preview" class="hidden md:col-span-2 mt-4 p-4 rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900">
+            <div
+              id="product-preview"
+              class="hidden md:col-span-2 mt-4 p-4 rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900"
+            >
               <p class="text-sm text-gray-500 mb-3">Producto seleccionado:</p>
-              <img id="product-image" class="w-40 rounded-xl shadow border" alt="Previsualización" />
+              <img
+                id="product-image"
+                class="w-40 rounded-xl shadow border"
+                alt="Previsualización"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Tipo de reclamo</label>
-              <select id="claim_type_id" name="claim_type_id" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none">
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Tipo de reclamo</label
+              >
+              <select
+                id="claim_type_id"
+                name="claim_type_id"
+                required
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              >
                 <option value="">Cargando...</option>
               </select>
             </div>
 
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Detalle del reclamo</label>
-              <textarea name="detail" rows="5" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none resize-none"></textarea>
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Detalle del reclamo</label
+              >
+              <textarea
+                name="detail"
+                rows="5"
+                required
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none resize-none"
+              ></textarea>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Monto reclamado (opcional)</label>
-              <input type="number" step="0.01" name="claimed_amount" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none" />
+              <label
+                class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >Monto reclamado (opcional)</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                name="claimed_amount"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              />
             </div>
           </div>
 
           <div class="mt-14 text-center">
-            <button id="submit-btn" type="submit" class="inline-flex items-center justify-center bg-teal-700 hover:bg-teal-800 text-white px-16 py-4 rounded-xl font-bold tracking-wide transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button
+              id="submit-btn"
+              type="submit"
+              class="inline-flex items-center justify-center bg-teal-700 hover:bg-teal-800 text-white px-16 py-4 rounded-xl font-bold tracking-wide transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Enviar reclamo
             </button>
           </div>
         </section>
-
       </form>
     </div>
   </main>
 </Layout>
 
 <script>
-// Definición de interfaces
-interface APIItem {
-  id: string | number;
-  name: string;
-  url_imagen?: string;
-}
-
-// OBTENEMOS LA URL BASE DESDE EL .ENV
-// Si PUBLIC_API_URL es "http://127.0.0.1:8000", BASE_URL será esa.
-const BASE_URL = import.meta.env.PUBLIC_API_URL;
-const API_PATH = `${BASE_URL}/api/v1`;
-
-let productsCache: APIItem[] = [];
-
-async function loadFormData() {
-  try {
-    // Usamos la ruta dinámica para cargar datos
-    const res = await fetch(`${API_PATH}/claim-form-data`);
-    const data = await res.json();
-
-    fill("document_type_id", data.document_types);
-    fill("claim_type_id", data.claim_types);
-    fill("producto_id", data.products);
-
-    productsCache = data.products;
-  } catch (error) {
-    console.error("Error cargando los datos del formulario:", error);
+  // Definición de interfaces
+  interface APIItem {
+    id: string | number;
+    name: string;
+    url_imagen?: string;
   }
-}
 
-function fill(id: string, items: APIItem[]) {
-  const el = document.getElementById(id) as HTMLSelectElement | null;
-  if (!el) return;
+  // OBTENEMOS LA URL BASE DESDE EL .ENV
+  // Si PUBLIC_API_URL es "http://127.0.0.1:8000", BASE_URL será esa.
+  const BASE_URL = import.meta.env.PUBLIC_API_URL;
+  const API_PATH = `${BASE_URL}/api/v1`;
 
-  el.innerHTML = '<option value="">--- Selecciona ---</option>';
-  items.forEach(i => {
-    const option = document.createElement("option");
-    option.value = i.id.toString();
-    option.textContent = i.name;
-    el.appendChild(option);
+  let productsCache: APIItem[] = [];
+
+  async function loadFormData() {
+    try {
+      // Usamos la ruta dinámica para cargar datos
+      const res = await fetch(`${API_PATH}/claim-form-data`);
+      const data = await res.json();
+
+      fill("document_type_id", data.document_types);
+      fill("claim_type_id", data.claim_types);
+      fill("producto_id", data.products);
+
+      productsCache = data.products;
+    } catch (error) {
+      console.error("Error cargando los datos del formulario:", error);
+    }
+  }
+
+  function fill(id: string, items: APIItem[]) {
+    const el = document.getElementById(id) as HTMLSelectElement | null;
+    if (!el) return;
+
+    el.innerHTML = '<option value="">--- Selecciona ---</option>';
+    items.forEach((i) => {
+      const option = document.createElement("option");
+      option.value = i.id.toString();
+      option.textContent = i.name;
+      el.appendChild(option);
+    });
+  }
+
+  // Manejo del cambio de producto (Previsualización de imagen)
+  document.getElementById("producto_id")?.addEventListener("change", (e) => {
+    const target = e.target as HTMLSelectElement;
+    const p = productsCache.find((x) => x.id.toString() === target.value);
+    const preview = document.getElementById("product-preview");
+    const img = document.getElementById(
+      "product-image",
+    ) as HTMLImageElement | null;
+
+    if (p?.url_imagen && img && preview) {
+      // Concatenamos con la URL base (Ej: https://apitami... + /storage/...)
+      img.src = `${BASE_URL}${p.url_imagen}`;
+      preview.classList.remove("hidden");
+    } else {
+      preview?.classList.add("hidden");
+    }
   });
-}
 
-// Manejo del cambio de producto (Previsualización de imagen)
-document.getElementById("producto_id")?.addEventListener("change", (e) => {
-  const target = e.target as HTMLSelectElement;
-  const p = productsCache.find(x => x.id.toString() === target.value);
-  const preview = document.getElementById("product-preview");
-  const img = document.getElementById("product-image") as HTMLImageElement | null;
+  // Enviar formulario (Ruta de producción/local automática)
+  document
+    .getElementById("claim-form")
+    ?.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  if (p?.url_imagen && img && preview) {
-    // Concatenamos con la URL base (Ej: https://apitami... + /storage/...)
-    img.src = `${BASE_URL}${p.url_imagen}`; 
-    preview.classList.remove("hidden");
-  } else {
-    preview?.classList.add("hidden");
-  }
-});
+      const form = e.target as HTMLFormElement;
+      const btn = document.getElementById(
+        "submit-btn",
+      ) as HTMLButtonElement | null;
 
-// Enviar formulario (Ruta de producción/local automática)
-document.getElementById("claim-form")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const form = e.target as HTMLFormElement;
-  const btn = document.getElementById("submit-btn") as HTMLButtonElement | null;
-  
-  if (btn) btn.disabled = true;
+      if (btn) btn.disabled = true;
 
-  const formData = new FormData(form);
-  const payload = Object.fromEntries(formData.entries());
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
 
-  try {
-    // Usamos API_PATH que ya tiene el dominio correcto
-    const res = await fetch(`${API_PATH}/claims`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Accept": "application/json" 
-      },
-      body: JSON.stringify(payload),
+      try {
+        // Usamos API_PATH que ya tiene el dominio correcto
+        const res = await fetch(`${API_PATH}/claims`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("Reclamo enviado correctamente ✅");
+          form.reset();
+          document.getElementById("product-preview")?.classList.add("hidden");
+        } else {
+          alert("Error: " + JSON.stringify(data.errors || data.message));
+        }
+      } catch (err) {
+        alert("Hubo un error al conectar con el servidor.");
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     });
 
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Reclamo enviado correctamente ✅");
-      form.reset();
-      document.getElementById("product-preview")?.classList.add("hidden");
-    } else {
-      alert("Error: " + JSON.stringify(data.errors || data.message));
-    }
-  } catch (err) {
-    alert("Hubo un error al conectar con el servidor.");
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-});
-
-loadFormData();
+  loadFormData();
 </script>
 
 <style>
