@@ -53,6 +53,22 @@ export default function WhatsappConnection({ onConnectionChange }: WhatsappConne
             if (connected) {
                 setQrCode(null);
             }
+
+            // se pide qr solo para cuando se cierra sesión desde el teléfono
+            const dataKeys = Object.keys(data);
+            if (dataKeys.length === 4 && 
+                data.connectionStatus === 'disconnected' && 
+                data.qrData === null && 
+                data.isConnected === false &&
+                data.hasActiveQR === false
+            ) {
+                console.log('🔴 Sesión cerrada desde el teléfono, solicitando nuevo QR...');
+                setTimeout(async () => {
+                    setIsWaitingQR(true);
+                    await requestQR();
+                    setIsWaitingQR(false);
+                }, 1000);
+            }
         });
 
         socket.on('disconnect', (reason) => {
