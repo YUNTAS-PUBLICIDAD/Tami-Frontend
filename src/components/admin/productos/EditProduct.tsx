@@ -33,6 +33,11 @@ type ImagenForms = {
 }
 const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
+const descripcionesPopup = [
+  "Solo subir imágenes sin fondo",
+  "Subir imágenes solo con fondo",
+  "Se pueden subir imágenes con o sin fondo"
+];
 
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
@@ -943,6 +948,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                         />
                                     </div>
+                                    
                                     {/** estilos de popup*/}
                                     <div className="form-input">
                                         <label>Estilo de Popup:</label>
@@ -969,6 +975,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         />
                                                         <span className="font-medium">Estilo {index + 1}</span>
                                                     </div>
+                                                    {/* 👇 TEXTO DEL POPUP */}
+                                                    <p className="text-sm text-gray-600 text-center px-2">
+                                                        {descripcionesPopup[index]}
+                                                    </p>
                                                 </label>
                                             ))}
                                         </div>
