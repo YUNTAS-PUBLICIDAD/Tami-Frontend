@@ -39,8 +39,8 @@ const ProductSlideshow = (): JSX.Element | null => {
         const items: Producto[] = Array.isArray(data)
           ? data.slice(-6)
           : Array.isArray(data.data)
-          ? data.data.slice(-6)
-          : [];
+            ? data.data.slice(-6)
+            : [];
 
         setProductsArray(items);
       } catch (err) {
@@ -126,12 +126,12 @@ const ProductSlideshow = (): JSX.Element | null => {
     }
     touchStartX.current = e.touches[0].clientX;
   };
-  
+
   const onTouchMove = (e: React.TouchEvent) => {
     if (!isMobile) return;
     touchEndX.current = e.touches[0].clientX;
   };
-  
+
   const onTouchEnd = () => {
     if (!isMobile) return;
     if (touchStartX.current == null || touchEndX.current == null) {
@@ -144,7 +144,7 @@ const ProductSlideshow = (): JSX.Element | null => {
       touchEndX.current = null;
       return;
     }
-    
+
     const delta = touchStartX.current - touchEndX.current;
     const threshold = 50;
     if (Math.abs(delta) > threshold) {
@@ -172,8 +172,8 @@ const ProductSlideshow = (): JSX.Element | null => {
         ? url
         : `${ApiUrl.replace(/\/$/, "")}${url}`
       : `https://placehold.co/300x300/orange/white?text=${encodeURIComponent(
-          (item.titulo as string) ?? "Producto"
-        )}`;
+        (item.titulo as string) ?? "Producto"
+      )}`;
   };
 
   const getLinkHref = (item: Producto) =>
@@ -201,7 +201,7 @@ const ProductSlideshow = (): JSX.Element | null => {
       >
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#2A938B]/35 to-transparent z-20 pointer-events-none" />
         {/* se elimino el div de la derecha */}
-        <div 
+        <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
         >
@@ -210,7 +210,7 @@ const ProductSlideshow = (): JSX.Element | null => {
               key={item.id}
               className="flex-shrink-0 w-full px-4 flex justify-center"
             >
-              <div className="bg-white rounded-xl overflow-hidden shadow-lg w-full max-w-[320px]">
+              <div className="bg-white rounded-xl overflow-hidden shadow-lg w-full max-w-[320px] border border-gray-100 transition-all duration-300 hover:shadow-[0_15px_35px_-10px_rgba(0,120,111,0.3)] hover:-translate-y-1">
                 <div className="relative">
                   <img
                     src={getImageUrl(item)}
@@ -250,9 +250,8 @@ const ProductSlideshow = (): JSX.Element | null => {
                 }
               }}
               aria-label={`Ir al producto ${i + 1}`}
-              className={`rounded-full transition-all ${
-  i === mobileIndex ? "bg-teal-700 w-6 h-2" : "bg-gray-400 w-2 h-2"
-}`}
+              className={`rounded-full transition-all ${i === mobileIndex ? "bg-teal-700 w-6 h-2" : "bg-gray-400 w-2 h-2"
+                }`}
             />
           ))}
         </div>
@@ -261,8 +260,8 @@ const ProductSlideshow = (): JSX.Element | null => {
   }
 
   return (
-    <div 
-      className="relative w-full overflow-hidden" 
+    <div
+      className="relative w-full overflow-hidden"
       aria-label="Carrusel productos destacado - desktop"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -276,7 +275,7 @@ const ProductSlideshow = (): JSX.Element | null => {
       >
         {[...productsArray, ...productsArray].map((item, idx) => (
           <div key={`${item.id}-${idx}`} className="flex-shrink-0 w-1/3 px-3">
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500">
+            <div className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100/80 transition-all duration-500 ease-out hover:shadow-[0_20px_45px_-15px_rgba(0,120,111,0.4)] hover:-translate-y-1.5 hover:border-teal-300/50">
               <div className="relative">
                 <img
                   src={getImageUrl(item)}
