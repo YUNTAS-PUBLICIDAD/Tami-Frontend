@@ -35,9 +35,10 @@ if (!producto) {
 ---
 
 <Layout
-  title={producto.etiqueta.meta_titulo || producto.titulo}
-  description={producto.etiqueta.meta_descripcion || producto.descripcion}
-  keywords={producto.etiqueta.keywords}
+  title={producto.etiqueta?.meta_titulo || producto.titulo}
+description={producto.etiqueta?.meta_descripcion || producto.descripcion}
+keywords={producto.etiqueta?.keywords || ''}
+
   canonicalUrl={`${Astro.site}productos/${producto.link}`}
 >
   <ProductPage producto={producto} client:idle />
