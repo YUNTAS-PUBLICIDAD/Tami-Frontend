@@ -17,6 +17,8 @@ interface EditProductProps {
     product: Product;
     onProductUpdated: () => Promise<void> | void;
 }
+
+
 interface ImagenFormState {
     id?: number;
     url_imagen: string | File;
@@ -33,6 +35,11 @@ type ImagenForms = {
 }
 const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
+const descripcionesPopup = [
+  "Solo subir imágenes sin fondo",
+  "Solo subir imagen con fondo, cuadrada y el producto centrado tamaño ideal: 1000×1000 px (mínimo 800×800).",
+  "Se pueden subir imágenes con o sin fondo"
+];
 
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
@@ -272,6 +279,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup_estilo]",
                 formData.etiqueta.popup_estilo || "estilo1"
             );
+            formDataToSend.append(
+                "etiqueta[popup3_sin_fondo]",
+                formData.etiqueta.popup3_sin_fondo ? "true" : "false"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -427,6 +438,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     meta_titulo: product.etiqueta?.meta_titulo || "",
                     meta_descripcion: product.etiqueta?.meta_descripcion || "",
                     popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
+                    popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
                 },
                 stock: product.stock,
                 precio: product.precio,
@@ -943,35 +955,70 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                         />
                                     </div>
-                                    {/** estilos de popup*/}
+                                    
                                     <div className="form-input">
-                                        <label>Estilo de Popup:</label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
-                                                <label key={"radio" + estilo} className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors">
-                                                    <img src={imagenEstilos[index]} alt={`Estilo ${index + 1}`} className="w-full h-auto rounded" />
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="popup_estilo"
-                                                            value={estilo}
-                                                            checked={formData.etiqueta.popup_estilo === estilo}
-                                                            onChange={(e) =>
-                                                                setFormData((prev) => ({
-                                                                    ...prev,
-                                                                    etiqueta: {
-                                                                        ...prev.etiqueta,
-                                                                        popup_estilo: e.target.value,
-                                                                    },
-                                                                }))
-                                                            }
-                                                            className="w-4 h-4 text-teal-600 focus:ring-teal-500"
-                                                        />
-                                                        <span className="font-medium">Estilo {index + 1}</span>
-                                                    </div>
-                                                </label>
-                                            ))}
-                                        </div>
+                                      <label>Estilo de Popup:</label>
+
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
+                                          <label
+                                            key={"radio" + estilo}
+                                            className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors"
+                                          >
+                                            <img
+                                              src={imagenEstilos[index]}
+                                              alt={`Estilo ${index + 1}`}
+                                              className="w-full h-auto rounded"
+                                            />
+
+                                            <div className="flex items-center gap-2">
+                                              <input
+                                                type="radio"
+                                                name="popup_estilo"
+                                                value={estilo}
+                                                checked={formData.etiqueta.popup_estilo === estilo}
+                                                onChange={(e) =>
+                                                  setFormData((prev) => ({
+                                                    ...prev,
+                                                    etiqueta: {
+                                                      ...prev.etiqueta,
+                                                      popup_estilo: e.target.value,
+                                                    },
+                                                  }))
+                                                }
+                                                className="w-4 h-4 text-teal-600 focus:ring-teal-500"
+                                              />
+                                              <span className="font-medium">Estilo {index + 1}</span>
+                                            </div>
+
+                                            <p className="text-sm text-gray-600 text-center px-2">
+                                              {descripcionesPopup[index]}
+                                            </p>
+
+                                            {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
+                                              <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={formData.etiqueta.popup3_sin_fondo || false}
+                                                  onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                      ...prev,
+                                                      etiqueta: {
+                                                        ...prev.etiqueta,
+                                                        popup3_sin_fondo: e.target.checked,
+                                                      },
+                                                    }))
+                                                  }
+                                                  className="w-4 h-4 text-teal-600"
+                                                />
+                                                <span className="text-sm font-medium text-gray-700">
+                                                  Imagen sin fondo (no cubrir todo)
+                                                </span>
+                                              </div>
+                                            )}
+                                          </label>
+                                        ))}
+                                      </div>
                                     </div>
                                 </div>
 

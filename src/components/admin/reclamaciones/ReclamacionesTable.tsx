@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { FaSearch, FaSyncAlt, FaExclamationTriangle, FaEye, FaTimes, FaCalendarAlt, FaUser, FaEnvelope, FaPhone, FaIdCard, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaSearch, FaSyncAlt, FaExclamationTriangle, FaEye, FaTimes, FaCalendarAlt, FaUser, FaEnvelope, FaPhone, FaIdCard, FaChevronLeft, FaChevronRight, FaFilter } from "react-icons/fa";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "src/components/admin/ui/Table";
 import { SearchInput } from "src/components/admin/ui/SearchInput";
 import LoadingComponent from "src/components/admin/ui/LoadingComponent";
@@ -14,6 +14,7 @@ const ReclamacionesTable = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // <-- NUEVO: Filtro de estado
   const [selectedReclamacion, setSelectedReclamacion] = useState<Reclamacion | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -22,12 +23,19 @@ const ReclamacionesTable = () => {
   // --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    return (reclamaciones || []).filter((r: Reclamacion) =>
-      [r.id, r.first_name, r.last_name, r.email, r.document_number].some(
+    
+    return (reclamaciones || []).filter((r: Reclamacion) => {
+      // 1. Filtro por término de búsqueda
+      const matchesSearch = [r.id, r.first_name, r.last_name, r.email, r.document_number].some(
         field => field?.toString().toLowerCase().includes(term)
-      )
-    );
-  }, [reclamaciones, searchTerm]);
+      );
+
+      // 2. Filtro por estado (claim_status_id)
+      const matchesStatus = statusFilter === "" || r.claim_status?.id === Number(statusFilter);
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [reclamaciones, searchTerm, statusFilter]); // Agregado statusFilter a dependencias
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const displayed = filtered.slice(
@@ -35,9 +43,10 @@ const ReclamacionesTable = () => {
     currentPage * ITEMS_PER_PAGE
   );
 
+  // Resetear a página 1 cuando cambia búsqueda o filtro
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, statusFilter]);
 
   const handleRefetch = () => setRefetchTrigger(prev => !prev);
 
@@ -53,12 +62,9 @@ const ReclamacionesTable = () => {
 
   const handleStatusChange = async (newStatusId: number) => {
     if (!selectedReclamacion) return;
-
-    // Obtenemos la URL base del .env
     const baseUrl = import.meta.env.PUBLIC_API_URL;
 
     try {
-      // Reemplazamos la URL fija por la variable
       const response = await fetch(`${baseUrl}/api/v1/admin/claims/${selectedReclamacion.id}/status`, {
         method: 'PATCH',
         headers: {
@@ -72,7 +78,6 @@ const ReclamacionesTable = () => {
 
       if (result.success) {
         const statusNames: Record<number, string> = { 1: 'Pendiente', 2: 'En Proceso', 3: 'Atendido' };
-
         setSelectedReclamacion((prev: Reclamacion | null) => {
           if (!prev) return null;
           return {
@@ -85,8 +90,6 @@ const ReclamacionesTable = () => {
             }
           } as Reclamacion;
         });
-
-        // Refrescamos la tabla para que el cambio se vea en la lista principal
         handleRefetch();
       } else {
         alert("Error: " + result.message);
@@ -96,7 +99,6 @@ const ReclamacionesTable = () => {
     }
   };
 
-  // --- COMPONENTES INTERNOS (UI) ---
   const InfoItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number | undefined }) => (
     <div className="flex items-start gap-3">
       <div className="text-red-500 mt-1 opacity-70">{icon}</div>
@@ -113,12 +115,10 @@ const ReclamacionesTable = () => {
   return (
     <div className="container mx-auto p-4 md:p-8 space-y-6">
 
-      {/* MODAL (DETALLE) */}
+      {/* MODAL DETALLE (Sin cambios en tu lógica) */}
       {isModalOpen && selectedReclamacion && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all">
           <div className="bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-200">
-
-            {/* Cabecera Modal */}
             <div className="bg-red-600 px-8 py-6 flex justify-between items-center text-white">
               <div>
                 <h3 className="text-xl font-black uppercase tracking-tighter">Detalle de Reclamación</h3>
@@ -128,27 +128,20 @@ const ReclamacionesTable = () => {
                 <FaTimes size={20} />
               </button>
             </div>
-
-            {/* Cuerpo Modal */}
             <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <InfoItem icon={<FaUser />} label="Cliente" value={`${selectedReclamacion.first_name} ${selectedReclamacion.last_name}`} />
                 <InfoItem icon={<FaEnvelope />} label="Email" value={selectedReclamacion.email} />
                 <InfoItem icon={<FaIdCard />} label="Documento" value={`${selectedReclamacion.document_type?.code || ''} - ${selectedReclamacion.document_number}`} />
                 <InfoItem icon={<FaPhone />} label="Teléfono" value={selectedReclamacion.phone} />
-                <InfoItem icon={<FaCalendarAlt />} label="Fecha Compra" value={
-                  selectedReclamacion.purchase_date
-                    ? selectedReclamacion.purchase_date.split('T')[0].split('-').reverse().join('/')
-                    : '---'
-                } />
+                <InfoItem icon={<FaCalendarAlt />} label="Fecha Compra" value={selectedReclamacion.purchase_date?.split('T')[0].split('-').reverse().join('/') || '---'} />
                 <InfoItem icon={<FaExclamationTriangle />} label="Tipo de Reclamo" value={selectedReclamacion.claim_type?.name} />
               </div>
 
-              {/* Selector de Estado */}
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div>
                   <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Gestión de Estado</h4>
-                  <p className="text-xs text-blue-400">Cambia el progreso de esta reclamación</p>
+                  <p className="text-xs text-blue-400">Cambia el progreso</p>
                 </div>
                 <select
                   value={selectedReclamacion.claim_status?.id || 1}
@@ -162,31 +155,12 @@ const ReclamacionesTable = () => {
               </div>
 
               <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
-                <h4 className="text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Descripción del Incidente</h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed italic">
-                  "{selectedReclamacion.detail}"
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-bold text-gray-400 uppercase pt-4 border-t border-gray-100 dark:border-gray-800">
-                <span>
-                  Estado actual:
-                  <span className={`ml-2 ${selectedReclamacion.claim_status?.id === 1 ? 'text-yellow-500' : selectedReclamacion.claim_status?.id === 2 ? 'text-blue-500' : 'text-green-500'}`}>
-                    {selectedReclamacion.claim_status?.name}
-                  </span>
-                </span>
-                <span>Registrado: {new Date(selectedReclamacion.created_at).toLocaleString()}</span>
+                <h4 className="text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Descripción</h4>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed italic">"{selectedReclamacion.detail}"</p>
               </div>
             </div>
-
-            {/* Footer Modal */}
             <div className="px-8 py-6 bg-gray-50 dark:bg-gray-800/30 flex justify-end">
-              <button
-                onClick={closeModal}
-                className="px-8 py-3 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl font-black text-xs hover:scale-105 transition-transform"
-              >
-                CERRAR EXPEDIENTE
-              </button>
+              <button onClick={closeModal} className="px-8 py-3 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl font-black text-xs hover:scale-105 transition-transform">CERRAR EXPEDIENTE</button>
             </div>
           </div>
         </div>
@@ -194,33 +168,46 @@ const ReclamacionesTable = () => {
 
       {/* --- VISTA PRINCIPAL (TABLA) --- */}
       <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-
         <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-white">
           <div>
             <h2 className="text-3xl font-black flex items-center gap-3 tracking-tighter uppercase">
-              <FaExclamationTriangle size={28} />
-              Reclamaciones
+              <FaExclamationTriangle size={28} /> Reclamaciones
             </h2>
             <p className="text-red-100 text-sm font-medium opacity-80 mt-1">Panel Administrativo de Atención al Cliente</p>
           </div>
-          <button
-            onClick={handleRefetch}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 px-6 py-2.5 rounded-2xl text-sm font-black transition-all backdrop-blur-md"
-          >
-            <FaSyncAlt className={loading ? "animate-spin" : ""} />
-            ACTUALIZAR
+          <button onClick={handleRefetch} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 px-6 py-2.5 rounded-2xl text-sm font-black transition-all backdrop-blur-md">
+            <FaSyncAlt className={loading ? "animate-spin" : ""} /> ACTUALIZAR
           </button>
         </div>
 
-        <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="w-full md:w-1/3">
-            <SearchInput
-              placeholder="Buscar por nombre, DNI, email..."
-              value={searchTerm}
-              onChange={setSearchTerm}
-            />
+        {/* BARRA DE FILTROS MODIFICADA */}
+        <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex flex-col lg:flex-row justify-between items-center gap-6">
+          <div className="w-full lg:w-2/3 flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <SearchInput
+                placeholder="Buscar por nombre, DNI, email..."
+                value={searchTerm}
+                onChange={setSearchTerm}
+              />
+            </div>
+            
+            {/* NUEVO SELECTOR DE ESTADO */}
+            <div className="w-full md:w-64 relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-red-500 outline-none appearance-none transition-all cursor-pointer"
+              >
+                <option value="">📂 Todos los Estados</option>
+                <option value="1">🟡 Pendientes</option>
+                <option value="2">🔵 En Proceso</option>
+                <option value="3">🟢 Atendidos</option>
+              </select>
+              <FaFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+            </div>
           </div>
-          <div className="px-5 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-black border border-red-100 dark:border-red-900/30">
+
+          <div className="px-5 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-black border border-red-100 dark:border-red-900/30 shrink-0">
             {filtered.length} REGISTROS ENCONTRADOS
           </div>
         </div>
@@ -230,9 +217,7 @@ const ReclamacionesTable = () => {
             <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
               <TableRow>
                 {["Expediente", "Consumidor", "Documento", "Tipo", "Fecha", "Acciones"].map((h) => (
-                  <TableHead key={h} className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-5 px-6 text-center">
-                    {h}
-                  </TableHead>
+                  <TableHead key={h} className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-5 px-6 text-center">{h}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -258,18 +243,18 @@ const ReclamacionesTable = () => {
                     </TableCell>
                     <TableCell className="text-center text-xs font-bold text-gray-500">{r.document_number}</TableCell>
                     <TableCell className="text-center">
-                      <span className="bg-red-50 dark:bg-red-900/20 text-red-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter">
-                        {r.claim_type?.name}
+                      <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${
+                        r.claim_status?.id === 1 ? 'bg-yellow-50 text-yellow-600' : 
+                        r.claim_status?.id === 2 ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
+                      }`}>
+                        {r.claim_status?.name || 'S/E'}
                       </span>
                     </TableCell>
                     <TableCell className="text-center text-xs text-gray-400 font-medium">
                       {new Date(r.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-center px-6">
-                      <button
-                        onClick={() => openModal(r)}
-                        className="bg-gray-900 dark:bg-red-600 text-white px-4 py-2 rounded-xl text-[10px] font-black hover:scale-105 active:scale-95 transition-all shadow-lg inline-flex items-center gap-2"
-                      >
+                      <button onClick={() => openModal(r)} className="bg-gray-900 dark:bg-red-600 text-white px-4 py-2 rounded-xl text-[10px] font-black hover:scale-105 active:scale-95 transition-all shadow-lg inline-flex items-center gap-2">
                         <FaEye /> VER DETALLE
                       </button>
                     </TableCell>
@@ -282,24 +267,10 @@ const ReclamacionesTable = () => {
 
         {totalPages > 1 && (
           <div className="p-8 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/30 dark:bg-gray-800/10">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Página {currentPage} de {totalPages}
-            </span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Página {currentPage} de {totalPages}</span>
             <div className="flex gap-2">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(p => p - 1)}
-                className="p-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl disabled:opacity-20 hover:bg-white dark:hover:bg-gray-800 transition-all"
-              >
-                <FaChevronLeft size={12} />
-              </button>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(p => p + 1)}
-                className="p-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl disabled:opacity-20 hover:bg-white dark:hover:bg-gray-800 transition-all"
-              >
-                <FaChevronRight size={12} />
-              </button>
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="p-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl disabled:opacity-20 hover:bg-white dark:hover:bg-gray-800 transition-all"><FaChevronLeft size={12} /></button>
+              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="p-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl disabled:opacity-20 hover:bg-white dark:hover:bg-gray-800 transition-all"><FaChevronRight size={12} /></button>
             </div>
           </div>
         )}
