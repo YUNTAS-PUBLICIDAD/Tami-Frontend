@@ -22,6 +22,7 @@ const ClientesTable = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -63,7 +64,6 @@ const ClientesTable = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // Ahora recibe opcionalmente el mensaje del backend
   const handleClienteFormSuccess = (msg?: string) => {
     setRefetchTrigger(prev => !prev);
     setIsModalOpen(false);
@@ -76,8 +76,6 @@ const ClientesTable = () => {
   };
 
   if (loading) return <LoadingComponent message="Cargando clientes..."/>
-  
-
   if (error) return <ErrorComponent handleRefetch={handleRefetch} error={error}/>
   
   return (
@@ -133,7 +131,7 @@ const ClientesTable = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "ACCIÓN"].map((header, index) => (
+                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "PRODUCTO", "ORIGEN", "FECHA DE INICIO", "ACCIÓN"].map((header, index) => (
                   <TableHead key={index} className="text-xs whitespace-nowrap">
                     {header}
                   </TableHead>
@@ -143,7 +141,7 @@ const ClientesTable = () => {
             <TableBody>
               {displayedClientes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} >
+                  <TableCell colSpan={8} >
                     <div className="flex flex-col items-center justify-center gap-2">
                       <div className="bg-teal-50 p-6 rounded-full">
                         <FaUsers className="h-10 w-10 text-teal-300" />
@@ -176,6 +174,18 @@ const ClientesTable = () => {
                           <span className="text-gray-400 italic text-xs">No disponible</span>
                         )}
                       </TableCell>
+                      
+                      <TableCell>
+                        < span className="text-gray-500 text-sm">-</span> {/* Aquí irá item.producto */}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-500 text-sm">-</span> {/* Aquí irá item.origen */}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                         {/* Aquí irá item.fechaInicio */}
+                        <span className="text-gray-500 text-sm">-</span>
+                      </TableCell>
+
                       <TableCell>
                         <div className="flex gap-3 items-center">
                           <button
@@ -198,8 +208,8 @@ const ClientesTable = () => {
                   ))}
                   {/* Filas vacías para mantener altura */}
                   {Array.from({ length: ITEMS_PER_PAGE - displayedClientes.length }).map((_, idx) => (
-                    <TableRow key={`empty-${idx}`} className="h-17"> {/* altura fija */}
-                      <TableCell colSpan={5} className="px-6 py-4">&nbsp;</TableCell>
+                    <TableRow key={`empty-${idx}`} className="h-17"> 
+                      <TableCell colSpan={8} className="px-6 py-4">&nbsp;</TableCell>
                     </TableRow>
                   ))}
                 </>
@@ -274,7 +284,7 @@ const ClientesTable = () => {
       )}
     </div>
   );
-
+  
 };
 
 export default ClientesTable;

@@ -419,8 +419,11 @@ const getCategoriaColor = (categoria: string) => {
 const CARD_RADIUS = 16;
 
 
+/* -------------------- PRODUCT CARD -------------------- */
 const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
   const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Hook de intersección
   const { targetRef, hasIntersected } = useIntersectionObserver();
 
   const imageSrc = useMemo(() => {
@@ -432,21 +435,21 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
       : `https://placehold.co/300x300/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
   }, [producto.imagenes, producto.nombre]);
 
-
   const categoriaColor = getCategoriaColor(producto.seccion);
-
 
   return (
     <a
       href={`/productos/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
-
       className="w-full"
     >
+    
       <div
+        ref={targetRef} 
         className="flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-[340px] bg-white rounded-xl shadow-md border relative overflow-hidden"
         style={{ borderColor: categoriaColor, boxShadow: '0 4px 16px rgba(0,0,0,0.10)', borderRadius: CARD_RADIUS }}
       >
+        
         {/* MOBILE: layout horizontal exacto */}
         <div
           className="flex w-full md:hidden min-h-[190px]"
@@ -454,7 +457,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
         >
           {/* Imagen a la izquierda */}
           <div
-            ref={targetRef}
+            
             className="flex items-center justify-center p-2 w-1/2 h-full"
             style={{ height: "100%" }}
           >
@@ -507,9 +510,12 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
             </button>
           </div>
         </div>
+
         {/* DESKTOP: layout vertical */}
         <div className="hidden w-full h-full md:flex md:flex-col">
-          <div ref={targetRef} className="w-full h-[250px] flex items-center justify-center pt-2 pb-2">
+          <div 
+            className="w-full h-[250px] flex items-center justify-center pt-2 pb-2"
+          >
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center rounded-xl" />
             )}
@@ -545,7 +551,6 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 padding: 0,
               }}
             >
-
               Comprar
             </button>
           </div>
