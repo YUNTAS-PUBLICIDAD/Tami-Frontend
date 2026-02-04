@@ -9,25 +9,37 @@ import { IoMdCloseCircle } from "react-icons/io";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
 import type { ImagenForm } from "../../../models/Product";
+import imagenEstilo1 from "@images/popup/estilo1.webp";
+import imagenEstilo2 from "@images/popup/estilo2.webp";
+import imagenEstilo3 from "@images/popup/estilo3.webp";
 
 interface EditProductProps {
     product: Product;
     onProductUpdated: () => Promise<void> | void;
 }
+
+
 interface ImagenFormState {
-  id?: number; 
-  url_imagen: string | File; 
-  texto_alt_SEO: string;
-  isNew: boolean; 
-  isDeleted?: boolean; 
+    id?: number;
+    url_imagen: string | File;
+    texto_alt_SEO: string;
+    isNew: boolean;
+    isDeleted?: boolean;
 
 }
-type ImagenForms= {
-  url_imagen: string | File
-  texto_alt_SEO?: string
-  cacheKey?: number
+type ImagenForms = {
+    url_imagen: string | File
+    texto_alt_SEO?: string
+    cacheKey?: number
 
 }
+const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
+
+const descripcionesPopup = [
+  "Solo subir imágenes sin fondo",
+  "Solo subir imagen con fondo, cuadrada y el producto centrado tamaño ideal: 1000×1000 px (mínimo 800×800).",
+  "Se pueden subir imágenes con o sin fondo"
+];
 
 
 const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
@@ -39,7 +51,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
 
     const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
-    
+
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -47,7 +59,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     ) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    
+
     };
 
     const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,9 +142,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         if (!file) return;
         const nuevasImagenes = [...formData.imagenes];
         nuevasImagenes[index] = {
-        ...nuevasImagenes[index],
-        url_imagen: file,
-        // texto_alt_SEO
+            ...nuevasImagenes[index],
+            url_imagen: file,
+            // texto_alt_SEO
         };
 
 
@@ -143,8 +155,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const handleImagesTextoSEOChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const nuevasImagenes = [...formData.imagenes];
         nuevasImagenes[index] = {
-        ...nuevasImagenes[index],
-        texto_alt_SEO: e.target.value,
+            ...nuevasImagenes[index],
+            texto_alt_SEO: e.target.value,
         };
         setFormData((prev) => ({ ...prev, imagenes: nuevasImagenes }));
     };
@@ -163,28 +175,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     }
 
     function goNextForm() {
-        setIsExiting(true); 
+        setIsExiting(true);
         setTimeout(() => {
-            setFormPage((prevPage) => prevPage + 1); 
-            setIsExiting(false); 
-            scrollToTop(); 
-        }, 500); 
+            setFormPage((prevPage) => prevPage + 1);
+            setIsExiting(false);
+            scrollToTop();
+        }, 500);
     }
 
     function goBackForm() {
-        setIsExiting(true); 
+        setIsExiting(true);
         setTimeout(() => {
             setFormPage((prevPage) => prevPage - 1);
-            setIsExiting(false); 
-            scrollToTop(); 
-        }, 500); 
+            setIsExiting(false);
+            scrollToTop();
+        }, 500);
     }
 
     function scrollToTop() {
         if (formContainerRef.current) {
             formContainerRef.current.scrollTo({
                 top: 0,
-                behavior: "smooth", 
+                behavior: "smooth",
             });
         }
     }
@@ -216,8 +228,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+        e.preventDefault();
+        setIsLoading(true);
 
         // Validación
         if (
@@ -263,6 +275,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[meta_descripcion]",
                 formData.etiqueta.meta_descripcion
             );
+            formDataToSend.append(
+                "etiqueta[popup_estilo]",
+                formData.etiqueta.popup_estilo || "estilo1"
+            );
+            formDataToSend.append(
+                "etiqueta[popup3_sin_fondo]",
+                formData.etiqueta.popup3_sin_fondo ? "true" : "false"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -272,50 +292,50 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formData.imagenes.forEach((imagen, index) => {
                 const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
 
-               if (imagen.url_imagen instanceof File) {
+                if (imagen.url_imagen instanceof File) {
                     formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
                     formDataToSend.append(`textos_alt[${index}]`, altText);
-            
+
                 } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen !== "") {
-                    
-                    let urlFinal = imagen.original_path; 
-                    
+
+                    let urlFinal = imagen.original_path;
+
                     if (!urlFinal) {
-                        urlFinal = imagen.url_imagen.replace(config.apiUrl, ''); 
+                        urlFinal = imagen.url_imagen.replace(config.apiUrl, '');
                     }
 
                     formDataToSend.append(`imagenes_existentes[${index}]`, urlFinal);
-                    
+
                     if (imagen.id) {
                         formDataToSend.append(`imagenes_ids[${index}]`, imagen.id.toString());
                     }
-                    
+
                     formDataToSend.append(`textos_alt[${index}]`, altText);
                 }
-             });
+            });
 
             formData.relacionados.forEach((item, index) => {
                 formDataToSend.append(`relacionados[${index}]`, item.toString());
             });
             const appendSingleImage = (key: string, fileOrUrl: string | File | null | undefined, altKey?: string, altText?: string) => {
                 if (!fileOrUrl) return;
-                
+
                 if (fileOrUrl instanceof File) {
                     formDataToSend.append(key, fileOrUrl);
-                } 
-                
+                }
+
                 /*
                 else if (typeof fileOrUrl === 'string') {
                     formDataToSend.append(`${key}_existente`, fileOrUrl.replace(config.apiUrl, ''));
                 }
                 */
-                
+
                 if (altKey && altText !== undefined) {
                     formDataToSend.append(altKey, altText);
                 }
             };
             appendSingleImage('imagen_popup', formData.imagen_popup, 'texto_alt_popup', formData.texto_alt_popup);
-            appendSingleImage('imagen_email', formData.imagen_email); 
+            appendSingleImage('imagen_email', formData.imagen_email);
             formDataToSend.append('asunto', formData.asunto || '');
             appendSingleImage('imagen_whatsapp', formData.imagen_whatsapp, 'texto_alt_whatsapp', formData.texto_alt_whatsapp);
 
@@ -384,62 +404,64 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
     useEffect(() => {
         if (showModal && product) {
-        const refreshCache = Date.now();
-        let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
-            id: img.id, 
-            url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
-            texto_alt_SEO: img.texto_alt_SEO || "",
-            original_path: img.url_imagen
-        })) || [];
-        while (imagenesTransformadas.length < 5) {
-        imagenesTransformadas.push({ 
-            url_imagen: "", 
-            texto_alt_SEO: "" 
-            
+            const refreshCache = Date.now();
+            let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
+                id: img.id,
+                url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
+                texto_alt_SEO: img.texto_alt_SEO || "",
+                original_path: img.url_imagen
+            })) || [];
+            while (imagenesTransformadas.length < 5) {
+                imagenesTransformadas.push({
+                    url_imagen: "",
+                    texto_alt_SEO: ""
+
                 });
-        }   
+            }
 
-        const relacionadosIds = product.productos_relacionados?.map((rel: any) => rel.id) || [];
-        const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
-        
-        const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
-        const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
-        const imagenWhatsapp = product.producto_imagenes?.find((img) => img.tipo === "whatsapp"); 
+            const relacionadosIds = product.productos_relacionados?.map((rel: any) => rel.id) || [];
+            const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
 
-        setFormData({
-            ...defaultValuesProduct, 
-            nombre: product.nombre,
-            titulo: product.titulo,
-            subtitulo: product.subtitulo,
-            link: product.link,
-            descripcion: product.descripcion,
-            etiqueta: {
-                keywords: keywordsArray || [""],
-                meta_titulo: product.etiqueta?.meta_titulo || "",
-                meta_descripcion: product.etiqueta?.meta_descripcion || "",
-            },
-            stock: product.stock,
-            precio: product.precio,
-            seccion: product.seccion,
-            especificaciones: Array.isArray(product.especificaciones)
-                ? product.especificaciones.map((e: any) => e.valor)
-                : [],
-            relacionados: relacionadosIds,
-            // @ts-ignore: Ajuste temporal de tipos si tu interfaz ProductFormularioPOST no tiene 'original_path'
-            imagenes: imagenesTransformadas,
-            dimensiones: {
-                largo: product.dimensiones?.largo || "",
-                alto: product.dimensiones?.alto || "",
-                ancho: product.dimensiones?.ancho || "",
-            },
-            video_url: product.video_url || "",
-            imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
-            texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-            imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
-            asunto: imagenEmail?.asunto || "",
-            imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
-            texto_alt_whatsapp: imagenWhatsapp?.texto_alt_SEO || "" // Asegúrate que tu back mande esto
-        });
+            const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
+            const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
+            const imagenWhatsapp = product.producto_imagenes?.find((img) => img.tipo === "whatsapp");
+
+            setFormData({
+                ...defaultValuesProduct,
+                nombre: product.nombre,
+                titulo: product.titulo,
+                subtitulo: product.subtitulo,
+                link: product.link,
+                descripcion: product.descripcion,
+                etiqueta: {
+                    keywords: keywordsArray || [""],
+                    meta_titulo: product.etiqueta?.meta_titulo || "",
+                    meta_descripcion: product.etiqueta?.meta_descripcion || "",
+                    popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
+                    popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+                },
+                stock: product.stock,
+                precio: product.precio,
+                seccion: product.seccion,
+                especificaciones: Array.isArray(product.especificaciones)
+                    ? product.especificaciones.map((e: any) => e.valor)
+                    : [],
+                relacionados: relacionadosIds,
+                // @ts-ignore: Ajuste temporal de tipos si tu interfaz ProductFormularioPOST no tiene 'original_path'
+                imagenes: imagenesTransformadas,
+                dimensiones: {
+                    largo: product.dimensiones?.largo || "",
+                    alto: product.dimensiones?.alto || "",
+                    ancho: product.dimensiones?.ancho || "",
+                },
+                video_url: product.video_url || "",
+                imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
+                texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
+                imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
+                asunto: imagenEmail?.asunto || "",
+                imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
+                texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "" // Asegúrate que tu back mande esto
+            });
         }
     }, [showModal, product]);
 
@@ -464,7 +486,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     </button>
                     <div
                         ref={formContainerRef}
-                        className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh]"
+                        className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh] overflow-x-hidden"
                     >
                         <div className="dialog-header">
                             <h4 className="dialog-title">
@@ -475,14 +497,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                         <form onSubmit={handleSubmit} className="relative">
                             {/* Primera página del formulario */}
                             {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
-                            
+
                             <div
-                                className={`w-full transition-all duration-500 ${
-                                    formPage !== 1 ? "hidden" : ""
-                                } ${isExiting && formPage === 1
-                                    ? "opacity-0"
-                                    : "opacity-100"
-                                }`}
+                                className={`w-full transition-all duration-500 ${formPage !== 1 ? "hidden" : ""
+                                    } ${isExiting && formPage === 1
+                                        ? "opacity-0"
+                                        : "opacity-100"
+                                    }`}
                             >
                                 <div className="space-y-4">
                                     <div className="form-input">
@@ -508,8 +529,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         />
                                     </div>
                                     <div className="form-input">
-                                        <label htmlFor="meta_titulo">
-                                            Meta título <span className="text-gray-500">(recomendado: 50-60 caracteres)</span>
+                                        <label htmlFor="meta_titulo" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
+                                            <span>Meta título</span>
+                                            <span className="text-gray-500 font-normal text-[10px] sm:text-xs italic leading-none mb-1">
+                                                (recomendado: 50-60 caracteres)
+                                            </span>
                                         </label>
                                         <input
                                             type="text"
@@ -533,8 +557,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
 
                                     <div className="form-input">
-                                        <label htmlFor="meta_descripcion">
-                                            Meta descripción <span className="text-gray-500">(recomendado: 40-160 caracteres)</span>
+                                        <label htmlFor="meta_descripcion" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
+                                            <span>Meta descripción</span>
+                                            <span className="text-gray-500 font-normal text-[10px] sm:text-xs italic leading-none mb-1">
+                                                (recomendado: 40-160 caracteres)
+                                            </span>
                                         </label>
                                         <textarea
                                             id="meta_descripcion"
@@ -561,7 +588,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="card">
                                         <h4 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Keywords:</h4>
                                         {formData.etiqueta.keywords.map((k, index) => (
-                                            <div className="form-input flex justify-between gap-2">
+                                            <div key={"key" + index} className="form-input flex justify-between gap-2">
                                                 <input type="text" id="keywords" value={k}
                                                     onChange={(e) => handleKeywordsChange(index, e)}
                                                 />
@@ -793,32 +820,35 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
                             {/* Segunda página del formulario */}
                             {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
-                            
+
                             <div
-                                className={`w-full transition-all duration-500 ${
-                                    formPage !== 2 ? "hidden" : ""
-                                } ${isExiting && formPage === 2
-                                    ? "opacity-0"
-                                    : "opacity-100"
-                                }`}
+                                className={`w-full transition-all duration-500 ${formPage !== 2 ? "hidden" : ""
+                                    } ${isExiting && formPage === 2
+                                        ? "opacity-0"
+                                        : "opacity-100"
+                                    }`}
                             >
                                 <div className="card">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
-                                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-800">
+                                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-xs sm:text-sm text-red-800">
                                         <p className="font-medium">⚠️ Importante:</p>
-                                        <ul className="list-disc list-inside space-y-1 mt-1">
-                                            <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
-                                            <li>Las imágenes que ves abajo son solo de referencia.</li>
-                                            <li>Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
-                                            <li>Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
-                                            <li>Si es que no quieres cambiar nada conforme a las imágenes, ignorar esta página. </li>
+                                        <ul className="list-disc list-outside pl-4 space-y-1 mt-1">
+                                            <li className="break-words">Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
+                                            <li className="break-words">Las imágenes que ves abajo son solo de referencia.</li>
+                                            <li className="break-words">Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
+                                            <li className="break-words">Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
+                                            <li className="break-words">Si no quieres cambiar nada, ignorar esta página.</li>
+                                            <li className="break-words">Peso máximo: <strong>2MB</strong> | Formato: <strong>WEBP</strong>.</li>
+                                            <li className="break-words">Tamaño recomendado: <strong>800×800 px</strong>.</li>
+                                            <li className="break-words">Quitar fondo: <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer" className="underline font-bold">LINK</a></li>
+                                            <li className="break-words">Redimensionar: <a href="https://www.iloveimg.com/es/redimensionar-imagen/jpg-cambiar-tamano" target="_blank" rel="noopener noreferrer" className="underline font-bold">LINK</a></li>
                                         </ul>
                                     </div>
                                     <div className="space-y-4">
                                         {formData.imagenes.map((img, index) => (
-                                            <div key={index} className="form-input"> 
+                                            <div key={index} className="form-input">
                                                 <label>Imagen {index + 1}:</label>
-                                                
+
                                                 <div className="border border-dashed border-gray-300 rounded-lg p-4 ...">
                                                     {img.url_imagen ? (
                                                         <div className="flex items-center gap-4">
@@ -826,7 +856,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 src={
                                                                     typeof img.url_imagen === "string"
                                                                         ? img.url_imagen
-                                                                        : URL.createObjectURL(img.url_imagen) 
+                                                                        : URL.createObjectURL(img.url_imagen)
                                                                 }
                                                                 className="w-16 h-16 object-cover rounded border"
                                                                 alt="Preview"
@@ -861,14 +891,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 />
                                             </div>
                                         ))}
-                                         </div>
+                                    </div>
                                 </div>
 
                                 {/* Imagen para Pop Up */}
                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Pop-up</h5>
-                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                                        <p className="font-medium">ℹ️ Esta imagen se usará únicamente en el pop-up del producto.</p>
+                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
+                                        <p className="font-medium break-words">ℹ️ Esta imagen se usará únicamente en el pop-up del producto.</p>
                                     </div>
                                     <div className="form-input">
                                         <label>Imagen Pop-up:</label>
@@ -925,13 +955,77 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                         />
                                     </div>
+                                    
+                                    <div className="form-input">
+                                      <label>Estilo de Popup:</label>
+
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
+                                          <label
+                                            key={"radio" + estilo}
+                                            className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors"
+                                          >
+                                            <img
+                                              src={imagenEstilos[index]}
+                                              alt={`Estilo ${index + 1}`}
+                                              className="w-full h-auto rounded"
+                                            />
+
+                                            <div className="flex items-center gap-2">
+                                              <input
+                                                type="radio"
+                                                name="popup_estilo"
+                                                value={estilo}
+                                                checked={formData.etiqueta.popup_estilo === estilo}
+                                                onChange={(e) =>
+                                                  setFormData((prev) => ({
+                                                    ...prev,
+                                                    etiqueta: {
+                                                      ...prev.etiqueta,
+                                                      popup_estilo: e.target.value,
+                                                    },
+                                                  }))
+                                                }
+                                                className="w-4 h-4 text-teal-600 focus:ring-teal-500"
+                                              />
+                                              <span className="font-medium">Estilo {index + 1}</span>
+                                            </div>
+
+                                            <p className="text-sm text-gray-600 text-center px-2">
+                                              {descripcionesPopup[index]}
+                                            </p>
+
+                                            {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
+                                              <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={formData.etiqueta.popup3_sin_fondo || false}
+                                                  onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                      ...prev,
+                                                      etiqueta: {
+                                                        ...prev.etiqueta,
+                                                        popup3_sin_fondo: e.target.checked,
+                                                      },
+                                                    }))
+                                                  }
+                                                  className="w-4 h-4 text-teal-600"
+                                                />
+                                                <span className="text-sm font-medium text-gray-700">
+                                                  Imagen sin fondo (no cubrir todo)
+                                                </span>
+                                              </div>
+                                            )}
+                                          </label>
+                                        ))}
+                                      </div>
+                                    </div>
                                 </div>
 
-                                {/* Imagen para Email */}
                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Correo Electrónico</h5>
-                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                                        <p className="font-medium">ℹ️ Esta imagen se usará únicamente para el envío de correos electrónicos del producto.</p>
+                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
+                                        <p className="font-medium break-words">ℹ️ Esta imagen se usará para el envío de correos.</p>
                                     </div>
                                     <div className="form-input">
                                         <label>Imagen Email:</label>
@@ -978,18 +1072,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         </div>
                                     </div>
                                     <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Asunto del Email
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        value={formData.asunto}
-                                        onChange={(e) =>
-                                        setFormData(prev => ({ ...prev, asunto: e.target.value }))}
-                                
-                                        placeholder="Ej: Empecemos a crear juntos ✨"
-                                    />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Asunto del Email
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            value={formData.asunto}
+                                            onChange={(e) =>
+                                                setFormData(prev => ({ ...prev, asunto: e.target.value }))}
+
+                                            placeholder="Ej: Empecemos a crear juntos ✨"
+                                        />
                                     </div>
                                     <div className="form-input">
                                         <label>URL del Video (opcional):</label>
@@ -1003,11 +1097,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         />
                                     </div>
                                 </div>
-                                    {/* Imagen para whatsapp*/}
                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Whatsapp</h5>
-                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                                        <p className="font-medium">ℹ️ Esta imagen se usará únicamente en el Whatsapp del producto.</p>
+                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
+                                        <p className="font-medium break-words">ℹ️ Esta imagen se usará únicamente en Whatsapp.</p>
                                     </div>
                                     <div className="form-input">
                                         <label>Imagen Whatsapp:</label>
@@ -1052,22 +1145,22 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 />
                                             )}
                                         </div>
-                
+
                                     </div>
                                     <div className="form-input">
-                                         <label>Texto personalizado para cotizar (Whatsapp):</label>
+                                        <label>Texto personalizado para cotizar (Whatsapp):</label>
                                         <textarea
-                                        //type="text"
-                                        name="texto_alt_whatsapp"
-                                        value={formData.texto_alt_whatsapp || ''}
-                                        onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
-                                        placeholder="Texto para el mensaje de Whatsapp..."
-                                        rows={4}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
+                                            //type="text"
+                                            name="texto_alt_whatsapp"
+                                            value={formData.texto_alt_whatsapp || ''}
+                                            onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
+                                            placeholder="Texto para el mensaje de Whatsapp..."
+                                            rows={4}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
 
                                         />
                                     </div>
-                                </div>                   
+                                </div>
                                 <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6">
                                     <button
                                         onClick={goBackForm}
@@ -1094,14 +1187,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
                             {/* Tercera página del form */}
                             {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
-                            
+
                             <div
-                                className={`w-full transition-all duration-500 ${
-                                    formPage !== 3 ? "hidden" : ""
-                                } ${isExiting && formPage === 3
-                                    ? "opacity-0"
-                                    : "opacity-100"
-                                }`}
+                                className={`w-full transition-all duration-500 ${formPage !== 3 ? "hidden" : ""
+                                    } ${isExiting && formPage === 3
+                                        ? "opacity-0"
+                                        : "opacity-100"
+                                    }`}
                             >
                                 <div className="form-input mb-6">
                                     <label>Productos Relacionados:</label>

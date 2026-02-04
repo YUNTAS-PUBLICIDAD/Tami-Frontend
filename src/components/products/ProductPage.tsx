@@ -13,19 +13,45 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import SimilarProductCard from './SimilarProductCard';
 
+declare global {
+  interface Window {
+    __detalleProducto?: any;
+  }
+}
+
 
 interface Props {
     producto: Producto
 }
 
-const ProductPage: React.FC<Props> = ({ producto }) => {
+const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
+    const [producto, setProducto] = useState<Producto>(initialProducto);
     const [productViewer, setProductViewer] = useState<string>(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
+    // Cargar datos frescos del producto
+    useEffect(() => {
+        const fetchFreshProductData = async () => {
+            try {
+                const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${initialProducto.link}`);
+                if (response.ok) {
+                    const freshData = await response.json();
+                    setProducto(freshData.data);
+                    setProductViewer(freshData.data.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+                    window.__detalleProducto = freshData.data;
+                }
+            } catch (error) {
+                console.error('Error al cargar datos frescos del producto:', error);
+            }
+        };
+
+        fetchFreshProductData();
+    }, [initialProducto.link]);
  
     useEffect(() => {
  
         setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
         insertJsonLd("product", producto);
+        window.__detalleProducto = producto;
     }, [producto]); 
 
     const getDimensionBgColor = (letter: string) => {
@@ -38,22 +64,20 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
     const relatedProducts = producto.productos_relacionados || [];
     const carouselThreshold = 3;
    const handleWhatsAppClick = () => {
-        
+
         const phoneNumber = "51978883199"; 
         const productName = producto.titulo; 
         
         const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
-        
-        const textoFinal = whatsappConfig?.whatsapp_mensaje 
-            ? whatsappConfig.whatsapp_mensaje 
-            : `Descripción: ${producto.descripcion}`;
 
-      const line1 = "🔥 ¡Excelente elección!";
-        const line2 = `Te presentamos la: *${productName}* ⚡`;
-        const line3 = textoFinal;
-        const line4 = "👉 ¿Quieres que te enviemos la ficha técnica completa y una cotización personalizada?";
-
-        const message = `${line1}\n${line2}\n\n${line3}\n\n${line4}`;
+        let message = "";
+        if (whatsappConfig?.whatsapp_mensaje){
+            message = whatsappConfig.whatsapp_mensaje;
+        } else {
+            message += `Hola 👋, estoy interesado en el producto: *${productName}* ⚡.`;
+            message += `\nDescripción: ${producto.descripcion}`;
+            message += `\n👉 ¿Podrían enviarme la ficha técnica completa y una cotización personalizada?`;
+        }
 
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         
@@ -72,8 +96,8 @@ const ProductPage: React.FC<Props> = ({ producto }) => {
                    
                     <div className="flex flex-col justify-center text-left">
                         <h1 className="text-5xl md:text-8xl font-extrabold uppercase mb-6">
-                        {producto.titulo.split(' ')[0]}
-                        <span className="block text-[#2DCCFF]">{producto.titulo.split(' ').slice(1).join(' ')}</span>
+                        {producto.titulo?.split(' ')[0]}
+                        <span className="block text-[#2DCCFF]">{producto.titulo?.split(' ').slice(1).join(' ')}</span>
                         </h1>
 
                         <p className="text-xl md:text-4xl opacity-90 mb-10 max-full uppercase tracking-wider font-light">

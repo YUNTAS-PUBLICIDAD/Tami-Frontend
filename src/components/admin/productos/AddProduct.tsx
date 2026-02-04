@@ -6,10 +6,14 @@ import { config, getApiUrl } from "../../../../config.ts";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
+import imagenEstilo1 from "@images/popup/estilo1.webp";
+import imagenEstilo2 from "@images/popup/estilo2.webp";
+import imagenEstilo3 from "@images/popup/estilo3.webp";
 
 type Props = {
   onProductAdded?: () => void;
 };
+const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
 const AddProduct = ({ onProductAdded }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -294,6 +298,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
+      formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo);
       formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto)
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo)
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho)
@@ -324,11 +329,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
       // Agregar imagen email y texto alt email al FormData
       if (formData.imagen_email) {
         formDataToSend.append('imagen_email', formData.imagen_email);
-        
+
       }
 
       formDataToSend.append('asunto', formData.asunto || '');
-      
+
       // Agregar imagen Whatsapp y texto alt Whatsapp al FormData
       if (formData.imagen_whatsapp) {
         formDataToSend.append('imagen_Whatsapp', formData.imagen_whatsapp);
@@ -429,12 +434,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
               {/* Primera página del formulario */}
               {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
               <div
-                className={`w-full transition-all duration-500 ${
-                  formPage !== 1 ? "hidden" : ""
-                } ${isExiting && formPage === 1
-                  ? "opacity-0"
-                  : "opacity-100"
-                }`}
+                className={`w-full transition-all duration-500 ${formPage !== 1 ? "hidden" : ""
+                  } ${isExiting && formPage === 1
+                    ? "opacity-0"
+                    : "opacity-100"
+                  }`}
               >
                 <div className="space-y-4">
                   <div className="form-input">
@@ -461,8 +465,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
                   {/* METADATOS SEO */}
                   <div className="form-input">
-                    <label htmlFor="meta_titulo" >
-                      Meta título <span className="text-gray-500">(recomendado: 50-60 caracteres)</span>
+                    <label htmlFor="meta_titulo" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
+                      <span>Meta título</span>
+                      <span className="text-gray-500 font-normal text-[10px] sm:text-xs italic leading-none mb-1">
+                        (recomendado: 50-60 caracteres)
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -486,8 +493,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
 
                   <div className="form-input">
-                    <label htmlFor="meta_descripcion">
-                      Meta descripción <span className="text-gray-500">(recomendado: 40-160 caracteres)</span>
+                    <label htmlFor="meta_descripcion" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
+                      <span>Meta descripción</span>
+                      <span className="text-gray-500 font-normal text-[10px] sm:text-xs italic leading-none mb-1">
+                        (recomendado: 40-160 caracteres)
+                      </span>
                     </label>
                     <textarea
                       id="meta_descripcion"
@@ -524,8 +534,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           className="text-red-600 hover:cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
                         </button>
                       </div>
                     ))}
@@ -707,12 +717,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
               {/* Segunda página del formulario */}
               {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
               <div
-                className={`w-full transition-all duration-500 ${
-                  formPage !== 2 ? "hidden" : ""
-                } ${isExiting && formPage === 2
-                  ? "opacity-0"
-                  : "opacity-100"
-                }`}
+                className={`w-full transition-all duration-500 ${formPage !== 2 ? "hidden" : ""
+                  } ${isExiting && formPage === 2
+                    ? "opacity-0"
+                    : "opacity-100"
+                  }`}
               >
                 <div className="card">
                   <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
@@ -722,8 +731,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
                       <li>Al menos <strong>1 imagen es obligatoria</strong>.</li>
                       <li>Cada imagen debe tener un <strong>Texto SEO</strong> descriptivo (importante para buscadores).</li>
-                      <li>Las imágenes deben ser en formato <code>JPG</code> o <code>PNG</code>.</li>
-                      <li>Si es un producto de 4 imágenes no subir nada en los campos de la 5ta imagen</li>
+                      <li>Las imágenes deben ser en formato <strong>WEBP.</strong></li>
+                      <li>Se recomienda un peso máximo de <strong>2MB</strong> por imagen para optimizar la carga.</li>
+                      <li>Regla de subida de tamaño recomendado de imagen: <strong>800-800 px.</strong></li>
+                      <li>Subir la imagen sin fondo <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a> para convertir imagen</li>
+                      <li>Subir el tamaño de imagen recomendado  <a href="https://www.iloveimg.com/es/redimensionar-imagen/jpg-cambiar-tamano" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a></li>
+
                     </ul>
                   </div>
                   <div className="space-y-4">
@@ -784,6 +797,36 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                     />
                   </div>
+                  {/** estilos de popup*/}
+                  <div className="form-input">
+                    <label>Estilo de Popup:</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
+                        <label key={"radio" + estilo} className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors">
+                          <img src={imagenEstilos[index]} alt={`Estilo ${index + 1}`} className="w-full h-auto rounded" />
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="popup_estilo"
+                              value={estilo}
+                              checked={formData.etiqueta.popup_estilo === estilo}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  etiqueta: {
+                                    ...prev.etiqueta,
+                                    popup_estilo: e.target.value,
+                                  },
+                                }))
+                              }
+                              className="w-4 h-4 text-teal-600 focus:ring-teal-500"
+                            />
+                            <span className="font-medium">Estilo {index + 1}</span>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Imagen para Email */}
@@ -813,15 +856,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       Asunto del Email
                     </label>
                     <input
-                       type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        value={formData.asunto}
-                        onChange={(e) =>
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      value={formData.asunto}
+                      onChange={(e) =>
                         setFormData(prev => ({ ...prev, asunto: e.target.value }))}
-                                
-                         placeholder="Ej: Empecemos a crear juntos ✨"
-                          />
-                   </div>
+
+                      placeholder="Ej: Empecemos a crear juntos ✨"
+                    />
+                  </div>
                   <div className="form-input">
                     <label>URL del Video (opcional):</label>
                     <input
@@ -892,18 +935,17 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </button>
                 </div>
               </div>
-              
+
 
               {/* Tercera página del form */}
               {/* Usa 'hidden' en lugar de 'absolute' para eliminar el espacio en blanco */}
-              
+
               <div
-                className={`w-full transition-all duration-500 ${
-                  formPage !== 3 ? "hidden" : ""
-                } ${isExiting && formPage === 3
-                  ? "opacity-0"
-                  : "opacity-100"
-                }`}
+                className={`w-full transition-all duration-500 ${formPage !== 3 ? "hidden" : ""
+                  } ${isExiting && formPage === 3
+                    ? "opacity-0"
+                    : "opacity-100"
+                  }`}
               >
                 <div className="form-input mb-6">
                   <label>Productos Relacionados:</label>

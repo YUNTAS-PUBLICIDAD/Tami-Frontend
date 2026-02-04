@@ -3,8 +3,11 @@ import Layout from "src/layouts/Layout.astro";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
+
 const getApiUrl = config.apiUrl;
 const blogsUrl = config.endpoints.blogs;
+
+const productsUrl = config.endpoints.productos.list; 
 ---
 
 <Layout
@@ -26,11 +29,8 @@ const blogsUrl = config.endpoints.blogs;
     />
 
     <!-- Overlay -->
-        <!-- se elimino fondo azul de la imagen y tambien se agrego z-index para mostrar el titulo sobre la imagen-->
     <div
-      class="z-10 absolute inset-0 w-full h-full flex flex-col items-center justify-center
-              
-                text-white px-4 text-center"
+      class="z-10 absolute inset-0 w-full h-full flex flex-col items-center justify-center text-white px-4 text-center"
     >
       <div class="max-w-5xl mx-auto font-bold">
         <h1
@@ -38,15 +38,12 @@ const blogsUrl = config.endpoints.blogs;
           class="font-montserrat text-3xl md:text-5xl tracking-tight leading-tight drop-shadow-lg mb-8"
         >
         </h1>
-        <!-- Separador adicional -->
       </div>
     </div>
   </header>
   <main
     class="py-8 md:py-20 px-4 md:px-20 bg-gradient-to-b from-[#041019] to-[#003E56]"
   >
-    <!-- SECCIÓN HERO -->
-
     <!-- CONTENIDO PRINCIPAL -->
     <div
       id="blog-content"
@@ -54,11 +51,15 @@ const blogsUrl = config.endpoints.blogs;
     >
       <!-- Espacio adicional entre título y contenido -->
       <div class="mb-8 md:mb-12">
-        <h2
-          id="blog-content-subtitle"
-          class="text-lg md:text-xl lg:text-4xl font-bold font-garet text-[#00B6FF] mb-4 text-center"
-        >
-        </h2>
+        <div class="mb-6 md:mb-10">
+  <h2
+    id="blog-content-subtitle"
+    class="text-base md:text-lg lg:text-2xl
+           font-semibold font-garet
+           text-sky-300
+           mb-3 text-center"
+  >
+  </h2>
         <p
           id="blog-content-subtitle2"
           class="px-2 md:px-8 text-base md:text-xl font-semibold text-black text-center md:text-left"
@@ -79,15 +80,17 @@ const blogsUrl = config.endpoints.blogs;
         <!-- Secciones dinámicas -->
       </div>
 
-        <!-- BOTÓN VER PRODUCTO -->
-    <div class="flex justify-center mb-8 md:mb-12">
-      <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105">
-        Ver Producto
-      </button>
+      <!-- BOTÓN VER PRODUCTO -->
+      <div class="flex justify-center mb-8 md:mb-12">
+        <a 
+          id="btn-ver-producto"
+          href="#"
+          class="hidden bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+        >
+          Ver Producto
+        </a>
+      </div>
     </div>
-    </div>
-
-    
 
     <!-- VIDEO -->
     <div
@@ -98,9 +101,9 @@ const blogsUrl = config.endpoints.blogs;
     </div>
   </main>
 
-  <!-- 🔒 SCRIPTS - NO TOCAR -->
+  <!-- 🔒 SCRIPTS -->
   <script
-    define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}
+    define:vars={{ getApiUrl, blogsUrl, productsUrl, showLoaderString, removeLoaderString }}
   >
     eval(showLoaderString);
     eval(removeLoaderString);
@@ -271,6 +274,46 @@ const blogsUrl = config.endpoints.blogs;
           }
         }
 
+       
+        const btnVerProducto = document.getElementById("btn-ver-producto");
+        
+        if (btnVerProducto && blog.producto_id) {
+            let slugProducto = "";
+
+            // Intento 1: Objeto directo
+            if (blog.producto && blog.producto.link) {
+                slugProducto = blog.producto.link;
+            } 
+            // Intento 2: Propiedad plana
+            else if (blog.producto_link) {
+                slugProducto = blog.producto_link;
+            }
+            // Intento 3: Fetch adicional al API de productos
+            else {
+                try {
+                    console.log(`Buscando link amigable para producto ID: ${blog.producto_id}...`);
+                    // Usamos productsUrl que pasamos en define:vars
+                    const prodRes = await fetch(`${getApiUrl}${productsUrl}/${blog.producto_id}`);
+                    if (prodRes.ok) {
+                        const prodData = await prodRes.json();
+                        const productoReal = prodData.data || prodData;
+                        if (productoReal && productoReal.link) {
+                            slugProducto = productoReal.link; 
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error buscando el producto relacionado:", err);
+                }
+            }
+
+            if (slugProducto) {
+                btnVerProducto.href = `/productos/${slugProducto}`;
+                btnVerProducto.innerText = "Ver Producto";
+                btnVerProducto.classList.remove("hidden");
+                btnVerProducto.classList.add("inline-block");
+            }
+        }
+    
         if (
           blogSectionsElement &&
           Array.isArray(blog.imagenes) &&
@@ -288,7 +331,7 @@ const blogsUrl = config.endpoints.blogs;
                 <!-- Texto - Siempre arriba en mobile -->
                 <div class="w-full md:w-1/2 px-2 md:px-4 flex flex-col justify-center order-1 md:order-none">
                   <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed">
-                    <p class="text-sm md:text-base">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
+                    <p class="text-sm md:text-base whitespace-pre-line">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
                   </article>
                 </div>
                 

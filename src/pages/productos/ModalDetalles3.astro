@@ -1,0 +1,201 @@
+---
+import { config } from "config";
+
+interface ModalProps {
+  seccion?: string;
+  link?: string;
+}
+
+const numeroWhatsApp = "51978883199";
+const DEFAULT_IMAGE = "/images/popup/default.webp";
+const { link = "", seccion = "" } = Astro.props as ModalProps;
+---
+
+<div id="modal-detalles-3" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden">
+  <div class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn">
+
+    <button id="close-modal-detalles-3"
+      class="absolute top-4 right-4 bg-white text-gray-600 hover:text-black w-10 h-10 rounded-full shadow-xl transition hover:scale-110 z-50">
+      ✕
+    </button>
+
+    <!-- IMAGEN -->
+    <div id="modal3-image-container"
+      class="w-full sm:w-1/2 relative z-20 h-[220px] sm:h-auto sm:min-h-[420px] bg-white overflow-hidden flex items-center justify-center">
+      <img
+        id="modal3-product-img"
+        src={DEFAULT_IMAGE}
+        alt="Imagen"
+        class="max-h-[85%] max-w-[85%] object-contain transition-all duration-300 ease-in-out"
+      />
+    </div>
+
+    <!-- FORMULARIO -->
+    <div id="modal3-form-container"
+      class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal3-panel overflow-y-auto sm:overflow-visible"
+      data-product-link={link}
+      data-seccion={seccion}
+      data-whatsapp={numeroWhatsApp}
+    >
+      <h2 class="text-3xl sm:text-4xl font-bold text-center leading-snug mb-8">
+        TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS
+      </h2>
+
+      <form id="form-cotizacion-producto-3" class="flex flex-col gap-4">
+        <input type="text" name="nombre" placeholder="Nombre y Apellidos" required class="input-style" />
+        <input type="email" name="correo" placeholder="Correo@gmail.com" required class="input-style" />
+        <input type="tel" name="telefono" placeholder="Teléfono: 905 876 524" required class="input-style" />
+
+        <button type="submit"
+          class="btn-white-pill mt-4 font-bold text-base sm:text-xl self-center w-auto px-8 sm:px-12">
+          ¡Solicitar asesoría!
+        </button>
+
+        <p class="text-center font-semibold mt-2">Asesoría gratuita</p>
+      </form>
+
+      <p id="modal3-mensaje" class="text-center mt-4"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal3-panel { background: #2702aa; }
+
+.input-style {
+  background: white;
+  color: #111;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #7aa2ff;
+}
+
+.btn-white-pill {
+  background: #160063;
+  color: white;
+  border-radius: 999px;
+  font-weight: bold;
+  transition: .3s;
+  padding: 0.65rem 2rem;
+  font-size: 1rem;
+}
+
+.btn-white-pill:hover { transform: scale(1.05); }
+</style>
+
+<script>
+import { config } from "config";
+
+window.__detalleProducto = window.__detalleProducto || null;
+
+async function actualizarImagenModal3() {
+  const container = document.querySelector("#modal3-form-container");
+  const modalImg = document.querySelector("#modal3-product-img");
+  if (!container || !modalImg) return;
+
+  const productLink = container.dataset.productLink || "";
+  let imagen = "/images/popup/default.webp";
+  let imagenAlt = "Imagen del producto";
+  let modoVisual = "fondo";
+
+  if (!window.__detalleProducto && productLink) {
+    try {
+      const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${productLink}`);
+      if (response.ok) {
+        const result = await response.json();
+        window.__detalleProducto = result.data || result;
+      }
+    } catch {}
+  }
+
+  if (window.__detalleProducto) {
+    const producto = window.__detalleProducto;
+    const imagenPopup = producto.producto_imagenes?.find(img => img.tipo === "popup");
+
+    if (imagenPopup?.url_imagen) {
+      imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
+      imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre;
+    } else if (producto.imagenes?.length > 0) {
+      imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
+      imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
+    }
+
+    // ⭐ CONTROL DESDE CHECKBOX LARAVEL
+    if (producto.etiqueta?.popup_estilo === "estilo3") {
+      modoVisual = producto.etiqueta.popup3_sin_fondo ? "recorte" : "fondo";
+    }
+  }
+
+  modalImg.src = imagen;
+  modalImg.alt = imagenAlt;
+
+  modalImg.classList.remove("absolute","inset-0","w-full","h-full","object-cover");
+  modalImg.classList.remove("max-h-[85%]","max-w-[85%]","object-contain");
+
+  if (modoVisual === "recorte") {
+    modalImg.classList.add("max-h-[85%]","max-w-[85%]","object-contain");
+  } else {
+    modalImg.classList.add("absolute","inset-0","w-full","h-full","object-cover");
+  }
+}
+
+/* Cerrar */
+const modal3 = document.getElementById("modal-detalles-3");
+const closeBtn3 = document.getElementById("close-modal-detalles-3");
+if (closeBtn3) closeBtn3.onclick = () => modal3?.classList.add("hidden");
+
+/* Detectar apertura */
+const observer3 = new MutationObserver(async () => {
+  if (!modal3.classList.contains("hidden")) await actualizarImagenModal3();
+});
+observer3.observe(modal3, { attributes: true, attributeFilter: ["class"] });
+
+/* Envío */
+const form3 = document.getElementById("form-cotizacion-producto-3");
+const container3 = document.getElementById("modal3-form-container");
+const mensaje3 = document.getElementById("modal3-mensaje");
+
+if (form3 && container3) {
+  form3.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const data = new FormData(form3);
+    const telefono = "+51 " + data.get("telefono");
+
+    try {
+      await fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          link: container3.dataset.productLink,
+          phone: telefono,
+          email: data.get("correo") ?? null,
+        }),
+      });
+      if (mensaje3) mensaje3.textContent = "WhatsApp enviado ✅";
+    } catch {
+      if (mensaje3) mensaje3.textContent = "WhatsApp falló ❌";
+    }
+
+    try {
+      const response = await fetch(`${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("nombre"),
+          celular: telefono,
+          email: data.get("correo"),
+          link: container3.dataset.productLink,
+        }),
+      });
+
+      if (mensaje3)
+        mensaje3.textContent += response.ok ? " | Correo enviado ✅" : " | Correo falló ❌";
+    } catch {
+      if (mensaje3) mensaje3.textContent += " | Correo falló ❌";
+    }
+
+    form3.reset();
+  });
+}
+</script>

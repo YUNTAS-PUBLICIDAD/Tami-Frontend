@@ -16,46 +16,61 @@ const { link = "" } = Astro.props as ModalProps;
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative animate-slideIn rounded-xl"
-  >
+  class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-4xl relative animate-slideIn rounded-xl"
+>
+
+
+    <button
+      id="close-modal-cotizacion"
+      aria-label="Cerrar modal"
+      class="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer z-[60]"
+    >
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke-width="2.5" 
+        stroke="currentColor" 
+        class="w-6 h-6 sm:w-6 sm:h-6"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
     <div id="background-modal" class="absolute inset-0 z-20"></div>
 
     <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
 
-    <div class="img-container-mobile sm:absolute sm:inset-0 sm:flex w-full sm:w-[50%] justify-center items-center overflow-hidden img-white-zone">
-
-      <img
+    <div
+        class="w-full sm:w-1/2 flex justify-center items-center overflow-hidden img-white-zone"
+      >
+        <img
           id="modal-product-img"
           src={DEFAULT_IMAGE}
           alt="Imagen del producto"
           title="Imagen del producto"
-          class="h-full w-full object-contain "
+          class="w-full h-full object-contain p-6"
           onerror="this.onerror=null; this.src='/images/popup/default.webp'"
         />
-    </div>
+      </div>
+
 
     <!-- Formulario dinámico -->
     <div
       id="modal-form-container"
-      class="w-full sm:w-3/5 p-6 text-white relative z-30 ml-auto"
+      class="w-full sm:w-1/2 p-6 text-white relative z-30 ml-auto"
       data-product-link={link}
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
     >
-      <div class="p-8 sm:py-10 sm:mx-8 min-h-[480px] flex flex-col justify-center">
-        <button
-          id="close-modal-cotizacion"
-          aria-label="Cerrar modal"
-          class="absolute top-4 text-black right-5 text-md  hover:text-red-300 cursor-pointer"
-        >
-          X
-        </button>
+      <div
+        class="p-8 sm:py-10 sm:mx-8 min-h-[480px] flex flex-col justify-center"
+      >
+        
+       
 
         <h2
           id="modal-title"
-
-          class="text-2xl text-white sm:text-3xl font-semibold text-center sm:mt-3 mb-8 select-none"
-
+          class="text-2xl text-white sm:text-3xl font-light italic text-center sm:mt-3 mb-8 select-none"
         >
         </h2>
 
@@ -64,7 +79,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="text"
             name="nombre"
-            class="p-2 rounded-lg bg-white  text-black  border-2  mb-1 "
+            class="p-2 rounded-lg bg-white text-black border-2 mb-1"
             placeholder="Nombre y Apellidos"
             required
           />
@@ -73,7 +88,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="email"
             name="correo"
-            class="p-2 rounded-lg bg-white text-black  border-2 mb-1"
+            class="p-2 rounded-lg bg-white text-black border-2 mb-1"
             placeholder="Correo@gmail.com"
             required
           />
@@ -90,10 +105,16 @@ const { link = "" } = Astro.props as ModalProps;
           <button
             id="modal-submit-btn"
             type="submit"
-            class="mt-4 py-2 rounded-lg text-white font-bold transition-colors shadow-lg"
+            class="mt-4 py-2 rounded-lg text-white font-bold transition-all duration-300 shadow-lg"
           >
             buttonText
           </button>
+          <p
+              id="modal-negocios-text"
+              class="text-center mt-3 text-base sm:text-lg text-white hidden font-bold tracking-wide"
+            >
+            Asesoría gratuita
+          </p>
         </form>
         <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
       </div>
@@ -114,26 +135,23 @@ const { link = "" } = Astro.props as ModalProps;
   // --- CONFIGURACIÓN POR SECCIÓN ---
   const secciones = {
     NEGOCIOS: {
-      gradient:
-        "custom-gradient-negocio",
-      title: "DESCARGA MÁS INFORMACIÓN GRATIS",
-      btn: "bg-[#14617F] hover:bg-[#1c85ab] cursor-pointer",
-      buttonText: "¡SÍ, QUIERO CRECER!",
+      gradient: "custom-gradient-negocio",
+      title: "Descubre tu guía exclusiva de negocio TOTALMENTE GRATIS",
+      btn: "btn-gradient-negocio-fix border border-white cursor-pointer", // Cambiado aquí
+      buttonText: "¡COTIZA AHORA!",
     },
     MAQUINARIA: {
-      gradient:
-        "custom-gradient-maquinaria",
+      gradient: "custom-gradient-maquinaria",
       title:
-        "DESCARGA TU <span class='scrollmodal-title ' style='color:black '>GUÍA TÉCNICA GRATIS</span>",
-      btn: "bg-[#064133] hover:bg-[#096653] cursor-pointer",
-      buttonText: "¡SÍ, QUIERO CRECER!",
+        "Descubre tu guía exclusiva de maquinaria TOTALMENTE GRATIS",
+      btn: "btn-gradient-negocio-fix border border-white cursor-pointer",
+      buttonText: "¡COTIZA AHORA!",
     },
     DECORACIÓN: {
-      gradient:
-        "custom-gradient-decoracion",
-      title: "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS",
-      btn: "bg-[#281184] hover:bg-[#3c2eb1] cursor-pointer",
-      buttonText: "¡SÍ, QUIERO CRECER!",
+      gradient: "custom-gradient-decoracion",
+      title: "Descubre tu guía exclusiva de decoración TOTALMENTE GRATIS",
+      btn: "btn-gradient-negocio-fix border border-white cursor-pointer",
+      buttonText: "¡COTIZA AHORA!",
     },
   };
 
@@ -152,17 +170,67 @@ const { link = "" } = Astro.props as ModalProps;
   let modalMostrado = false;
   let scrollActivado = false;
 
+  async function obtenerProductoActual() {
+    const container = document.getElementById("modal-form-container");
+    const productLink = container?.dataset.productLink;
+
+    if (!productLink) return null;
+
+    if (window.__detalleProducto) return window.__detalleProducto;
+
+    try {
+      const response = await fetch(`${config.apiUrl}/api/v1/productos/link/${productLink}`);
+      if (response.ok) {
+        const result = await response.json();
+        window.__detalleProducto = result.data || result;
+        return window.__detalleProducto;
+      }
+    } catch (e) {}
+
+    return null;
+  }
+
+  function cerrarTodosLosModales() {
+    document.getElementById("modal-cotizacion-producto")?.classList.add("hidden");
+    document.getElementById("modal-detalles-2")?.classList.add("hidden");
+    document.getElementById("modal-detalles-3")?.classList.add("hidden");
+  }
+
   async function showCotizacionModal() {
+    const producto = await obtenerProductoActual();
+    await actualizarImagenDesdeLink();
+
+    cerrarTodosLosModales();
+
+    const popupEstilo =
+      producto?.etiqueta?.popup_estilo ||
+      "estilo1";
+
+
+    console.log("🎯 Estilo de modal detectado:", popupEstilo);
+
+    if (popupEstilo === "estilo2") {
+      document.getElementById("modal-detalles-2")?.classList.remove("hidden");
+      return;
+    }
+
+    if (popupEstilo === "estilo3") {
+      document.getElementById("modal-detalles-3")?.classList.remove("hidden");
+      return;
+    }
+
+    // ---- ESTILO 1 (TU MODAL ACTUAL) ----
     aplicarConfig();
-    await actualizarImagenDesdeLink(); // Esperar a que cargue la imagen
+
     const modal = document.getElementById("modal-cotizacion-producto");
     const mensaje = document.getElementById("modal-cotizacion-mensaje");
+
     if (modal && mensaje) {
       modal.classList.remove("hidden");
       mensaje.textContent = "";
-      modalMostrado = true;
     }
   }
+
 
   /**
    * Actualiza la imagen del modal popup desde la BD.
@@ -170,7 +238,9 @@ const { link = "" } = Astro.props as ModalProps;
    */
   async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
-    const modalImg = document.getElementById("modal-product-img") as HTMLImageElement | null;
+    const modalImg = document.getElementById(
+      "modal-product-img",
+    ) as HTMLImageElement | null;
 
     if (!container || !modalImg) return;
 
@@ -182,7 +252,7 @@ const { link = "" } = Astro.props as ModalProps;
     if (!window.__detalleProducto && productLink) {
       try {
         const response = await fetch(
-          `${config.apiUrl}/api/v1/productos/link/${productLink}`
+          `${config.apiUrl}/api/v1/productos/link/${productLink}`,
         );
         if (response.ok) {
           const result = await response.json();
@@ -198,7 +268,7 @@ const { link = "" } = Astro.props as ModalProps;
 
       // Buscar imagen con tipo 'popup'
       const imagenPopup = producto.producto_imagenes?.find(
-        (img: any) => img.tipo === "popup"
+        (img: any) => img.tipo === "popup",
       );
 
       if (imagenPopup?.url_imagen) {
@@ -226,7 +296,7 @@ const { link = "" } = Astro.props as ModalProps;
   function puedeMostrarModal() {
     const lastClosed = parseInt(
       localStorage.getItem(MODAL_STORAGE_KEY) || "0",
-      10
+      10,
     );
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
@@ -243,7 +313,7 @@ const { link = "" } = Astro.props as ModalProps;
 
   // --- FORMULARIO ---
   const form = document.getElementById(
-    "form-cotizacion-producto"
+    "form-cotizacion-producto",
   ) as HTMLFormElement | null;
   if (form) {
     form.onsubmit = async (e) => {
@@ -259,17 +329,28 @@ const { link = "" } = Astro.props as ModalProps;
 
       // Enviar mensaje a WhatsApp
       try {
-        await fetch(
-          `${config.apiUrl}${config.endpoints.whatsapp.sendMessageAccept}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ telefono, comentario: mensaje }),
-          }
+        console.log("API URL:", config.apiUrl);
+        console.log("ENDPOINT:", config.endpoints?.whatsapp?.info);
+        console.log(
+          "URL FINAL:",
+          `${config.apiUrl}${config.endpoints?.whatsapp?.info}`,
         );
+
+        await fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            link: productLink, // 👈 viene del dataset
+            phone: telefono, // 👈 correcto
+            email: correo ?? null, // 👈 correcto
+          }),
+        });
+
         if (mensajeEl) mensajeEl.textContent = "Enviado a WhatsApp ✅";
       } catch (error) {
-        // Error silencioso
+        console.error("ERROR WHATSAPP:", error);
       }
 
       // Enviar correo electrónico
@@ -285,7 +366,7 @@ const { link = "" } = Astro.props as ModalProps;
               email: correo,
               link: productLink,
             }),
-          }
+          },
         );
 
         if (response.ok) {
@@ -305,36 +386,118 @@ const { link = "" } = Astro.props as ModalProps;
     };
   }
 
+   // ====== CONECTAR OTROS MODALES AL MISMO ENVÍO ======
+const extraForms = document.querySelectorAll(".form-cotizacion-producto");
+
+extraForms.forEach((formExtra) => {
+  if (formExtra.id === "form-cotizacion-producto") return; // evitar duplicar el principal
+
+  formExtra.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const container = formExtra.closest("[data-product-link]");
+    const mensajeEl = container?.querySelector(".modal-cotizacion-mensaje");
+
+    const data = new FormData(formExtra);
+    const nombre = data.get("nombre");
+    const telefono = "+51 " + data.get("telefono");
+    const correo = data.get("correo");
+    const productLink = container?.dataset.productLink;
+
+    // === WHATSAPP (MISMA LÓGICA QUE YA USAS) ===
+    try {
+      await fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          link: productLink,
+          phone: telefono,
+          email: correo ?? null,
+        }),
+      });
+
+      if (mensajeEl) mensajeEl.textContent = "WhatsApp enviado ✅";
+    } catch (error) {
+      if (mensajeEl) mensajeEl.textContent = "WhatsApp falló ❌";
+    }
+
+    // === EMAIL ===
+    try {
+      const response = await fetch(
+        `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: nombre,
+            celular: telefono,
+            email: correo,
+            link: productLink,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        if (mensajeEl)
+          mensajeEl.textContent += mensajeEl.textContent
+            ? " | Correo enviado ✅"
+            : "Correo enviado ✅";
+      } else {
+        if (mensajeEl)
+          mensajeEl.textContent += mensajeEl.textContent
+            ? " | Correo falló ❌"
+            : "Correo falló ❌";
+      }
+    } catch {
+      if (mensajeEl)
+        mensajeEl.textContent += mensajeEl.textContent
+          ? " | Correo falló ❌"
+          : "Correo falló ❌";
+    }
+
+    formExtra.reset();
+  });
+});
+
+
   function aplicarConfig() {
     const backgroundModal = document.getElementById("background-modal");
     const formContainer = document.getElementById("modal-form-container");
     const title = document.getElementById("modal-title");
     const btn = document.getElementById("modal-submit-btn");
-    const buttonText = document.getElementById("modal-submit-btn");
 
     // GRADIENTE DE FONDO
     if (backgroundModal) {
+      // Limpiar gradientes anteriores antes de agregar el nuevo
+      backgroundModal.classList.remove("custom-gradient-negocio", "custom-gradient-maquinaria", "custom-gradient-decoracion");
       backgroundModal.classList.add(sectionConfig.gradient);
     }
 
     if (title) {
-      title.innerHTML = sectionConfig.title;
-    }
+  title.innerHTML = sectionConfig.title.replace(
+    "GRATIS",
+    "<span class='font-extrabold'>GRATIS</span>",
+  );
+}
+
+
+    const negociosText = document.getElementById("modal-negocios-text");
+
+      if (negociosText) {
+          negociosText.classList.remove("hidden");
+      }
+
 
     if (btn) {
-      btn.classList.remove(
-        "bg-sky-400",
-        "hover:bg-sky-500",
-        "bg-emerald-400",
-        "hover:bg-emerald-500",
-        "bg-violet-500",
-        "hover:bg-violet-600"
-      );
-      btn.classList.add(...sectionConfig.btn.split(" "), "text-white");
-    }
-    if (buttonText) {
-      buttonText.textContent = sectionConfig.buttonText || "Enviar";
-      buttonText.classList.add("font-bold");
+      // Resetear clases de botón completamente para evitar conflictos de Tailwind
+      btn.className = "mt-4 py-2 rounded-lg text-white transition-all duration-300 shadow-lg font-bold";
+      
+      // Aplicar las clases específicas de la sección
+      const extraClasses = sectionConfig.btn.split(" ");
+      btn.classList.add(...extraClasses);
+      
+      // Aplicar texto
+      btn.textContent = sectionConfig.buttonText || "¡COTIZA AHORA!";
     }
   }
 
@@ -359,7 +522,12 @@ const { link = "" } = Astro.props as ModalProps;
         (document.documentElement.scrollHeight - window.innerHeight)) *
       100;
 
-    if (scrollPercentage > 30 && !scrollActivado && puedeMostrarModal() && !modalMostrado) {
+    if (
+      scrollPercentage > 30 &&
+      !scrollActivado &&
+      puedeMostrarModal() &&
+      !modalMostrado
+    ) {
       scrollActivado = true;
       await showCotizacionModal();
     }
@@ -371,10 +539,18 @@ const { link = "" } = Astro.props as ModalProps;
     if (!container) return;
 
     const rawSection = container.dataset.seccion || "NEGOCIOS";
-    const normalized = rawSection.normalize?.("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-    const keyMap = { NEGOCIOS: "NEGOCIOS", MAQUINARIA: "MAQUINARIA", DECORACION: "DECORACIÓN" } as const;
+    const normalized = rawSection
+      .normalize?.("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+    const keyMap = {
+      NEGOCIOS: "NEGOCIOS",
+      MAQUINARIA: "MAQUINARIA",
+      DECORACION: "DECORACIÓN",
+    } as const;
 
-    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] || "NEGOCIOS") as keyof typeof secciones;
+    const productoSeccion = (keyMap[normalized as keyof typeof keyMap] ||
+      "NEGOCIOS") as keyof typeof secciones;
     sectionConfig = secciones[productoSeccion] || secciones.NEGOCIOS;
 
     aplicarConfig();
@@ -398,7 +574,7 @@ const { link = "" } = Astro.props as ModalProps;
       attributeFilter: ["data-seccion", "data-product-link"],
     });
   }
-  
+
   // Inicializar
   document.addEventListener("DOMContentLoaded", async function () {
     localStorage.removeItem("asesoriaModalLastClosedDetalle");
@@ -408,87 +584,70 @@ const { link = "" } = Astro.props as ModalProps;
     configurarBotonesCotizacion();
   });
 </script>
- <style>
-    .custom-gradient-negocio {
-      background: linear-gradient(
-        270deg,
-        rgba(0, 54, 75, 0.95) 0%, 
-        rgba(10, 94, 127, 0.9) 40%,
-        rgba(18, 125, 167, 0.46) 70%,
-        rgba(35, 173, 227, 0.37) 100%
-      );
-    }
-    .custom-gradient-maquinaria {
-      background: linear-gradient(
-        90deg,
-        rgba(4, 179, 138, 0.28) 0%,     
-        rgba(2, 131, 101, 0.95) 55%,     
-        rgba(0, 83, 64, 1) 100%          
-      );
-    }
-    .custom-gradient-decoracion {
-      background: linear-gradient(
-        90deg,
-        rgba(40, 82, 222, 0.35) 0%,     
-        rgba(42, 45, 193, 0.61) 35%,    
-        rgba(42, 25, 234, 0.95) 75%,  
-        rgba(17, 27, 215, 1) 100%      
-      );
-    }
+
+<style>
+  /* GRADIENTES DEL MODAL */
+  .custom-gradient-negocio,  .custom-gradient-maquinaria, .custom-gradient-decoracion {
+      background: radial-gradient(circle at top, #4287e1 0%, #1f3a7a 40%, #0c1142 85%);
+  }
+  
+
+  /* --- FIX GRADIENTE BOTÓN--- */
+  :global(.btn-gradient-negocio-fix) {
+    background: linear-gradient(90deg, #4287e1 0%, #1f3a7a 100%) !important;
+  }
+  :global(.btn-gradient-negocio-fix:hover) {
+    background: linear-gradient(90deg, #1f3a7a 0%, #4287e1 100%) !important;
+  }
+
+  #background-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
 
 
-    #background-modal {
-      position: absolute;
-      inset: 0;
-      z-index: 1; 
-      pointer-events: none;
-    }
-
-    #modal-product-img {
-      position: relative;
-      z-index: 2;
-    }
-    /* --- Ajustes SOLO para móvil, sin tocar tus estilos actuales --- */
-@media (max-width: 640px) {
-
-  /* Imagen más pequeña + margen arriba */
   #modal-product-img {
-    max-height: 180px !important;
-    width: auto !important;
-    object-fit: contain !important;
-    margin: 20px auto 0 auto !important; /* 👈 margen arriba */
-    display: block !important;
+    position: relative;
+    z-index: 2;
   }
+  
+  @media (max-width: 640px) {
+    #modal-product-img {
+      max-height: 180px !important;
+      width: auto !important;
+      object-fit: contain !important;
+      margin: 20px auto 0 auto !important;
+      display: block !important;
+    }
 
-  /* El modal no debe ocupar toda la altura */
-  .modal-content {
-    max-height: 90vh !important;
-    overflow-y: auto !important;
-    border-radius: 12px !important;
-  }
+    /* El modal no debe ocupar toda la altura */
+    .modal-content {
+      max-height: 90vh !important;
+      overflow-y: auto !important;
+      border-radius: 12px !important;
+    }
 
-  /* Botón de cerrar más grande y visible */
+    /* Botón de cerrar más grande y visible */
+
     .modal-close-btn {
-      font-size: 32px !important;
-      color: #ffffff !important;
-      z-index: 9999 !important;
-      top: 12px !important;
-      right: 12px !important;
+      top: 10px !important;
+      right: 10px !important;
+      background-color: white !important;
+      color: #4b5563 !important; 
     }
   }
-    .img-white-zone {
-      position: relative;
-      background: white; /* 👈 blanco real */
-      z-index: 25;       /* encima del gradiente */
-    }
 
-    /* Desktop: solo la mitad izquierda blanca */
-    @media (min-width: 640px) {
-      .img-white-zone {
-        width: 50%;
-      }
-    }
+  .img-white-zone {
+    position: relative;
+    background: #0c1142;
+    z-index: 25;
+  }
 
+  @media (min-width: 640px) {
+    .img-white-zone { width: 50%; }
+  }
 
-  </style>
-
+  
+</style>

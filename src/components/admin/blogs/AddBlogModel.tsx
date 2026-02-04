@@ -687,7 +687,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
             >
               {/* Título */}
               <div className="form-input">
-                <label className="font-medium">Título*</label>
+                <label className="font-medium">Título para web*</label>
                 <input
                   type="text"
                   name="titulo"
@@ -765,7 +765,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
               {/* Párrafo (subtitulo1) */}
               <div className="form-input">
-                <label className="font-medium">Párrafo*</label>
+                <label className="font-medium">Título*</label>
                 <input
                   type="text"
                   name="subtitulo1"
