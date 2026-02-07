@@ -115,7 +115,8 @@ export const defaultValuesProduct: ProductFormularioPOST = {
     keywords: [""],
     meta_titulo: "",
     meta_descripcion: "",
-    popup_estilo: ""
+    popup_estilo: "",
+    popup3_sin_fondo: false,
   },
   relacionados: [],
   imagenes: [

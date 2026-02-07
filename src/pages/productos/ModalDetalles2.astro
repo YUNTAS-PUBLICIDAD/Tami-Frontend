@@ -20,11 +20,12 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       ✕
     </button>
 
-    <div class="w-full sm:w-1/2 bg-white flex items-center justify-center p-6 sm:p-10 relative z-20">
-      <img id="modal2-product-img"
+    <div class="w-full sm:w-1/2 relative z-20 h-[220px] sm:h-auto sm:min-h-[420px]">
+      <img
+        id="modal2-product-img"
         src={DEFAULT_IMAGE}
         alt="Imagen"
-        class="object-contain max-h-[160px] sm:max-h-[420px] w-full" />
+        class="absolute inset-0 w-full h-full object-cover"/>
     </div>
 
     <div id="modal2-form-container"
