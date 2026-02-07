@@ -36,9 +36,9 @@ type ImagenForms = {
 const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
 const descripcionesPopup = [
-  "Solo subir imágenes sin fondo",
-  "Solo subir imagen con fondo, cuadrada y el producto centrado tamaño ideal: 1000×1000 px (mínimo 800×800).",
-  "Se pueden subir imágenes con o sin fondo"
+    "Solo subir imágenes sin fondo",
+    "Solo subir imagen con fondo, cuadrada y el producto centrado tamaño ideal: 1000×1000 px (mínimo 800×800).",
+    "Se pueden subir imágenes con o sin fondo"
 ];
 
 
@@ -477,21 +477,22 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             </button>
             {showModal && (
                 <div className="dialog-overlay">
-                    <button
-                        className="absolute top-4 right-4 md:top-6 md:right-6 text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl"
-                        onClick={() => closeModal()}
-                        aria-label="Cerrar"
-                    >
-                        <IoMdCloseCircle />
-                    </button>
+
                     <div
                         ref={formContainerRef}
-                        className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh] overflow-x-hidden"
+                        className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh] overflow-x-hidden !pt-0"
                     >
-                        <div className="dialog-header">
-                            <h4 className="dialog-title">
+                        <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !mt-0">
+                            <h4 className="dialog-title flex-1 text-center">
                                 Editar Producto
                             </h4>
+                            <button
+                                className="text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl ml-2"
+                                onClick={() => closeModal()}
+                                aria-label="Cerrar"
+                            >
+                                <IoMdCloseCircle />
+                            </button>
                         </div>
                         {/* Formulario con contenedor relativo para evitar espacios en blanco entre páginas */}
                         <form onSubmit={handleSubmit} className="relative">
@@ -955,70 +956,70 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
                                         />
                                     </div>
-                                    
+
                                     <div className="form-input">
-                                      <label>Estilo de Popup:</label>
+                                        <label>Estilo de Popup:</label>
 
-                                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
-                                          <label
-                                            key={"radio" + estilo}
-                                            className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors"
-                                          >
-                                            <img
-                                              src={imagenEstilos[index]}
-                                              alt={`Estilo ${index + 1}`}
-                                              className="w-full h-auto rounded"
-                                            />
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
+                                                <label
+                                                    key={"radio" + estilo}
+                                                    className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors"
+                                                >
+                                                    <img
+                                                        src={imagenEstilos[index]}
+                                                        alt={`Estilo ${index + 1}`}
+                                                        className="w-full h-auto rounded"
+                                                    />
 
-                                            <div className="flex items-center gap-2">
-                                              <input
-                                                type="radio"
-                                                name="popup_estilo"
-                                                value={estilo}
-                                                checked={formData.etiqueta.popup_estilo === estilo}
-                                                onChange={(e) =>
-                                                  setFormData((prev) => ({
-                                                    ...prev,
-                                                    etiqueta: {
-                                                      ...prev.etiqueta,
-                                                      popup_estilo: e.target.value,
-                                                    },
-                                                  }))
-                                                }
-                                                className="w-4 h-4 text-teal-600 focus:ring-teal-500"
-                                              />
-                                              <span className="font-medium">Estilo {index + 1}</span>
-                                            </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="radio"
+                                                            name="popup_estilo"
+                                                            value={estilo}
+                                                            checked={formData.etiqueta.popup_estilo === estilo}
+                                                            onChange={(e) =>
+                                                                setFormData((prev) => ({
+                                                                    ...prev,
+                                                                    etiqueta: {
+                                                                        ...prev.etiqueta,
+                                                                        popup_estilo: e.target.value,
+                                                                    },
+                                                                }))
+                                                            }
+                                                            className="w-4 h-4 text-teal-600 focus:ring-teal-500"
+                                                        />
+                                                        <span className="font-medium">Estilo {index + 1}</span>
+                                                    </div>
 
-                                            <p className="text-sm text-gray-600 text-center px-2">
-                                              {descripcionesPopup[index]}
-                                            </p>
+                                                    <p className="text-sm text-gray-600 text-center px-2">
+                                                        {descripcionesPopup[index]}
+                                                    </p>
 
-                                            {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
-                                              <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">
-                                                <input
-                                                  type="checkbox"
-                                                  checked={formData.etiqueta.popup3_sin_fondo || false}
-                                                  onChange={(e) =>
-                                                    setFormData((prev) => ({
-                                                      ...prev,
-                                                      etiqueta: {
-                                                        ...prev.etiqueta,
-                                                        popup3_sin_fondo: e.target.checked,
-                                                      },
-                                                    }))
-                                                  }
-                                                  className="w-4 h-4 text-teal-600"
-                                                />
-                                                <span className="text-sm font-medium text-gray-700">
-                                                  Imagen sin fondo (no cubrir todo)
-                                                </span>
-                                              </div>
-                                            )}
-                                          </label>
-                                        ))}
-                                      </div>
+                                                    {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
+                                                        <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={formData.etiqueta.popup3_sin_fondo || false}
+                                                                onChange={(e) =>
+                                                                    setFormData((prev) => ({
+                                                                        ...prev,
+                                                                        etiqueta: {
+                                                                            ...prev.etiqueta,
+                                                                            popup3_sin_fondo: e.target.checked,
+                                                                        },
+                                                                    }))
+                                                                }
+                                                                className="w-4 h-4 text-teal-600"
+                                                            />
+                                                            <span className="text-sm font-medium text-gray-700">
+                                                                Imagen sin fondo (no cubrir todo)
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
