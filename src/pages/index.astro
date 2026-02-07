@@ -5,7 +5,12 @@ import bg_card4 from "@images/index/cards/porquetami2.png";
 import mapaPeru from "@images/shipping-policies/mapa.webp";
 import ProductSlideshow from "src/components/index/ProductSlideshow.tsx";
 import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
-const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
+
+// Configuración del mensaje de WhatsApp
+const phoneNumber = "51978883199";
+const message = "Hola TAMI, quisiera cotizar un envío para Lima Metropolitana.";
+const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
 import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
 ---
@@ -111,14 +116,12 @@ import Testimonials from "../components/index/Slideshow";
       />
     </div>
   </section>
-  {/* Sección ¿Por qué elegir TAMI? */}
-  {/* MÓVIL: flex-col para imagen arriba y texto abajo | DESKTOP: relative con posición absoluta */}
+
   <section class="w-full px-4 lg:px-8 py-8">
     <div
       class="rounded-3xl overflow-hidden flex flex-col md:relative"
     >
-      <!-- Imagen principal con blur sutil - Se redujo la intensidad del blur para mantener 
-            la imagen más clara y visible, conservando un ligero desenfoque del fondo -->
+     
       <img
         src={bg_card4.src}
         alt="Por qué elegir TAMI"
