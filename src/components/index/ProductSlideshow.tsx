@@ -193,7 +193,7 @@ const ProductSlideshow = (): JSX.Element | null => {
   if (isMobile) {
     return (
       <div
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden pb-12"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -219,16 +219,18 @@ const ProductSlideshow = (): JSX.Element | null => {
                     className="w-full h-80 object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-x-0 bottom-0 bg-white/85 backdrop-blur-sm flex items-center justify-between px-4 py-3">
-                    <h3 className="text-teal-700 font-bold text-sm uppercase truncate flex-1">
+                  <div className="absolute inset-x-0 bottom-0 bg-[#00786F]/90 backdrop-blur-sm p-4 flex flex-col gap-2">
+                    <h3 className="text-white font-bold text-sm uppercase leading-tight">
                       {item.titulo}
                     </h3>
-                    <a
-                      href={getLinkHref(item)}
-                      className="bg-white border-2 border-teal-700 text-teal-700 hover:bg-teal-700 hover:text-white px-3 py-1 rounded-md font-semibold text-xs transition-all ml-2 whitespace-nowrap"
-                    >
-                      Comprar
-                    </a>
+                    <div className="flex justify-end mt-auto">
+                      <a
+                        href={getLinkHref(item)}
+                        className="bg-white border-2 border-white text-[#00786F] hover:bg-transparent hover:text-white px-4 py-1.5 rounded-md font-bold text-xs transition-all uppercase"
+                      >
+                        Comprar
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -236,7 +238,7 @@ const ProductSlideshow = (): JSX.Element | null => {
           ))}
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex gap-2 z-30" style={{ bottom: 2 }}>
+        <div className="absolute left-1/2 -translate-x-1/2 flex gap-2 z-30" style={{ bottom: 10 }}>
           {productsArray.map((_, i) => (
             <button
               key={i}
@@ -284,16 +286,18 @@ const ProductSlideshow = (): JSX.Element | null => {
                   className="w-full h-80 object-cover"
                   loading="lazy"
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-white/85 backdrop-blur-sm flex items-center justify-between px-4 py-3">
-                  <h3 className="text-teal-700 font-bold text-sm uppercase truncate flex-1">
+                <div className="absolute inset-x-0 bottom-0 bg-[#00786F]/90 backdrop-blur-sm p-4 flex flex-col gap-2">
+                  <h3 className="text-white font-bold text-sm uppercase leading-tight">
                     {item.titulo}
                   </h3>
-                  <a
-                    href={getLinkHref(item)}
-                    className="bg-white border-2 border-teal-700 text-teal-700 hover:bg-teal-700 hover:text-white px-3 py-1 rounded-md font-semibold text-xs transition-all ml-2 whitespace-nowrap"
-                  >
-                    Comprar
-                  </a>
+                  <div className="flex justify-end mt-auto">
+                    <a
+                      href={getLinkHref(item)}
+                      className="bg-white border-2 border-white text-[#00786F] hover:bg-transparent hover:text-white px-4 py-1.5 rounded-md font-bold text-xs transition-all uppercase"
+                    >
+                      Comprar
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
