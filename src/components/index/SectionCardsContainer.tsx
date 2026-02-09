@@ -63,7 +63,9 @@ const SectionCardsContainer = () => {
             <a
               key={item.id}
               href={`/productos#${item.id}`}
-              className="group relative w-[30%] min-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden border border-teal-200 transition-transform duration-500 hover:scale-[1.05] hover:shadow-2xl hover:border-teal-400"
+              className="group relative w-[30%] min-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden border border-teal-200/60 shadow-md
+                         transition-all duration-500 ease-out
+                         hover:scale-[1.03] hover:-translate-y-2 hover:shadow-[0_20px_40px_-12px_rgba(0,120,111,0.35)] hover:border-teal-400"
             >
               <img
                 src={resolveImageSrc(item.image)}
@@ -102,13 +104,12 @@ const SectionCardsContainer = () => {
           <a
             key={item.id}
             href={`/productos#${item.id}`}
-            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${
-              i === index
+            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${i === index
                 ? "opacity-100 scale-100 z-10"
                 : "opacity-0 scale-95 z-0 pointer-events-none"
-            }`}
+              }`}
           >
-            <div className="relative w-72 h-96 rounded-2xl overflow-hidden shadow-lg border border-teal-200">
+            <div className="relative w-72 h-96 rounded-2xl overflow-hidden shadow-lg border border-teal-200/60 transition-all duration-300 hover:shadow-[0_15px_35px_-10px_rgba(0,120,111,0.4)]">
               <img
                 src={resolveImageSrc(item.image)}
                 alt={item.alt}
@@ -130,9 +131,8 @@ const SectionCardsContainer = () => {
             <button
               key={i}
               onClick={() => setIndex(i)}
-              className={`h-2 w-2 rounded-full transition-all ${
-                i === index ? "bg-teal-600 w-6" : "bg-teal-300 w-2"
-              }`}
+              className={`h-2 w-2 rounded-full transition-all ${i === index ? "bg-teal-600 w-6" : "bg-teal-300 w-2"
+                }`}
               aria-label={`Ir al slide ${i + 1}`}
             />
           ))}

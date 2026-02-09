@@ -1,8 +1,8 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import heroArray from "@data/hero.data";
 
 const Hero = () => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -43,7 +43,7 @@ const Hero = () => {
                 isVisible
                   ? "opacity-100 z-10 pointer-events-auto"
                   : "opacity-0 z-0 pointer-events-none"
-              }`}
+                }`}
               aria-hidden={isVisible ? "false" : "true"}
               role="img"
             />
@@ -64,37 +64,39 @@ const Hero = () => {
 
       {/* Card inferior flotante — oculto en móvil */}
       <div className="flex absolute bottom-0 left-0 right-0 z-40 w-full justify-center">
-        <div className=" bg-[#FFF8F8] backdrop-blur-sm shadow-xl rounded-xl 
-  px-4 py-3                     /* 👈 MÁS GRANDE EN MÓVIL */
-  sm:px-6 sm:py-4 md:px-16 md:py-6 
+        <div className="bg-[#FFF8F8] backdrop-blur-sm rounded-xl 
+  shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15),0_4px_20px_-5px_rgba(0,120,111,0.1)]
+  px-4 py-3 sm:px-6 sm:py-4 md:px-16 md:py-6 
   mx-4 sm:mx-6 md:mx-8 
   text-[#00786F] font-black text-center 
-  text-[12px] sm:text-sm md:text-lg  /* 👈 letra un poco mayor en móvil */
+  text-[12px] sm:text-sm md:text-lg
   tracking-wide uppercase font-inter 
   flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-12 
-  translate-y-1/2">
+  translate-y-1/2
+  border border-gray-100/50
+  transition-all duration-300 hover:shadow-[0_15px_50px_-10px_rgba(0,0,0,0.2),0_8px_25px_-5px_rgba(0,120,111,0.15)]">
           <a
-            href="/productos?categoria=Negocio"
-            className="hover:text-teal-700 transition-colors"
-          >
-            Negocio
-          </a>
+            href="/productos?categoria=Negocio"
+            className="relative hover:text-teal-700 transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:w-0 after:bg-teal-600 after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Negocio
+          </a>
           <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
           <a
-            href="/productos?categoria=Maquinaria"
-            className="hover:text-teal-700 transition-colors"
-          >
-            Maquinarias 
-          </a>
+            href="/productos?categoria=Maquinaria"
+            className="relative hover:text-teal-700 transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:w-0 after:bg-teal-600 after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Maquinarias
+          </a>
           <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
           <a
-            href="/productos?categoria=Decoración"
-            className="hover:text-teal-700 transition-colors"
-          >
-            Decoración
-          </a>
+            href="/productos?categoria=Decoración"
+            className="relative hover:text-teal-700 transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:w-0 after:bg-teal-600 after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Decoración
+          </a>
         </div>
-        
+
       </div>
     </section>
   );
