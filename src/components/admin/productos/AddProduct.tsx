@@ -413,21 +413,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
       </button>
       {showModal && (
         <div className="dialog-overlay">
-          <button
-            className="absolute top-4 right-4 md:top-6 md:right-6 text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl"
-            onClick={() => closeModal()}
-            aria-label="Cerrar"
-          >
-            <IoMdCloseCircle />
-          </button>
+
           <div
             ref={formContainerRef}
-            className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh]"
+            className="dialog max-h-[90vh] min-h-[70vh] md:min-h-[80vh] !pt-0"
           >
-            <div className="dialog-header">
-              <h4 className="dialog-title">
+            <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !mt-0">
+              <h4 className="dialog-title flex-1 text-center">
                 Agregar Producto
               </h4>
+              <button
+                className="text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl ml-2"
+                onClick={() => closeModal()}
+                aria-label="Cerrar"
+              >
+                <IoMdCloseCircle />
+              </button>
             </div>
             {/* Formulario con contenedor relativo para evitar espacios en blanco entre páginas */}
             <form onSubmit={handleSubmit} className="relative">
