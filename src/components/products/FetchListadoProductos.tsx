@@ -53,11 +53,11 @@ export default function ListadoDeProductos() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const categoriaUrl = params.get("categoria"); 
-    
+    const categoriaUrl = params.get("categoria");
+
     if (categoriaUrl) {
       setFiltroCategoria(categoriaUrl);
-}
+    }
   }, [])
 
   const obtenerDatos = useCallback(async (useCache = true) => {
@@ -214,24 +214,24 @@ export default function ListadoDeProductos() {
               <button
                 type="button"
                 onClick={() => setFiltroCategoria(filtroCategoria === 'Negocio' ? null : 'Negocio')}
-                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Negocio' ? 'ring-2 ring-white' : ''}`}
-                style={{ background: '#00B6FF', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'Negocio' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
+                style={{ background: '#00B6FF', color: '#fff', boxShadow: '0 4px 12px rgba(0,182,255,0.2)' }}
               >
                 NEGOCIO
               </button>
               <button
                 type="button"
                 onClick={() => setFiltroCategoria(filtroCategoria === 'Maquinaria' ? null : 'Maquinaria')}
-                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Maquinaria' ? 'ring-2 ring-white' : ''}`}
-                style={{ background: '#04B088', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'Maquinaria' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
+                style={{ background: '#04B088', color: '#fff', boxShadow: '0 4px 12px rgba(4,176,136,0.2)' }}
               >
                 MAQUINARIA
               </button>
               <button
                 type="button"
                 onClick={() => setFiltroCategoria(filtroCategoria === 'Decoración' ? null : 'Decoración')}
-                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Decoración' ? 'ring-2 ring-white' : ''}`}
-                style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'Decoración' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
+                style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 4px 12px rgba(93,57,251,0.2)' }}
               >
                 DECORACIÓN
               </button>
@@ -375,7 +375,7 @@ const Seccion = React.memo(function Seccion({
       <MemoizedProductCard key={producto.id} producto={producto} />
     ));
   }, [productosDeLaSeccion]);
-  
+
   return (
     <div
       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6 ">
@@ -422,7 +422,7 @@ const CARD_RADIUS = 16;
 /* -------------------- PRODUCT CARD -------------------- */
 const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
   const [imageLoaded, setImageLoaded] = useState(false);
-  
+
   // Hook de intersección
   const { targetRef, hasIntersected } = useIntersectionObserver();
 
@@ -443,13 +443,13 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
       title={`Ver detalles de ${producto.nombre}`}
       className="w-full"
     >
-    
+
       <div
-        ref={targetRef} 
-        className="flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-[340px] bg-white rounded-xl shadow-md border relative overflow-hidden"
-        style={{ borderColor: categoriaColor, boxShadow: '0 4px 16px rgba(0,0,0,0.10)', borderRadius: CARD_RADIUS }}
+        ref={targetRef}
+        className="group flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-[340px] bg-white rounded-xl shadow-md border relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
+        style={{ borderColor: categoriaColor, borderRadius: CARD_RADIUS }}
       >
-        
+
         {/* MOBILE: layout horizontal exacto */}
         <div
           className="flex w-full md:hidden min-h-[190px]"
@@ -457,7 +457,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
         >
           {/* Imagen a la izquierda */}
           <div
-            
+
             className="flex items-center justify-center p-2 w-1/2 h-full"
             style={{ height: "100%" }}
           >
@@ -513,7 +513,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
 
         {/* DESKTOP: layout vertical */}
         <div className="hidden w-full h-full md:flex md:flex-col">
-          <div 
+          <div
             className="w-full h-[250px] flex items-center justify-center pt-2 pb-2"
           >
             {!imageLoaded && (
@@ -525,7 +525,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 alt={producto.nombre}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
-                className={`object-contain w-[95%] h-[95%] transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                className={`object-contain w-[95%] h-[95%] transition-all duration-500 ease-out group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                 style={{ background: "#f8f8f8", borderRadius: '12px' }}
               />
             )}
@@ -539,7 +539,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
               </div>
             </div>
             <button
-              className="bg-white font-bold text-lg text-[#0374A2] px-5 py-2 shadow border-none"
+              className="bg-white font-bold text-lg text-[#0374A2] px-5 py-2 shadow-sm border-none transition-all duration-300 group-hover:bg-gray-50 group-hover:shadow-md group-hover:text-[#00B6FF]"
               style={{
                 minWidth: '120px',
                 minHeight: '48px',
