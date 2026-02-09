@@ -37,7 +37,7 @@ const Hero = () => {
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
 
-              className={`absolute inset-0 w-full h-[45vh] sm:h-full object-cover object-center 
+              className={`absolute inset-0 w-full h-full object-cover object-center 
               transition-opacity duration-1000 ${
 
                 isVisible
