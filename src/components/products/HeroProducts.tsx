@@ -19,14 +19,20 @@ const HeroProducts = () => {
   return (
     <>
       <section
-        className="flex flex-col items-center justify-around relative bg-cover bg-top h-screen lg:h-dvh w-full"
-        style={{
-          backgroundImage:
+          className="flex flex-col items-center justify-between relative 
+           bg-no-repeat bg-top sm:bg-cover
+           min-h-[230px] sm:min-h-screen w-full pb-10 sm:pb-20"
+          style={{
+            backgroundImage:
             currentSlide === 0
               ? `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(4,4,4,0.5) 100%), url(${heroProductsArray[0].image})`
               : `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(4,4,4,0.5) 100%), url(${fondoSlider.src})`,
-        }}
-      >
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+
+          }}
+        >
+
         <div className="absolute inset-0 backdrop-blur-xs"></div>
         <div className="w-full h-11/12 pt-20 grid grid-rows-1 grid-cols-2 lg:grid-cols-12 items-center z-10">
           <button
@@ -37,10 +43,11 @@ const HeroProducts = () => {
           </button>
 
           <div
-            className={`w-full h-full text-white place-content-center place-items-center col-span-5 ${
-              currentSlide !== 0 ? "text-start" : "text-center col-span-10"
+            className={`absolute inset-0 z-20 flex items-center justify-center text-white px-4 ${
+              currentSlide !== 0 ? "text-start lg:col-span-5" : "text-center"
             }`}
           >
+
             <div>
               <h2 className="sm:text-xl md:text-2xl xl:text-3xl 2xl:text-4xl pb-4 font-light">
                 {heroProductsArray[currentSlide].subTitulo1}
