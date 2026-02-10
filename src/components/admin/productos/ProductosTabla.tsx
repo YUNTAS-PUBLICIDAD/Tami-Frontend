@@ -252,7 +252,10 @@ const ProductosTabla = () => {
                 {
                     method: "POST",
                     headers: {
-                        "X-DEPLOY-KEY": "super-secreto-123",
+                        "Content-Type": "application/json",
+                        "accept": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+
                     },
                 }
             );
