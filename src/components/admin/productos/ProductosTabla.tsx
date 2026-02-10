@@ -20,7 +20,7 @@ const DEPLOY_TIMEOUT = 180; // 3 minutos
 const isClient = typeof window !== "undefined";
 
 const ProductosTabla = () => {
-    // ✅ Todos los useState dentro del componente
+    //  Todos los useState dentro del componente
     const [deployInProgress, setDeployInProgress] = useState(false);
     const [deployRemaining, setDeployRemaining] = useState<number | null>(null);
     const [productos, setProductos] = useState<Product[]>([]);
@@ -111,12 +111,14 @@ const ProductosTabla = () => {
     }, [searchTerm, productos]);
 
 
+    //  Inicializar el estado del deploy desde localStorage al montar
     useEffect(() => {
-        if (!isClient) return;
-
         const stored = localStorage.getItem("deployCooldownUntil");
         if (stored) {
-            const diff = Math.floor((Number(stored) - Date.now()) / 1000);
+            const cooldownEnd = Number(stored);
+            const now = Date.now();
+            const diff = Math.floor((cooldownEnd - now) / 1000);
+
             if (diff > 0) {
                 setDeployInProgress(true);
                 setDeployRemaining(diff);
@@ -127,28 +129,55 @@ const ProductosTabla = () => {
     }, []);
 
 
+    //  Contador que sincroniza con localStorage cada segundo
     useEffect(() => {
-        if (!deployInProgress || deployRemaining === null) return;
+        if (!deployInProgress || deployRemaining === null || deployRemaining <= 0) {
+            if (deployRemaining !== null && deployRemaining <= 0) {
+                setDeployInProgress(false);
+                setDeployRemaining(null);
+                localStorage.removeItem("deployCooldownUntil");
 
-        if (deployRemaining <= 0) {
-            setDeployInProgress(false);
-            setDeployRemaining(null);
-            localStorage.removeItem("deployCooldownUntil");
-
-            Swal.fire({
-                icon: "success",
-                title: "✅ Despliegue liberado",
-                text: "Ya puedes volver a desplegar cambios.",
-                confirmButtonColor: "#14b8a6",
-            });
+                Swal.fire({
+                    icon: "success",
+                    title: "✅ Despliegue completado",
+                    text: "Ya puedes volver a desplegar cambios.",
+                    confirmButtonColor: "#14b8a6",
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
             return;
         }
 
-        const timer = setTimeout(() => {
-            setDeployRemaining((prev) => (prev ? prev - 1 : null));
+        const timer = setInterval(() => {
+            const stored = localStorage.getItem("deployCooldownUntil");
+            if (!stored) {
+                setDeployInProgress(false);
+                setDeployRemaining(null);
+                return;
+            }
+
+            const diff = Math.floor((Number(stored) - Date.now()) / 1000);
+
+            if (diff <= 0) {
+                setDeployInProgress(false);
+                setDeployRemaining(null);
+                localStorage.removeItem("deployCooldownUntil");
+
+                Swal.fire({
+                    icon: "success",
+                    title: "✅ Despliegue completado",
+                    text: "Ya puedes volver a desplegar cambios.",
+                    confirmButtonColor: "#14b8a6",
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            } else {
+                setDeployRemaining(diff);
+            }
         }, 1000);
 
-        return () => clearTimeout(timer);
+        return () => clearInterval(timer);
     }, [deployInProgress, deployRemaining]);
 
 
