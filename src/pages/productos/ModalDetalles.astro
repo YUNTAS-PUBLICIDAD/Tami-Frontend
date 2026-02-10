@@ -41,13 +41,15 @@ const { link = "" } = Astro.props as ModalProps;
 
     <div class="w-full sm:w-1/2 relative z-20 bg-[#0c1142]">
         <!-- Wrapper anti-corte -->
-        <div class="h-[220px] sm:h-auto sm:min-h-[420px] flex items-center justify-center pt-6 px-4">
+        <div class="h-[220px] sm:h-full flex items-center justify-center p-6">
           <img
-            id="modal-product-img"
-            src={DEFAULT_IMAGE}
-            alt="Imagen del producto"
-            class="max-h-[85%] max-w-[85%] object-contain"
-          />
+              id="modal-product-img"
+              src={DEFAULT_IMAGE}
+              alt="Imagen del producto"
+              class="w-full h-full object-contain"
+            />
+
+
         </div>
       </div>
 
