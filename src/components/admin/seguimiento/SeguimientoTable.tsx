@@ -176,14 +176,14 @@ const ClientesTable = () => {
                       </TableCell>
                       
                       <TableCell>
-                        < span className="text-gray-500 text-sm">-</span> {/* Aquí irá item.producto */}
+                        < span className="text-gray-500 text-sm">{item.producto ?? "-"}</span> {/* Aquí irá item.producto */}
                       </TableCell>
                       <TableCell>
-                        <span className="text-gray-500 text-sm">-</span> {/* Aquí irá item.origen */}
+                        <span className="text-gray-500 text-sm">{item.source ?? "-"}</span> {/* Aquí irá item.origen */}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                          {/* Aquí irá item.fechaInicio */}
-                        <span className="text-gray-500 text-sm">-</span>
+                        <span className="text-gray-500 text-sm">{item.updated_at ?? "-"}</span>
                       </TableCell>
 
                       <TableCell>
