@@ -114,6 +114,54 @@ const ProductosTabla = () => {
 
     if (isLoading) return <LoadingComponent message="cargando productos" />
 
+    const handleDeploy = async () => {
+        // Confirmación inicial
+        const result = await Swal.fire({
+            title: '¿Desplegar cambios?',
+            text: "Esta acción actualizará el frontend con los últimos datos.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#14b8a6',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, desplegar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                // Mostramos un mensaje de "cargando"
+                Swal.fire({
+                    title: 'Iniciando despliegue...',
+                    didOpen: () => { Swal.showLoading(); },
+                    allowOutsideClick: false
+                });
+
+                const res = await fetch('https://apitami.tamimaquinarias.com/api/v1/frontend/deploy', {
+                    method: 'POST',
+                    headers: {
+                        'X-DEPLOY-KEY': 'super-secreto-123'
+                    }
+                });
+
+                if (!res.ok) throw new Error();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '🚀 Deploy iniciado',
+                    text: 'Los cambios se verán reflejados en unos minutos.',
+                    confirmButtonColor: '#14b8a6',
+                });
+            } catch (e) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: 'No se pudo iniciar el despliegue.',
+                    confirmButtonColor: '#14b8a6',
+                });
+            }
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
@@ -139,6 +187,15 @@ const ProductosTabla = () => {
                     <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
                         <SearchInput placeholder="Buscar productos..." value={searchTerm} onChange={setSearchTerm} />
                         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
+                            <button
+                                onClick={handleDeploy}
+                                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md"
+                            >
+                                <FaSyncAlt className="h-4 w-4" />
+                                Desplegar Cambios
+                            </button>
+
                             <button
                                 onClick={() => setIsWhatsappModalOpen(true)}
                                 className="flex items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
@@ -146,6 +203,7 @@ const ProductosTabla = () => {
                                 <FaWhatsapp className="h-5 w-5" />
                                 Conexión WhatsApp
                             </button>
+
                             <button
                                 onClick={fetchData}
                                 disabled={isLoading}
