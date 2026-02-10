@@ -136,7 +136,7 @@ const ProductosTabla = () => {
                     allowOutsideClick: false
                 });
 
-                const res = await fetch('https://apitami.tamimaquinarias.com/v1/frontend/deploy', {
+                const res = await fetch('https://apitami.tamimaquinarias.com/api/v1/frontend/deploy', {
                     method: 'POST',
                     headers: {
                         'X-DEPLOY-KEY': 'super-secreto-123'
