@@ -200,84 +200,111 @@ const ProductosTabla = () => {
     if (isLoading) return <LoadingComponent message="cargando productos" />
 
     const handleDeploy = async () => {
-        if (deployInProgress) {
+    if (deployInProgress) {
+        Swal.fire({
+            icon: "info",
+            title: "⏳ Despliegue en curso",
+            html: `Podrás volver a desplegar en <b>${deployRemaining}</b> segundos`,
+            confirmButtonColor: "#14b8a6",
+            timer: 2000,
+            timerProgressBar: true,
+        });
+        return;
+    }
+
+    const result = await Swal.fire({
+        title: "¿Desplegar cambios?",
+        text: "Esta acción actualizará el frontend con los últimos datos.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#14b8a6",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Sí, desplegar",
+        cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        // ✅ Verificar que el token exista
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
             Swal.fire({
-                icon: "info",
-                title: "⏳ Despliegue en curso",
-                html: `Podrás volver a desplegar en <b>${deployRemaining}</b> segundos`,
+                icon: "error",
+                title: "❌ Error de autenticación",
+                text: "No se encontró el token de sesión. Por favor, inicia sesión nuevamente.",
                 confirmButtonColor: "#14b8a6",
-                timer: 2000, // Se cierra automáticamente en 2 segundos
-                timerProgressBar: true,
             });
             return;
         }
 
-        const result = await Swal.fire({
-            title: "¿Desplegar cambios?",
-            text: "Esta acción actualizará el frontend con los últimos datos.",
-            icon: "question",
-            showCancelButton: true,
+        setDeployInProgress(true);
+        setDeployRemaining(DEPLOY_TIMEOUT);
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem(
+                "deployCooldownUntil",
+                String(Date.now() + DEPLOY_TIMEOUT * 1000)
+            );
+        }
+
+        Swal.fire({
+            title: "🚀 Despliegue iniciado",
+            html: "El despliegue está en curso. Puedes seguir navegando.",
+            icon: "success",
             confirmButtonColor: "#14b8a6",
-            cancelButtonColor: "#6b7280",
-            confirmButtonText: "Sí, desplegar",
-            cancelButtonText: "Cancelar",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
         });
 
-        if (!result.isConfirmed) return;
-
-        try {
-            setDeployInProgress(true);
-            setDeployRemaining(DEPLOY_TIMEOUT);
-
-            if (typeof window !== "undefined") {
-                localStorage.setItem(
-                    "deployCooldownUntil",
-                    String(Date.now() + DEPLOY_TIMEOUT * 1000)
-                );
+        const res = await fetch(
+            "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
             }
+        );
 
-            // ✅ Modal que se cierra automáticamente después de 3 segundos
-            Swal.fire({
-                title: "🚀 Despliegue iniciado",
-                html: "El despliegue está en curso. Puedes seguir navegando.",
-                icon: "success",
-                confirmButtonColor: "#14b8a6",
-                timer: 3000, // Se cierra en 3 segundos
-                timerProgressBar: true,
-                showConfirmButton: false,
-            });
-
-            const res = await fetch(
-                "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "accept": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-
-                    },
-                }
-            );
-
-            if (!res.ok) throw new Error();
-
-        } catch (e) {
-            setDeployInProgress(false);
-            setDeployRemaining(null);
-
-            if (typeof window !== "undefined") {
-                localStorage.removeItem("deployCooldownUntil");
+        // ✅ Manejar diferentes tipos de error
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ message: "Error desconocido" }));
+            
+            if (res.status === 401) {
+                throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
+            } else if (res.status === 403) {
+                throw new Error("No tienes permisos para realizar esta acción.");
+            } else {
+                throw new Error(errorData.message || "Error al iniciar el despliegue");
             }
-
-            Swal.fire({
-                icon: "error",
-                title: "❌ Error",
-                text: "No se pudo iniciar el despliegue.",
-                confirmButtonColor: "#14b8a6",
-            });
         }
-    };
+
+        const data = await res.json();
+        console.log("Deploy exitoso:", data);
+
+    } catch (e) {
+        console.error("Error en deploy:", e);
+        
+        setDeployInProgress(false);
+        setDeployRemaining(null);
+
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("deployCooldownUntil");
+        }
+
+        Swal.fire({
+            icon: "error",
+            title: "❌ Error",
+            text: e instanceof Error ? e.message : "No se pudo iniciar el despliegue.",
+            confirmButtonColor: "#14b8a6",
+        });
+    }
+};
 
 
     return (
