@@ -16,7 +16,13 @@ import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWith
 
 const getApiUrl = config.apiUrl;
 
+const DEPLOY_TIMEOUT = 180; // 3 minutos
+const isClient = typeof window !== "undefined";
+
 const ProductosTabla = () => {
+    // ✅ Todos los useState dentro del componente
+    const [deployInProgress, setDeployInProgress] = useState(false);
+    const [deployRemaining, setDeployRemaining] = useState<number | null>(null);
     const [productos, setProductos] = useState<Product[]>([]);
     const [filteredProductos, setFilteredProductos] = useState<Product[]>([]);
     const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
@@ -104,6 +110,56 @@ const ProductosTabla = () => {
         }
     }, [searchTerm, productos]);
 
+
+    useEffect(() => {
+        if (!isClient) return;
+
+        const stored = localStorage.getItem("deployCooldownUntil");
+        if (stored) {
+            const diff = Math.floor((Number(stored) - Date.now()) / 1000);
+            if (diff > 0) {
+                setDeployInProgress(true);
+                setDeployRemaining(diff);
+            } else {
+                localStorage.removeItem("deployCooldownUntil");
+            }
+        }
+    }, []);
+
+
+    useEffect(() => {
+        if (!deployInProgress || deployRemaining === null) return;
+
+        if (deployRemaining <= 0) {
+            setDeployInProgress(false);
+            setDeployRemaining(null);
+            localStorage.removeItem("deployCooldownUntil");
+
+            Swal.fire({
+                icon: "success",
+                title: "✅ Despliegue liberado",
+                text: "Ya puedes volver a desplegar cambios.",
+                confirmButtonColor: "#14b8a6",
+            });
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setDeployRemaining((prev) => (prev ? prev - 1 : null));
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [deployInProgress, deployRemaining]);
+
+
+
+
+
+
+
+
+
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredProductos.slice(indexOfFirstItem, indexOfLastItem);
@@ -115,52 +171,82 @@ const ProductosTabla = () => {
     if (isLoading) return <LoadingComponent message="cargando productos" />
 
     const handleDeploy = async () => {
-        // Confirmación inicial
+        if (deployInProgress) {
+            Swal.fire({
+                icon: "info",
+                title: "⏳ Despliegue en curso",
+                html: `Podrás volver a desplegar en <b>${deployRemaining}</b> segundos`,
+                confirmButtonColor: "#14b8a6",
+                timer: 2000, // Se cierra automáticamente en 2 segundos
+                timerProgressBar: true,
+            });
+            return;
+        }
+
         const result = await Swal.fire({
-            title: '¿Desplegar cambios?',
+            title: "¿Desplegar cambios?",
             text: "Esta acción actualizará el frontend con los últimos datos.",
-            icon: 'question',
+            icon: "question",
             showCancelButton: true,
-            confirmButtonColor: '#14b8a6',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Sí, desplegar',
-            cancelButtonText: 'Cancelar'
+            confirmButtonColor: "#14b8a6",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Sí, desplegar",
+            cancelButtonText: "Cancelar",
         });
 
-        if (result.isConfirmed) {
-            try {
-                // Mostramos un mensaje de "cargando"
-                Swal.fire({
-                    title: 'Iniciando despliegue...',
-                    didOpen: () => { Swal.showLoading(); },
-                    allowOutsideClick: false
-                });
+        if (!result.isConfirmed) return;
 
-                const res = await fetch('https://apitami.tamimaquinarias.com/api/v1/frontend/deploy', {
-                    method: 'POST',
-                    headers: {
-                        'X-DEPLOY-KEY': 'super-secreto-123'
-                    }
-                });
+        try {
+            setDeployInProgress(true);
+            setDeployRemaining(DEPLOY_TIMEOUT);
 
-                if (!res.ok) throw new Error();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: '🚀 Deploy iniciado',
-                    text: 'Los cambios se verán reflejados en unos minutos.',
-                    confirmButtonColor: '#14b8a6',
-                });
-            } catch (e) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '❌ Error',
-                    text: 'No se pudo iniciar el despliegue.',
-                    confirmButtonColor: '#14b8a6',
-                });
+            if (typeof window !== "undefined") {
+                localStorage.setItem(
+                    "deployCooldownUntil",
+                    String(Date.now() + DEPLOY_TIMEOUT * 1000)
+                );
             }
+
+            // ✅ Modal que se cierra automáticamente después de 3 segundos
+            Swal.fire({
+                title: "🚀 Despliegue iniciado",
+                html: "El despliegue está en curso. Puedes seguir navegando.",
+                icon: "success",
+                confirmButtonColor: "#14b8a6",
+                timer: 3000, // Se cierra en 3 segundos
+                timerProgressBar: true,
+                showConfirmButton: false,
+            });
+
+            const res = await fetch(
+                "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
+                {
+                    method: "POST",
+                    headers: {
+                        "X-DEPLOY-KEY": "super-secreto-123",
+                    },
+                }
+            );
+
+            if (!res.ok) throw new Error();
+
+        } catch (e) {
+            setDeployInProgress(false);
+            setDeployRemaining(null);
+
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("deployCooldownUntil");
+            }
+
+            Swal.fire({
+                icon: "error",
+                title: "❌ Error",
+                text: "No se pudo iniciar el despliegue.",
+                confirmButtonColor: "#14b8a6",
+            });
         }
     };
+
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -190,10 +276,17 @@ const ProductosTabla = () => {
 
                             <button
                                 onClick={handleDeploy}
-                                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md"
+                                disabled={deployInProgress}
+                                className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
+    ${deployInProgress
+                                        ? "bg-gray-400 cursor-not-allowed text-white"
+                                        : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                                    }`}
                             >
-                                <FaSyncAlt className="h-4 w-4" />
-                                Desplegar Cambios
+                                <FaSyncAlt className={`h-4 w-4 ${deployInProgress ? "animate-spin" : ""}`} />
+                                {deployInProgress
+                                    ? `Desplegando (${deployRemaining}s)`
+                                    : "Desplegar Cambios"}
                             </button>
 
                             <button
