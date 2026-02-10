@@ -15,9 +15,8 @@ const { link = "" } = Astro.props as ModalProps;
   id="modal-cotizacion-producto"
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
-  <div
-  class="bg-white flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-4xl relative animate-slideIn rounded-xl"
->
+  <div class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn">
+
 
 
     <button
@@ -40,24 +39,27 @@ const { link = "" } = Astro.props as ModalProps;
 
     <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
 
-    <div
-        class="w-full sm:w-1/2 flex justify-center items-center overflow-hidden img-white-zone"
-      >
-        <img
-          id="modal-product-img"
-          src={DEFAULT_IMAGE}
-          alt="Imagen del producto"
-          title="Imagen del producto"
-          class="w-full h-full object-contain p-6"
-          onerror="this.onerror=null; this.src='/images/popup/default.webp'"
-        />
+    <div class="w-full sm:w-1/2 relative z-20 bg-[#0c1142]">
+        <!-- Wrapper anti-corte -->
+        <div class="h-[220px] sm:h-full flex items-center justify-center p-6">
+          <img
+              id="modal-product-img"
+              src={DEFAULT_IMAGE}
+              alt="Imagen del producto"
+              class="w-full h-full object-contain"
+            />
+
+
+        </div>
       </div>
+
+
 
 
     <!-- Formulario dinámico -->
     <div
       id="modal-form-container"
-      class="w-full sm:w-1/2 p-6 text-white relative z-30 ml-auto"
+       class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
@@ -622,21 +624,11 @@ extraForms.forEach((formExtra) => {
       display: block !important;
     }
 
-    /* El modal no debe ocupar toda la altura */
-    .modal-content {
-      max-height: 90vh !important;
-      overflow-y: auto !important;
-      border-radius: 12px !important;
-    }
+    
 
     /* Botón de cerrar más grande y visible */
 
-    .modal-close-btn {
-      top: 10px !important;
-      right: 10px !important;
-      background-color: white !important;
-      color: #4b5563 !important; 
-    }
+    
   }
 
   .img-white-zone {
