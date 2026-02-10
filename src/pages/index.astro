@@ -5,7 +5,12 @@ import bg_card4 from "@images/index/cards/porquetami2.png";
 import mapaPeru from "@images/shipping-policies/mapa.webp";
 import ProductSlideshow from "src/components/index/ProductSlideshow.tsx";
 import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
-const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
+
+// Configuración del mensaje de WhatsApp
+const phoneNumber = "51978883199";
+const message = "Hola TAMI, quisiera cotizar un envío para Lima Metropolitana.";
+const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
 import "src/styles/global.css";
 import Testimonials from "../components/index/Slideshow";
 ---
@@ -41,15 +46,14 @@ import Testimonials from "../components/index/Slideshow";
     </div>
   </section>
 
-  
   {/* Carrusel de productos con gradiente de fondo */}
   <section
-    class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 py-16 px-6 lg:px-16 bg-[linear-gradient(to_right,_#2A938B,_#0D2D2B)]"
+    class="w-full grid grid-cols-1 lg:grid-cols-[30%_70%] gap-8 py-16 px-6 lg:px-16 bg-[linear-gradient(to_right,_#2A938B,_#0D2D2B)]"
   >
-    <!-- Título - 50% izquierda -->
-    <div class="flex items-center justify-center">
+    <!-- Título - 30% izquierda -->
+    <div class="flex items-center justify-center lg:justify-start">
       <h3
-        class="text-white text-3xl lg:text-4xl xl:text-8xl font-bold leading-tight text-center lg:text-left"
+        class="text-white text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight text-center lg:text-left"
       >
         <span class="block">PRODUCTOS</span>
         <span class="block">DESTACADOS</span>
@@ -111,14 +115,9 @@ import Testimonials from "../components/index/Slideshow";
       />
     </div>
   </section>
-  {/* Sección ¿Por qué elegir TAMI? */}
-  {/* MÓVIL: flex-col para imagen arriba y texto abajo | DESKTOP: relative con posición absoluta */}
+
   <section class="w-full px-4 lg:px-8 py-8">
-    <div
-      class="rounded-3xl overflow-hidden flex flex-col md:relative"
-    >
-      <!-- Imagen principal con blur sutil - Se redujo la intensidad del blur para mantener 
-            la imagen más clara y visible, conservando un ligero desenfoque del fondo -->
+    <div class="rounded-3xl overflow-hidden flex flex-col md:relative">
       <img
         src={bg_card4.src}
         alt="Por qué elegir TAMI"
@@ -129,7 +128,9 @@ import Testimonials from "../components/index/Slideshow";
       <div class="hidden md:block absolute inset-0 bg-black/40 z-0"></div>
 
       <!-- Contenido - En móvil: debajo de la imagen con fondo | En desktop: posición absoluta -->
-      <div class="bg-gray-800 py-6 md:py-0 md:bg-transparent md:absolute md:inset-0 flex items-center justify-center md:items-center md:justify-end z-10">
+      <div
+        class="bg-gray-800 py-6 md:py-0 md:bg-transparent md:absolute md:inset-0 flex items-center justify-center md:items-center md:justify-end z-10"
+      >
         <div class="text-white text-center max-w-2xl px-6 md:px-12 md:mr-8">
           <h2
             class="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight drop-shadow-md"
@@ -139,7 +140,9 @@ import Testimonials from "../components/index/Slideshow";
           <p
             class="text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg font-light mb-3 sm:mb-4 md:mb-6 opacity-95 leading-relaxed drop-shadow-sm"
           >
-            Calidad respaldada por nuestra garantía,<br class="hidden md:block" />
+            Calidad respaldada por nuestra garantía,<br
+              class="hidden md:block"
+            />
             mostrando nuestro compromiso con la<br class="hidden md:block" />
             satisfacción de nuestros clientes.
           </p>
@@ -159,8 +162,6 @@ import Testimonials from "../components/index/Slideshow";
           </a>
         </div>
       </div>
-
-      
     </div>
   </section>
 
@@ -172,22 +173,27 @@ import Testimonials from "../components/index/Slideshow";
     <SectionCardsContainer />
   </section>
   <section
-    class="w-full pt-12 mt-16 md:mt-24 flex flex-col relative bg-[linear-gradient(90deg,_#035751_0%,_#018C81_100%)] before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200"
+    class="w-full pt-12 mt-16 md:mt-24 flex flex-col relative bg-[linear-gradient(90deg,_#035751_0%,_#018C81_100%)] before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200 overflow-hidden"
   >
     <h2
-      class="text-center text-3xl md:text-4xl font-black text-white mb-4 tracking-widest"
+      class="text-center font-black text-white mb-3 md:mb-4 px-1
+             whitespace-nowrap w-full
+             tracking-normal md:tracking-widest
+             text-[5vw] sm:text-2xl md:text-4xl"
     >
       LO QUE DICEN NUESTROS CLIENTES
     </h2>
     <h3
-      class="text-center text-lg md:text-2xl font-black text-white mb-8 md:mb-14 tracking-widest px-4 md:px-40 lg:px-80"
+      class="text-center font-bold text-white mb-8 md:mb-14 w-full mx-auto px-6 md:px-4
+             text-[10px] sm:text-sm md:text-lg lg:text-xl xl:text-2xl
+             tracking-wide leading-relaxed
+             whitespace-normal md:whitespace-nowrap"
     >
       VALORAMOS CADA COMENTARIO PARA SEGUIR MEJORANDO Y OFRECIENDO LO MEJOR PARA
       TI.
     </h3>
     <Testimonials client:only="react" />
   </section>
-    
 </Layout>
 <style>
   @keyframes fadeInUpHero {

@@ -3,9 +3,7 @@ name: Deploy Astro Static Site
 on:
   push:
     branches: ["main"]
-
   workflow_dispatch:
-
   repository_dispatch:
     types: [rebuild-frontend]
 
@@ -22,11 +20,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Clean previous build
-        run: |
-          rm -rf dist
-          rm -rf node_modules
 
       - name: Install dependencies
         run: npm ci
@@ -62,4 +55,4 @@ jobs:
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
 
       - name: Notify completion
-        run: echo "🚀 Deploy Astro completado"
+        run: echo "🚀 Deploy Astro completado con éxito"
