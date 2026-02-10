@@ -36,18 +36,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
 
-      - name: Add known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
       - name: Deploy with Rsync
         run: |
           rsync -avz --delete \
             --exclude='.git/' \
             --exclude='back/' \
             --exclude='.htaccess' \
-            --exclude='.git/' \
             --exclude='*.log' \
             --exclude='node_modules/' \
             -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
