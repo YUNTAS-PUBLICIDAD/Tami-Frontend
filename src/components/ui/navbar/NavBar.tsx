@@ -78,10 +78,10 @@ function NavBar() {
 
     // Agregar listener con passive para mejor rendimiento
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
+
     // Esta es la línea que estaba en conflicto.
     // Se elimina el punto y coma doble (;;) de tu versión HEAD.
-    handleScroll(); 
+    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -115,7 +115,7 @@ function NavBar() {
     >
       <div className="max-w-[1834px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
-          
+
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="/" title="Ir a la sección de inicio">
@@ -160,7 +160,8 @@ function NavBar() {
             <div className="lg:hidden ml-4">
               <button
                 className="w-12 h-12 flex items-center justify-center text-white"
-                title="Abrir Menú"
+                title={isOpen ? "Cerrar Menú" : "Abrir Menú"}
+                aria-label={isOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"}
                 onClick={() => setIsOpen(!isOpen)}
               >
                 {isOpen ? <IoClose size={32} /> : <IoMenu size={32} />}

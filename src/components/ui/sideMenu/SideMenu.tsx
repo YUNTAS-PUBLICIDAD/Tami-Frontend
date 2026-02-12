@@ -105,7 +105,7 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
         <nav className="space-y-0">
           {links.map((item, index) => (
             <div key={index} className="border-b border-white/20 last:border-b-0">
-              <div className="block py-1 text-center text-white font-medium text-lg hover:bg-white/10 transition-colors rounded-lg mx-2">
+              <div className="block py-3 text-center text-white font-medium text-lg hover:bg-white/10 transition-colors rounded-lg mx-2">
                 <NavLink
                   isForNavBar={false}
                   to={item.url}
