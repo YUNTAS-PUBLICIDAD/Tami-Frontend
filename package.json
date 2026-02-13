@@ -16,10 +16,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "astro": "^5.16.15",
-<<<<<<< HEAD
-=======
     "autoprefixer": "^10.4.24",
->>>>>>> 0b9e994cc27f78c0fe394b7c81f2bf7f44ab198e
     "axios": "^1.13.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
