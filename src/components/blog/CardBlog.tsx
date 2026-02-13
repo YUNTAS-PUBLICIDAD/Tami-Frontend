@@ -41,12 +41,12 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
             {blog.nombre_producto && (
               <div className="mb-4">
                 <span className="inline-block bg-teal-700 text-white text-sm font-medium px-4 py-1.5 rounded-md
-                                 transition-all duration-300 group-hover:bg-teal-600 group-hover:shadow-md">
+                                 transition-all duration-300 group-hover:bg-teal-800 group-hover:shadow-md">
                   {blog.nombre_producto}
                 </span>
               </div>
             )}
-            <h2 className="text-teal-700 text-xl md:text-2xl font-bold mb-3 leading-tight transition-colors duration-300 group-hover:text-teal-600">
+            <h2 className="text-teal-700 text-xl md:text-2xl font-bold mb-3 leading-tight transition-colors duration-300 group-hover:text-teal-800">
               {blog.subtitulo1}
             </h2>
             <p className="text-gray-700 text-base leading-relaxed mb-4">
