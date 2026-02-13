@@ -140,7 +140,7 @@ div {
 
 /* --- Tus clases personalizadas --- */
 .pagination-btn {
-  @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-600 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
+  @apply px-4 py-2 bg-teal-700 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-700 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
 }
 
 .admin-act-btn {
@@ -413,7 +413,7 @@ a.relative.group:hover::after {
 }
 
 .dialog-header {
-  @apply bg-teal-600 -mx-6 md:-mx-8 -mt-6 md:-mt-8 mb-6 p-4 md:p-6 rounded-t-2xl;
+  @apply bg-teal-700 -mx-6 md:-mx-8 -mt-6 md:-mt-8 mb-6 p-4 md:p-6 rounded-t-2xl;
 }
 
 .dialog-title {
