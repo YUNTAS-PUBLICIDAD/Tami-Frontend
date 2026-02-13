@@ -5,12 +5,15 @@ interface WhatsappFormWithTabsProps {
     onClose: () => void;
 }
 
+<<<<<<< HEAD
 interface Producto {
     id: number;
     nombre: string;
     link: string;
 }
 
+=======
+>>>>>>> f7d29efabcc74e8bc58424c5bca3a77e6bf02940
 // El texto original que se usará si el admin quiere resetear
 const DEFAULT_TEMPLATE = `📢 *Bienvenido a Tami Maquinarias* 📢
 
@@ -35,6 +38,7 @@ Atentamente,
 *Yuntas Publicidad*`;
 
 export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsProps) {
+<<<<<<< HEAD
     const [productos, setProductos] = useState<Producto[]>([]);
     const [selectedProductoId, setSelectedProductoId] = useState<number | null>(null);
     const [template, setTemplate] = useState('');
@@ -122,6 +126,33 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
         } catch (error) {
             alert('Error al guardar la plantilla');
             console.error(error);
+=======
+    const [template, setTemplate] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const [activeTab, setActiveTab] = useState<'connection' | 'template'>('connection');
+
+    useEffect(() => {
+        fetch(`${import.meta.env.PUBLIC_API_URL}/api/v1/whatsapp-templates/product_details`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.content) setTemplate(data.content);
+                else setTemplate(DEFAULT_TEMPLATE); // Cargar default si la DB está vacía
+            })
+            .catch(() => setTemplate(DEFAULT_TEMPLATE));
+    }, []);
+
+    const handleSaveTemplate = async () => {
+        setIsSaving(true);
+        try {
+            await fetch(`${import.meta.env.PUBLIC_API_URL}/api/v1/whatsapp-templates/product_details`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: template })
+            });
+            alert('¡Plantilla guardada!');
+        } catch (error) {
+            alert('Error al guardar');
+>>>>>>> f7d29efabcc74e8bc58424c5bca3a77e6bf02940
         } finally {
             setIsSaving(false);
         }
