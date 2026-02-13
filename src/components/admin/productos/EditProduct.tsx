@@ -140,15 +140,23 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const nuevasImagenes = [...formData.imagenes];
-        nuevasImagenes[index] = {
-            ...nuevasImagenes[index],
-            url_imagen: file,
-            // texto_alt_SEO
-        };
 
+        setFormData((prev) => {
+            const nuevasImagenes = [...prev.imagenes];
+            const imagenAnterior = nuevasImagenes[index];
 
-        setFormData((prev) => ({ ...prev, imagenes: nuevasImagenes }));
+            nuevasImagenes[index] = {
+                ...imagenAnterior,
+                url_imagen: file,
+                // 
+                id: imagenAnterior.id 
+            };
+            
+            // Debug para verificar que el ID sigue ahí
+            console.log(`📸 Cambio en slot ${index + 1}. ID mantenido:`, nuevasImagenes[index].id);
+
+            return { ...prev, imagenes: nuevasImagenes };
+        });
     };
 
 
@@ -288,21 +296,20 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
             formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
 
-           // ==========================================
-            // MANEJO DE IMÁGENES DE GALERÍA 
-            // ==========================================
 
-           const imagenesNuevas: File[] = [];
+            // MANEJO DE IMÁGENES DE GALERÍA 
+            
+            const imagenesNuevas: File[] = [];
             const imagenesNuevasAlt: string[] = [];
+            
+            //  Array para imágenes que se reemplazan
+            const imagenesEditadas: { id: number; file: File; alt: string }[] = [];
+
             const imagenesExistentesData: Array<{
                 url: string;
                 id?: number;
                 alt: string;
             }> = [];
-
-            console.log('════════════════════════════════════════');
-            console.log('🔍 INICIANDO PROCESAMIENTO DE IMÁGENES');
-            console.log('════════════════════════════════════════');
 
             // Procesar TODAS las imágenes 
             formData.imagenes.forEach((imagen, index) => {
@@ -315,36 +322,52 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
 
                 if (imagen.url_imagen instanceof File) {
-                    //  IMAGEN NUEVA 
-                    imagenesNuevas.push(imagen.url_imagen);
-                    imagenesNuevasAlt.push(altText);
                     
-                    console.log(`✨ Slot ${index + 1}: NUEVA imagen`, {
-                        nombre: imagen.url_imagen.name,
-                        tamaño: `${(imagen.url_imagen.size / 1024).toFixed(2)} KB`,
-                        alt: altText
-                    });
+                    // Verificamos si tiene ID para decidir si es EDICIÓN o INSERCIÓN
+                    if (imagen.id) {
+                        // TIENE ID + FILE = EDICIÓN
+                        imagenesEditadas.push({
+                            id: imagen.id,
+                            file: imagen.url_imagen,
+                            alt: altText
+                        });
+
+                        console.log(`🔄 Slot ${index + 1}: REEMPLAZO (Editando ID ${imagen.id})`, {
+                            nombre: imagen.url_imagen.name,
+                            id_original: imagen.id
+                        });
+
+                    } else {
+                        // NO TIENE ID + FILE = NUEVA (Insertar al final)
+                        imagenesNuevas.push(imagen.url_imagen);
+                        imagenesNuevasAlt.push(altText);
+                        
+                        console.log(`✨ Slot ${index + 1}: NUEVA imagen (Insertar)`, {
+                            nombre: imagen.url_imagen.name,
+                            tamaño: `${(imagen.url_imagen.size / 1024).toFixed(2)} KB`
+                        });
+                    }
                     
                 } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
-                    //  IMAGEN EXISTENTE 
+                    //  IMAGEN EXISTENTE    
                     let urlLimpia = "";
 
                     // Estrategia 1: Usar original_path si existe
                     if (imagen.original_path) {
                         urlLimpia = imagen.original_path;
-                        console.log(`  📍 Usando original_path: ${urlLimpia}`);
+                        
                     } else {
                         // Estrategia 2: Extraer de la URL completa
                         try {
                             const urlObj = new URL(imagen.url_imagen, window.location.origin);
                             urlLimpia = urlObj.pathname;
-                            console.log(`  📍 Extraído de URL: ${urlLimpia}`);
+                           
                         } catch (error) {
                             // Fallback: limpiar manualmente
                             urlLimpia = imagen.url_imagen
                                 .split('?')[0]
                                 .replace(config.apiUrl, '');
-                            console.log(`  📍 Limpiado manualmente: ${urlLimpia}`);
+                           
                         }
                     }
 
@@ -359,8 +382,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     
                     console.log(`🔒 Slot ${index + 1}: CONSERVAR imagen existente`, {
                         id: imagen.id,
-                        url_limpia: urlLimpia,
-                        alt: altText
+                        url: urlLimpia
                     });
                 }
             });
@@ -368,25 +390,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             console.log('════════════════════════════════════════');
             console.log('📊 RESUMEN DE PROCESAMIENTO');
             console.log('════════════════════════════════════════');
-            console.log(`✨ Imágenes NUEVAS: ${imagenesNuevas.length}`);
-            console.log(`🔒 Imágenes EXISTENTES: ${imagenesExistentesData.length}`);
-            console.log(`📈 TOTAL: ${imagenesNuevas.length + imagenesExistentesData.length}`);
+            console.log(`✨ Nuevas (Insertar): ${imagenesNuevas.length}`);
+            console.log(`🔄 Editadas (Reemplazar): ${imagenesEditadas.length}`);
+            console.log(`🔒 Existentes (Mantener): ${imagenesExistentesData.length}`);
             console.log('════════════════════════════════════════');
 
-            // ==========================================
-            // SIEMPRE enviar datos si hay imágenes 
-            // ==========================================
 
-            const hayImagenes = imagenesNuevas.length > 0 || imagenesExistentesData.length > 0;
+
+            const hayImagenes = imagenesNuevas.length > 0 || imagenesExistentesData.length > 0 || imagenesEditadas.length > 0;
 
             if (hayImagenes) {
-                // Agregar imágenes NUEVAS
+                //Agregar imágenes TOTALMENTE NUEVAS
                 imagenesNuevas.forEach((file, idx) => {
                     formDataToSend.append('imagenes_nuevas[]', file);
                     formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
                 });
                 
-                console.log(`📦 Enviando ${imagenesNuevas.length} imagen(es) NUEVA(s)`);
+                // Agregar imágenes EDITADAS (Reemplazos)
+                imagenesEditadas.forEach((img, idx) => {
+                    formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
+                    formDataToSend.append(`imagenes_editadas[${idx}][file]`, img.file);
+                    formDataToSend.append(`imagenes_editadas[${idx}][alt]`, img.alt);
+                });
 
                 // Agregar imágenes EXISTENTES a CONSERVAR
                 imagenesExistentesData.forEach((img, idx) => {
@@ -399,25 +424,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
                 });
                 
-                console.log(`📦 Enviando ${imagenesExistentesData.length} imagen(es) EXISTENTE(s) a conservar`);
-                
-                console.log('✅ Todas las imágenes agregadas al FormData');
+                console.log('✅ Todas las categorías de imágenes agregadas al FormData');
             } else {
-                console.warn('⚠️ NO hay imágenes para enviar (esto no debería pasar si validaste correctamente)');
+                console.warn('⚠️ NO hay imágenes para enviar');
             }
-
-            // ==========================================
-            // DEBUG: Mostrar lo que se va a enviar
-            // ==========================================
-            console.log('════════════════════════════════════════');
-            console.log('🚀 DATOS FINALES A ENVIAR AL BACKEND');
-            console.log('════════════════════════════════════════');
-            console.log('Imágenes nuevas:', imagenesNuevas.map(f => f.name));
-            console.log('Imágenes existentes a conservar:', imagenesExistentesData.map(i => ({
-                id: i.id,
-                url: i.url
-            })));
-            console.log('════════════════════════════════════════');
 
             formData.relacionados.forEach((item, index) => {
                 formDataToSend.append(`relacionados[${index}]`, item.toString());
@@ -510,6 +520,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     useEffect(() => {
         if (showModal && product) {
             const refreshCache = Date.now();
+            console.log("Producto a editar:", product);
+            console.log("Imágenes originales:", product.imagenes);
             let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
                 id: img.id,
                 url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
