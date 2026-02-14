@@ -1,0 +1,81 @@
+<div
+    id="toast-notification"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] opacity-0 pointer-events-none transition-opacity duration-500 ease-in-out"
+>
+    <div
+        class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md text-gray-800 dark:text-white px-8 py-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-teal-500/20 flex flex-col items-center gap-4 min-w-[280px]"
+    >
+        <div
+            id="toast-icon-success"
+            class="bg-teal-500 text-white rounded-full p-2 hidden transform scale-125"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="3"
+                stroke="currentColor"
+                class="w-6 h-6"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"></path>
+            </svg>
+        </div>
+        <div
+            id="toast-icon-error"
+            class="bg-red-500 text-white rounded-full p-2 hidden transform scale-125"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="3"
+                stroke="currentColor"
+                class="w-6 h-6"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </div>
+        <span
+            id="toast-message"
+            class="font-bold text-center text-xl tracking-tight leading-tight"
+            >Mensaje</span
+        >
+    </div>
+</div>
+
+<script is:inline>
+    window.addEventListener("show-toast", (e) => {
+        const { message, type = "success", duration = 2000 } = e.detail || {};
+        const toast = document.getElementById("toast-notification");
+        const toastMsg = document.getElementById("toast-message");
+        const successIcon = document.getElementById("toast-icon-success");
+        const errorIcon = document.getElementById("toast-icon-error");
+
+        if (!toast || !toastMsg) return;
+
+        // Reset icons
+        successIcon.classList.add("hidden");
+        errorIcon.classList.add("hidden");
+
+        // Set content and icon
+        toastMsg.textContent = message;
+        if (type === "success") successIcon.classList.remove("hidden");
+        else errorIcon.classList.remove("hidden");
+
+        // Show toast
+        toast.classList.remove("opacity-0");
+        toast.classList.add("opacity-100");
+
+        // Hide after duration
+        setTimeout(() => {
+            toast.classList.add("opacity-0");
+            toast.classList.remove("opacity-100");
+        }, duration);
+    });
+</script>
