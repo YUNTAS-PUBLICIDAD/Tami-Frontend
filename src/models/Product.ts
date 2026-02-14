@@ -47,6 +47,10 @@ export interface ProductFormularioPOST {
     meta_titulo: string;
     meta_descripcion: string;
     popup_estilo: string;
+    popup3_sin_fondo?: boolean;
+    titulo_popup_1?: string;
+    titulo_popup_2?: string;
+    titulo_popup_3?: string;
   };
 }
 
@@ -92,6 +96,10 @@ export default interface Producto {
     meta_titulo: string;
     meta_descripcion: string;
     popup_estilo: string;
+    popup3_sin_fondo?: boolean;
+    titulo_popup_1?: string;
+    titulo_popup_2?: string;
+    titulo_popup_3?: string;
   };
   dimensiones: {
     largo: string;
@@ -117,6 +125,9 @@ export const defaultValuesProduct: ProductFormularioPOST = {
     meta_descripcion: "",
     popup_estilo: "",
     popup3_sin_fondo: false,
+    titulo_popup_1: "",
+    titulo_popup_2: "",
+    titulo_popup_3: "",
   },
   relacionados: [],
   imagenes: [

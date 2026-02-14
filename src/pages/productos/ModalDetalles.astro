@@ -198,15 +198,47 @@ const { link = "" } = Astro.props as ModalProps;
     document.getElementById("modal-detalles-3")?.classList.add("hidden");
   }
 
+  function obtenerTituloPopup(producto) {
+      const etiqueta = producto?.etiqueta;
+      if (!etiqueta) return sectionConfig.title;
+
+      switch (etiqueta.popup_estilo) {
+        case "estilo1":
+          return etiqueta.titulo_popup_1 || sectionConfig.title;
+        case "estilo2":
+          return etiqueta.titulo_popup_2 || sectionConfig.title;
+        case "estilo3":
+          return etiqueta.titulo_popup_3 || sectionConfig.title;
+        default:
+          return sectionConfig.title;
+      }
+    }
+
+
   async function showCotizacionModal() {
     const producto = await obtenerProductoActual();
+    console.log("PRODUCTO COMPLETO:", producto);
+    console.log("ETIQUETA COMPLETA:", producto?.etiqueta);
+    console.log("TITULO 1:", producto?.etiqueta?.titulo_popup_1);
+    console.log("TITULO 2:", producto?.etiqueta?.titulo_popup_2);
+    console.log("TITULO 3:", producto?.etiqueta?.titulo_popup_3);
     await actualizarImagenDesdeLink();
+    console.log("🧾 Titulos popup:", producto?.etiqueta);
+
 
     cerrarTodosLosModales();
 
     const popupEstilo =
       producto?.etiqueta?.popup_estilo ||
       "estilo1";
+    const titleEl = document.getElementById("modal-title");
+      if (titleEl) {
+        const tituloFinal = obtenerTituloPopup(producto);
+        titleEl.innerHTML = tituloFinal.replace(
+          "GRATIS",
+          "<span class='font-extrabold'>GRATIS</span>"
+        );
+      }
 
 
     console.log("🎯 Estilo de modal detectado:", popupEstilo);
@@ -221,6 +253,7 @@ const { link = "" } = Astro.props as ModalProps;
       return;
     }
 
+
     // ---- ESTILO 1 (TU MODAL ACTUAL) ----
     aplicarConfig();
 
@@ -233,6 +266,8 @@ const { link = "" } = Astro.props as ModalProps;
     }
   }
 
+
+  
 
   /**
    * Actualiza la imagen del modal popup desde la BD.
@@ -475,12 +510,7 @@ extraForms.forEach((formExtra) => {
       backgroundModal.classList.add(sectionConfig.gradient);
     }
 
-    if (title) {
-  title.innerHTML = sectionConfig.title.replace(
-    "GRATIS",
-    "<span class='font-extrabold'>GRATIS</span>",
-  );
-}
+    
 
 
     const negociosText = document.getElementById("modal-negocios-text");

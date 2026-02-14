@@ -37,9 +37,10 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
     >
-      <h2 class="text-3xl sm:text-4xl font-bold text-center leading-snug mb-8">
-        TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS
+      <h2 id="modal3-title"
+       class="text-3xl sm:text-4xl font-bold text-center leading-snug mb-8">
       </h2>
+
 
       <form id="form-cotizacion-producto-3" class="flex flex-col gap-4">
         <input type="text" name="nombre" placeholder="Nombre y Apellidos" required class="input-style" />
@@ -123,6 +124,18 @@ async function actualizarImagenModal3() {
     // ⭐ CONTROL DESDE CHECKBOX LARAVEL
     if (producto.etiqueta?.popup_estilo === "estilo3") {
       modoVisual = producto.etiqueta.popup3_sin_fondo ? "recorte" : "fondo";
+    }
+  }
+
+  const tituloModal3 = document.getElementById("modal3-title");
+
+  if (window.__detalleProducto) {
+    const producto = window.__detalleProducto;
+
+    if (tituloModal3) {
+      tituloModal3.textContent =
+        producto.etiqueta?.titulo_popup_3 ||
+        "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS";
     }
   }
 

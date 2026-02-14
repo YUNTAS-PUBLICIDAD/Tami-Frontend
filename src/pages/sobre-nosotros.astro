@@ -108,7 +108,7 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
         <div class="flex justify-center md:justify-start mb-3 md:mb-0">
           <a
             href="/productos"
-            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95"
+            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-4 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95 min-h-[48px]"
           >
             CONTÁCTANOS
           </a>
@@ -228,8 +228,20 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
     .valores-swiper-pagination .swiper-pagination-bullet {
       background: #0c998a;
       opacity: 0.5;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
+      margin: 0 8px !important;
+      position: relative;
+    }
+    /* Aumentar área táctil invisible alrededor del bullet */
+    .valores-swiper-pagination .swiper-pagination-bullet::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
     }
     .valores-swiper-pagination .swiper-pagination-bullet-active {
       opacity: 1;
