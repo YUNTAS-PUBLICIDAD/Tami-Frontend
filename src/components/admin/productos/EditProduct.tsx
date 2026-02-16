@@ -1333,7 +1333,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         <div className="relative flex items-center justify-center">
                                                             {item.imagenes?.[0]?.url_imagen ? (
                                                                 <img
-                                                                    src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                                                    src={`https://apitami.staging.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
                                                                     alt={item.nombre}
                                                                     className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${formData.relacionados.includes(item.id)
                                                                         ? 'border-teal-600'

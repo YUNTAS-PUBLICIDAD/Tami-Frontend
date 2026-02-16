@@ -443,7 +443,7 @@ const productosUrl = config.endpoints.productos;
 
       const images = [
         ...(product.imagenes?.map(
-          (img) => `https://apitami.tamimaquinarias.com${img.url_imagen}`
+          (img) => `https://apitami.staging.tamimaquinarias.com${img.url_imagen}`
         ) || []),
       ];
 

@@ -260,7 +260,7 @@ const ProductosTabla = () => {
         });
 
         const res = await fetch(
-            "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
+            "https://apitami.staging.tamimaquinarias.com/api/v1/frontend/deploy",
             {
                 method: "POST",
                 headers: {
