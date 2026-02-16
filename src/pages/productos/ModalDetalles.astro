@@ -66,7 +66,7 @@ const { link = "" } = Astro.props as ModalProps;
       >
         <h2
           id="modal-title"
-          class="text-2xl text-white sm:text-3xl font-light italic text-center sm:mt-3 mb-8 select-none"
+          class="text-2xl text-white sm:text-3xl font-light italic text-center sm:mt-3 mb-4 select-none"
         >
         </h2>
 
@@ -75,7 +75,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="text"
             name="nombre"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1"
+            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
             placeholder="Nombre y Apellidos"
             required
           />
@@ -84,7 +84,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="email"
             name="correo"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1"
+            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
             placeholder="Correo@gmail.com"
             required
           />
@@ -93,7 +93,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="tel"
             name="telefono"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1"
+            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
             placeholder="Teléfono: 905 876 524"
             required
           />
@@ -655,6 +655,17 @@ const { link = "" } = Astro.props as ModalProps;
       margin: 20px auto 0 auto !important;
       display: block !important;
     }
+
+    /* 📱 SOLO MÓVIL */
+  @media (max-width: 640px) {
+    .input-style {
+      padding: 10px 12px;   /* ↓ menos alto */
+      font-size: 14px;      /* ↓ texto un poco más chico */
+      border-radius: 12px;  /* opcional */
+    }
+  }
+
+    
 
     /* Botón de cerrar más grande y visible */
   }

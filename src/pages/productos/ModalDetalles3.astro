@@ -46,10 +46,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
     >
-      <h2
-        id="modal3-title"
-        class="text-3xl sm:text-4xl font-bold text-center leading-snug mb-8"
-      >
+      <h2 id="modal3-title"
+       class="text-2xl sm:text-4xl font-bold text-center leading-snug mb-4">
       </h2>
 
       <form id="form-cotizacion-producto-3" class="flex flex-col gap-4">
@@ -103,15 +101,25 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     border: 2px solid #7aa2ff;
   }
 
-  .btn-white-pill {
-    background: #160063;
-    color: white;
-    border-radius: 999px;
-    font-weight: bold;
-    transition: 0.3s;
-    padding: 0.65rem 2rem;
-    font-size: 1rem;
+/* 📱 SOLO MÓVIL */
+@media (max-width: 640px) {
+  .input-style {
+    padding: 10px 12px;   /* ↓ menos alto */
+    font-size: 14px;      /* ↓ texto un poco más chico */
+    border-radius: 12px;  /* opcional */
   }
+}
+
+
+.btn-white-pill {
+  background: #160063;
+  color: white;
+  border-radius: 999px;
+  font-weight: bold;
+  transition: .3s;
+  padding: 0.65rem 2rem;
+  font-size: 1rem;
+}
 
   .btn-white-pill:hover {
     transform: scale(1.05);
