@@ -10,43 +10,56 @@ import BlogPage from "../components/blog/BlogPage.tsx";
   description="Explora nuestro blog de maquinaria industrial con tips, consejos de empaque y guías útiles para pequeños negocios y emprendedores en Perú."
   canonicalUrl="https://tamimaquinarias.com/blog/"
 >
-  <section
-    class="relative bg-cover bg-center h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
-    style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
+    <section
+  class="relative bg-cover bg-center
+         h-[42vh] sm:h-screen min-h-[42vh]
+         pt-16 lg:pt-20 text-white"
+  style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
+>
+  <div
+  class="absolute inset-0 z-20 flex flex-col
+         items-center justify-center
+         text-center text-white px-6
+         pt-20 sm:pt-28
+         pb-8 sm:pb-20
+         bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
   >
-    <div
-      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6 bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+
+    <h2
+      class="text-2xl sm:text-5xl lg:text-8xl
+             font-extrabold mb-2
+             leading-tight drop-shadow-lg"
     >
-      <h2
-        class="text-6xl sm:text-5xl lg:text-8xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 sm:mb-4 max-w-5xl mb-8 leading-relaxed drop-shadow-lg"
-      >
-        BLOG TAMI
-      </h2>
+      BLOG TAMI
+    </h2>
 
-      <p
-        class="text-base sm:text-lg md:text-xl font-medium max-w-5xl drop-shadow-md leading-relaxed"
-      >
-        En esta sección encontrarás temas sobre diseño de interiores para
-        entornos profesionales, como oficinas, restaurantes, hoteles y eventos
-        especiales, incluyendo tips, artículos, tendencias y consejos.
-      </p>
+    <p
+      class="text-[12.5px] sm:text-lg md:text-xl
+             font-medium max-w-[280px] sm:max-w-5xl
+             drop-shadow-md leading-snug"
+    >
+      En esta sección encontrarás temas sobre diseño de interiores para
+      entornos profesionales, como oficinas, restaurantes, hoteles y eventos
+      especiales, incluyendo tips, artículos, tendencias y consejos.
+    </p>
 
-      <a
-        href="/productos"
-        title="Ver productos"
-        style="background-color: #00786F;"
-        class="hover:bg-teal-700 text-white font-semibold text-lg sm:text-xl px-10 py-4 rounded-sm transition-all duration-300 inline-flex items-center justify-center shadow-lg cursor-pointer mt-24"
-      >
-        <span>DESCUBRE</span>
-        <span class="ml-2 text-2xl">+</span>
-        <svg
-          class="w-5 h-5 ml-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"></svg>
-      </a>
-    </div>
-  </section>
+    <a
+      href="/productos"
+      title="Ver productos"
+      style="background-color: #00786F;"
+      class="hover:bg-teal-700 text-white font-semibold
+             text-sm sm:text-xl
+             px-6 sm:px-10 py-2 sm:py-4
+             rounded-sm transition-all duration-300
+             inline-flex items-center justify-center
+             shadow-lg cursor-pointer
+             mt-4 sm:mt-10"
+    >
+      <span>DESCUBRE</span>
+      <span class="ml-2 text-lg sm:text-2xl">+</span>
+    </a>
+  </div>
+</section>
 
   <BlogPage client:load />
 </Layout>

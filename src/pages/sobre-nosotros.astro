@@ -24,23 +24,25 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
 >
   {/* 🔹 Banner principal */}
   <section
-    class="relative bg-cover bg-center h-[30vh] sm:h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
-    style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${aboutHero.src})`}
-  >
-    <div
-      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6
-  pt-10 sm:pt-0
-  bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+  class="relative bg-cover bg-center h-[30vh] sm:h-screen
+min-h-[32vh]
+ pt-16 lg:pt-20 text-white"
+  style={`background-image: linear-gradient(to bottom, rgba(0,120,111,.75), rgba(0,0,0,.75)), url(${aboutHero.src})`}
     >
+  <div
+    class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
+    bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60">
+
       <h2
-        class="text-3xl sm:text-5xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 mb-4 sm:mb-4 max-w-5xl leading-snug drop-shadow-lg"
-      >
+          class="text-xl sm:text-5xl lg:text-7xl font-extrabold mb-2 leading-tight"
+        >
         SOBRE NOSOTROS
       </h2>
 
       <p
-        class="text-sm sm:text-lg md:text-xl font-medium max-w-4xl drop-shadow-md leading-snug px-4 sm:px-0"
-      >
+        class="text-[12.5px] sm:text-lg md:text-xlmax-w-[260px] sm:max-w-4xl
+        eading-snug sm:leading-relaxed"
+        >
         Buscamos ayudar en tu negocio, mediante la comercialización de productos
         para emprendimiento, trabajo y decoración, cumpliendo con los estándares
         de calidad.
@@ -108,7 +110,7 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
         <div class="flex justify-center md:justify-start mb-3 md:mb-0">
           <a
             href="/productos"
-            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95"
+            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-4 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95 min-h-[48px]"
           >
             CONTÁCTANOS
           </a>
@@ -228,8 +230,20 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
     .valores-swiper-pagination .swiper-pagination-bullet {
       background: #0c998a;
       opacity: 0.5;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
+      margin: 0 8px !important;
+      position: relative;
+    }
+    /* Aumentar área táctil invisible alrededor del bullet */
+    .valores-swiper-pagination .swiper-pagination-bullet::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
     }
     .valores-swiper-pagination .swiper-pagination-bullet-active {
       opacity: 1;

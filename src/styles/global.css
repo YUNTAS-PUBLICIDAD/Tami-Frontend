@@ -140,7 +140,7 @@ div {
 
 /* --- Tus clases personalizadas --- */
 .pagination-btn {
-  @apply px-4 py-2 bg-teal-600 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-600 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
+  @apply px-4 py-2 bg-teal-700 text-white rounded-md disabled:opacity-50 disabled:hover:cursor-default disabled:hover:bg-teal-700 hover:bg-teal-900 hover:cursor-pointer transition-colors duration-200;
 }
 
 .admin-act-btn {
@@ -400,24 +400,24 @@ a.relative.group:hover::after {
 
 
 .card {
-  @apply bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700
+  @apply bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700;
 }
 
 /* Modales para dashboards (dialogs) */
 .dialog-overlay {
-  @apply fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 md:p-6 lg:p-8 overflow-y-auto
+  @apply fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 md:p-6 lg:p-8 overflow-y-auto;
 }
 
 .dialog {
-  @apply bg-white dark:bg-gray-800 w-full max-w-md md:max-w-2xl lg:max-w-4xl rounded-2xl shadow-2xl p-6 md:p-8 relative transition-all duration-500 overflow-y-auto overflow-x-hidden
+  @apply bg-white dark:bg-gray-800 w-full max-w-md md:max-w-2xl lg:max-w-4xl rounded-2xl shadow-2xl p-6 md:p-8 relative transition-all duration-500 overflow-y-auto overflow-x-hidden;
 }
 
 .dialog-header {
-  @apply bg-teal-600 -mx-6 md:-mx-8 -mt-6 md:-mt-8 mb-6 p-4 md:p-6 rounded-t-2xl
+  @apply bg-teal-700 -mx-6 md:-mx-8 -mt-6 md:-mt-8 mb-6 p-4 md:p-6 rounded-t-2xl;
 }
 
 .dialog-title {
-  @apply text-xl md:text-2xl text-center font-bold text-white
+  @apply text-xl md:text-2xl text-center font-bold text-white;
 }
 
 .dialog p, .dialog li, .dialog span {

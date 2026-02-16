@@ -140,15 +140,23 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const nuevasImagenes = [...formData.imagenes];
-        nuevasImagenes[index] = {
-            ...nuevasImagenes[index],
-            url_imagen: file,
-            // texto_alt_SEO
-        };
 
+        setFormData((prev) => {
+            const nuevasImagenes = [...prev.imagenes];
+            const imagenAnterior = nuevasImagenes[index];
 
-        setFormData((prev) => ({ ...prev, imagenes: nuevasImagenes }));
+            nuevasImagenes[index] = {
+                ...imagenAnterior,
+                url_imagen: file,
+                // 
+                id: imagenAnterior.id 
+            };
+            
+            // Debug para verificar que el ID sigue ahí
+            console.log(`📸 Cambio en slot ${index + 1}. ID mantenido:`, nuevasImagenes[index].id);
+
+            return { ...prev, imagenes: nuevasImagenes };
+        });
     };
 
 
@@ -280,6 +288,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 formData.etiqueta.popup_estilo || "estilo1"
             );
             formDataToSend.append(
+                "etiqueta[titulo_popup_1]",
+                formData.etiqueta.titulo_popup_1 || ""
+            );
+            formDataToSend.append(
+                "etiqueta[titulo_popup_2]",
+                formData.etiqueta.titulo_popup_2 || ""
+            );
+            formDataToSend.append(
+                "etiqueta[titulo_popup_3]",
+                formData.etiqueta.titulo_popup_3 || ""
+            );
+            formDataToSend.append(
                 "etiqueta[popup3_sin_fondo]",
                 formData.etiqueta.popup3_sin_fondo ? "true" : "false"
             );
@@ -288,31 +308,138 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
             formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
 
-            // Manejo de imágenes: conservar existentes + añadir nuevas
+
+            // MANEJO DE IMÁGENES DE GALERÍA 
+            
+            const imagenesNuevas: File[] = [];
+            const imagenesNuevasAlt: string[] = [];
+            
+            //  Array para imágenes que se reemplazan
+            const imagenesEditadas: { id: number; file: File; alt: string }[] = [];
+
+            const imagenesExistentesData: Array<{
+                url: string;
+                id?: number;
+                alt: string;
+            }> = [];
+
+            // Procesar TODAS las imágenes 
             formData.imagenes.forEach((imagen, index) => {
-                const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
+                // Saltar slots completamente vacíos
+                if (!imagen.url_imagen) {
+                    console.log(`⏭️ Slot ${index + 1}: vacío (sin imagen)`);
+                    return;
+                }
+                
+                const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
 
                 if (imagen.url_imagen instanceof File) {
-                    formDataToSend.append(`imagenes[${index}]`, imagen.url_imagen);
-                    formDataToSend.append(`textos_alt[${index}]`, altText);
-
-                } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen !== "") {
-
-                    let urlFinal = imagen.original_path;
-
-                    if (!urlFinal) {
-                        urlFinal = imagen.url_imagen.replace(config.apiUrl, '');
-                    }
-
-                    formDataToSend.append(`imagenes_existentes[${index}]`, urlFinal);
-
+                    
+                    // Verificamos si tiene ID para decidir si es EDICIÓN o INSERCIÓN
                     if (imagen.id) {
-                        formDataToSend.append(`imagenes_ids[${index}]`, imagen.id.toString());
+                        // TIENE ID + FILE = EDICIÓN
+                        imagenesEditadas.push({
+                            id: imagen.id,
+                            file: imagen.url_imagen,
+                            alt: altText
+                        });
+
+                        console.log(`🔄 Slot ${index + 1}: REEMPLAZO (Editando ID ${imagen.id})`, {
+                            nombre: imagen.url_imagen.name,
+                            id_original: imagen.id
+                        });
+
+                    } else {
+                        // NO TIENE ID + FILE = NUEVA (Insertar al final)
+                        imagenesNuevas.push(imagen.url_imagen);
+                        imagenesNuevasAlt.push(altText);
+                        
+                        console.log(`✨ Slot ${index + 1}: NUEVA imagen (Insertar)`, {
+                            nombre: imagen.url_imagen.name,
+                            tamaño: `${(imagen.url_imagen.size / 1024).toFixed(2)} KB`
+                        });
+                    }
+                    
+                } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
+                    //  IMAGEN EXISTENTE    
+                    let urlLimpia = "";
+
+                    // Estrategia 1: Usar original_path si existe
+                    if (imagen.original_path) {
+                        urlLimpia = imagen.original_path;
+                        
+                    } else {
+                        // Estrategia 2: Extraer de la URL completa
+                        try {
+                            const urlObj = new URL(imagen.url_imagen, window.location.origin);
+                            urlLimpia = urlObj.pathname;
+                           
+                        } catch (error) {
+                            // Fallback: limpiar manualmente
+                            urlLimpia = imagen.url_imagen
+                                .split('?')[0]
+                                .replace(config.apiUrl, '');
+                           
+                        }
                     }
 
-                    formDataToSend.append(`textos_alt[${index}]`, altText);
+                    // Limpiar query params y decodificar
+                    urlLimpia = decodeURIComponent(urlLimpia.split('?')[0]);
+                    
+                    imagenesExistentesData.push({
+                        url: urlLimpia,
+                        id: imagen.id,
+                        alt: altText
+                    });
+                    
+                    console.log(`🔒 Slot ${index + 1}: CONSERVAR imagen existente`, {
+                        id: imagen.id,
+                        url: urlLimpia
+                    });
                 }
             });
+
+            console.log('════════════════════════════════════════');
+            console.log('📊 RESUMEN DE PROCESAMIENTO');
+            console.log('════════════════════════════════════════');
+            console.log(`✨ Nuevas (Insertar): ${imagenesNuevas.length}`);
+            console.log(`🔄 Editadas (Reemplazar): ${imagenesEditadas.length}`);
+            console.log(`🔒 Existentes (Mantener): ${imagenesExistentesData.length}`);
+            console.log('════════════════════════════════════════');
+
+
+
+            const hayImagenes = imagenesNuevas.length > 0 || imagenesExistentesData.length > 0 || imagenesEditadas.length > 0;
+
+            if (hayImagenes) {
+                //Agregar imágenes TOTALMENTE NUEVAS
+                imagenesNuevas.forEach((file, idx) => {
+                    formDataToSend.append('imagenes_nuevas[]', file);
+                    formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
+                });
+                
+                // Agregar imágenes EDITADAS (Reemplazos)
+                imagenesEditadas.forEach((img, idx) => {
+                    formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
+                    formDataToSend.append(`imagenes_editadas[${idx}][file]`, img.file);
+                    formDataToSend.append(`imagenes_editadas[${idx}][alt]`, img.alt);
+                });
+
+                // Agregar imágenes EXISTENTES a CONSERVAR
+                imagenesExistentesData.forEach((img, idx) => {
+                    formDataToSend.append(`imagenes_existentes[${idx}][url]`, img.url);
+                    
+                    if (img.id) {
+                        formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
+                    }
+                    
+                    formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
+                });
+                
+                console.log('✅ Todas las categorías de imágenes agregadas al FormData');
+            } else {
+                console.warn('⚠️ NO hay imágenes para enviar');
+            }
 
             formData.relacionados.forEach((item, index) => {
                 formDataToSend.append(`relacionados[${index}]`, item.toString());
@@ -405,6 +532,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     useEffect(() => {
         if (showModal && product) {
             const refreshCache = Date.now();
+            console.log("Producto a editar:", product);
+            console.log("Imágenes originales:", product.imagenes);
             let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
                 id: img.id,
                 url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
@@ -438,6 +567,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     meta_titulo: product.etiqueta?.meta_titulo || "",
                     meta_descripcion: product.etiqueta?.meta_descripcion || "",
                     popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
+                    titulo_popup_1: product.etiqueta?.titulo_popup_1 || "",
+                    titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
+                    titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
                     popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
                 },
                 stock: product.stock,
@@ -995,6 +1127,40 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     <p className="text-sm text-gray-600 text-center px-2">
                                                         {descripcionesPopup[index]}
                                                     </p>
+                                                    {formData.etiqueta.popup_estilo === estilo && (
+                                                      <div className="w-full mt-2">
+                                                        <input
+                                                          type="text"
+                                                          placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
+                                                          value={
+                                                            estilo === "estilo1"
+                                                              ? formData.etiqueta.titulo_popup_1 || ""
+                                                              : estilo === "estilo2"
+                                                              ? formData.etiqueta.titulo_popup_2 || ""
+                                                              : formData.etiqueta.titulo_popup_3 || ""
+                                                          }
+                                                          onChange={(e) =>
+                                                            setFormData((prev) => ({
+                                                              ...prev,
+                                                              etiqueta: {
+                                                                ...prev.etiqueta,
+                                                                ...(estilo === "estilo1" && {
+                                                                  titulo_popup_1: e.target.value,
+                                                                }),
+                                                                ...(estilo === "estilo2" && {
+                                                                  titulo_popup_2: e.target.value,
+                                                                }),
+                                                                ...(estilo === "estilo3" && {
+                                                                  titulo_popup_3: e.target.value,
+                                                                }),
+                                                              },
+                                                            }))
+                                                          }
+                                                          className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
+                                                        />
+                                                      </div>
+                                                    )}
+
 
                                                     {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
                                                         <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">
