@@ -249,7 +249,7 @@ const ScrollModal = () => {
 
         {/* Contenido Formulario */}
         <div className="w-full sm:w-6/12 text-white relative animate-fadeInRight h-full">
-          <div className="sm:py-10 p-10 sm:px-8 h-full space-y-10">
+          <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
 
 
             <button
@@ -311,7 +311,7 @@ const ScrollModal = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-3.5 px-8 text-lg font-bold mx-auto shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-2 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
