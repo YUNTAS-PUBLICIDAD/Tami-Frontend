@@ -30,14 +30,14 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
     <!-- FORM -->
     <div id="modal2-form-container"
-      class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
+      class="w-full sm:w-1/2 pt-4 pb-4 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
     >
 
       <!-- TÍTULO DINÁMICO -->
-      <h2 id="modal2-title" class="text-3xl sm:text-4xl font-light text-center leading-snug mb-8">
+      <h2 id="modal2-title" class="text-3xl sm:text-4xl font-light text-center leading-snug mb-4">
         Tu guía de decoración exclusiva,<br>
         <span class="font-extrabold">Gratis</span>
       </h2>
@@ -74,6 +74,14 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   border-radius: 14px;
   border: 2px solid #7aa2ff;
   box-shadow: 0 0 0 3px rgba(122,162,255,.15);
+}
+/* 📱 SOLO MÓVIL */
+@media (max-width: 640px) {
+  .input-style {
+    padding: 10px 12px;   /* ↓ menos alto */
+    font-size: 14px;      /* ↓ texto un poco más chico */
+    border-radius: 12px;  /* opcional */
+  }
 }
 
 .btn-white-pill {

@@ -38,7 +38,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       data-whatsapp={numeroWhatsApp}
     >
       <h2 id="modal3-title"
-       class="text-3xl sm:text-4xl font-bold text-center leading-snug mb-8">
+       class="text-2xl sm:text-4xl font-bold text-center leading-snug mb-4">
       </h2>
 
 
@@ -70,6 +70,16 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   border-radius: 14px;
   border: 2px solid #7aa2ff;
 }
+
+/* 📱 SOLO MÓVIL */
+@media (max-width: 640px) {
+  .input-style {
+    padding: 10px 12px;   /* ↓ menos alto */
+    font-size: 14px;      /* ↓ texto un poco más chico */
+    border-radius: 12px;  /* opcional */
+  }
+}
+
 
 .btn-white-pill {
   background: #160063;
