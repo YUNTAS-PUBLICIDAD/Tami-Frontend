@@ -37,6 +37,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
 
+<<<<<<< HEAD
       # ✅ NUEVO: Verificar conectividad SSH antes de deploy
       - name: Test SSH Connection
         run: |
@@ -56,6 +57,8 @@ jobs:
           exit 1
 
       # ✅ MEJORADO: Deploy con reintentos automáticos
+=======
+>>>>>>> 8690eebfcad2a85c34b86d5f70889f384db30047
       - name: Deploy with Rsync
         uses: nick-fields/retry-action@v2
         with:
@@ -76,10 +79,22 @@ jobs:
 
       - name: Verify deployment
         run: |
+<<<<<<< HEAD
           ssh -p ${{ secrets.SERVER_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             'ls -la ~/domains/tamimaquinarias.com/public_html/ | head -10'
+=======
+          rsync -avz --delete \
+            --exclude='.git/' \
+            --exclude='back/' \
+            --exclude='.htaccess' \
+            --exclude='*.log' \
+            --exclude='node_modules/' \
+            -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
+            ./dist/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
+>>>>>>> 8690eebfcad2a85c34b86d5f70889f384db30047
 
       - name: Notify completion
         run: echo "🚀 Deploy Astro completado con éxito"

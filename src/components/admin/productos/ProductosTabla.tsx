@@ -271,6 +271,7 @@ const ProductosTabla = () => {
             }
         );
 
+<<<<<<< HEAD
         // ✅ Manejar diferentes tipos de error
         if (!res.ok) {
             const errorData = await res.json().catch(() => ({ message: "Error desconocido" }));
@@ -281,6 +282,30 @@ const ProductosTabla = () => {
                 throw new Error("No tienes permisos para realizar esta acción.");
             } else {
                 throw new Error(errorData.message || "Error al iniciar el despliegue");
+=======
+                const res = await fetch('https://apitami.tamimaquinarias.com/api/v1/frontend/deploy', {
+                    method: 'POST',
+                    headers: {
+                        'X-DEPLOY-KEY': 'super-secreto-123'
+                    }
+                });
+
+                if (!res.ok) throw new Error();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '🚀 Deploy iniciado',
+                    text: 'Los cambios se verán reflejados en unos minutos.',
+                    confirmButtonColor: '#14b8a6',
+                });
+            } catch (e) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: 'No se pudo iniciar el despliegue.',
+                    confirmButtonColor: '#14b8a6',
+                });
+>>>>>>> 8690eebfcad2a85c34b86d5f70889f384db30047
             }
         }
 
