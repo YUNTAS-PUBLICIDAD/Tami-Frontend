@@ -126,7 +126,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
 <script>
   import { config } from "config";
-
+  import { origenCliente } from "@data/origenCliente";
+  
   window.__detalleProducto = window.__detalleProducto || null;
 
   /* ================= OBTENER PRODUCTO ================= */
@@ -283,31 +284,46 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
       // 4. Enviar datos en segundo plano
       try {
-        const p1 = fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+        // crear cliente
+        const formData = new FormData();
+        formData.append("name", nombre);
+        formData.append("email", correo);
+        formData.append("celular", telefono.replace(" ", ""));
+        formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
+        formData.append("producto_id", window.__detalleProducto?.id || "");
+
+        const response = await fetch(`${config.apiUrl}${config.endpoints.clientes.create}`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            link: productLink,
-            phone: telefono,
-            email: correo ?? null,
-          }),
+          body: formData,
         }).catch(() => {});
 
-        const p2 = fetch(
-          `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
-          {
+        if (response && response.ok) {
+          const p1 = fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: nombre,
-              celular: telefono,
-              email: correo,
               link: productLink,
+              phone: telefono,
+              email: correo ?? null,
             }),
-          },
-        ).catch(() => {});
+          }).catch(() => {});
 
-        await Promise.all([p1, p2]);
+          const p2 = fetch(
+            `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: nombre,
+                celular: telefono,
+                email: correo,
+                link: productLink,
+              }),
+            },
+          ).catch(() => {});
+
+          await Promise.all([p1, p2]);
+        }
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;

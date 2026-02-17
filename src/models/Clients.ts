@@ -5,5 +5,6 @@ export default interface Cliente {
     celular: string;
     producto?: string;
     source?: string;
+    source_id?: string;
     created_at?: string;
   }
