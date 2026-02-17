@@ -120,6 +120,7 @@ const { link = "" } = Astro.props as ModalProps;
 
 <script>
   import { config } from "config";
+  import { origenCliente } from "@data/origenCliente";
 
   declare global {
     interface Window {
@@ -378,34 +379,49 @@ const { link = "" } = Astro.props as ModalProps;
 
       // 4. Enviar datos en segundo plano
       try {
-        // WhatsApp
-        const p1 = fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            link: productLink,
-            phone: telefono,
-            email: correo ?? null,
-          }),
-        }).catch((err) => console.error("Error WhatsApp background:", err));
+        // crear cliente
+        const formData = new FormData();
+        formData.append("name", nombre);
+        formData.append("email", correo);
+        formData.append("celular", telefono.replace(" ", ""));
+        formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
+        formData.append("producto_id", window.__detalleProducto?.id || "");
 
-        // Email
-        const p2 = fetch(
-          `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
-          {
+        const response = await fetch(`${config.apiUrl}${config.endpoints.clientes.create}`, {
+          method: "POST",
+          body: formData,
+        }).catch(() => {});
+
+        if (response && response.ok) {
+          // WhatsApp
+          const p1 = fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: nombre,
-              celular: telefono,
-              email: correo,
               link: productLink,
+              phone: telefono,
+              email: correo ?? null,
             }),
-          },
-        ).catch((err) => console.error("Error Email background:", err));
+          }).catch((err) => console.error("Error WhatsApp background:", err));
 
-        // Esperar un poco antes de resetear por si el usuario vuelve a abrir el modal
-        await Promise.all([p1, p2]);
+          // Email
+          const p2 = fetch(
+            `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: nombre,
+                celular: telefono,
+                email: correo,
+                link: productLink,
+              }),
+            },
+          ).catch((err) => console.error("Error Email background:", err));
+
+          // Esperar un poco antes de resetear por si el usuario vuelve a abrir el modal
+          await Promise.all([p1, p2]);
+        }
       } catch (error) {
         console.error("Error en el envío:", error);
       } finally {

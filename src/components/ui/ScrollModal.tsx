@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import asesoriaImg from "../../assets/images/Diseno.webp";
 import Logo from "../../assets/images/logos/logo-blanco-tami.gif";
 import { config, getApiUrl } from "../../../config";
+import { origenCliente } from "@data/origenCliente";
 
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
@@ -181,6 +182,7 @@ const ScrollModal = () => {
 
       const telefonoAEnviar = `+51${telefono}`;
       formData.append("celular", telefonoAEnviar);
+      formData.append("source_id", origenCliente.INICIO);
 
       const response = await fetch(
         getApiUrl(config.endpoints.clientes.create),
