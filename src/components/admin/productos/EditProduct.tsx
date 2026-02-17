@@ -288,6 +288,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 formData.etiqueta.popup_estilo || "estilo1"
             );
             formDataToSend.append(
+                "etiqueta[titulo_popup_1]",
+                formData.etiqueta.titulo_popup_1 || ""
+            );
+            formDataToSend.append(
+                "etiqueta[titulo_popup_2]",
+                formData.etiqueta.titulo_popup_2 || ""
+            );
+            formDataToSend.append(
+                "etiqueta[titulo_popup_3]",
+                formData.etiqueta.titulo_popup_3 || ""
+            );
+            formDataToSend.append(
                 "etiqueta[popup3_sin_fondo]",
                 formData.etiqueta.popup3_sin_fondo ? "true" : "false"
             );
@@ -555,6 +567,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     meta_titulo: product.etiqueta?.meta_titulo || "",
                     meta_descripcion: product.etiqueta?.meta_descripcion || "",
                     popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
+                    titulo_popup_1: product.etiqueta?.titulo_popup_1 || "",
+                    titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
+                    titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
                     popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
                 },
                 stock: product.stock,
@@ -1112,6 +1127,40 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     <p className="text-sm text-gray-600 text-center px-2">
                                                         {descripcionesPopup[index]}
                                                     </p>
+                                                    {formData.etiqueta.popup_estilo === estilo && (
+                                                      <div className="w-full mt-2">
+                                                        <input
+                                                          type="text"
+                                                          placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
+                                                          value={
+                                                            estilo === "estilo1"
+                                                              ? formData.etiqueta.titulo_popup_1 || ""
+                                                              : estilo === "estilo2"
+                                                              ? formData.etiqueta.titulo_popup_2 || ""
+                                                              : formData.etiqueta.titulo_popup_3 || ""
+                                                          }
+                                                          onChange={(e) =>
+                                                            setFormData((prev) => ({
+                                                              ...prev,
+                                                              etiqueta: {
+                                                                ...prev.etiqueta,
+                                                                ...(estilo === "estilo1" && {
+                                                                  titulo_popup_1: e.target.value,
+                                                                }),
+                                                                ...(estilo === "estilo2" && {
+                                                                  titulo_popup_2: e.target.value,
+                                                                }),
+                                                                ...(estilo === "estilo3" && {
+                                                                  titulo_popup_3: e.target.value,
+                                                                }),
+                                                              },
+                                                            }))
+                                                          }
+                                                          className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
+                                                        />
+                                                      </div>
+                                                    )}
+
 
                                                     {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
                                                         <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">

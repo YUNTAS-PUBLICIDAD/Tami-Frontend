@@ -140,7 +140,7 @@ export default function ListadoDeProductos() {
     []
   );
 
-/* -------------------- FILTROS Y ORDENAMIENTO -------------------- */
+  /* -------------------- FILTROS Y ORDENAMIENTO -------------------- */
   const productosFiltrados = useMemo(() => {
     let filtrados = [...productos];
 
@@ -198,12 +198,12 @@ export default function ListadoDeProductos() {
       <aside className="md:w-4/12 xl:w-3/12 hidden sm:block">
 
         <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00B6FF] space-y-4" style={{ borderColor: '#00B6FF' }}>
-          <h1 className="uppercase text-[#009688] font-bold text-center text-3xl mb-2" style={{ textDecoration: 'underline', textUnderlineOffset: '6px' }}>
+          <h2 className="uppercase text-[#009688] font-bold text-center text-3xl mb-2" style={{ textDecoration: 'underline', textUnderlineOffset: '6px' }}>
             FILTROS
-          </h1>
+          </h2>
           {/* Filtro nombre */}
           <div>
-            <h2 className="font-bold text-[#009688] text-lg uppercase mb-1">NOMBRE</h2>
+            <h3 className="font-bold text-[#009688] text-lg uppercase mb-1">NOMBRE</h3>
 
             <input
               type="text"
@@ -220,7 +220,7 @@ export default function ListadoDeProductos() {
           <div>
 
             <div className="flex items-center justify-between mb-2">
-              <h2 className="font-bold text-[#009688] text-lg uppercase">CATEGORIAS</h2>
+              <h3 className="font-bold text-[#009688] text-lg uppercase">CATEGORIAS</h3>
               <span className="text-[#009688] text-xl font-bold">&#9660;</span>
             </div>
             <div className="flex flex-col gap-4">
@@ -338,17 +338,17 @@ export default function ListadoDeProductos() {
 
       {/* PRODUCTOS */}
       <section className="w-full xl:w-9/12 flex flex-col gap-6 p-4 rounded-md shadow-[0_0_7px_rgba(0,0,0,0.25)] shadow-[#00786F] sm:shadow-none sm:rounded-none m-auto bg-gray-50/50 sm:bg-transparent">
-        
+
 
         <div className="flex flex-col sm:flex-row justify-end items-center pb-4">
 
           {/* Dropdown de Ordenamiento */}
           <div className="relative group">
             <div className="flex items-center gap-2">
-               <label htmlFor="ordenar" className="text-gray-600 font-medium text-sm whitespace-nowrap">
+              <label htmlFor="ordenar" className="text-gray-600 font-medium text-sm whitespace-nowrap">
                 Ordenar por:
               </label>
-              
+
               <div className="relative">
                 <select
                   id="ordenar"
@@ -377,7 +377,7 @@ export default function ListadoDeProductos() {
               )
           )}
         </div>
-        
+
         {/* Mensaje si no hay productos */}
         {productosFiltrados.length === 0 && (
           <div className="text-center py-20 text-gray-500">
