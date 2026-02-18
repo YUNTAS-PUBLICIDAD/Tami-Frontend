@@ -38,19 +38,15 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     </div>
 
     <!-- FORM -->
-    <div
-      id="modal2-form-container"
-      class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
+    <div id="modal2-form-container"
+      class="w-full sm:w-1/2 pt-4 pb-4 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
     >
       <!-- TÍTULO DINÁMICO -->
-      <h2
-        id="modal2-title"
-        class="text-3xl sm:text-4xl font-light text-center leading-snug mb-8"
-      >
-        Tu guía de decoración exclusiva,<br />
+      <h2 id="modal2-title" class="text-3xl sm:text-4xl font-light text-center leading-snug mb-4">
+        Tu guía de decoración exclusiva,<br>
         <span class="font-extrabold">Gratis</span>
       </h2>
 
@@ -95,14 +91,22 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     background: linear-gradient(180deg, #002ade 0%, #003a9f 40%, #004c5d 100%);
   }
 
+.input-style {
+  background: white;
+  color: #111;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #7aa2ff;
+  box-shadow: 0 0 0 3px rgba(122,162,255,.15);
+}
+/* 📱 SOLO MÓVIL */
+@media (max-width: 640px) {
   .input-style {
-    background: white;
-    color: #111;
-    padding: 14px;
-    border-radius: 14px;
-    border: 2px solid #7aa2ff;
-    box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.15);
+    padding: 10px 12px;   /* ↓ menos alto */
+    font-size: 14px;      /* ↓ texto un poco más chico */
+    border-radius: 12px;  /* opcional */
   }
+}
 
   .btn-white-pill {
     background: white;
@@ -122,7 +126,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
 <script>
   import { config } from "config";
-
+  import { origenCliente } from "@data/origenCliente";
+  
   window.__detalleProducto = window.__detalleProducto || null;
 
   /* ================= OBTENER PRODUCTO ================= */
@@ -279,31 +284,46 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
       // 4. Enviar datos en segundo plano
       try {
-        const p1 = fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
+        // crear cliente
+        const formData = new FormData();
+        formData.append("name", nombre);
+        formData.append("email", correo);
+        formData.append("celular", telefono.replace(" ", ""));
+        formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
+        formData.append("producto_id", window.__detalleProducto?.id || "");
+
+        const response = await fetch(`${config.apiUrl}${config.endpoints.clientes.create}`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            link: productLink,
-            phone: telefono,
-            email: correo ?? null,
-          }),
+          body: formData,
         }).catch(() => {});
 
-        const p2 = fetch(
-          `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
-          {
+        if (response && response.ok) {
+          const p1 = fetch(`${config.apiUrl}${config.endpoints.whatsapp.info}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: nombre,
-              celular: telefono,
-              email: correo,
               link: productLink,
+              phone: telefono,
+              email: correo ?? null,
             }),
-          },
-        ).catch(() => {});
+          }).catch(() => {});
 
-        await Promise.all([p1, p2]);
+          const p2 = fetch(
+            `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: nombre,
+                celular: telefono,
+                email: correo,
+                link: productLink,
+              }),
+            },
+          ).catch(() => {});
+
+          await Promise.all([p1, p2]);
+        }
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
