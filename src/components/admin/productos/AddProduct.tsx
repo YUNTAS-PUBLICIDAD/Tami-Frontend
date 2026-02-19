@@ -595,9 +595,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       onChange={handleChange}
                       name="seccion"
                     >
-                      <option value="Negocio">Negocio</option>
                       <option value="Decoración">Decoración</option>
                       <option value="Maquinaria">Maquinaria</option>
+                      <option value="Negocio">Negocio</option>
                     </select>
                   </div>
 
