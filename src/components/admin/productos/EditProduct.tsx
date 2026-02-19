@@ -792,8 +792,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             onChange={handleChange}
                                             name="seccion"
                                         >
-                                            <option value="Trabajo">Trabajo</option>
                                             <option value="Decoración">Decoración</option>
+                                            <option value="Maquinaria">Maquinaria</option>
                                             <option value="Negocio">Negocio</option>
                                         </select>
                                     </div>
