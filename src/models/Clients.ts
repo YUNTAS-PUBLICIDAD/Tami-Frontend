@@ -3,6 +3,8 @@ export default interface Cliente {
     name: string;
     email: string;
     celular: string;
-    // seccion: string;
-    //created_at?: string;
+    producto?: string;
+    source?: string;
+    source_id?: string;
+    created_at?: string;
   }

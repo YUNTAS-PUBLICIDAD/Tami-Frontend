@@ -176,14 +176,13 @@ const ClientesTable = () => {
                       </TableCell>
                       
                       <TableCell>
-                        < span className="text-gray-500 text-sm">-</span> {/* Aquí irá item.producto */}
+                        < span className="text-gray-500 text-sm">{item.producto ?? "-"}</span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-gray-500 text-sm">-</span> {/* Aquí irá item.origen */}
+                        <span className="text-gray-500 text-sm">{item.source ?? "-"}</span>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
-                         {/* Aquí irá item.fechaInicio */}
-                        <span className="text-gray-500 text-sm">-</span>
+                        <span className="text-gray-500 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
                       </TableCell>
 
                       <TableCell>
