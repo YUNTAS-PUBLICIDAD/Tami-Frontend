@@ -751,9 +751,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       name="seccion"
                       className={errors.seccion ? "border-red-500 focus:ring-red-400" : ""}
                     >
-                      <option value="Negocio">Negocio</option>
                       <option value="Decoración">Decoración</option>
                       <option value="Maquinaria">Maquinaria</option>
+                      <option value="Negocio">Negocio</option>
                     </select>
                     {errors.seccion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.seccion}</p>}
                   </div>
