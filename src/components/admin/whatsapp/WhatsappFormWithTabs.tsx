@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WhatsappConnection from './WhatsappConnection';
-
+import CampañaForm from './CampañaForm';
 interface WhatsappFormWithTabsProps {
     onClose: () => void;
 }
@@ -32,7 +32,7 @@ Si tiene alguna otra consulta, no dude en contactarnos.
 ¡Gracias por elegirnos!
 
 Atentamente,  
-*Yuntas Publicidad*`;
+*Tami Maquinarias*`;
 
 export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsProps) {
     const [productos, setProductos] = useState<Producto[]>([]);
@@ -42,7 +42,7 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
     const [isLoadingProductos, setIsLoadingProductos] = useState(true);
     const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
     const [hasCustomTemplate, setHasCustomTemplate] = useState(false);
-    const [activeTab, setActiveTab] = useState<'connection' | 'template'>('connection');
+    const [activeTab, setActiveTab] = useState<'connection' | 'template' | 'campaña'>('connection');
 
     // ✅ Cargar lista de productos al montar el componente
     useEffect(() => {
@@ -181,14 +181,26 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
                 >
                     Mensaje de Respuesta
                 </button>
+                <button
+                    onClick={() => setActiveTab('campaña')}
+                    className={`px-4 py-2 font-medium transition-all ${
+                        activeTab === 'campaña'
+                            ? 'border-b-2 border-green-500 text-green-600'
+                            : 'text-gray-500'
+                    }`}
+                    >
+                    Campañas
+                </button>
             </div>
 
             <div className="flex-1 animate-fadeIn overflow-y-auto">
                 {activeTab === 'connection' ? (
                     <WhatsappConnection />
+                ) : activeTab === 'campaña' ? (
+                    <CampañaForm />
                 ) : (
                     <div className="space-y-4">
-                        {/* ✅ SELECTOR DE PRODUCTOS */}
+                        {/*  SELECTOR DE PRODUCTOS */}
                         <div>
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                 Seleccionar Producto
@@ -210,7 +222,7 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
                             </select>
                         </div>
 
-                        {/* ✅ Indicador de estado de plantilla */}
+                        {/*  Indicador de estado de plantilla */}
                         {selectedProductoId && (
                             <div className={`px-4 py-2 rounded-lg text-sm ${
                                 hasCustomTemplate 
@@ -233,7 +245,7 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
                             </div>
                         )}
 
-                        {/* ✅ Editor de plantilla */}
+                        {/* Editor de plantilla */}
                         {selectedProductoId ? (
                             <>
                                 <div className="flex justify-between items-end">
