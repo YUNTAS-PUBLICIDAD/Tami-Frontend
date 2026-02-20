@@ -49,6 +49,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const [isExiting, setIsExiting] = useState(false);
     const [productos, setProductos] = useState<Product[]>([]);
     const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Refs para scroll automático al primer error
+    const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
     const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
 
@@ -57,9 +61,17 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
         >
     ) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-
-
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        // Limpiar error del campo al escribir
+        setErrors(prev => {
+            if (prev[name]) {
+                const next = { ...prev };
+                delete next[name];
+                return next;
+            }
+            return prev;
+        });
     };
 
     const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +83,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 [name]: value
             }
         }));
+        // Limpiar error de la dimensión al escribir
+        setErrors(prev => {
+            if (prev[name]) {
+                const next = { ...prev };
+                delete next[name];
+                return next;
+            }
+            return prev;
+        });
     };
 
     const handleSpecificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,9 +170,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 ...imagenAnterior,
                 url_imagen: file,
                 // 
-                id: imagenAnterior.id 
+                id: imagenAnterior.id
             };
-            
+
             // Debug para verificar que el ID sigue ahí
             console.log(`📸 Cambio en slot ${index + 1}. ID mantenido:`, nuevasImagenes[index].id);
 
@@ -182,7 +203,110 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         setFormData(defaultValuesProduct);
     }
 
+    function validatePage1(): boolean {
+        const newErrors: Record<string, string> = {};
+        if (!formData.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio.";
+        if (!formData.descripcion?.trim()) newErrors.descripcion = "La descripción es obligatoria.";
+        if (!formData.titulo?.trim()) newErrors.titulo = "El título es obligatorio.";
+        if (!formData.subtitulo?.trim()) newErrors.subtitulo = "El subtítulo es obligatorio.";
+        if (!formData.seccion?.trim()) newErrors.seccion = "Debes seleccionar una sección.";
+        if (!formData.dimensiones?.alto?.toString().trim()) newErrors.alto = "El alto es obligatorio.";
+        if (!formData.dimensiones?.ancho?.toString().trim()) newErrors.ancho = "El ancho es obligatorio.";
+        if (!formData.dimensiones?.largo?.toString().trim()) newErrors.largo = "El largo es obligatorio.";
+        // Meta título: obligatorio y mínimo 10 caracteres
+        if (!formData.etiqueta.meta_titulo?.trim()) {
+            newErrors.meta_titulo = "El meta título es obligatorio.";
+        } else if (formData.etiqueta.meta_titulo.trim().length < 10) {
+            newErrors.meta_titulo = "El meta título debe tener al menos 10 caracteres.";
+        }
+        // Meta descripción: obligatoria y mínimo 40 caracteres
+        if (!formData.etiqueta.meta_descripcion?.trim()) {
+            newErrors.meta_descripcion = "La meta descripción es obligatoria.";
+        } else if (formData.etiqueta.meta_descripcion.trim().length < 40) {
+            newErrors.meta_descripcion = `La meta descripción debe tener al menos 40 caracteres (actualmente: ${formData.etiqueta.meta_descripcion.trim().length}).`;
+        }
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
+            // Scroll automático al primer campo con error
+            const firstKey = Object.keys(newErrors)[0];
+            const el = fieldRefs.current[firstKey];
+            if (el && formContainerRef.current) {
+                const containerTop = formContainerRef.current.getBoundingClientRect().top;
+                const elTop = el.getBoundingClientRect().top;
+                formContainerRef.current.scrollBy({ top: elTop - containerTop - 80, behavior: "smooth" });
+            }
+            return false;
+        }
+        return true;
+    }
+
+    function validatePage2(): boolean {
+        const newErrors: Record<string, string> = {};
+
+        // Validación de Galería: Mínimo 4 imágenes
+        const validImages = formData.imagenes.filter(img => img.url_imagen);
+        if (validImages.length < 4) {
+            newErrors.gallery = `Debes subir al menos 4 imágenes para la galería (actualmente: ${validImages.length}).`;
+        }
+
+        // Validación de Textos SEO en galería
+        formData.imagenes.forEach((img, index) => {
+            if (img.url_imagen && !img.texto_alt_SEO?.trim()) {
+                newErrors[`seo_${index}`] = `El texto SEO es obligatorio para la imagen ${index + 1}.`;
+            }
+        });
+
+        // Imagen de Pop-up obligatoria
+        if (!formData.imagen_popup) {
+            newErrors.imagen_popup = "La imagen para el Pop-up es obligatoria.";
+        }
+
+        // Texto ALT de Pop-up obligatorio
+        if (!formData.texto_alt_popup?.trim()) {
+            newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatorio.";
+        }
+
+        // Imagen de Email obligatoria
+        if (!formData.imagen_email) {
+            newErrors.imagen_email = "La imagen para el Email es obligatoria.";
+        }
+
+        // Asunto del Email obligatorio
+        if (!formData.asunto?.trim()) {
+            newErrors.asunto = "El asunto del email es obligatorio.";
+        }
+
+        // Imagen de WhatsApp obligatoria
+        if (!formData.imagen_whatsapp) {
+            newErrors.imagen_whatsapp = "La imagen para WhatsApp es obligatoria.";
+        }
+
+        // Mensaje de WhatsApp obligatorio
+        if (!formData.texto_alt_whatsapp?.trim()) {
+            newErrors.texto_alt_whatsapp = "El mensaje de WhatsApp es obligatorio.";
+        }
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
+            // Scroll automático al primer campo con error de la página 2
+            const firstKey = Object.keys(newErrors)[0];
+            const el = fieldRefs.current[firstKey] || fieldRefs.current.gallery;
+            if (el && formContainerRef.current) {
+                const containerTop = formContainerRef.current.getBoundingClientRect().top;
+                const elTop = el.getBoundingClientRect().top;
+                formContainerRef.current.scrollBy({ top: elTop - containerTop - 80, behavior: "smooth" });
+            }
+            return false;
+        }
+        return true;
+    }
+
     function goNextForm() {
+        if (formPage === 1 && !validatePage1()) return;
+        if (formPage === 2 && !validatePage2()) return;
         setIsExiting(true);
         setTimeout(() => {
             setFormPage((prevPage) => prevPage + 1);
@@ -192,6 +316,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     }
 
     function goBackForm() {
+        setErrors({});
         setIsExiting(true);
         setTimeout(() => {
             setFormPage((prevPage) => prevPage - 1);
@@ -310,10 +435,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
 
             // MANEJO DE IMÁGENES DE GALERÍA 
-            
+
             const imagenesNuevas: File[] = [];
             const imagenesNuevasAlt: string[] = [];
-            
+
             //  Array para imágenes que se reemplazan
             const imagenesEditadas: { id: number; file: File; alt: string }[] = [];
 
@@ -330,11 +455,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     console.log(`⏭️ Slot ${index + 1}: vacío (sin imagen)`);
                     return;
                 }
-                
+
                 const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
 
                 if (imagen.url_imagen instanceof File) {
-                    
+
                     // Verificamos si tiene ID para decidir si es EDICIÓN o INSERCIÓN
                     if (imagen.id) {
                         // TIENE ID + FILE = EDICIÓN
@@ -353,13 +478,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                         // NO TIENE ID + FILE = NUEVA (Insertar al final)
                         imagenesNuevas.push(imagen.url_imagen);
                         imagenesNuevasAlt.push(altText);
-                        
+
                         console.log(`✨ Slot ${index + 1}: NUEVA imagen (Insertar)`, {
                             nombre: imagen.url_imagen.name,
                             tamaño: `${(imagen.url_imagen.size / 1024).toFixed(2)} KB`
                         });
                     }
-                    
+
                 } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
                     //  IMAGEN EXISTENTE    
                     let urlLimpia = "";
@@ -367,31 +492,31 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     // Estrategia 1: Usar original_path si existe
                     if (imagen.original_path) {
                         urlLimpia = imagen.original_path;
-                        
+
                     } else {
                         // Estrategia 2: Extraer de la URL completa
                         try {
                             const urlObj = new URL(imagen.url_imagen, window.location.origin);
                             urlLimpia = urlObj.pathname;
-                           
+
                         } catch (error) {
                             // Fallback: limpiar manualmente
                             urlLimpia = imagen.url_imagen
                                 .split('?')[0]
                                 .replace(config.apiUrl, '');
-                           
+
                         }
                     }
 
                     // Limpiar query params y decodificar
                     urlLimpia = decodeURIComponent(urlLimpia.split('?')[0]);
-                    
+
                     imagenesExistentesData.push({
                         url: urlLimpia,
                         id: imagen.id,
                         alt: altText
                     });
-                    
+
                     console.log(`🔒 Slot ${index + 1}: CONSERVAR imagen existente`, {
                         id: imagen.id,
                         url: urlLimpia
@@ -417,7 +542,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     formDataToSend.append('imagenes_nuevas[]', file);
                     formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
                 });
-                
+
                 // Agregar imágenes EDITADAS (Reemplazos)
                 imagenesEditadas.forEach((img, idx) => {
                     formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
@@ -428,14 +553,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 // Agregar imágenes EXISTENTES a CONSERVAR
                 imagenesExistentesData.forEach((img, idx) => {
                     formDataToSend.append(`imagenes_existentes[${idx}][url]`, img.url);
-                    
+
                     if (img.id) {
                         formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
                     }
-                    
+
                     formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
                 });
-                
+
                 console.log('✅ Todas las categorías de imágenes agregadas al FormData');
             } else {
                 console.warn('⚠️ NO hay imágenes para enviar');
@@ -642,24 +767,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="form-input">
                                         <label>Nombre:</label>
                                         <input
-                                            required
+                                            ref={el => { fieldRefs.current.nombre = el; }}
                                             value={formData.nombre}
                                             onChange={handleChange}
                                             type="text"
                                             name="nombre"
                                             placeholder="Nombre del producto..."
+                                            className={errors.nombre ? "border-red-500 focus:ring-red-400" : ""}
                                         />
+                                        {errors.nombre && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.nombre}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label>Descripción:</label>
                                         <textarea
-                                            required
+                                            ref={el => { fieldRefs.current.descripcion = el; }}
                                             value={formData.descripcion}
                                             onChange={handleChange}
                                             name="descripcion"
                                             placeholder="Descripción del producto..."
-                                            className="min-h-[100px]"
+                                            className={`min-h-[100px] ${errors.descripcion ? "border-red-500 focus:ring-red-400" : ""}`}
                                         />
+                                        {errors.descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.descripcion}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label htmlFor="meta_titulo" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
@@ -669,24 +797,35 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             </span>
                                         </label>
                                         <input
+                                            ref={el => { fieldRefs.current.meta_titulo = el; }}
                                             type="text"
                                             id="meta_titulo"
                                             name="meta_titulo"
                                             value={formData.etiqueta.meta_titulo}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
                                                 setFormData((prev) => ({
                                                     ...prev,
                                                     etiqueta: {
                                                         ...prev.etiqueta,
                                                         meta_titulo: e.target.value,
                                                     },
-                                                }))
-                                            }
+                                                }));
+                                                setErrors(prev => {
+                                                    if (prev.meta_titulo) {
+                                                        const next = { ...prev };
+                                                        delete next.meta_titulo;
+                                                        return next;
+                                                    }
+                                                    return prev;
+                                                });
+                                            }}
                                             maxLength={70}
+                                            className={errors.meta_titulo ? "border-red-500 focus:ring-red-400" : ""}
                                         />
                                         <p className="text-xs text-gray-500 mt-1">
                                             {formData.etiqueta.meta_titulo.length} / 70 caracteres
                                         </p>
+                                        {errors.meta_titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.meta_titulo}</p>}
                                     </div>
 
                                     <div className="form-input">
@@ -697,24 +836,35 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             </span>
                                         </label>
                                         <textarea
+                                            ref={el => { fieldRefs.current.meta_descripcion = el; }}
                                             id="meta_descripcion"
                                             name="meta_descripcion"
                                             value={formData.etiqueta.meta_descripcion}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
                                                 setFormData((prev) => ({
                                                     ...prev,
                                                     etiqueta: {
                                                         ...prev.etiqueta,
                                                         meta_descripcion: e.target.value,
                                                     },
-                                                }))
-                                            }
+                                                }));
+                                                setErrors(prev => {
+                                                    if (prev.meta_descripcion) {
+                                                        const next = { ...prev };
+                                                        delete next.meta_descripcion;
+                                                        return next;
+                                                    }
+                                                    return prev;
+                                                });
+                                            }}
                                             maxLength={200}
                                             rows={3}
+                                            className={errors.meta_descripcion ? "border-red-500 focus:ring-red-400" : ""}
                                         />
                                         <p className="text-xs text-gray-500 mt-1">
                                             {formData.etiqueta.meta_descripcion.length} / 200 caracteres
                                         </p>
+                                        {errors.meta_descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.meta_descripcion}</p>}
                                     </div>
 
                                     {/* keywords */}
@@ -752,25 +902,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="form-input">
                                         <label>Título:</label>
                                         <input
-                                            required
+                                            ref={el => { fieldRefs.current.titulo = el; }}
                                             value={formData.titulo}
                                             onChange={handleChange}
                                             type="text"
                                             name="titulo"
                                             placeholder="Título..."
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                         />
+                                        {errors.titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.titulo}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label>Subtitulo:</label>
                                         <input
-                                            required
+                                            ref={el => { fieldRefs.current.subtitulo = el; }}
                                             value={formData.subtitulo ?? ""}
                                             onChange={handleChange}
                                             type="text"
                                             name="subtitulo"
                                             placeholder="Subtitulo..."
+                                            className={errors.subtitulo ? "border-red-500 focus:ring-red-400" : ""}
                                         />
+                                        {errors.subtitulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.subtitulo}</p>}
                                     </div>
                                     {/*<div className="form-input">*/}
                                     {/*    <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>*/}
@@ -787,15 +940,17 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     <div className="form-input">
                                         <label>Sección del Producto:</label>
                                         <select
-                                            required
+                                            ref={el => { fieldRefs.current.seccion = el; }}
                                             value={formData.seccion}
                                             onChange={handleChange}
                                             name="seccion"
+                                            className={errors.seccion ? "border-red-500 focus:ring-red-400" : ""}
                                         >
                                             <option value="Trabajo">Trabajo</option>
                                             <option value="Decoración">Decoración</option>
                                             <option value="Negocio">Negocio</option>
                                         </select>
+                                        {errors.seccion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.seccion}</p>}
                                     </div>
 
                                     {/* Especificaciones */}
@@ -892,49 +1047,52 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 <label className="block text-sm text-gray-600 mb-1">Alto:</label>
                                                 <div className="relative">
                                                     <input
-                                                        required
+                                                        ref={el => { fieldRefs.current.alto = el; }}
                                                         title="alto"
                                                         value={formData.dimensiones.alto}
                                                         onChange={handleDimensionChange}
                                                         name="alto"
                                                         type="number"
                                                         placeholder="0"
-                                                        className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                                        className={`w-full pl-4 pr-12 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.alto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                                     />
                                                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
                                                 </div>
+                                                {errors.alto && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.alto}</p>}
                                             </div>
                                             <div className="form-input">
                                                 <label className="block text-sm text-gray-600 mb-1">Ancho:</label>
                                                 <div className="relative">
                                                     <input
+                                                        ref={el => { fieldRefs.current.ancho = el; }}
                                                         title="ancho"
-                                                        required
                                                         value={formData.dimensiones.ancho}
                                                         onChange={handleDimensionChange}
                                                         name="ancho"
                                                         type="number"
                                                         placeholder="0"
-                                                        className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                                        className={`w-full pl-4 pr-12 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.ancho ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                                     />
                                                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
                                                 </div>
+                                                {errors.ancho && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.ancho}</p>}
                                             </div>
                                             <div className="form-input">
                                                 <label className="block text-sm text-gray-600 mb-1">Largo:</label>
                                                 <div className="relative">
                                                     <input
-                                                        required
+                                                        ref={el => { fieldRefs.current.largo = el; }}
                                                         title="largo"
                                                         value={formData.dimensiones.largo}
                                                         onChange={handleDimensionChange}
                                                         name="largo"
                                                         type="number"
                                                         placeholder="0"
-                                                        className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                                        className={`w-full pl-4 pr-12 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.largo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                                     />
                                                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
                                                 </div>
+                                                {errors.largo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.largo}</p>}
                                             </div>
                                         </div>
                                     </div>
@@ -964,18 +1122,20 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                 <div className="card">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
                                     <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-xs sm:text-sm text-red-800">
-                                        <p className="font-medium">⚠️ Importante:</p>
+                                        <p className="font-medium">⚠️ Requisitos Obligatorios:</p>
                                         <ul className="list-disc list-outside pl-4 space-y-1 mt-1">
-                                            <li className="break-words">Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
-                                            <li className="break-words">Las imágenes que ves abajo son solo de referencia.</li>
-                                            <li className="break-words">Al actualizar el producto, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
-                                            <li className="break-words">Si quieres mantener alguna de las actuales, <strong>debes volver a subirla</strong>.</li>
+                                            <li className="break-words">Debes subir <strong>al menos 4 imágenes</strong> para la galería.</li>
+                                            <li className="break-words">Cada imagen subida <strong>debe tener su texto SEO</strong>.</li>
+                                            <li className="break-words">La <strong>imagen de Pop-up</strong> y su <strong>texto alternativo</strong> son obligatorios.</li>
+                                            <li className="break-words">La <strong>imagen de Email</strong> y su <strong>asunto</strong> son obligatorios.</li>
+                                            <li className="break-words">La <strong>imagen de WhatsApp</strong> y su <strong>mensaje</strong> son obligatorios.</li>
+                                            <li className="break-words">Al actualizar, <strong>se reemplazarán todas las imágenes</strong> por las que subas aquí.</li>
                                             <li className="break-words">Si no quieres cambiar nada, ignorar esta página.</li>
                                             <li className="break-words">Peso máximo: <strong>2MB</strong> | Formato: <strong>WEBP</strong>.</li>
-                                            <li className="break-words">Tamaño recomendado: <strong>800×800 px</strong>.</li>
-                                            <li className="break-words">Quitar fondo: <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer" className="underline font-bold">LINK</a></li>
-                                            <li className="break-words">Redimensionar: <a href="https://www.iloveimg.com/es/redimensionar-imagen/jpg-cambiar-tamano" target="_blank" rel="noopener noreferrer" className="underline font-bold">LINK</a></li>
                                         </ul>
+                                    </div>
+                                    <div ref={el => { fieldRefs.current.gallery = el; }}>
+                                        {errors.gallery && <p className="text-red-500 text-sm mb-4 flex items-center gap-1"><span>⚠️</span>{errors.gallery}</p>}
                                     </div>
                                     <div className="space-y-4">
                                         {formData.imagenes.map((img, index) => (
@@ -1016,12 +1176,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
                                                 <label className="mt-2 block text-sm">Texto SEO Imagen {index + 1}:</label>
                                                 <input
+                                                    ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
                                                     type="text"
-                                                    value={img.texto_alt_SEO || ""}
+                                                    value={img.texto_alt_SEO}
                                                     onChange={(e) => handleImagesTextoSEOChange(e, index)}
-                                                    className="w-full border p-2 rounded outline-none"
-                                                    placeholder="Descripción para Google..."
+                                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
+                                                    placeholder="Descripción SEO de la imagen..."
                                                 />
+                                                {errors[`seo_${index}`] && <p className="text-red-500 text-[10px] mt-1 flex items-center gap-1"><span>⚠️</span>{errors[`seo_${index}`]}</p>}
                                             </div>
                                         ))}
                                     </div>
@@ -1035,7 +1197,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
                                     <div className="form-input">
                                         <label>Imagen Pop-up:</label>
-                                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                                        <div
+                                            ref={el => { fieldRefs.current.imagen_popup = el; }}
+                                            className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_popup ? "border-red-500" : "border-gray-300"}`}
+                                        >
                                             {formData.imagen_popup ? (
                                                 <div className="flex items-center gap-4">
                                                     <img
@@ -1044,10 +1209,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 ? formData.imagen_popup
                                                                 : URL.createObjectURL(formData.imagen_popup)
                                                         }
-                                                        alt={formData.texto_alt_popup || "Imagen popup"}
-                                                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                                                        alt={formData.texto_alt_popup || "Imagen pop-up"}
+                                                        className="w-16 h-16 object-cover rounded border"
                                                     />
-                                                    <label className="text-sm text-blue-600 underline cursor-pointer">
+                                                    <label className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
                                                         Reemplazar
                                                         <input
                                                             type="file"
@@ -1076,17 +1241,20 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 />
                                             )}
                                         </div>
+                                        {errors.imagen_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup}</p>}
                                     </div>
                                     <div className="form-input">
-                                        <label>Texto ALT Imagen Pop-up (opcional):</label>
+                                        <label>Texto ALT Imagen Pop-up:</label>
                                         <input
+                                            ref={el => { fieldRefs.current.texto_alt_popup = el; }}
                                             type="text"
                                             name="texto_alt_popup"
                                             value={formData.texto_alt_popup || ''}
                                             onChange={e => setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }))}
                                             placeholder="Texto alternativo para SEO..."
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                         />
+                                        {errors.texto_alt_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup}</p>}
                                     </div>
 
                                     <div className="form-input">
@@ -1128,37 +1296,37 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         {descripcionesPopup[index]}
                                                     </p>
                                                     {formData.etiqueta.popup_estilo === estilo && (
-                                                      <div className="w-full mt-2">
-                                                        <input
-                                                          type="text"
-                                                          placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
-                                                          value={
-                                                            estilo === "estilo1"
-                                                              ? formData.etiqueta.titulo_popup_1 || ""
-                                                              : estilo === "estilo2"
-                                                              ? formData.etiqueta.titulo_popup_2 || ""
-                                                              : formData.etiqueta.titulo_popup_3 || ""
-                                                          }
-                                                          onChange={(e) =>
-                                                            setFormData((prev) => ({
-                                                              ...prev,
-                                                              etiqueta: {
-                                                                ...prev.etiqueta,
-                                                                ...(estilo === "estilo1" && {
-                                                                  titulo_popup_1: e.target.value,
-                                                                }),
-                                                                ...(estilo === "estilo2" && {
-                                                                  titulo_popup_2: e.target.value,
-                                                                }),
-                                                                ...(estilo === "estilo3" && {
-                                                                  titulo_popup_3: e.target.value,
-                                                                }),
-                                                              },
-                                                            }))
-                                                          }
-                                                          className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
-                                                        />
-                                                      </div>
+                                                        <div className="w-full mt-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
+                                                                value={
+                                                                    estilo === "estilo1"
+                                                                        ? formData.etiqueta.titulo_popup_1 || ""
+                                                                        : estilo === "estilo2"
+                                                                            ? formData.etiqueta.titulo_popup_2 || ""
+                                                                            : formData.etiqueta.titulo_popup_3 || ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData((prev) => ({
+                                                                        ...prev,
+                                                                        etiqueta: {
+                                                                            ...prev.etiqueta,
+                                                                            ...(estilo === "estilo1" && {
+                                                                                titulo_popup_1: e.target.value,
+                                                                            }),
+                                                                            ...(estilo === "estilo2" && {
+                                                                                titulo_popup_2: e.target.value,
+                                                                            }),
+                                                                            ...(estilo === "estilo3" && {
+                                                                                titulo_popup_3: e.target.value,
+                                                                            }),
+                                                                        },
+                                                                    }))
+                                                                }
+                                                                className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
+                                                            />
+                                                        </div>
                                                     )}
 
 
@@ -1196,7 +1364,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
                                     <div className="form-input">
                                         <label>Imagen Email:</label>
-                                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                                        <div
+                                            ref={el => { fieldRefs.current.imagen_email = el; }}
+                                            className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_email ? "border-red-500" : "border-gray-300"}`}
+                                        >
                                             {formData.imagen_email ? (
                                                 <div className="flex flex-col items-center gap-2"> {/* se agrego flex*/}
                                                     <img
@@ -1218,6 +1389,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 if (e.target.files?.[0]) {
                                                                     setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
                                                                 }
+                                                                if (errors.imagen_email) setErrors(prev => { const n = { ...prev }; delete n.imagen_email; return n; });
                                                             }}
                                                             className="hidden"
                                                         />
@@ -1232,25 +1404,30 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         if (e.target.files?.[0]) {
                                                             setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
                                                         }
+                                                        if (errors.imagen_email) setErrors(prev => { const n = { ...prev }; delete n.imagen_email; return n; });
                                                     }}
                                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                                 />
                                             )}
                                         </div>
+                                        {errors.imagen_email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_email}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Asunto del Email
                                         </label>
                                         <input
+                                            ref={el => { fieldRefs.current.asunto = el; }}
                                             type="text"
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.asunto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"}`}
                                             value={formData.asunto}
-                                            onChange={(e) =>
-                                                setFormData(prev => ({ ...prev, asunto: e.target.value }))}
-
+                                            onChange={(e) => {
+                                                setFormData(prev => ({ ...prev, asunto: e.target.value }));
+                                                if (errors.asunto) setErrors(prev => { const n = { ...prev }; delete n.asunto; return n; });
+                                            }}
                                             placeholder="Ej: Empecemos a crear juntos ✨"
                                         />
+                                        {errors.asunto && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.asunto}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label>URL del Video (opcional):</label>
@@ -1271,7 +1448,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
                                     <div className="form-input">
                                         <label>Imagen Whatsapp:</label>
-                                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                                        <div
+                                            ref={el => { fieldRefs.current.imagen_whatsapp = el; }}
+                                            className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_whatsapp ? "border-red-500" : "border-gray-300"}`}
+                                        >
                                             {formData.imagen_whatsapp ? (
                                                 <div className="flex items-center gap-4">
                                                     <img
@@ -1293,6 +1473,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 if (e.target.files?.[0]) {
                                                                     setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
                                                                 }
+                                                                if (errors.imagen_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.imagen_whatsapp; return n; });
                                                             }}
                                                             className="hidden"
                                                         />
@@ -1307,25 +1488,29 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         if (e.target.files?.[0]) {
                                                             setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
                                                         }
+                                                        if (errors.imagen_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.imagen_whatsapp; return n; });
                                                     }}
                                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                                 />
                                             )}
                                         </div>
-
+                                        {errors.imagen_whatsapp && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_whatsapp}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label>Texto personalizado para cotizar (Whatsapp):</label>
                                         <textarea
-                                            //type="text"
+                                            ref={el => { fieldRefs.current.texto_alt_whatsapp = el; }}
                                             name="texto_alt_whatsapp"
                                             value={formData.texto_alt_whatsapp || ''}
-                                            onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
+                                            onChange={e => {
+                                                setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }));
+                                                if (errors.texto_alt_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_whatsapp; return n; });
+                                            }}
                                             placeholder="Texto para el mensaje de Whatsapp..."
                                             rows={4}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
-
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition min-h-[100px] resize-y ${errors.texto_alt_whatsapp ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                         />
+                                        {errors.texto_alt_whatsapp && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_whatsapp}</p>}
                                     </div>
                                 </div>
                                 <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6">
