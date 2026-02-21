@@ -22,6 +22,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [isExiting, setIsExiting] = useState(false);
   const [productos, setProductos] = useState<Product[]>([]);
   const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Refs para scroll automático al primer error
+  const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
 
@@ -30,7 +34,17 @@ const AddProduct = ({ onProductAdded }: Props) => {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Limpiar error del campo al escribir
+    setErrors(prev => {
+      if (prev[name]) {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      }
+      return prev;
+    });
   };
 
   // Manejo específico para dimensiones
@@ -43,6 +57,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
         [name]: value
       }
     }));
+    // Limpiar error de la dimensión al escribir
+    setErrors(prev => {
+      if (prev[name]) {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      }
+      return prev;
+    });
   };
 
   /*const handleNestedChange = (
@@ -125,22 +148,126 @@ const AddProduct = ({ onProductAdded }: Props) => {
     setFormData(defaultValuesProduct);
   }
 
+  function validatePage1(): boolean {
+    const newErrors: Record<string, string> = {};
+    if (!formData.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio.";
+    if (!formData.descripcion?.trim()) newErrors.descripcion = "La descripción es obligatoria.";
+    if (!formData.titulo?.trim()) newErrors.titulo = "El título es obligatorio.";
+    if (!formData.subtitulo?.trim()) newErrors.subtitulo = "El subtítulo es obligatorio.";
+    if (!formData.seccion?.trim()) newErrors.seccion = "Debes seleccionar una sección.";
+    if (!formData.dimensiones?.alto?.toString().trim()) newErrors.alto = "El alto es obligatorio.";
+    if (!formData.dimensiones?.ancho?.toString().trim()) newErrors.ancho = "El ancho es obligatorio.";
+    if (!formData.dimensiones?.largo?.toString().trim()) newErrors.largo = "El largo es obligatorio.";
+    // Meta título: obligatorio y mínimo 10 caracteres
+    if (!formData.etiqueta.meta_titulo?.trim()) {
+      newErrors.meta_titulo = "El meta título es obligatorio.";
+    } else if (formData.etiqueta.meta_titulo.trim().length < 10) {
+      newErrors.meta_titulo = "El meta título debe tener al menos 10 caracteres.";
+    }
+    // Meta descripción: obligatoria y mínimo 40 caracteres
+    if (!formData.etiqueta.meta_descripcion?.trim()) {
+      newErrors.meta_descripcion = "La meta descripción es obligatoria.";
+    } else if (formData.etiqueta.meta_descripcion.trim().length < 40) {
+      newErrors.meta_descripcion = `La meta descripción debe tener al menos 40 caracteres (actualmente: ${formData.etiqueta.meta_descripcion.trim().length}).`;
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      // Scroll automático al primer campo con error
+      const firstKey = Object.keys(newErrors)[0];
+      const el = fieldRefs.current[firstKey];
+      if (el && formContainerRef.current) {
+        const containerTop = formContainerRef.current.getBoundingClientRect().top;
+        const elTop = el.getBoundingClientRect().top;
+        formContainerRef.current.scrollBy({ top: elTop - containerTop - 80, behavior: "smooth" });
+      }
+      return false;
+    }
+    return true;
+  }
+
+  function validatePage2(): boolean {
+    const newErrors: Record<string, string> = {};
+
+    // Validación de Galería: Mínimo 4 imágenes
+    const validImages = formData.imagenes.filter(img => img.url_imagen);
+    if (validImages.length < 4) {
+      newErrors.gallery = `Debes subir al menos 4 imágenes para la galería (actualmente: ${validImages.length}).`;
+    }
+
+    // Validación de Textos SEO en galería
+    formData.imagenes.forEach((img, index) => {
+      if (img.url_imagen && !img.texto_alt_SEO?.trim()) {
+        newErrors[`seo_${index}`] = `El texto SEO es obligatorio para la imagen ${index + 1}.`;
+      }
+    });
+
+    // Imagen de Pop-up obligatoria
+    if (!formData.imagen_popup) {
+      newErrors.imagen_popup = "La imagen para el Pop-up es obligatoria.";
+    }
+
+    // Texto ALT de Pop-up obligatorio
+    if (!formData.texto_alt_popup?.trim()) {
+      newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatorio.";
+    }
+
+    // Imagen de Email obligatoria
+    if (!formData.imagen_email) {
+      newErrors.imagen_email = "La imagen para el Email es obligatoria.";
+    }
+
+    // Asunto del Email obligatorio
+    if (!formData.asunto?.trim()) {
+      newErrors.asunto = "El asunto del email es obligatorio.";
+    }
+
+    // Imagen de WhatsApp obligatoria
+    if (!formData.imagen_whatsapp) {
+      newErrors.imagen_whatsapp = "La imagen para WhatsApp es obligatoria.";
+    }
+
+    // Mensaje de WhatsApp obligatorio
+    if (!formData.texto_alt_whatsapp?.trim()) {
+      newErrors.texto_alt_whatsapp = "El mensaje de WhatsApp es obligatorio.";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      // Scroll automático al primer campo con error de la página 2
+      const firstKey = Object.keys(newErrors)[0];
+      const el = fieldRefs.current[firstKey] || fieldRefs.current.gallery;
+      if (el && formContainerRef.current) {
+        const containerTop = formContainerRef.current.getBoundingClientRect().top;
+        const elTop = el.getBoundingClientRect().top;
+        formContainerRef.current.scrollBy({ top: elTop - containerTop - 80, behavior: "smooth" });
+      }
+      return false;
+    }
+    return true;
+  }
+
   function goNextForm() {
-    setIsExiting(true); // Inicia la animación de salida
+    if (formPage === 1 && !validatePage1()) return;
+    if (formPage === 2 && !validatePage2()) return;
+    setIsExiting(true);
     setTimeout(() => {
-      setFormPage((prevPage) => prevPage + 1); // Incrementa el número de página
-      setIsExiting(false); // Resetea el estado de salida
-      scrollToTop(); // Desplaza el scroll hacia arriba
-    }, 500); // Duración de la animación (en milisegundos)
+      setFormPage((prevPage) => prevPage + 1);
+      setIsExiting(false);
+      scrollToTop();
+    }, 500);
   }
 
   function goBackForm() {
-    setIsExiting(true); // Inicia la animación de salida
+    setErrors({});
+    setIsExiting(true);
     setTimeout(() => {
-      setFormPage((prevPage) => prevPage - 1); // Decrementa el número de página
-      setIsExiting(false); // Resetea el estado de salida
-      scrollToTop(); // Desplaza el scroll hacia arriba
-    }, 500); // Duración de la animación (en milisegundos)
+      setFormPage((prevPage) => prevPage - 1);
+      setIsExiting(false);
+      scrollToTop();
+    }, 500);
   }
 
   function scrollToTop() {
@@ -445,24 +572,27 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   <div className="form-input">
                     <label>Nombre:</label>
                     <input
-                      required
+                      ref={el => { fieldRefs.current.nombre = el; }}
                       value={formData.nombre}
                       onChange={handleChange}
                       type="text"
                       name="nombre"
                       placeholder="Nombre del producto..."
+                      className={errors.nombre ? "border-red-500 focus:ring-red-400" : ""}
                     />
+                    {errors.nombre && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.nombre}</p>}
                   </div>
                   <div className="form-input">
                     <label>Descripción:</label>
                     <textarea
-                      required
+                      ref={el => { fieldRefs.current.descripcion = el; }}
                       value={formData.descripcion}
                       onChange={handleChange}
                       name="descripcion"
                       placeholder="Descripción del producto..."
-                      className="min-h-[100px]"
+                      className={`min-h-[100px] ${errors.descripcion ? "border-red-500 focus:ring-red-400" : ""}`}
                     />
+                    {errors.descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.descripcion}</p>}
                   </div>
                   {/* METADATOS SEO */}
                   <div className="form-input">
@@ -473,24 +603,35 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       </span>
                     </label>
                     <input
+                      ref={el => { fieldRefs.current.meta_titulo = el; }}
                       type="text"
                       id="meta_titulo"
                       name="meta_titulo"
                       value={formData.etiqueta.meta_titulo}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFormData((prev) => ({
                           ...prev,
                           etiqueta: {
                             ...prev.etiqueta,
                             meta_titulo: e.target.value,
                           },
-                        }))
-                      }
+                        }));
+                        setErrors(prev => {
+                          if (prev.meta_titulo) {
+                            const next = { ...prev };
+                            delete next.meta_titulo;
+                            return next;
+                          }
+                          return prev;
+                        });
+                      }}
                       maxLength={70}
+                      className={errors.meta_titulo ? "border-red-500 focus:ring-red-400" : ""}
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {formData.etiqueta.meta_titulo.length} / 70 caracteres
                     </p>
+                    {errors.meta_titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.meta_titulo}</p>}
                   </div>
 
                   <div className="form-input">
@@ -501,25 +642,35 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       </span>
                     </label>
                     <textarea
+                      ref={el => { fieldRefs.current.meta_descripcion = el; }}
                       id="meta_descripcion"
                       name="meta_descripcion"
                       value={formData.etiqueta.meta_descripcion}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFormData((prev) => ({
                           ...prev,
                           etiqueta: {
                             ...prev.etiqueta,
                             meta_descripcion: e.target.value,
                           },
-                        }))
-                      }
+                        }));
+                        setErrors(prev => {
+                          if (prev.meta_descripcion) {
+                            const next = { ...prev };
+                            delete next.meta_descripcion;
+                            return next;
+                          }
+                          return prev;
+                        });
+                      }}
                       maxLength={200}
                       rows={3}
+                      className={errors.meta_descripcion ? "border-red-500 focus:ring-red-400" : ""}
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {formData.etiqueta.meta_descripcion.length} / 200 caracteres
-
                     </p>
+                    {errors.meta_descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.meta_descripcion}</p>}
                   </div>
                   {/* keywords */}
                   <div className="card">
@@ -556,24 +707,28 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   <div className="form-input">
                     <label>Título:</label>
                     <input
-                      required
+                      ref={el => { fieldRefs.current.titulo = el; }}
                       value={formData.titulo}
                       onChange={handleChange}
                       type="text"
                       name="titulo"
                       placeholder="Título..."
+                      className={errors.titulo ? "border-red-500 focus:ring-red-400" : ""}
                     />
+                    {errors.titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.titulo}</p>}
                   </div>
                   <div className="form-input">
                     <label>Subtitulo:</label>
                     <input
-                      required
+                      ref={el => { fieldRefs.current.subtitulo = el; }}
                       value={formData.subtitulo}
                       onChange={handleChange}
                       type="text"
                       name="subtitulo"
                       placeholder="Subtitulo..."
+                      className={errors.subtitulo ? "border-red-500 focus:ring-red-400" : ""}
                     />
+                    {errors.subtitulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.subtitulo}</p>}
                   </div>
                   {/*<div className="form-input">*/}
                   {/*  <label className="block !text-gray-700 text-sm font-medium mb-1">Imagen Principal del Producto:</label>*/}
@@ -590,15 +745,17 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   <div className="form-input">
                     <label>Sección del Producto:</label>
                     <select
-                      required
+                      ref={el => { fieldRefs.current.seccion = el; }}
                       value={formData.seccion}
                       onChange={handleChange}
                       name="seccion"
+                      className={errors.seccion ? "border-red-500 focus:ring-red-400" : ""}
                     >
                       <option value="Decoración">Decoración</option>
                       <option value="Maquinaria">Maquinaria</option>
                       <option value="Negocio">Negocio</option>
                     </select>
+                    {errors.seccion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.seccion}</p>}
                   </div>
 
                   {/* Especificaciones */}
@@ -659,46 +816,49 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <label>Alto:</label>
                         <div className="relative">
                           <input
-                            required
+                            ref={el => { fieldRefs.current.alto = el; }}
                             value={formData.dimensiones.alto}
                             onChange={handleDimensionChange}
                             name="alto"
                             type="number"
                             placeholder="0"
-                            className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                            className={`w-full pl-4 pr-12 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.alto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                           />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
                         </div>
+                        {errors.alto && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.alto}</p>}
                       </div>
                       <div className="form-input">
                         <label className="block text-sm text-gray-600 mb-1">Ancho:</label>
                         <div className="relative">
                           <input
-                            required
+                            ref={el => { fieldRefs.current.ancho = el; }}
                             value={formData.dimensiones.ancho}
                             onChange={handleDimensionChange}
                             name="ancho"
                             type="number"
                             placeholder="0"
-                            className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                            className={`w-full pl-4 pr-12 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.ancho ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                           />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
                         </div>
+                        {errors.ancho && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.ancho}</p>}
                       </div>
                       <div className="form-input">
                         <label className="block text-sm text-gray-600 mb-1">Largo:</label>
                         <div className="relative">
                           <input
-                            required
+                            ref={el => { fieldRefs.current.largo = el; }}
                             value={formData.dimensiones.largo}
                             onChange={handleDimensionChange}
                             name="largo"
                             type="number"
                             placeholder="0"
-                            className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                            className={`w-full pl-4 pr-12 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.largo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                           />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">cm</span>
                         </div>
+                        {errors.largo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.largo}</p>}
                       </div>
                     </div>
                   </div>
@@ -726,22 +886,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
               >
                 <div className="card">
                   <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Galería de Imágenes</h5>
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                    <p className="font-medium">ℹ️ Instrucciones:</p>
-                    <ul className="list-disc list-inside space-y-1 mt-1">
-                      <li>Puedes subir hasta <strong>5 imágenes</strong> por producto.</li>
-                      <li>Al menos <strong>1 imagen es obligatoria</strong>.</li>
-                      <li>Cada imagen debe tener un <strong>Texto SEO</strong> descriptivo (importante para buscadores).</li>
-                      <li>Las imágenes deben ser en formato <strong>WEBP.</strong></li>
-                      <li>Se recomienda un peso máximo de <strong>2MB</strong> por imagen para optimizar la carga.</li>
-                      <li>Regla de subida de tamaño recomendado de imagen: <strong>800-800 px.</strong></li>
-                      <li>Subir la imagen sin fondo <a href="https://www.remove.bg/" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a> para convertir imagen</li>
-                      <li>Subir el tamaño de imagen recomendado  <a href="https://www.iloveimg.com/es/redimensionar-imagen/jpg-cambiar-tamano" target="_blank" rel="noopener noreferrer"><strong>LINK</strong></a></li>
-
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
+                    <p className="font-medium">⚠️ Requisitos de Galería:</p>
+                    <ul className="list-disc list-outside pl-4 space-y-1 mt-1">
+                      <li className="break-words">Debes subir <strong>al menos 4 imágenes</strong> para la galería.</li>
+                      <li className="break-words">Cada imagen subida <strong>debe tener su texto SEO</strong>.</li>
+                      <li className="break-words">La <strong>imagen de Pop-up</strong> y su <strong>texto alternativo</strong> son obligatorios.</li>
+                      <li className="break-words">La <strong>imagen de Email</strong> y su <strong>asunto</strong> son obligatorios.</li>
+                      <li className="break-words">La <strong>imagen de WhatsApp</strong> y su <strong>mensaje</strong> son obligatorios.</li>
+                      <li className="break-words">Peso máximo: <strong>2MB</strong> | Formato: <strong>WEBP</strong>.</li>
                     </ul>
                   </div>
+                  <div ref={el => { fieldRefs.current.gallery = el; }}>
+                    {errors.gallery && <p className="text-red-500 text-sm mb-4 flex items-center gap-1"><span>⚠️</span>{errors.gallery}</p>}
+                  </div>
                   <div className="space-y-4">
-                    {formData.imagenes.map((_, index) => (
+                    {formData.imagenes.map((img, index) => (
                       <div key={index} className="form-input">
                         <label>Imagen {index + 1}:</label>
                         <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
@@ -752,14 +912,16 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                           />
                         </div>
-                        <label>Texto SEO Imagen {index + 1}:</label>
-                        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
-                          <input
-                            type="text"
-                            onChange={(e) => handleImagesTextoSEOChange(e, index)}
-                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 outline-none"
-                          />
-                        </div>
+                        <label className="mt-2 block text-sm">Texto SEO Imagen {index + 1}:</label>
+                        <input
+                          ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
+                          type="text"
+                          value={img.texto_alt_SEO}
+                          onChange={(e) => handleImagesTextoSEOChange(e, index)}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
+                          placeholder="Descripción SEO de la imagen..."
+                        />
+                        {errors[`seo_${index}`] && <p className="text-red-500 text-[10px] mt-1 flex items-center gap-1"><span>⚠️</span>{errors[`seo_${index}`]}</p>}
                       </div>
                     ))}
                   </div>
@@ -773,7 +935,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
                   <div className="form-input">
                     <label>Imagen Pop-up:</label>
-                    <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                    <div ref={el => { fieldRefs.current.imagen_popup = el; }} className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
                       <input
                         type="file"
                         accept="image/*"
@@ -782,21 +944,28 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           if (e.target.files?.[0]) {
                             setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
                           }
+                          if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
                         }}
                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                       />
                     </div>
+                    {errors.imagen_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup}</p>}
                   </div>
                   <div className="form-input">
                     <label>Texto ALT Imagen Pop-up (opcional):</label>
                     <input
+                      ref={el => { fieldRefs.current.texto_alt_popup = el; }}
                       type="text"
                       name="texto_alt_popup"
                       value={formData.texto_alt_popup || ''}
-                      onChange={e => setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }))}
+                      onChange={e => {
+                        setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }));
+                        if (errors.texto_alt_popup) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_popup; return n; });
+                      }}
                       placeholder="Texto alternativo para SEO..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                     />
+                    {errors.texto_alt_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup}</p>}
                   </div>
                   {/** estilos de popup*/}
                   <div className="form-input">
@@ -838,7 +1007,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
                   <div className="form-input">
                     <label>Imagen Email:</label>
-                    <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                    <div
+                      ref={el => { fieldRefs.current.imagen_email = el; }}
+                      className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_email ? "border-red-500" : "border-gray-300"}`}
+                    >
                       <input
                         type="file"
                         accept="image/*"
@@ -847,24 +1019,29 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           if (e.target.files?.[0]) {
                             setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
                           }
+                          if (errors.imagen_email) setErrors(prev => { const n = { ...prev }; delete n.imagen_email; return n; });
                         }}
                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                       />
                     </div>
+                    {errors.imagen_email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_email}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Asunto del Email
                     </label>
                     <input
+                      ref={el => { fieldRefs.current.asunto = el; }}
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.asunto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"}`}
                       value={formData.asunto}
-                      onChange={(e) =>
-                        setFormData(prev => ({ ...prev, asunto: e.target.value }))}
-
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, asunto: e.target.value }));
+                        if (errors.asunto) setErrors(prev => { const n = { ...prev }; delete n.asunto; return n; });
+                      }}
                       placeholder="Ej: Empecemos a crear juntos ✨"
                     />
+                    {errors.asunto && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.asunto}</p>}
                   </div>
                   <div className="form-input">
                     <label>URL del Video (opcional):</label>
@@ -886,7 +1063,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
                   <div className="form-input">
                     <label>Imagen Whatsapp:</label>
-                    <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
+                    <div
+                      ref={el => { fieldRefs.current.imagen_whatsapp = el; }}
+                      className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_whatsapp ? "border-red-500" : "border-gray-300"}`}
+                    >
                       <input
                         type="file"
                         accept="image/*"
@@ -895,22 +1075,28 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           if (e.target.files?.[0]) {
                             setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
                           }
+                          if (errors.imagen_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.imagen_whatsapp; return n; });
                         }}
                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                       />
                     </div>
+                    {errors.imagen_whatsapp && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_whatsapp}</p>}
                   </div>
                   <div className="form-input">
                     <label>Texto personalizado para cotizar (Whatsapp):</label>
                     <textarea
-                      //type="text"
+                      ref={el => { fieldRefs.current.texto_alt_whatsapp = el; }}
                       name="texto_alt_whatsapp"
                       value={formData.texto_alt_whatsapp || ''}
-                      onChange={e => setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }))}
-                      placeholder="Texto para el mensaje de Whatsapp..."
+                      onChange={e => {
+                        setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }));
+                        if (errors.texto_alt_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_whatsapp; return n; });
+                      }}
+                      placeholder="Texto para el mensaje de WhatsApp..."
                       rows={4}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition min-h-[100px] resize-y"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition min-h-[100px] resize-y ${errors.texto_alt_whatsapp ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                     />
+                    {errors.texto_alt_whatsapp && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_whatsapp}</p>}
                   </div>
                 </div>
                 <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6">
