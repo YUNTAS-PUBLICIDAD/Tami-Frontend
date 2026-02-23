@@ -23,7 +23,7 @@
     "cors": "^2.8.6",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "framer-motion": "^12.34.0",
+    "framer-motion": "^12.34.2",
     "lucide-react": "^0.544.0",
     "postcss": "^8.5.6",
     "react": "^19.1.0",

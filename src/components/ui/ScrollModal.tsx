@@ -246,11 +246,16 @@ const ScrollModal = () => {
         <div className="absolute inset-0 " style={{ background: "linear-gradient(to left, #00786F 0%, #018C86 45%, rgba(1, 160, 158, 0.6) 100%)" }}></div>
 
         <div className="hidden sm:flex sm:w-6/12 justify-center items-center relative z-10">
-          <img src={Logo.src} alt="LogoTami" className="w-60 h-60 object-contain select-none drop-shadow-2xl animate-fadeIn z-20" />
+          <img 
+            src={Logo.src} 
+            alt="LogoTami" 
+            className="w-55 h-55 object-contain select-none drop-shadow-2xl animate-fadeIn z-20" 
+          />
         </div>
 
         {/* Contenido Formulario */}
-        <div className="w-full sm:w-6/12 text-white relative animate-fadeInRight h-full">
+        <div className="w-full sm:w-8/12 text-white relative animate-fadeInRight h-full">
+
           <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
 
 
@@ -270,8 +275,10 @@ const ScrollModal = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <h2 className="scrollmodal-body select-none font-semibold animate-fadeInUp">
-              DESCARGA <span className="scrollmodal-title text-yellow-200">GRATIS</span> NUESTRO <span className="scrollmodal-title text-yellow-200">CATÁLOGO</span>
+            <h2 className="text-2xl sm:text-3xl text-center font-medium leading-tight select-none animate-fadeInUp mb-2 text-white">
+              DESCARGA <span className="font-bold">GRATIS</span>
+              <br />
+              NUESTRO <span className="font-bold">CATÁLOGO</span>
             </h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp">
