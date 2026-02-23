@@ -1,42 +1,23 @@
-import { config, getApiUrl } from "config";
+import { config } from "config";
+import apiClient from "src/services/apiClient";
 import type {
     WhatsappPlantillaServiceResponse,
 } from "src/models/whatsapp";
 
-function getToken() {
-    return localStorage.getItem("token");
-}
-
 export async function requestQRService(): Promise<WhatsappPlantillaServiceResponse<null>> {
     try {
-        const token = getToken();
-        if (!token) return { success: false, message: "No autenticado" };
-
-        const response = await fetch(getApiUrl(config.endpoints.whatsapp.requestQR), {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        const result = await response.json();
-
-        return { success: response.ok, message: result.message || "QR solicitado" };
+        const response = await apiClient.post(config.endpoints.whatsapp.requestQR);
+        return { success: response.status === 200, message: response.data.message || "QR solicitado" };
     } catch (error: any) {
-        return { success: false, message: error.message };
+        return { success: false, message: error.response?.data?.message || error.message };
     }
 }
 
 export async function resetSessionService(): Promise<WhatsappPlantillaServiceResponse<null>> {
     try {
-        const token = getToken();
-        if (!token) return { success: false, message: "No autenticado" };
-
-        const response = await fetch(getApiUrl(config.endpoints.whatsapp.resetSession), {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        const result = await response.json();
-
-        return { success: response.ok, message: result.message || "Sesión reseteada" };
+        const response = await apiClient.post(config.endpoints.whatsapp.resetSession);
+        return { success: response.status === 200, message: response.data.message || "Sesión reseteada" };
     } catch (error: any) {
-        return { success: false, message: error.message };
+        return { success: false, message: error.response?.data?.message || error.message };
     }
 }

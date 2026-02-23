@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, type FC } from "react";
 import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import React from "react";
-import { config, getApiUrl } from "../../../../config.ts";
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import { FaEdit } from "react-icons/fa";
 import type Product from "src/models/Product";
@@ -149,9 +150,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 ...imagenAnterior,
                 url_imagen: file,
                 // 
-                id: imagenAnterior.id 
+                id: imagenAnterior.id
             };
-            
+
             // Debug para verificar que el ID sigue ahí
             console.log(`📸 Cambio en slot ${index + 1}. ID mantenido:`, nuevasImagenes[index].id);
 
@@ -259,7 +260,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
 
         try {
-            const token = localStorage.getItem("token");
             const formDataToSend = new FormData();
 
             formDataToSend.append("nombre", formData.nombre);
@@ -310,10 +310,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
 
             // MANEJO DE IMÁGENES DE GALERÍA 
-            
+
             const imagenesNuevas: File[] = [];
             const imagenesNuevasAlt: string[] = [];
-            
+
             //  Array para imágenes que se reemplazan
             const imagenesEditadas: { id: number; file: File; alt: string }[] = [];
 
@@ -330,11 +330,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     console.log(`⏭️ Slot ${index + 1}: vacío (sin imagen)`);
                     return;
                 }
-                
+
                 const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
 
                 if (imagen.url_imagen instanceof File) {
-                    
+
                     // Verificamos si tiene ID para decidir si es EDICIÓN o INSERCIÓN
                     if (imagen.id) {
                         // TIENE ID + FILE = EDICIÓN
@@ -353,13 +353,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                         // NO TIENE ID + FILE = NUEVA (Insertar al final)
                         imagenesNuevas.push(imagen.url_imagen);
                         imagenesNuevasAlt.push(altText);
-                        
+
                         console.log(`✨ Slot ${index + 1}: NUEVA imagen (Insertar)`, {
                             nombre: imagen.url_imagen.name,
                             tamaño: `${(imagen.url_imagen.size / 1024).toFixed(2)} KB`
                         });
                     }
-                    
+
                 } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
                     //  IMAGEN EXISTENTE    
                     let urlLimpia = "";
@@ -367,31 +367,31 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     // Estrategia 1: Usar original_path si existe
                     if (imagen.original_path) {
                         urlLimpia = imagen.original_path;
-                        
+
                     } else {
                         // Estrategia 2: Extraer de la URL completa
                         try {
                             const urlObj = new URL(imagen.url_imagen, window.location.origin);
                             urlLimpia = urlObj.pathname;
-                           
+
                         } catch (error) {
                             // Fallback: limpiar manualmente
                             urlLimpia = imagen.url_imagen
                                 .split('?')[0]
                                 .replace(config.apiUrl, '');
-                           
+
                         }
                     }
 
                     // Limpiar query params y decodificar
                     urlLimpia = decodeURIComponent(urlLimpia.split('?')[0]);
-                    
+
                     imagenesExistentesData.push({
                         url: urlLimpia,
                         id: imagen.id,
                         alt: altText
                     });
-                    
+
                     console.log(`🔒 Slot ${index + 1}: CONSERVAR imagen existente`, {
                         id: imagen.id,
                         url: urlLimpia
@@ -417,7 +417,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     formDataToSend.append('imagenes_nuevas[]', file);
                     formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
                 });
-                
+
                 // Agregar imágenes EDITADAS (Reemplazos)
                 imagenesEditadas.forEach((img, idx) => {
                     formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
@@ -428,14 +428,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 // Agregar imágenes EXISTENTES a CONSERVAR
                 imagenesExistentesData.forEach((img, idx) => {
                     formDataToSend.append(`imagenes_existentes[${idx}][url]`, img.url);
-                    
+
                     if (img.id) {
                         formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
                     }
-                    
+
                     formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
                 });
-                
+
                 console.log('✅ Todas las categorías de imágenes agregadas al FormData');
             } else {
                 console.warn('⚠️ NO hay imágenes para enviar');
@@ -470,22 +470,20 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
             formDataToSend.append("_method", "PUT");
 
-            const response = await fetch(
-                getApiUrl(config.endpoints.productos.update(product.id)),
+            const response = await apiClient.post(
+                config.endpoints.productos.update(product.id),
+                formDataToSend,
                 {
-                    method: "POST",
-                    body: formDataToSend,
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data",
                     },
                 }
             );
 
-            const data = await response.json();
+            const data = response.data;
             console.log("Respuesta del servidor:", data);
 
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) {
                 Swal.fire({
                     icon: "success",
                     title: "Producto actualizado exitosamente",
@@ -1128,37 +1126,37 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         {descripcionesPopup[index]}
                                                     </p>
                                                     {formData.etiqueta.popup_estilo === estilo && (
-                                                      <div className="w-full mt-2">
-                                                        <input
-                                                          type="text"
-                                                          placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
-                                                          value={
-                                                            estilo === "estilo1"
-                                                              ? formData.etiqueta.titulo_popup_1 || ""
-                                                              : estilo === "estilo2"
-                                                              ? formData.etiqueta.titulo_popup_2 || ""
-                                                              : formData.etiqueta.titulo_popup_3 || ""
-                                                          }
-                                                          onChange={(e) =>
-                                                            setFormData((prev) => ({
-                                                              ...prev,
-                                                              etiqueta: {
-                                                                ...prev.etiqueta,
-                                                                ...(estilo === "estilo1" && {
-                                                                  titulo_popup_1: e.target.value,
-                                                                }),
-                                                                ...(estilo === "estilo2" && {
-                                                                  titulo_popup_2: e.target.value,
-                                                                }),
-                                                                ...(estilo === "estilo3" && {
-                                                                  titulo_popup_3: e.target.value,
-                                                                }),
-                                                              },
-                                                            }))
-                                                          }
-                                                          className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
-                                                        />
-                                                      </div>
+                                                        <div className="w-full mt-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
+                                                                value={
+                                                                    estilo === "estilo1"
+                                                                        ? formData.etiqueta.titulo_popup_1 || ""
+                                                                        : estilo === "estilo2"
+                                                                            ? formData.etiqueta.titulo_popup_2 || ""
+                                                                            : formData.etiqueta.titulo_popup_3 || ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData((prev) => ({
+                                                                        ...prev,
+                                                                        etiqueta: {
+                                                                            ...prev.etiqueta,
+                                                                            ...(estilo === "estilo1" && {
+                                                                                titulo_popup_1: e.target.value,
+                                                                            }),
+                                                                            ...(estilo === "estilo2" && {
+                                                                                titulo_popup_2: e.target.value,
+                                                                            }),
+                                                                            ...(estilo === "estilo3" && {
+                                                                                titulo_popup_3: e.target.value,
+                                                                            }),
+                                                                        },
+                                                                    }))
+                                                                }
+                                                                className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
+                                                            />
+                                                        </div>
                                                     )}
 
 

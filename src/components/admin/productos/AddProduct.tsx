@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, type FC } from "react";
 import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
-import { config, getApiUrl } from "../../../../config.ts";
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
@@ -283,7 +284,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
 
       formDataToSend.append("nombre", formData.nombre);
@@ -344,22 +344,20 @@ const AddProduct = ({ onProductAdded }: Props) => {
         formDataToSend.append('video_url', formData.video_url);
       }
 
-      const response = await fetch(
-        getApiUrl(config.endpoints.productos.create),
+      const response = await apiClient.post(
+        config.endpoints.productos.create,
+        formDataToSend,
         {
-          method: "POST",
-          body: formDataToSend, // FormData
           headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json"
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
-      const data = await response.json();
+      const data = response.data;
       console.log("Respuesta del servidor:", data);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         Swal.fire({
           icon: "success",
           title: "Producto añadido exitosamente",
