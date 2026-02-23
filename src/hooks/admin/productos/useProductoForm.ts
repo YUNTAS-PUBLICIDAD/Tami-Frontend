@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import type { ProductPOST } from "../../../models/Product.ts";
+import type { ProductFormularioPOST } from "../../../models/Product.ts";
 import useProductoAcciones from "./useProductosActions";
 import type Producto from "../../../models/Product.ts";
 import useClienteAcciones from "../seguimiento/useClientesActions.ts";
@@ -23,27 +23,31 @@ const useProductForm = (
      * Inicialmente se establece como un objeto vacío.
      */
     const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState<ProductPOST>({
+    const [formData, setFormData] = useState<ProductFormularioPOST>({
         nombre: "",
         titulo: "",
         subtitulo: "",
-        lema: "",
+        link: "",
         descripcion: "",
-        miniatura: null,
         stock: 100,
-        precioProducto: 199.99,
-        seccion: "Trabajo",
-        especificaciones: {
-            color: "",
-            material: "",
-        },
+        precio: 199.99,
+        seccion: "Negocio",
+        especificaciones: [],
         dimensiones: {
             alto: "",
             largo: "",
             ancho: "",
         },
-        imagenes: Array(4).fill({ url_imagen: null }),
+        imagenes: Array(5).fill({ url_imagen: null, texto_alt_SEO: "" }),
         relacionados: [],
+        textos_alt: [],
+        asunto: "",
+        etiqueta: {
+            keywords: [""],
+            meta_titulo: "",
+            meta_descripcion: "",
+            popup_estilo: "estilo1",
+        }
     });
 
     const [isEditing, setIsEditing] = useState(false); // Estado para manejar si estamos editando o añadiendo un producto
@@ -59,19 +63,26 @@ const useProductForm = (
              * Si hay un producto, cargamos sus datos en el formulario.
              */
             setFormData({
-                nombre: producto.nombreProducto,
-                titulo: producto.title,
-                subtitulo: producto.subtitle,
-                lema: producto.tagline,
-                descripcion: producto.description,
-                miniatura: null, // Resetear la imagen principal
-                stock: producto.stockProducto,
-                precioProducto: producto.precioProducto,
+                nombre: producto.nombre,
+                titulo: producto.titulo,
+                subtitulo: producto.subtitulo,
+                link: producto.link,
+                descripcion: producto.descripcion,
+                stock: producto.stock,
+                precio: producto.precio,
                 seccion: producto.seccion,
-                especificaciones: producto.specs, // Mapeo directo si tiene la misma estructura
-                dimensiones: producto.dimensions, // Mapeo directo si tiene la misma estructura
-                imagenes: producto.images?.map((url) => ({ url_imagen: null })) || [], // Conversión de `string[]` a `{ url_imagen: null }`
-                relacionados: producto.relatedProducts || [],
+                especificaciones: producto.especificaciones.map(e => e.valor),
+                dimensiones: producto.dimensiones,
+                imagenes: producto.imagenes.map((img) => ({ url_imagen: null, texto_alt_SEO: img.texto_alt_SEO })),
+                relacionados: producto.productos_relacionados?.map(p => p.id) || [],
+                textos_alt: producto.imagenes.map(img => img.texto_alt_SEO),
+                asunto: "",
+                etiqueta: {
+                    keywords: producto.etiqueta.keywords.split(","),
+                    meta_titulo: producto.etiqueta.meta_titulo,
+                    meta_descripcion: producto.etiqueta.meta_descripcion,
+                    popup_estilo: producto.etiqueta.popup_estilo,
+                }
             });
             setIsEditing(true);
         } else {
@@ -92,24 +103,21 @@ const useProductForm = (
         >
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData((prev: ProductFormularioPOST) => ({ ...prev, [name]: value }));
     };
 
     const handleNestedChange = (
         e: React.ChangeEvent<HTMLInputElement>,
         group: "dimensiones" | "especificaciones"
     ) => {
-        setFormData((prev) => ({
+        setFormData((prev: ProductFormularioPOST) => ({
             ...prev,
             [group]: { ...prev[group], [e.target.name]: e.target.value },
         }));
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setFormData((prev) => ({ ...prev, miniatura: file }));
-        }
+        // No longer used in this model
     };
 
     const handleRelacionadosChange = (
@@ -122,7 +130,7 @@ const useProductForm = (
                 // Agregar el ID al array de relacionados
                 ? [...prev.relacionados, id]
                 // Eliminar el ID del array de relacionados
-                : prev.relacionados.filter((r) => r !== id),
+                : prev.relacionados.filter((r: number) => r !== id),
         }));
     };
 
@@ -133,8 +141,8 @@ const useProductForm = (
         if (e.target.files?.[0]) {
             const nuevasImagenes = [...formData.imagenes];
             // Agregar el archivo y su parrafo
-            nuevasImagenes[index] = { url_imagen: e.target.files[0] };
-            setFormData((prev) => ({ ...prev, imagenes: nuevasImagenes }));
+            nuevasImagenes[index] = { ...nuevasImagenes[index], url_imagen: e.target.files[0] };
+            setFormData((prev: ProductFormularioPOST) => ({ ...prev, imagenes: nuevasImagenes }));
         }
     };
 
@@ -149,11 +157,9 @@ const useProductForm = (
             nombre,
             titulo,
             subtitulo,
-            lema,
             descripcion,
-            miniatura,
             stock,
-            precioProducto,
+            precio,
             seccion,
             especificaciones,
             dimensiones,
@@ -168,19 +174,14 @@ const useProductForm = (
             !nombre.trim() ||
             !titulo.trim() ||
             !subtitulo.trim() ||
-            !lema.trim() ||
             !descripcion.trim() ||
-            !(miniatura instanceof File) ||
             stock <= 0 ||
-            precioProducto <= 0 ||
+            precio <= 0 ||
             !seccion.trim() ||
-            !especificaciones.color.trim() ||
-            !especificaciones.material.trim() ||
             !dimensiones.alto.trim() ||
             !dimensiones.largo.trim() ||
             !dimensiones.ancho.trim() ||
-            imagenes.length === 0 ||
-            imagenes.some((img) => !(img.url_imagen instanceof File))
+            imagenes.length === 0
         ) {
             await Swal.fire({
                 icon: "warning",
@@ -194,7 +195,7 @@ const useProductForm = (
             const formToSend = new FormData();
 
             for (const key in formData) {
-                const value = formData[key as keyof ProductPOST];
+                const value = formData[key as keyof ProductFormularioPOST];
                 if (
                     typeof value === "string" ||
                     typeof value === "number" ||
@@ -218,34 +219,32 @@ const useProductForm = (
             );
             formToSend.append("relacionados", JSON.stringify(formData.relacionados));
 
-            if (formData.miniatura) {
-                formToSend.append("miniatura", formData.miniatura);
+            if ((formData as any).miniatura) {
+                formToSend.append("miniatura", (formData as any).miniatura);
             }
 
-            formData.imagenes.forEach((img, i) => {
-                if (img.url_imagen) {
-                    formToSend.append(`imagenes[${i}][url_imagen]`, img.url_imagen);
+            formData.imagenes.forEach((img: { url_imagen: File | string | null }, i: number) => {
+                if (img.url_imagen instanceof File) {
+                    formToSend.append(`imagenes[${i}]`, img.url_imagen);
                 }
             });
 
             const productoData: Partial<Producto> = {
-                name: formData.nombre, // `nombre` en `ProductPOST` se asigna a `name` en `Producto`
-                title: formData.titulo,
-                subtitle: formData.subtitulo,
-                tagline: formData.lema,
-                description: formData.descripcion,
-                image: formData.miniatura
-                    ? URL.createObjectURL(formData.miniatura) // Convierte el archivo a una URL
-                    : "", // Si es null, asigna un string vacío
-                stockProducto: formData.stock,
-                precioProducto: formData.precioProducto,
+                nombre: formData.nombre,
+                titulo: formData.titulo,
+                subtitulo: formData.subtitulo,
+                descripcion: formData.descripcion,
+                stock: formData.stock,
+                precio: formData.precio,
                 seccion: formData.seccion,
-                specs: formData.especificaciones, // Mapea correctamente a `specs`
-                dimensions: formData.dimensiones, // Mapea a `dimensions`
-                images: formData.imagenes
-                    .filter((img) => img.url_imagen !== null) // Excluye imágenes nulas
-                    .map((img) => URL.createObjectURL(img.url_imagen as File)), // Convierte archivos a URLs
-                relatedProducts: formData.relacionados, // `relacionados` se asigna a `relatedProducts`
+                dimensiones: formData.dimensiones,
+                imagenes: formData.imagenes
+                    .filter((img: { url_imagen: File | string | null }) => img.url_imagen instanceof File)
+                    .map((img: { url_imagen: File | string | null }) => ({
+                        id: 0,
+                        url_imagen: URL.createObjectURL(img.url_imagen as File),
+                        texto_alt_SEO: ""
+                    })),
             };
 
             if (isEditing && producto) {
@@ -286,23 +285,27 @@ const useProductForm = (
             nombre: "",
             titulo: "",
             subtitulo: "",
-            lema: "",
+            link: "",
             descripcion: "",
-            miniatura: null,
             stock: 100,
-            precioProducto: 199.99,
-            seccion: "Trabajo",
-            especificaciones: {
-                color: "",
-                material: "",
-            },
+            precio: 199.99,
+            seccion: "Negocio",
+            especificaciones: [],
             dimensiones: {
                 alto: "",
                 largo: "",
                 ancho: "",
             },
-            imagenes: Array(4).fill({ url_imagen: null }),
+            imagenes: Array(5).fill({ url_imagen: null, texto_alt_SEO: "" }),
             relacionados: [],
+            textos_alt: [],
+            asunto: "",
+            etiqueta: {
+                keywords: [""],
+                meta_titulo: "",
+                meta_descripcion: "",
+                popup_estilo: "estilo1",
+            }
         });
         setIsEditing(false);
     };

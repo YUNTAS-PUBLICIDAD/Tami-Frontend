@@ -6,7 +6,7 @@ import { config } from "config";
 // GET: obtener blogs desde la API remota
 export const GET: APIRoute = async () => {
   try {
-    const response = await apiClient.get(config.endpoints.blogs);
+    const response = await apiClient.get(config.endpoints.blogs.list);
 
     return new Response(JSON.stringify(response.data), {
       status: response.status || 200,
