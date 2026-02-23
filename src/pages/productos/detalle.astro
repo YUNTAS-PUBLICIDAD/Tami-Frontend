@@ -332,14 +332,6 @@ const productosUrl = config.endpoints.productos;
     }
     metaKeywords.content = product.etiqueta?.keywords || "";
 
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (!metaKeywords) {
-      metaKeywords = document.createElement("meta");
-      metaKeywords.name = "keywords";
-      document.head.appendChild(metaKeywords);
-    }
-    metaKeywords.content = product.etiqueta?.keywords || "";
-
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement("link");

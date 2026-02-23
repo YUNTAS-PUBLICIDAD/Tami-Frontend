@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import useClienteAcciones from "./useClientesActions";
 import type Cliente from "../../../models/Clients.ts";
 import Swal from "sweetalert2";
+import { origenCliente } from "@data/origenCliente";
 
 const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
-  type ClienteFormData = Pick<Cliente, "name" | "celular" | "email">;
+  type ClienteFormData = Pick<Cliente, "name" | "celular" | "email" | "source_id">;
   const [formData, setFormData] = useState<ClienteFormData>({
     name: "",
     celular: "",
@@ -69,7 +70,7 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
           text: "✅ Cliente actualizado correctamente",
         });
       } else {
-        await addCliente({ name, celular, email });
+        await addCliente({ name, celular: `+51${celular}`, email, source_id: origenCliente.ADMINISTRACION });
         await Swal.fire({
           icon: "success",
           title: "Cliente registrado",
