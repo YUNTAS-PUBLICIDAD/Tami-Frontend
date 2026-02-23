@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
+  text_alt: string;
   url?: string;
 }
 
@@ -89,8 +90,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     producto_id: "",
     miniatura: null,
     imagenes: [
-      { imagen: null, parrafo: "" },
-      { imagen: null, parrafo: "" },
+      { imagen: null, parrafo: "", text_alt: "" },
+      { imagen: null, parrafo: "", text_alt: "" },
     ],
     etiqueta: {
       meta_titulo: "",
@@ -143,6 +144,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           return {
             imagen: null,
             parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
+            text_alt: img.text_alt || "",
             url: raw
               ? raw.startsWith("http")
                 ? raw
@@ -150,8 +152,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               : "",
           };
         }) || [
-            { imagen: null, parrafo: "", url: "" },
-            { imagen: null, parrafo: "", url: "" },
+            { imagen: null, parrafo: "", text_alt: "", url: "" },
+            { imagen: null, parrafo: "", text_alt: "", url: "" },
           ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
@@ -169,8 +171,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         producto_id: "",
         miniatura: null,
         imagenes: [
-          { imagen: null, parrafo: "" },
-          { imagen: null, parrafo: "" },
+          { imagen: null, parrafo: "", text_alt: "" },
+          { imagen: null, parrafo: "", text_alt: "" },
         ],
         etiqueta: {
           meta_titulo: "",
@@ -266,6 +268,15 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = { ...nuevoArray[index], parrafo: e.target.value };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleAltTextChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], text_alt: e.target.value };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -407,8 +418,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       producto_id: "",
       miniatura: null,
       imagenes: [
-        { imagen: null, parrafo: "" },
-        { imagen: null, parrafo: "" },
+        { imagen: null, parrafo: "", text_alt: "" },
+        { imagen: null, parrafo: "", text_alt: "" },
       ],
       etiqueta: { meta_titulo: "", meta_descripcion: "" },
     });
@@ -537,6 +548,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           formDataToSend.append("existing_images[]", item.imagen);
         }
         formDataToSend.append("parrafos[]", item.parrafo);
+        formDataToSend.append("text_alt[]", item.text_alt);
       });
 
       if (blogToEdit) {
@@ -556,7 +568,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           title: blogToEdit
             ? "Blog actualizado con éxito"
             : "Blog creado con éxito",
-          text: `El blog "${data.blog.titulo}" ha sido ${blogToEdit ? "actualizado" : "creado"
+          text: `El blog "${data.data.titulo}" ha sido ${blogToEdit ? "actualizado" : "creado"
             } correctamente.`,
           confirmButtonColor: "#3085d6",
         });
@@ -856,6 +868,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={(e) => handleFileChangeAdicional(e, index)}
                           className="w-full text-sm"
                         />
+                        <div className="mt-2">
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Texto Alternativo (SEO)*</label>
+                          <input
+                            type="text"
+                            value={imagen.text_alt}
+                            onChange={(e) => handleAltTextChange(e, index)}
+                            placeholder="Descripción de la imagen"
+                            className="w-full border rounded p-1 text-xs"
+                            required
+                          />
+                        </div>
                         {imagen.url && (
                           <div className="mt-2">
                             <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
