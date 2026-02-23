@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, type FC } from "react";
 import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import React from "react";
-import { config, getApiUrl } from "../../../../config.ts";
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import { FaEdit } from "react-icons/fa";
 import type Product from "src/models/Product";
@@ -410,7 +411,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
 
         try {
-            const token = localStorage.getItem("token");
             const formDataToSend = new FormData();
 
             formDataToSend.append("nombre", formData.nombre);
@@ -621,22 +621,20 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
             formDataToSend.append("_method", "PUT");
 
-            const response = await fetch(
-                getApiUrl(config.endpoints.productos.update(product.id)),
+            const response = await apiClient.post(
+                config.endpoints.productos.update(product.id),
+                formDataToSend,
                 {
-                    method: "POST",
-                    body: formDataToSend,
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data",
                     },
                 }
             );
 
-            const data = await response.json();
+            const data = response.data;
             console.log("Respuesta del servidor:", data);
 
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) {
                 Swal.fire({
                     icon: "success",
                     title: "Producto actualizado exitosamente",
