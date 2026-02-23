@@ -226,6 +226,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             newErrors.meta_descripcion = `La meta descripción debe tener al menos 40 caracteres (actualmente: ${formData.etiqueta.meta_descripcion.trim().length}).`;
         }
 
+        // Validación de especificaciones: al menos una
+        if (formData.especificaciones.length === 0) {
+            newErrors.especificaciones = "Debes añadir al menos una especificación.";
+        }
+
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length > 0) {
@@ -341,14 +346,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 especificaciones: [...prev.especificaciones, nuevaEspecificacion.trim()]
             }));
             setNuevaEspecificacion("");
+            // Limpiar error de especificaciones
+            if (errors.especificaciones) {
+                setErrors(prev => {
+                    const next = { ...prev };
+                    delete next.especificaciones;
+                    return next;
+                });
+            }
         }
     };
 
     const eliminarEspecificacion = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            especificaciones: prev.especificaciones.filter((_, i) => i !== index)
-        }));
+        setFormData(prev => {
+            const nuevas = prev.especificaciones.filter((_, i) => i !== index);
+            // Si el usuario elimina la última, se volverá a pedir al validar, 
+            // pero no limpiamos el error aquí porque no está "corrigiendo" positivamente el vacío
+            return {
+                ...prev,
+                especificaciones: nuevas
+            };
+        });
     };
 
     const handleEspecificacionChange = (index: number, value: string) => {
@@ -358,6 +376,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             ...prev,
             especificaciones: nuevasEspecificaciones
         }));
+        // Limpiar error de especificaciones si hay contenido
+        if (value.trim() && errors.especificaciones) {
+            setErrors(prev => {
+                const next = { ...prev };
+                delete next.especificaciones;
+                return next;
+            });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -954,7 +980,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
 
                                     {/* Especificaciones */}
-                                    <div className="card">
+                                    <div
+                                        ref={el => { fieldRefs.current.especificaciones = el; }}
+                                        className={`card ${errors.especificaciones ? "border-red-500 ring-1 ring-red-400" : ""}`}
+                                    >
                                         <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Especificaciones</h5>
                                         <div className="flex items-center gap-2 form-input">
                                             <input
@@ -1001,6 +1030,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 <p className="text-sm text-gray-500 italic">No hay especificaciones agregadas</p>
                                             )}
                                         </div>
+                                        {errors.especificaciones && <p className="text-red-500 text-xs mt-3 flex items-center gap-1"><span>⚠️</span>{errors.especificaciones}</p>}
                                     </div>
                                     {/* <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                     <h5 className="font-medium !text-gray-700 mb-3">Especificaciones</h5>
