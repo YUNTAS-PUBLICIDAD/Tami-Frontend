@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect } from "react";
-import { getApiUrl, config } from "config";
+import { config } from "config";
+import apiClient from "../../../services/apiClient";
 import type Cliente from "../../../models/Clients";
 
 const useClientes = (trigger: boolean) => {
@@ -18,28 +19,14 @@ const useClientes = (trigger: boolean) => {
       setError(null);
 
       try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No se encontró el token de autenticación");
+        // Traemos todos los clientes usando el apiClient
+        const response = await apiClient.get(config.endpoints.clientes.list);
 
-        // Traemos todos los clientes (sin paginar en el backend)
-        const url = `${getApiUrl(config.endpoints.clientes.list)}`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error al obtener clientes: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const data = response.data;
 
         const clientesArray: Cliente[] = Array.isArray(data.data)
-            ? data.data
-            : data.data?.data || [];
+          ? data.data
+          : data.data?.data || [];
 
         setClientes(clientesArray);
       } catch (err) {
