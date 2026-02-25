@@ -1,17 +1,14 @@
-import { config, getApiUrl } from "../../../../config.ts";
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
+  text_alt: string;
   url?: string;
 }
- 
-
-//prueba
-
-
 
 interface BlogPOST {
   titulo: string;
@@ -75,6 +72,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [productos, setProductos] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedText, setSelectedText] = useState("");
@@ -92,8 +90,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     producto_id: "",
     miniatura: null,
     imagenes: [
-      { imagen: null, parrafo: "" },
-      { imagen: null, parrafo: "" },
+      { imagen: null, parrafo: "", text_alt: "" },
+      { imagen: null, parrafo: "", text_alt: "" },
     ],
     etiqueta: {
       meta_titulo: "",
@@ -110,14 +108,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
     const fetchProductos = async () => {
       try {
-        const url = getApiUrl(config.endpoints.productos.list);
-        const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            Accept: "application/json",
-          },
-        });
-        const data = await res.json();
+        const response = await apiClient.get(config.endpoints.productos.list);
+        const data = response.data;
 
         let lista: any[] = [];
         if (Array.isArray(data)) lista = data;
@@ -152,6 +144,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           return {
             imagen: null,
             parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
+            text_alt: img.text_alt || "",
             url: raw
               ? raw.startsWith("http")
                 ? raw
@@ -159,9 +152,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               : "",
           };
         }) || [
-          { imagen: null, parrafo: "", url: "" },
-          { imagen: null, parrafo: "", url: "" },
-        ],
+            { imagen: null, parrafo: "", text_alt: "", url: "" },
+            { imagen: null, parrafo: "", text_alt: "", url: "" },
+          ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
@@ -178,8 +171,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         producto_id: "",
         miniatura: null,
         imagenes: [
-          { imagen: null, parrafo: "" },
-          { imagen: null, parrafo: "" },
+          { imagen: null, parrafo: "", text_alt: "" },
+          { imagen: null, parrafo: "", text_alt: "" },
         ],
         etiqueta: {
           meta_titulo: "",
@@ -275,6 +268,15 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = { ...nuevoArray[index], parrafo: e.target.value };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleAltTextChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], text_alt: e.target.value };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -416,8 +418,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       producto_id: "",
       miniatura: null,
       imagenes: [
-        { imagen: null, parrafo: "" },
-        { imagen: null, parrafo: "" },
+        { imagen: null, parrafo: "", text_alt: "" },
+        { imagen: null, parrafo: "", text_alt: "" },
       ],
       etiqueta: { meta_titulo: "", meta_descripcion: "" },
     });
@@ -518,20 +520,21 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const formDataToSend = new FormData();
+      setIsSubmitting(true);
 
+      const url = blogToEdit
+        ? `${config.endpoints.blogs.list}/${blogToEdit.id}`
+        : config.endpoints.blogs.create;
+
+      const formDataToSend = new FormData();
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
-      formDataToSend.append("video_url", formData.video_url);
-      formDataToSend.append("video_titulo", formData.video_titulo);
+      formDataToSend.append("video_url", formData.video_url || "");
+      formDataToSend.append("video_titulo", formData.video_titulo || "");
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
-      formDataToSend.append(
-        "meta_descripcion",
-        formData.etiqueta.meta_descripcion
-      );
+      formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
       if (formData.miniatura instanceof File) {
@@ -539,67 +542,62 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       }
 
       formData.imagenes.forEach((item) => {
-        if (item.imagen) formDataToSend.append("imagenes[]", item.imagen);
+        if (item.imagen instanceof File) {
+          formDataToSend.append("imagenes[]", item.imagen);
+        } else if (typeof item.imagen === "string") {
+          formDataToSend.append("existing_images[]", item.imagen);
+        }
         formDataToSend.append("parrafos[]", item.parrafo);
-        formDataToSend.append("text_alt[]", "Sin descripción");
+        formDataToSend.append("text_alt[]", item.text_alt);
       });
 
-      if (blogToEdit) formDataToSend.append("_method", "POST");
+      if (blogToEdit) {
+        formDataToSend.append("_method", "PUT");
+      }
 
-      const url = blogToEdit
-        ? `${getApiUrl(config.endpoints.blogs.list)}/${blogToEdit.id}`
-        : getApiUrl(config.endpoints.blogs.create);
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formDataToSend,
+      const response = await apiClient.post(url, formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      const data = await response.json();
-      console.log("response", response);
-      console.log("data", data);
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
+        const data = response.data;
         await Swal.fire({
           icon: "success",
           title: blogToEdit
-            ? "Blog actualizado exitosamente"
-            : "Blog añadido exitosamente",
-          showConfirmButton: true,
+            ? "Blog actualizado con éxito"
+            : "Blog creado con éxito",
+          text: `El blog "${data.data.titulo}" ha sido ${blogToEdit ? "actualizado" : "creado"
+            } correctamente.`,
+          confirmButtonColor: "#3085d6",
         });
         closeModal();
         onBlogAdded();
       } else {
-        // 🔹 Mostrar errores detallados del backend
+        const data = response.data;
         if (data.errors) {
           const errores = Object.entries(data.errors)
-            .map(
-              ([campo, mensajes]) =>
-                `- ${campo}: ${(mensajes as string[]).join(", ")}`
-            )
+            .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
             .join("\n");
-
-          Swal.fire({
-            icon: "error",
-            title: "Errores de validación",
-            text: errores,
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: `❌ ${data.message || "Error al guardar blog"}`,
-          });
+          throw new Error(`Errores de validación:\n${errores}`);
         }
+        throw new Error(data.message || "Error al procesar el blog");
       }
     } catch (error: any) {
-      console.error("Error al enviar los datos:", error);
-      Swal.fire({ icon: "error", title: "Error", text: `❌ ${error}` });
+      console.error("Error al enviar el blog:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Ocurrió un error al procesar la solicitud",
+        confirmButtonColor: "#d33",
+      });
     } finally {
+      setIsSubmitting(false);
       setIsSaving(false);
     }
   };
+
 
   // Cuenta palabras en un string
   function contarPalabras(texto: string): number {
@@ -685,7 +683,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               onSubmit={handleSubmit}
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
-              {/* Título */}
               <div className="form-input">
                 <label className="font-medium">Título para web*</label>
                 <input
@@ -698,7 +695,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 />
               </div>
 
-              {/* Link (slug) */}
               <div className="form-input">
                 <label className="font-medium">Link*</label>
                 <input
@@ -706,12 +702,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   name="link"
                   value={formData.link}
                   onChange={handleChange}
-                  maxLength={LENGTHS.titulo} /* opcional: igual que título */
+                  maxLength={LENGTHS.titulo}
                   required
                 />
               </div>
 
-              {/* Meta título */}
               <div className="form-input">
                 <label className="font-medium">Meta título</label>
                 <input
@@ -733,14 +728,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   maxLength={LENGTHS.metaTitulo}
                 />
                 <small className="text-gray-500">
-                  Máximo 10 caracteres
+                  Sugerido {LENGTHS.metaTitulo} caracteres
                 </small>
               </div>
 
-              {/* Meta descripción */}
               <div className="form-input">
                 <label className="font-medium">Meta descripción</label>
-                <textarea
+                <input
+                  type="text"
                   name="meta_descripcion"
                   value={formData.etiqueta.meta_descripcion}
                   onChange={(e) =>
@@ -756,42 +751,44 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     })
                   }
                   maxLength={LENGTHS.metaDescripcion}
-                  rows={3}
                 />
                 <small className="text-gray-500">
-                  Máximo 40 caracteres
+                  Sugerido {LENGTHS.metaDescripcion} caracteres
                 </small>
               </div>
 
-              {/* Párrafo (subtitulo1) */}
               <div className="form-input">
-                <label className="font-medium">Título*</label>
-                <input
-                  type="text"
+                <label className="font-medium">Párrafo corto (100 palabras)*</label>
+                <textarea
                   name="subtitulo1"
                   value={formData.subtitulo1}
                   onChange={handleChange}
                   maxLength={LENGTHS.parrafo}
                   required
+                  rows={3}
                 />
+                <small className="text-gray-500 text-end block">
+                  {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
+                </small>
               </div>
 
-              {/* Descripción (subtitulo2) */}
-              <div className="md:col-span-2 form-input">
-                <label className="font-medium">Descripción*</label>
-                <input
-                  type="text"
+              <div className="form-input">
+                <label className="font-medium">Descripción (255 palabras)*</label>
+                <textarea
                   name="subtitulo2"
                   value={formData.subtitulo2}
                   onChange={handleChange}
                   maxLength={LENGTHS.descripcion}
                   required
+                  rows={3}
                 />
+                <small className="text-gray-500 text-end block">
+                  {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
+                </small>
               </div>
 
-              {/* Título Video */}
               <div className="form-input">
-                <label className="font-medium">Título Video*</label>
+                <label className="font-medium">Título del video para YouTube*</label>
                 <input
                   type="text"
                   name="video_titulo"
@@ -802,314 +799,227 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 />
               </div>
 
-              {/* URL del Video */}
               <div className="form-input">
-                <label className="font-medium">URL del Video*</label>
+                <label className="font-medium">URL del video*</label>
                 <input
-                  type="url"
+                  type="text"
                   name="video_url"
                   value={formData.video_url}
                   onChange={handleChange}
                   maxLength={LENGTHS.videoUrl}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                  placeholder="https://www.youtube.com/watch?v=..."
                 />
               </div>
 
-              {/* Producto */}
-              <div className="md:col-span-2 form-input">
-                <label className="font-medium">Producto*</label>
+              <div className="form-input">
+                <label className="font-medium">Relacionar con producto*</label>
                 <select
                   name="producto_id"
                   value={formData.producto_id}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 >
                   <option value="">Selecciona un producto</option>
-                  {productos.map((producto) => (
-                    <option key={producto.id} value={String(producto.id)}>
+                  {productos.map((producto: any) => (
+                    <option key={producto.id} value={producto.id}>
                       {producto.nombre}
                     </option>
                   ))}
                 </select>
-                <small className="text-gray-500">
-                  Selecciona el producto relacionado.
-                </small>
               </div>
 
-              {/* Miniatura */}
-              <div className="md:col-span-2 space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Miniatura{!blogToEdit && "*"}
-                </label>
-                {formData.miniatura instanceof File ? (
-                  <img
-                    src={URL.createObjectURL(formData.miniatura)}
-                    alt="Vista previa miniatura"
-                    className="w-32 h-32 object-cover rounded-md border mb-2"
-                  />
-                ) : typeof formData.miniatura === "string" &&
-                  formData.miniatura ? (
-                  <img
-                    src={
-                      String(formData.miniatura).startsWith("http")
-                        ? String(formData.miniatura)
-                        : `${import.meta.env.PUBLIC_API_URL}${
-                            formData.miniatura
-                          }`
-                    }
-                    alt="Miniatura actual"
-                    className="w-32 h-32 object-cover rounded-md border mb-2"
-                  />
-                ) : null}
-
+              <div className="form-input">
+                <label className="font-medium block mb-2">Miniatura del Blog*</label>
                 <input
                   type="file"
-                  accept={ACCEPT_IMAGE_TYPES.join(",")}
+                  accept="image/*"
                   onChange={handleFileChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                  className="hidden"
+                  id="miniatura-upload"
                 />
-                <small className="text-gray-500">
-                  Formatos permitidos: JPG, JPEG, PNG, WEBP. Máx. {MAX_IMAGE_MB}{" "}
-                  MB.
-                </small>
+                <label
+                  htmlFor="miniatura-upload"
+                  className="cursor-pointer border-2 border-dashed border-teal-300 p-4 rounded-lg block text-center hover:bg-teal-50 transition-colors"
+                >
+                  {formData.miniatura ? (
+                    <span className="text-teal-600 font-medium">
+                      {(formData.miniatura as any).name || "Imagen cargada"}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">Click para subir miniatura</span>
+                  )}
+                </label>
               </div>
 
-              {/* Imágenes adicionales + descripción larga */}
-              {formData.imagenes.map((imagen, index) => (
-                <div key={index} className="md:col-span-2 form-input">
-                  <label className="font-medium">
-                    Imagen Adicional {index + 1}
-                    {!blogToEdit && "*"}
-                  </label>
+              <div className="col-span-1 md:col-span-2 mt-4">
+                <h3 className="text-xl font-bold text-teal-600 mb-4">Contenido del Blog</h3>
+                {formData.imagenes.map((imagen, index) => (
+                  <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold text-teal-700">Sección {numeroAPalabras(index + 1)}</span>
+                    </div>
 
-                  {imagen.imagen instanceof File ? (
-                    <img
-                      src={URL.createObjectURL(imagen.imagen)}
-                      alt={`Vista previa imagen ${index + 1}`}
-                      className="w-32 h-32 object-cover rounded-md border mb-2"
-                    />
-                  ) : imagen.url ? (
-                    <img
-                      src={
-                        imagen.url.startsWith("http")
-                          ? imagen.url
-                          : `${import.meta.env.PUBLIC_API_URL}${imagen.url}`
-                      }
-                      alt={`Imagen adicional ${index + 1}`}
-                      className="w-32 h-32 object-cover rounded-md border mb-2"
-                    />
-                  ) : null}
-
-                  <div className="flex items-center gap-4 mb-2">
-                    <label className="flex-1 cursor-pointer">
-                      <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-500 transition">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Imagen*</label>
                         <input
                           type="file"
-                          accept={ACCEPT_IMAGE_TYPES.join(",")}
+                          accept="image/*"
                           onChange={(e) => handleFileChangeAdicional(e, index)}
-                          className="hidden"
+                          className="w-full text-sm"
                         />
-                        <p className="text-center text-gray-500">
-                          {imagen.imagen instanceof File
-                            ? imagen.imagen.name
-                            : "Seleccionar archivo"}
-                        </p>
+                        <div className="mt-2">
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Texto Alternativo (SEO)*</label>
+                          <input
+                            type="text"
+                            value={imagen.text_alt}
+                            onChange={(e) => handleAltTextChange(e, index)}
+                            placeholder="Descripción de la imagen"
+                            className="w-full border rounded p-1 text-xs"
+                            required
+                          />
+                        </div>
+                        {imagen.url && (
+                          <div className="mt-2">
+                            <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
+                          </div>
+                        )}
                       </div>
-                    </label>
-                  </div>
-
-                  <div className="md:col-span-2 form-input">
-                    <label className="font-medium">Descripción Completa*</label>
-                    <div className="relative">
-                      <textarea
-                        name="descripcionAntes"
-                        id={`crear_descripcion_antes_${index}`}
-                        rows={5}
-                        value={formData.imagenes[index]?.parrafo || ""}
-                        onChange={(e) => handleParrafoChange(e, index)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition resize-none"
-                        placeholder="Escribe aquí toda la descripción del blog..."
-                        required
-                      />
-                      <div className="absolute top-2/3 right-2 flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleInsertLinkClick(index)}
-                          title="Insertar enlace"
-                          className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg transition-all duration-200"
-                        >
-                          {/* icono link */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleProductLinkClick(index)}
-                          title="Enlazar a producto"
-                          className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-full shadow-lg transition-all duration-200"
-                        >
-                          {/* icono carrito */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                            />
-                          </svg>
-                        </button>
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <label className="block text-sm font-medium text-gray-700">Párrafo de la sección*</label>
+                          <div className="space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => handleInsertLinkClick(index)}
+                              className="text-xs text-teal-600 hover:text-teal-800 underline"
+                            >
+                              Insertar Link
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleProductLinkClick(index)}
+                              className="text-xs text-teal-600 hover:text-teal-800 underline"
+                            >
+                              Link Producto
+                            </button>
+                          </div>
+                        </div>
+                        <textarea
+                          id={`crear_descripcion_antes_${index}`}
+                          value={imagen.parrafo}
+                          onChange={(e) => handleParrafoChange(e, index)}
+                          className="w-full border rounded p-2 text-sm"
+                          rows={4}
+                          required
+                        />
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Selecciona texto y haz clic en:
-                      <span className="mx-2">🔗 para enlace normal</span>
-                      <span className="mx-2">🛒 para enlace a producto</span>
-                    </p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
-              {/* Acciones */}
-              <div className="md:col-span-2 flex justify-end gap-4">
+              <div className="col-span-1 md:col-span-2 flex justify-end gap-4 mt-6">
                 <button
                   type="button"
                   onClick={onClose ? onClose : closeModal}
-                  className="px-6 py-2 border border-gray-300 dark:border-gray-800 dark:bg-gray-900 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 transition"
+                  className="px-6 py-2 border rounded-full text-gray-600 hover:bg-gray-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow-md flex items-center justify-center gap-2 min-w-[140px]"
-                  disabled={isSaving}
+                  disabled={isSaving || isSubmitting}
+                  className="px-8 py-2 bg-teal-600 text-white rounded-full hover:bg-teal-700 disabled:bg-gray-400 shadow-lg"
                 >
-                  {isSaving ? (
-                    <>
-                      <svg
-                        className="animate-spin h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8z"
-                        />
-                      </svg>
-                      Guardando...
-                    </>
-                  ) : blogToEdit ? (
-                    "Actualizar Blog"
-                  ) : (
-                    "Guardar Blog"
-                  )}
+                  {isSaving || isSubmitting ? "Guardando..." : "Guardar Blog"}
                 </button>
               </div>
             </form>
-
-            {/* Modal enlace */}
-            {isModalOpen && (
-              <div className="dialog-overlay">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Insertar enlace para "{selectedText}"
-                  </h3>
-                  <input
-                    type="url"
-                    placeholder="https://ejemplo.com"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded mb-4"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => setIsModalOpen(false)}
-                      className="px-4 py-2 bg-gray-300 dark:bg-gray-900 rounded"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={handleAddLink}
-                      className="px-4 py-2 bg-blue-600 text-white rounded"
-                    >
-                      Insertar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Modal producto */}
-            {isProductLinkModalOpen && (
-              <div className="dialog-overlay">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto form-input">
-                  <h3 className="text-xl font-bold mb-4">
-                    Enlazar "{selectedText}" a producto:
-                  </h3>
-                  <select
-                    name="producto_id"
-                    value={formData.producto_id}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                  >
-                    <option value="">Selecciona un producto</option>
-                    {productos.map((producto) => (
-                      <option key={producto.id} value={producto.id}>
-                        {producto.nombre}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="flex justify-end gap-2 p-6">
-                    <button
-                      onClick={() => setIsProductLinkModalOpen(false)}
-                      className="px-4 py-2 bg-gray-300 dark:bg-gray-900 rounded"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={handleAddProduct}
-                      className="px-4 py-2 bg-blue-600 text-white rounded"
-                    >
-                      Insertar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
+
+      {/* Modal para insertar enlace manual */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
+            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
+            <input
+              type="text"
+              placeholder="https://..."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
+              <button onClick={handleAddLink} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para insertar enlace de producto */}
+      {isProductLinkModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h3 className="text-xl font-bold mb-4">Enlace a Producto</h3>
+            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
+            <select
+              value={formData.producto_id}
+              onChange={(e) => setFormData({ ...formData, producto_id: e.target.value })}
+              className="w-full border p-2 rounded mb-4"
+            >
+              <option value="">Selecciona un producto</option>
+              {productos.map((producto: any) => (
+                <option key={producto.id} value={producto.id}>{producto.nombre}</option>
+              ))}
+            </select>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setIsProductLinkModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
+              <button onClick={handleAddProduct} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .dialog-overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex; justify-content: center; align-items: center;
+          z-index: 999;
+          padding: 20px;
+        }
+        .dialog {
+          background: #fff;
+          width: 100%;
+          max-width: 900px;
+          padding: 30px;
+          border-radius: 20px;
+          overflow-y: auto;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .form-input {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+        .form-input input, .form-input select, .form-input textarea {
+          border: 1px solid #ddd;
+          padding: 10px;
+          border-radius: 10px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .form-input input:focus, .form-input select:focus, .form-input textarea:focus {
+          border-color: #0d9488;
+        }
+      `}} />
     </>
   );
 };

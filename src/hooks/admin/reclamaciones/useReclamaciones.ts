@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { config } from "config";
+import apiClient from "src/services/apiClient";
 import type Reclamacion from "src/models/Reclamacion";
 
 const useReclamaciones = (refetchTrigger?: boolean) => {
@@ -8,41 +9,33 @@ const useReclamaciones = (refetchTrigger?: boolean) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchReclamaciones = async () => {
-  try {
-    setLoading(true);
-    setError(null);
+    try {
+      setLoading(true);
+      setError(null);
 
-    const response = await axios.get(
-      `${import.meta.env.PUBLIC_API_URL}/api/v1/admin/claims`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          Accept: "application/json",
-        },
+      const response = await apiClient.get(config.endpoints.reclamaciones.list);
+
+      const apiData = response.data;
+
+      // 🔐 Normalizamos SIEMPRE a array
+      if (Array.isArray(apiData.data)) {
+        setReclamaciones(apiData.data);
+      } else if (Array.isArray(apiData.data?.data)) {
+        setReclamaciones(apiData.data.data);
+      } else {
+        setReclamaciones([]);
       }
-    );
 
-    const apiData = response.data;
-
-    // 🔐 Normalizamos SIEMPRE a array
-    if (Array.isArray(apiData.data)) {
-      setReclamaciones(apiData.data);
-    } else if (Array.isArray(apiData.data?.data)) {
-      setReclamaciones(apiData.data.data);
-    } else {
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message ||
+        "Error al obtener las reclamaciones"
+      );
       setReclamaciones([]);
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err: any) {
-    setError(
-      err.response?.data?.message ||
-      "Error al obtener las reclamaciones"
-    );
-    setReclamaciones([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     fetchReclamaciones();
