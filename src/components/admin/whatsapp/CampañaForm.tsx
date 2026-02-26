@@ -82,7 +82,7 @@ export default function CampañaForm() {
             if (response.ok) {
                 setMensaje({
                     tipo: 'exito',
-                    texto: `✅ Campaña activada. Se enviarán mensajes a ${data.total_clientes} cliente(s).`,
+                    texto: `✅ Campaña activada. Se enviarán mensajes a ${data.data.total_clientes} cliente(s).`,
                 });
                 // Limpiar formulario
                 setForm({ producto_id: '', contenido_personalizado: '', imagen: null });
