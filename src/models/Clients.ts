@@ -1,8 +1,11 @@
+export interface WhatsappMessageStats {
+  total_messages: number;
+  ult_envio: string | null;
+}
+
 export interface WhatsappStats {
-  popup: {
-    total_messages: number;
-    ult_envio: string | null;
-  };
+  popup: WhatsappMessageStats;
+  campaign?: WhatsappMessageStats;
 }
 
 export interface ClienteStats {
