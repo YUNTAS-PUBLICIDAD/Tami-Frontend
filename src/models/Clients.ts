@@ -5,6 +5,7 @@ export interface WhatsappMessageStats {
 
 export interface WhatsappStats {
   popup: WhatsappMessageStats;
+  campaign?: WhatsappMessageStats;
 }
 
 export interface ClienteStats {
