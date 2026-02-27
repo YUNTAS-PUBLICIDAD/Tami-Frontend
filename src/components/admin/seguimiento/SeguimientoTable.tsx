@@ -155,15 +155,19 @@ const ClientesTable = () => {
             
             {/* Stats globales de WhatsApp - solo en modo monitoreo */}
             {monitoringMode && globalTotals && (
-              <div className="flex items-center gap-4 text-sm">
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                {/* Stats Popup */}
                 <div className="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-full">
                   <FaWhatsapp className="text-green-600" />
                   <span className="font-semibold">{globalTotals.whatsapp.popup.total_messages}</span>
-                  <span className="text-green-600">msgs totales</span>
+                  <span className="text-green-600 text-xs">msgs</span>
                 </div>
-                {globalTotals.whatsapp.popup.ult_envio && (
-                  <div className="text-gray-500 text-xs">
-                    Último: {new Date(globalTotals.whatsapp.popup.ult_envio).toLocaleString()}
+                {/* Stats Campaign */}
+                {globalTotals.whatsapp.campaign && (
+                  <div className="flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full">
+                    <FaWhatsapp className="text-blue-600" />
+                    <span className="font-semibold">{globalTotals.whatsapp.campaign.total_messages}</span>
+                    <span className="text-blue-600 text-xs">campañas</span>
                   </div>
                 )}
               </div>
@@ -183,20 +187,26 @@ const ClientesTable = () => {
                   "TELÉFONO", 
                   "PRODUCTO", 
                   "ORIGEN", 
-                  ...(monitoringMode ? ["MSGS WA", "ÚLT. ENVÍO"] : []),
+                  ...(monitoringMode ? ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"] : []),
                   "FECHA DE INICIO", 
                   "ACCIÓN"
-                ].map((header, index) => (
-                  <TableHead key={index} className={`text-xs whitespace-nowrap ${monitoringMode && (header === "MSGS WA" || header === "ÚLT. ENVÍO") ? "bg-purple-50 text-purple-700" : ""}`}>
-                    {header}
-                  </TableHead>
-                ))}
+                ].map((header, index) => {
+                  const isMonitoringCol = ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"].includes(header);
+                  return (
+                    <TableHead 
+                      key={index} 
+                      className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 text-purple-700" : ""}`}
+                    >
+                      {header}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>
               {displayedClientes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={monitoringMode ? 10 : 8} >
+                  <TableCell colSpan={monitoringMode ? 11 : 8} >
                     <div className="flex flex-col items-center justify-center gap-2">
                       <div className="bg-teal-50 p-6 rounded-full">
                         <FaUsers className="h-10 w-10 text-teal-300" />
@@ -240,9 +250,10 @@ const ClientesTable = () => {
                       {/* Columnas de monitoreo WhatsApp */}
                       {monitoringMode && (
                         <>
+                          {/* Popup msgs */}
                           <TableCell className="bg-purple-50/50">
-                            <div className="flex items-center gap-2">
-                              <FaWhatsapp className="text-green-500" />
+                            <div className="flex items-center gap-1">
+                              <FaWhatsapp className="text-green-500 text-xs" />
                               <span className={`font-semibold ${
                                 (item.stats?.whatsapp?.popup?.total_messages ?? 0) > 0 
                                   ? "text-green-600" 
@@ -252,12 +263,30 @@ const ClientesTable = () => {
                               </span>
                             </div>
                           </TableCell>
+                          {/* Campaign msgs */}
+                          <TableCell className="bg-purple-50/50">
+                            <div className="flex items-center gap-1">
+                              <FaWhatsapp className="text-blue-500 text-xs" />
+                              <span className={`font-semibold ${
+                                (item.stats?.whatsapp?.campaign?.total_messages ?? 0) > 0 
+                                  ? "text-blue-600" 
+                                  : "text-gray-400"
+                              }`}>
+                                {item.stats?.whatsapp?.campaign?.total_messages ?? 0}
+                              </span>
+                            </div>
+                          </TableCell>
+                          {/* Último envío (el más reciente entre popup y campaign) */}
                           <TableCell className="bg-purple-50/50 whitespace-nowrap">
                             <span className="text-gray-500 text-xs">
-                              {item.stats?.whatsapp?.popup?.ult_envio 
-                                ? new Date(item.stats.whatsapp.popup.ult_envio).toLocaleString()
-                                : "-"
-                              }
+                              {(() => {
+                                const popupDate = item.stats?.whatsapp?.popup?.ult_envio;
+                                const campaignDate = item.stats?.whatsapp?.campaign?.ult_envio;
+                                const latestDate = [popupDate, campaignDate]
+                                  .filter(Boolean)
+                                  .sort((a, b) => new Date(b!).getTime() - new Date(a!).getTime())[0];
+                                return latestDate ? new Date(latestDate).toLocaleString() : "-";
+                              })()}
                             </span>
                           </TableCell>
                         </>
@@ -290,7 +319,7 @@ const ClientesTable = () => {
                   {/* Filas vacías para mantener altura */}
                   {Array.from({ length: ITEMS_PER_PAGE - displayedClientes.length }).map((_, idx) => (
                     <TableRow key={`empty-${idx}`} className="h-17"> 
-                      <TableCell colSpan={monitoringMode ? 10 : 8} className="px-6 py-4">&nbsp;</TableCell>
+                      <TableCell colSpan={monitoringMode ? 11 : 8} className="px-6 py-4">&nbsp;</TableCell>
                     </TableRow>
                   ))}
                 </>
