@@ -138,15 +138,15 @@ const ClientesTable = () => {
             <button
               onClick={handleRefetch}
               disabled={loading}
-              className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+              className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
             >
               <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               {loading ? "Cargando..." : "Actualizar"}
             </button>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-            <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                 {totalFiltered}
               </span>
@@ -157,17 +157,17 @@ const ClientesTable = () => {
             {monitoringMode && globalTotals && (
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 {/* Stats Popup */}
-                <div className="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-full">
-                  <FaWhatsapp className="text-green-600" />
+                <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-full">
+                  <FaWhatsapp className="text-green-600 dark:text-green-400" />
                   <span className="font-semibold">{globalTotals.whatsapp.popup.total_messages}</span>
-                  <span className="text-green-600 text-xs">msgs</span>
+                  <span className="text-green-600 dark:text-green-400 text-xs">msgs</span>
                 </div>
                 {/* Stats Campaign */}
                 {globalTotals.whatsapp.campaign && (
-                  <div className="flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full">
-                    <FaWhatsapp className="text-blue-600" />
+                  <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
+                    <FaWhatsapp className="text-blue-600 dark:text-blue-400" />
                     <span className="font-semibold">{globalTotals.whatsapp.campaign.total_messages}</span>
-                    <span className="text-blue-600 text-xs">campañas</span>
+                    <span className="text-blue-600 dark:text-blue-400 text-xs">campañas</span>
                   </div>
                 )}
               </div>
@@ -195,7 +195,7 @@ const ClientesTable = () => {
                   return (
                     <TableHead 
                       key={index} 
-                      className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 text-purple-700" : ""}`}
+                      className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300" : ""}`}
                     >
                       {header}
                     </TableHead>
@@ -208,15 +208,15 @@ const ClientesTable = () => {
                 <TableRow>
                   <TableCell colSpan={monitoringMode ? 11 : 8} >
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="bg-teal-50 p-6 rounded-full">
-                        <FaUsers className="h-10 w-10 text-teal-300" />
+                      <div className="bg-teal-50 dark:bg-teal-900/30 p-6 rounded-full">
+                        <FaUsers className="h-10 w-10 text-teal-300 dark:text-teal-500" />
                       </div>
-                      <p className="text-xl font-medium text-gray-600 mt-4">
+                      <p className="text-xl font-medium text-gray-600 dark:text-gray-300 mt-4">
                         {searchTerm
                           ? "No se encontraron clientes que coincidan con tu búsqueda"
                           : "No hay clientes registrados"}
                       </p>
-                      <p className="text-gray-400 max-w-md mx-auto">
+                      <p className="text-gray-400 dark:text-gray-500 max-w-md mx-auto">
                         {searchTerm
                           ? "Intenta con otros términos de búsqueda"
                           : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
@@ -251,34 +251,34 @@ const ClientesTable = () => {
                       {monitoringMode && (
                         <>
                           {/* Popup msgs */}
-                          <TableCell className="bg-purple-50/50">
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20">
                             <div className="flex items-center gap-1">
-                              <FaWhatsapp className="text-green-500 text-xs" />
+                              <FaWhatsapp className="text-green-500 dark:text-green-400 text-xs" />
                               <span className={`font-semibold ${
                                 (item.stats?.whatsapp?.popup?.total_messages ?? 0) > 0 
-                                  ? "text-green-600" 
-                                  : "text-gray-400"
+                                  ? "text-green-600 dark:text-green-400" 
+                                  : "text-gray-400 dark:text-gray-500"
                               }`}>
                                 {item.stats?.whatsapp?.popup?.total_messages ?? 0}
                               </span>
                             </div>
                           </TableCell>
                           {/* Campaign msgs */}
-                          <TableCell className="bg-purple-50/50">
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20">
                             <div className="flex items-center gap-1">
-                              <FaWhatsapp className="text-blue-500 text-xs" />
+                              <FaWhatsapp className="text-blue-500 dark:text-blue-400 text-xs" />
                               <span className={`font-semibold ${
                                 (item.stats?.whatsapp?.campaign?.total_messages ?? 0) > 0 
-                                  ? "text-blue-600" 
-                                  : "text-gray-400"
+                                  ? "text-blue-600 dark:text-blue-400" 
+                                  : "text-gray-400 dark:text-gray-500"
                               }`}>
                                 {item.stats?.whatsapp?.campaign?.total_messages ?? 0}
                               </span>
                             </div>
                           </TableCell>
                           {/* Último envío (el más reciente entre popup y campaign) */}
-                          <TableCell className="bg-purple-50/50 whitespace-nowrap">
-                            <span className="text-gray-500 text-xs">
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20 whitespace-nowrap">
+                            <span className="text-gray-500 dark:text-gray-400 text-xs">
                               {(() => {
                                 const popupDate = item.stats?.whatsapp?.popup?.ult_envio;
                                 const campaignDate = item.stats?.whatsapp?.campaign?.ult_envio;
@@ -299,14 +299,14 @@ const ClientesTable = () => {
                       <TableCell>
                         <div className="flex gap-3 items-center">
                           <button
-                            className="p-2 rounded-full hover:bg-green-100 text-green-600 transition-colors duration-200 border border-transparent hover:border-green-200"
+                            className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-colors duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-700"
                             title="Editar"
                             onClick={() => openModalForEdit(item)}
                           >
                             <FaEdit size={18} />
                           </button>
                           <button
-                            className="p-2 rounded-full text-red-500 border border-transparent transition-colors duration-200 hover:bg-red-100 hover:border-red-200"
+                            className="p-2 rounded-full text-red-500 dark:text-red-400 border border-transparent transition-colors duration-200 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-200 dark:hover:border-red-700"
                             title="Eliminar"
                             onClick={() => openDeleteModal(item.id)}
                           >
