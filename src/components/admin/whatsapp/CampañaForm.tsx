@@ -82,7 +82,7 @@ export default function CampañaForm() {
             if (response.ok) {
                 setMensaje({
                     tipo: 'exito',
-                    texto: `✅ Campaña activada. Se enviarán mensajes a ${data.total_clientes} cliente(s).`,
+                    texto: `✅ Campaña activada. Se enviarán mensajes a ${data.data.total_clientes} cliente(s).`,
                 });
                 // Limpiar formulario
                 setForm({ producto_id: '', contenido_personalizado: '', imagen: null });
@@ -160,7 +160,7 @@ export default function CampañaForm() {
             {/* Subir imagen */}
             <div>
                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                    Imagen (opcional)
+                    Imagen (obligatorio)
                 </label>
 
                 <label className={`flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
