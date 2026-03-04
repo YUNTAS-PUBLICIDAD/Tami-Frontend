@@ -57,7 +57,10 @@ export const config = {
       info: "/api/v1/whatsapp/solicitar-info-producto",
       requestQR: "/api/v1/whatsapp/request-qr",
       resetSession: "/api/v1/whatsapp/reset",
-
+      /** Endpoints para manejar templates de whatsapp */
+      getTemplateByProduct: (productoId: number | string) => `/api/v1/whatsapp/template/product/${productoId}`,
+      updateTemplateByProduct: (productoId: number | string) => `/api/v1/whatsapp/template/product/${productoId}`,
+      deleteTemplateByProduct: (productoId: number | string) => `/api/v1/whatsapp/template/product/${productoId}`,
     },
     reclamaciones: {
       // Endpoints de reclamaciones
