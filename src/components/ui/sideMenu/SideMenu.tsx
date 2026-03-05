@@ -4,6 +4,9 @@
  */
 
 import { lazy, useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import apiClient from "src/services/apiClient";
+import { config } from "config";
 import NavSocialMediaLink from "./NavSocialMediaLink";
 import socialMediaLinks from "@data/socialMedia.data";
 import userIcon from "@icons/icon_user.webp";
@@ -78,11 +81,30 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInfo");
-    setUser(null);
-    window.location.href = "/";
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Deseas cerrar sesión?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await apiClient.post(config.endpoints.auth.logout);
+      } catch (error) {
+        console.error("Logout error:", error);
+      } finally {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userInfo");
+        setUser(null);
+        window.location.href = "/";
+      }
+    }
   };
 
   const handleUserClick = () => {

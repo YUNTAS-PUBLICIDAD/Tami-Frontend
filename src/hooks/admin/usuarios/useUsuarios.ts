@@ -5,7 +5,8 @@
  */
 
 import { useState, useEffect } from "react";
-import { getApiUrl, config } from "config";
+import { config } from "config";
+import apiClient from "../../../services/apiClient";
 import type Usuario from "../../../models/Users";
 
 const useUsuarios = (trigger: boolean, page: number = 1) => {
@@ -23,33 +24,16 @@ const useUsuarios = (trigger: boolean, page: number = 1) => {
       setLoading(true);
       setError(null);
 
-      /**
-       * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
-       * Si no se encuentra el token, lanza un error.
-       */
       try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No se encontró el token de autenticación");
-
         /**
-         * Realiza la solicitud a la API para obtener la lista de usuarios.
+         * Realiza la solicitud a la API para obtener la lista de usuarios usando apiClient.
          */
-        const url = `${getApiUrl(config.endpoints.users.list)}?page=${page}`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok)
-          throw new Error(`Error al obtener usuarios: ${response.statusText}`);
+        const response = await apiClient.get(`${config.endpoints.users.list}?page=${page}`);
 
         /**
          * Convierte la respuesta a JSON y maneja los datos.
          */
-        const data = await response.json();
+        const data = response.data;
 
         /**
          * Extrae la lista de usuarios y el número total de páginas de la respuesta.
@@ -66,7 +50,7 @@ const useUsuarios = (trigger: boolean, page: number = 1) => {
       } catch (err) {
         console.error("🚨 Error en fetchusuarios:", err);
         setError(
-            err instanceof Error ? err.message : "Ocurrió un error desconocido"
+          err instanceof Error ? err.message : "Ocurrió un error desconocido"
         );
       } finally {
         setLoading(false);

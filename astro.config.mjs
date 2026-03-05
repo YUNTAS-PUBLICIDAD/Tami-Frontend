@@ -9,9 +9,11 @@ import path from 'path';
 export default defineConfig({
     site: 'https://tamimaquinarias.com/',
     vite: {
+        // @ts-ignore
         plugins: [tailwindcss()],
         resolve: {
             alias: {
+                'src': path.resolve('./src'),
                 '@images': path.resolve('./src/assets/images'),
                 '@components': path.resolve('./src/components'),
                 '@layouts': path.resolve('./src/layouts'),

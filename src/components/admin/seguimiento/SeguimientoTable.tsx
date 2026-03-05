@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers, FaChartBar, FaWhatsapp } from "react-icons/fa";
 import AddDataModal from "./modals/AddUpdateModal.tsx";
 import DeleteClienteModal from "./modals/DeleteModal.tsx";
 import useClientes from "../../../hooks/admin/seguimiento/useClientes.ts";
@@ -12,10 +12,27 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "s
 import LoadingComponent from "src/components/admin/ui/LoadingComponent.tsx";
 import ErrorComponent from "src/components/admin/ui/ErrorComponent.tsx";
 
+const MONITORING_MODE_KEY = "seguimiento_monitoring_mode";
+
 const ClientesTable = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const { clientes, loading, error } = useClientes(refetchTrigger);
+  const { clientes, globalTotals, loading, error } = useClientes(refetchTrigger);
+  
+  // Estado para modo monitoreo - inicializa desde localStorage
+  const [monitoringMode, setMonitoringMode] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(MONITORING_MODE_KEY) === "true";
+    }
+    return false;
+  });
+
+  // Persistir estado de monitoreo en localStorage
+  const toggleMonitoringMode = () => {
+    const newValue = !monitoringMode;
+    setMonitoringMode(newValue);
+    localStorage.setItem(MONITORING_MODE_KEY, String(newValue));
+  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
@@ -92,12 +109,24 @@ const ClientesTable = () => {
                 Seguimiento y administración de clientes
               </p>
             </div>
-            <button
-              onClick={openModalForCreate}
-              className="flex items-center gap-2 bg-white text-teal-600 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg"
-            >
-              <FaPlus /> Agregar Cliente
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={toggleMonitoringMode}
+                className={`flex items-center gap-2 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg ${
+                  monitoringMode
+                    ? "bg-purple-600 text-white hover:bg-purple-700"
+                    : "bg-white text-purple-600 hover:bg-purple-50"
+                }`}
+              >
+                <FaChartBar /> {monitoringMode ? "Monitoreo ON" : "Monitoreo"}
+              </button>
+              <button
+                onClick={openModalForCreate}
+                className="flex items-center gap-2 bg-white text-teal-600 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg"
+              >
+                <FaPlus /> Agregar Cliente
+              </button>
+            </div>
           </div>
         </div>
 
@@ -109,20 +138,40 @@ const ClientesTable = () => {
             <button
               onClick={handleRefetch}
               disabled={loading}
-              className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+              className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
             >
               <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               {loading ? "Cargando..." : "Actualizar"}
             </button>
           </div>
 
-          <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-            <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                 {totalFiltered}
               </span>
               {totalFiltered === 1 ? "cliente" : "clientes"} encontrados
             </div>
+            
+            {/* Stats globales de WhatsApp - solo en modo monitoreo */}
+            {monitoringMode && globalTotals && (
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                {/* Stats Popup */}
+                <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-full">
+                  <FaWhatsapp className="text-green-600 dark:text-green-400" />
+                  <span className="font-semibold">{globalTotals.whatsapp.popup.total_messages}</span>
+                  <span className="text-green-600 dark:text-green-400 text-xs">msgs</span>
+                </div>
+                {/* Stats Campaign */}
+                {globalTotals.whatsapp.campaign && (
+                  <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
+                    <FaWhatsapp className="text-blue-600 dark:text-blue-400" />
+                    <span className="font-semibold">{globalTotals.whatsapp.campaign.total_messages}</span>
+                    <span className="text-blue-600 dark:text-blue-400 text-xs">campañas</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -131,27 +180,43 @@ const ClientesTable = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                {["ID", "NOMBRE", "EMAIL", "TELÉFONO", "PRODUCTO", "ORIGEN", "FECHA DE INICIO", "ACCIÓN"].map((header, index) => (
-                  <TableHead key={index} className="text-xs whitespace-nowrap">
-                    {header}
-                  </TableHead>
-                ))}
+                {[
+                  "ID", 
+                  "NOMBRE", 
+                  "EMAIL", 
+                  "TELÉFONO", 
+                  "PRODUCTO", 
+                  "ORIGEN", 
+                  ...(monitoringMode ? ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"] : []),
+                  "FECHA DE INICIO", 
+                  "ACCIÓN"
+                ].map((header, index) => {
+                  const isMonitoringCol = ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"].includes(header);
+                  return (
+                    <TableHead 
+                      key={index} 
+                      className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300" : ""}`}
+                    >
+                      {header}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>
               {displayedClientes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} >
+                  <TableCell colSpan={monitoringMode ? 11 : 8} >
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="bg-teal-50 p-6 rounded-full">
-                        <FaUsers className="h-10 w-10 text-teal-300" />
+                      <div className="bg-teal-50 dark:bg-teal-900/30 p-6 rounded-full">
+                        <FaUsers className="h-10 w-10 text-teal-300 dark:text-teal-500" />
                       </div>
-                      <p className="text-xl font-medium text-gray-600 mt-4">
+                      <p className="text-xl font-medium text-gray-600 dark:text-gray-300 mt-4">
                         {searchTerm
                           ? "No se encontraron clientes que coincidan con tu búsqueda"
                           : "No hay clientes registrados"}
                       </p>
-                      <p className="text-gray-400 max-w-md mx-auto">
+                      <p className="text-gray-400 dark:text-gray-500 max-w-md mx-auto">
                         {searchTerm
                           ? "Intenta con otros términos de búsqueda"
                           : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
@@ -181,6 +246,52 @@ const ClientesTable = () => {
                       <TableCell>
                         <span className="text-gray-500 text-sm">{item.source ?? "-"}</span>
                       </TableCell>
+                      
+                      {/* Columnas de monitoreo WhatsApp */}
+                      {monitoringMode && (
+                        <>
+                          {/* Popup msgs */}
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20">
+                            <div className="flex items-center gap-1">
+                              <FaWhatsapp className="text-green-500 dark:text-green-400 text-xs" />
+                              <span className={`font-semibold ${
+                                (item.stats?.whatsapp?.popup?.total_messages ?? 0) > 0 
+                                  ? "text-green-600 dark:text-green-400" 
+                                  : "text-gray-400 dark:text-gray-500"
+                              }`}>
+                                {item.stats?.whatsapp?.popup?.total_messages ?? 0}
+                              </span>
+                            </div>
+                          </TableCell>
+                          {/* Campaign msgs */}
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20">
+                            <div className="flex items-center gap-1">
+                              <FaWhatsapp className="text-blue-500 dark:text-blue-400 text-xs" />
+                              <span className={`font-semibold ${
+                                (item.stats?.whatsapp?.campaign?.total_messages ?? 0) > 0 
+                                  ? "text-blue-600 dark:text-blue-400" 
+                                  : "text-gray-400 dark:text-gray-500"
+                              }`}>
+                                {item.stats?.whatsapp?.campaign?.total_messages ?? 0}
+                              </span>
+                            </div>
+                          </TableCell>
+                          {/* Último envío (el más reciente entre popup y campaign) */}
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20 whitespace-nowrap">
+                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                              {(() => {
+                                const popupDate = item.stats?.whatsapp?.popup?.ult_envio;
+                                const campaignDate = item.stats?.whatsapp?.campaign?.ult_envio;
+                                const latestDate = [popupDate, campaignDate]
+                                  .filter(Boolean)
+                                  .sort((a, b) => new Date(b!).getTime() - new Date(a!).getTime())[0];
+                                return latestDate ? new Date(latestDate).toLocaleString() : "-";
+                              })()}
+                            </span>
+                          </TableCell>
+                        </>
+                      )}
+                      
                       <TableCell className="whitespace-nowrap">
                         <span className="text-gray-500 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
                       </TableCell>
@@ -188,14 +299,14 @@ const ClientesTable = () => {
                       <TableCell>
                         <div className="flex gap-3 items-center">
                           <button
-                            className="p-2 rounded-full hover:bg-green-100 text-green-600 transition-colors duration-200 border border-transparent hover:border-green-200"
+                            className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-colors duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-700"
                             title="Editar"
                             onClick={() => openModalForEdit(item)}
                           >
                             <FaEdit size={18} />
                           </button>
                           <button
-                            className="p-2 rounded-full text-red-500 border border-transparent transition-colors duration-200 hover:bg-red-100 hover:border-red-200"
+                            className="p-2 rounded-full text-red-500 dark:text-red-400 border border-transparent transition-colors duration-200 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-200 dark:hover:border-red-700"
                             title="Eliminar"
                             onClick={() => openDeleteModal(item.id)}
                           >
@@ -208,7 +319,7 @@ const ClientesTable = () => {
                   {/* Filas vacías para mantener altura */}
                   {Array.from({ length: ITEMS_PER_PAGE - displayedClientes.length }).map((_, idx) => (
                     <TableRow key={`empty-${idx}`} className="h-17"> 
-                      <TableCell colSpan={8} className="px-6 py-4">&nbsp;</TableCell>
+                      <TableCell colSpan={monitoringMode ? 11 : 8} className="px-6 py-4">&nbsp;</TableCell>
                     </TableRow>
                   ))}
                 </>

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import type { FormEvent } from "react";
 import logoAnimado from "@images/logos/logo-blanco-tami.gif?url";
 import loginBg from "@images/login_bg.jpg";
-import { config, getApiUrl } from "config";
+import { config } from "config";
+import apiClient from "src/services/apiClient";
 import Swal from "sweetalert2";
 
 const SignIn: React.FC = () => {
@@ -20,32 +21,27 @@ const SignIn: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(getApiUrl(config.endpoints.auth.login), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await apiClient.post(config.endpoints.auth.login, { email, password });
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         // Guardar token en localStorage
         localStorage.setItem("token", data.data.token);
-        
+
         // Guardar información del usuario en localStorage (sin información sensible)
         const userInfo = {
-          name: data.data.user?.name || 
-                data.data.user?.username || 
-                data.data.user?.email?.split('@')[0] || // Solo muestra la parte antes del @
-                "Usuario",
-          role: data.data.user?.role || 
-                data.data.user?.rol || 
-                data.data.user?.tipo || 
-                "Usuario"
+          name: data.data.user?.name ||
+            data.data.user?.username ||
+            data.data.user?.email?.split('@')[0] || // Solo muestra la parte antes del @
+            "Usuario",
+          role: data.data.user?.role ||
+            data.data.user?.rol ||
+            data.data.user?.tipo ||
+            "Usuario"
         };
-        
+
         localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        
+
         // Redirigir al dashboard
         window.location.href = "/admin/inicio";
       } else {

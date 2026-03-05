@@ -13,6 +13,7 @@ import Paginator from "src/components/admin/ui/Paginator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "src/components/admin/ui/Table";
 import GenericModal from "src/components/admin/ui/GenericModal";
 import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWithTabs";
+import ExportMenu from "src/components/admin/ui/ExportMenu";
 
 const getApiUrl = config.apiUrl;
 
@@ -312,6 +313,7 @@ const ProductosTabla = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                 <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                        
                         <div>
                             <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
                                 <FaTags />
@@ -322,9 +324,18 @@ const ProductosTabla = () => {
                             </p>
                         </div>
 
-                        <div className="flex-shrink-0">
-                            <AddProduct onProductAdded={fetchData} />
+                        <div className="flex flex-col sm:flex-row gap-3 items-center">
+                            
+                            {/* Botón de Exportar */}
+                            <ExportMenu data={filteredProductos} fileName="Reporte_Productos_Tami" />
+
+                            {/* Botón de Agregar */}
+                            <div className="flex-shrink-0">
+                                <AddProduct onProductAdded={fetchData} />
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
 

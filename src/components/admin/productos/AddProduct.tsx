@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, type FC } from "react";
 import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
-import { config, getApiUrl } from "../../../../config.ts";
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
@@ -171,6 +172,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
       newErrors.meta_descripcion = `La meta descripción debe tener al menos 40 caracteres (actualmente: ${formData.etiqueta.meta_descripcion.trim().length}).`;
     }
 
+    // Validación de especificaciones: al menos una
+    if (formData.especificaciones.length === 0) {
+      newErrors.especificaciones = "Debes añadir al menos una especificación.";
+    }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -280,30 +286,31 @@ const AddProduct = ({ onProductAdded }: Props) => {
   }
 
   const addNewSpecification = () => {
-    // const newKey = prompt("Nombre de la nueva especificación:");
-    // if (newKey && !formData.especificaciones[newKey]) {
-    //   setFormData((prev) => ({
-    //     ...prev,
-    //     especificaciones: {
-    //       ...prev.especificaciones,
-    //       [newKey]: "",
-    //     },
-    //   }));
-    // }
     if (nuevaEspecificacion.trim()) {
       setFormData((prev) => ({
         ...prev,
         especificaciones: [...prev.especificaciones, nuevaEspecificacion.trim()],
       }));
       setNuevaEspecificacion("");
+      // Limpiar error de especificaciones
+      if (errors.especificaciones) {
+        setErrors(prev => {
+          const next = { ...prev };
+          delete next.especificaciones;
+          return next;
+        });
+      }
     }
   };
 
   const eliminarEspecificacion = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      especificaciones: prev.especificaciones.filter((_, i) => i !== index)
-    }));
+    setFormData(prev => {
+      const nuevas = prev.especificaciones.filter((_, i) => i !== index);
+      return {
+        ...prev,
+        especificaciones: nuevas
+      };
+    });
   };
 
   const handleEspecificacionChange = (index: number, value: string) => {
@@ -313,6 +320,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
       ...prev,
       especificaciones: nuevasEspecificaciones
     }));
+    // Limpiar error de especificaciones si hay contenido
+    if (value.trim() && errors.especificaciones) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next.especificaciones;
+        return next;
+      });
+    }
   };
 
   const agregarKeyword = () => {
@@ -410,7 +425,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const formDataToSend = new FormData();
 
       formDataToSend.append("nombre", formData.nombre);
@@ -471,22 +485,20 @@ const AddProduct = ({ onProductAdded }: Props) => {
         formDataToSend.append('video_url', formData.video_url);
       }
 
-      const response = await fetch(
-        getApiUrl(config.endpoints.productos.create),
+      const response = await apiClient.post(
+        config.endpoints.productos.create,
+        formDataToSend,
         {
-          method: "POST",
-          body: formDataToSend, // FormData
           headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json"
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
-      const data = await response.json();
+      const data = response.data;
       console.log("Respuesta del servidor:", data);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         Swal.fire({
           icon: "success",
           title: "Producto añadido exitosamente",
@@ -759,7 +771,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
 
                   {/* Especificaciones */}
-                  <div className="card">
+                  <div
+                    ref={el => { fieldRefs.current.especificaciones = el; }}
+                    className={`card ${errors.especificaciones ? "border-red-500 ring-1 ring-red-400" : ""}`}
+                  >
                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Especificaciones</h5>
 
                     <div className="flex items-center gap-2 form-input">
@@ -807,6 +822,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <p className="text-sm text-gray-500 italic">No hay especificaciones agregadas</p>
                       )}
                     </div>
+                    {errors.especificaciones && <p className="text-red-500 text-xs mt-3 flex items-center gap-1"><span>⚠️</span>{errors.especificaciones}</p>}
                   </div>
                   {/* Dimensiones */}
                   <div className="card">
