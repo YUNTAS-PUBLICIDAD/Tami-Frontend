@@ -586,10 +586,25 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       }
     } catch (error: any) {
       console.error("Error al enviar el blog:", error);
+
+      let errorMessage = "Ocurrió un error al procesar la solicitud.";
+
+      if (error.response?.data?.errors) {
+        // Formatear los errores de Laravel
+        const errors = error.response.data.errors;
+        errorMessage = Object.keys(errors)
+          .map(key => `${key}: ${errors[key].join(', ')}`)
+          .join('\n');
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else {
+        errorMessage = error.message;
+      }
+
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: error.message || "Ocurrió un error al procesar la solicitud",
+        title: "Error de Validación",
+        text: `❌ ${errorMessage}`,
         confirmButtonColor: "#d33",
       });
     } finally {
