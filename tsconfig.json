@@ -12,9 +12,18 @@
     "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@icons/*":["src/assets/icons/*"],
-      "@images/*":["src/assets/images/*"],
-      "@data/*":["src/data/*"]
+      "src/*": [
+        "src/*"
+      ],
+      "@icons/*": [
+        "src/assets/icons/*"
+      ],
+      "@images/*": [
+        "src/assets/images/*"
+      ],
+      "@data/*": [
+        "src/data/*"
+      ]
     }
   }
 }

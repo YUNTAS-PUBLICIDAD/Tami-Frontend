@@ -226,7 +226,8 @@ const ProductSlideshow = (): JSX.Element | null => {
                     <div className="flex justify-end mt-auto">
                       <a
                         href={getLinkHref(item)}
-                        className="bg-white border-2 border-white text-[#00786F] hover:bg-transparent hover:text-white px-4 py-1.5 rounded-md font-bold text-xs transition-all uppercase"
+                        aria-label={`Comprar ${item.titulo}`}
+                        className="bg-white border-2 border-white text-[#00786F] hover:bg-transparent hover:text-white px-4 py-3 rounded-md font-bold text-xs transition-all uppercase inline-block"
                       >
                         Comprar
                       </a>
@@ -252,9 +253,12 @@ const ProductSlideshow = (): JSX.Element | null => {
                 }
               }}
               aria-label={`Ir al producto ${i + 1}`}
-              className={`rounded-full transition-all ${i === mobileIndex ? "bg-teal-700 w-6 h-2" : "bg-gray-400 w-2 h-2"
-                }`}
-            />
+              className="flex items-center justify-center p-5 group"
+            >
+              <span
+                className={`rounded-full transition-all ${i === mobileIndex ? "bg-teal-700 w-6 h-2" : "bg-gray-400 w-2 h-2"}`}
+              />
+            </button>
           ))}
         </div>
       </div>
@@ -293,7 +297,8 @@ const ProductSlideshow = (): JSX.Element | null => {
                   <div className="flex justify-end mt-auto">
                     <a
                       href={getLinkHref(item)}
-                      className="bg-white border-2 border-white text-[#00786F] hover:bg-transparent hover:text-white px-4 py-1.5 rounded-md font-bold text-xs transition-all uppercase"
+                      aria-label={`Comprar ${item.titulo}`}
+                      className="bg-white border-2 border-white text-[#00786F] hover:bg-transparent hover:text-white px-4 py-3 rounded-md font-bold text-xs transition-all uppercase inline-block"
                     >
                       Comprar
                     </a>

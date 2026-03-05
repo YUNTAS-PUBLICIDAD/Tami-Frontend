@@ -1,14 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import aboutHero from "@images/about/nosotros_hero.png";
-import circuitosFondo from "@images/about/circuitos.webp";
-import fondoMyV from "@images/about/myv_fondo.webp";
-import iconMision from "@icons/icon_mision.webp";
-import iconVision from "@icons/icon_vision.webp";
 import valoresArray from "@data/valores.data";
 import Card from "../components/about/Card.astro";
 import bg_card4 from "@images/about/nosotrostami.webp";
 import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
+
+import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
 ---
 
 <!-- Cargar CSS de Swiper temprano -->
@@ -22,24 +20,25 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
   description="Somos Tami, empresa peruana que apoya a emprendedores con maquinaria y suministros para negocios. Comprometidos con la calidad."
   canonicalUrl="https://tamimaquinarias.com/about/"
 >
-  {/* 🔹 Banner principal */}
+
   <section
-    class="relative bg-cover bg-center h-[30vh] sm:h-screen pt-16 lg:pt-20 flex flex-col justify-center items-start text-white"
-    style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${aboutHero.src})`}
+    class="relative h-[30vh] sm:h-screen min-h-[32vh] pt-16 lg:pt-20 text-white overflow-hidden"
   >
+    <AboutHeroBackground client:load imageSrc={aboutHero.src} />
+
     <div
-      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-6
-  pt-10 sm:pt-0
-  bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
+      bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
     >
       <h2
-        class="text-3xl sm:text-5xl lg:text-7xl font-extrabold px-4 sm:px-12 md:pl-16 lg:pl-28 mb-4 sm:mb-4 max-w-5xl leading-snug drop-shadow-lg"
+        class="text-xl sm:text-5xl lg:text-7xl font-extrabold mb-2 leading-tight"
       >
         SOBRE NOSOTROS
       </h2>
 
       <p
-        class="text-sm sm:text-lg md:text-xl font-medium max-w-4xl drop-shadow-md leading-snug px-4 sm:px-0"
+        class="text-[12.5px] sm:text-lg md:text-xl max-w-[260px] sm:max-w-4xl
+        leading-snug sm:leading-relaxed"
       >
         Buscamos ayudar en tu negocio, mediante la comercialización de productos
         para emprendimiento, trabajo y decoración, cumpliendo con los estándares
@@ -108,7 +107,7 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
         <div class="flex justify-center md:justify-start mb-3 md:mb-0">
           <a
             href="/productos"
-            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95"
+            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-4 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95 min-h-[48px]"
           >
             CONTÁCTANOS
           </a>
@@ -205,7 +204,7 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
     </div>
   </section>
 
-  <!-- Estilos para el carrusel -->
+<!-- Estilos para el carrusel -->
   <style>
     .valores-carousel-container {
       padding: 0 10px;
@@ -228,27 +227,43 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
     .valores-swiper-pagination .swiper-pagination-bullet {
       background: #0c998a;
       opacity: 0.5;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
+      margin: 0 8px !important;
+      position: relative;
+    }
+    .valores-swiper-pagination .swiper-pagination-bullet::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
     }
     .valores-swiper-pagination .swiper-pagination-bullet-active {
       opacity: 1;
     }
   </style>
 
-  <!-- Swiper JS + Inicialización robusta (espera a que Swiper esté disponible) -->
+  <!-- Swiper JS -->
   <script
     src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
     defer></script>
 
   <script>
+    // @ts-nocheck
+    
     (function () {
-      // Inicializador que espera hasta que window.Swiper exista
+      
+      const win = window;
+
       function waitForSwiperAndInit(maxAttempts = 50, interval = 100) {
         let attempts = 0;
         const timer = setInterval(() => {
           attempts++;
-          if (window.Swiper) {
+          // Verificamos si Swiper existe en window
+          if (win.Swiper) {
             clearInterval(timer);
             initSwiper();
             return;
@@ -261,15 +276,15 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
       }
 
       function initSwiper() {
-        // Solo inicializar para móviles (si lo deseas). Si quieres siempre, quita el if.
         if (window.innerWidth >= 768) return;
 
-        // Evitar múltiples inicializaciones
-        if (window._valoresSwiperInitialized) return;
-        window._valoresSwiperInitialized = true;
+        // Accedemos a la propiedad personalizada de forma segura
+        if (win._valoresSwiperInitialized) return;
+        win._valoresSwiperInitialized = true;
 
         try {
-          const swiper = new Swiper(".valoresSwiper", {
+          // @ts-ignore: Swiper viene del CDN
+          const swiper = new win.Swiper(".valoresSwiper", {
             loop: false,
             slidesPerView: 1,
             spaceBetween: 20,
@@ -287,10 +302,11 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
             },
           });
 
-          swiper.on("slideChange", function () {
-            if (this.isEnd) {
+          // Usamos arrow function para que el contexto sea correcto y no falle 'this'
+          swiper.on("slideChange", (s) => {
+            if (s.isEnd) {
               setTimeout(() => {
-                this.slideTo(0, 500);
+                s.slideTo(0, 500);
               }, 2000);
             }
           });
@@ -299,21 +315,18 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
         }
       }
 
-      // Ejecutar
-      if (window.Swiper) {
+      if (win.Swiper) {
         initSwiper();
       } else {
         waitForSwiperAndInit();
       }
 
-      // Re-inicializar si el usuario cambia tamaño y pasa a vista móvil (útil en inspector)
       let resizeTimeout;
       window.addEventListener("resize", () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-          // reinicializar solo si ahora es móvil y no estaba inicializado
-          if (window.innerWidth < 768 && !window._valoresSwiperInitialized) {
-            if (window.Swiper) initSwiper();
+          if (window.innerWidth < 768 && !win._valoresSwiperInitialized) {
+            if (win.Swiper) initSwiper();
           }
         }, 200);
       });
