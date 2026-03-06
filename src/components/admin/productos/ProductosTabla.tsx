@@ -13,10 +13,17 @@ import Paginator from "src/components/admin/ui/Paginator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "src/components/admin/ui/Table";
 import GenericModal from "src/components/admin/ui/GenericModal";
 import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWithTabs";
+import ExportMenu from "src/components/admin/ui/ExportMenu";
 
 const getApiUrl = config.apiUrl;
 
+const DEPLOY_TIMEOUT = 180; // 3 minutos
+const isClient = typeof window !== "undefined";
+
 const ProductosTabla = () => {
+    //  Todos los useState dentro del componente
+    const [deployInProgress, setDeployInProgress] = useState(false);
+    const [deployRemaining, setDeployRemaining] = useState<number | null>(null);
     const [productos, setProductos] = useState<Product[]>([]);
     const [filteredProductos, setFilteredProductos] = useState<Product[]>([]);
     const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
@@ -104,6 +111,85 @@ const ProductosTabla = () => {
         }
     }, [searchTerm, productos]);
 
+
+    //  Inicializar el estado del deploy desde localStorage al montar
+    useEffect(() => {
+        const stored = localStorage.getItem("deployCooldownUntil");
+        if (stored) {
+            const cooldownEnd = Number(stored);
+            const now = Date.now();
+            const diff = Math.floor((cooldownEnd - now) / 1000);
+
+            if (diff > 0) {
+                setDeployInProgress(true);
+                setDeployRemaining(diff);
+            } else {
+                localStorage.removeItem("deployCooldownUntil");
+            }
+        }
+    }, []);
+
+
+    //  Contador que sincroniza con localStorage cada segundo
+    useEffect(() => {
+        if (!deployInProgress || deployRemaining === null || deployRemaining <= 0) {
+            if (deployRemaining !== null && deployRemaining <= 0) {
+                setDeployInProgress(false);
+                setDeployRemaining(null);
+                localStorage.removeItem("deployCooldownUntil");
+
+                Swal.fire({
+                    icon: "success",
+                    title: "✅ Despliegue completado",
+                    text: "Ya puedes volver a desplegar cambios.",
+                    confirmButtonColor: "#14b8a6",
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
+            return;
+        }
+
+        const timer = setInterval(() => {
+            const stored = localStorage.getItem("deployCooldownUntil");
+            if (!stored) {
+                setDeployInProgress(false);
+                setDeployRemaining(null);
+                return;
+            }
+
+            const diff = Math.floor((Number(stored) - Date.now()) / 1000);
+
+            if (diff <= 0) {
+                setDeployInProgress(false);
+                setDeployRemaining(null);
+                localStorage.removeItem("deployCooldownUntil");
+
+                Swal.fire({
+                    icon: "success",
+                    title: "✅ Despliegue completado",
+                    text: "Ya puedes volver a desplegar cambios.",
+                    confirmButtonColor: "#14b8a6",
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            } else {
+                setDeployRemaining(diff);
+            }
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [deployInProgress, deployRemaining]);
+
+
+
+
+
+
+
+
+
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredProductos.slice(indexOfFirstItem, indexOfLastItem);
@@ -115,58 +201,119 @@ const ProductosTabla = () => {
     if (isLoading) return <LoadingComponent message="cargando productos" />
 
     const handleDeploy = async () => {
-        // Confirmación inicial
-        const result = await Swal.fire({
-            title: '¿Desplegar cambios?',
-            text: "Esta acción actualizará el frontend con los últimos datos.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#14b8a6',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Sí, desplegar',
-            cancelButtonText: 'Cancelar'
+    if (deployInProgress) {
+        Swal.fire({
+            icon: "info",
+            title: "⏳ Despliegue en curso",
+            html: `Podrás volver a desplegar en <b>${deployRemaining}</b> segundos`,
+            confirmButtonColor: "#14b8a6",
+            timer: 2000,
+            timerProgressBar: true,
+        });
+        return;
+    }
+
+    const result = await Swal.fire({
+        title: "¿Desplegar cambios?",
+        text: "Esta acción actualizará el frontend con los últimos datos.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#14b8a6",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Sí, desplegar",
+        cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        // ✅ Verificar que el token exista
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+            Swal.fire({
+                icon: "error",
+                title: "❌ Error de autenticación",
+                text: "No se encontró el token de sesión. Por favor, inicia sesión nuevamente.",
+                confirmButtonColor: "#14b8a6",
+            });
+            return;
+        }
+
+        setDeployInProgress(true);
+        setDeployRemaining(DEPLOY_TIMEOUT);
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem(
+                "deployCooldownUntil",
+                String(Date.now() + DEPLOY_TIMEOUT * 1000)
+            );
+        }
+
+        Swal.fire({
+            title: "🚀 Despliegue iniciado",
+            html: "El despliegue está en curso. Puedes seguir navegando.",
+            icon: "success",
+            confirmButtonColor: "#14b8a6",
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
         });
 
-        if (result.isConfirmed) {
-            try {
-                // Mostramos un mensaje de "cargando"
-                Swal.fire({
-                    title: 'Iniciando despliegue...',
-                    didOpen: () => { Swal.showLoading(); },
-                    allowOutsideClick: false
-                });
+        const res = await fetch(
+            "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            }
+        );
 
-                const res = await fetch('https://apitami.tamimaquinarias.com/api/v1/frontend/deploy', {
-                    method: 'POST',
-                    headers: {
-                        'X-DEPLOY-KEY': 'super-secreto-123'
-                    }
-                });
-
-                if (!res.ok) throw new Error();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: '🚀 Deploy iniciado',
-                    text: 'Los cambios se verán reflejados en unos minutos.',
-                    confirmButtonColor: '#14b8a6',
-                });
-            } catch (e) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '❌ Error',
-                    text: 'No se pudo iniciar el despliegue.',
-                    confirmButtonColor: '#14b8a6',
-                });
+        // ✅ Manejar diferentes tipos de error
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ message: "Error desconocido" }));
+            
+            if (res.status === 401) {
+                throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
+            } else if (res.status === 403) {
+                throw new Error("No tienes permisos para realizar esta acción.");
+            } else {
+                throw new Error(errorData.message || "Error al iniciar el despliegue");
             }
         }
-    };
+
+        const data = await res.json();
+        console.log("Deploy exitoso:", data);
+
+    } catch (e) {
+        console.error("Error en deploy:", e);
+        
+        setDeployInProgress(false);
+        setDeployRemaining(null);
+
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("deployCooldownUntil");
+        }
+
+        Swal.fire({
+            icon: "error",
+            title: "❌ Error",
+            text: e instanceof Error ? e.message : "No se pudo iniciar el despliegue.",
+            confirmButtonColor: "#14b8a6",
+        });
+    }
+};
+
 
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                 <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                        
                         <div>
                             <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
                                 <FaTags />
@@ -177,9 +324,18 @@ const ProductosTabla = () => {
                             </p>
                         </div>
 
-                        <div className="flex-shrink-0">
-                            <AddProduct onProductAdded={fetchData} />
+                        <div className="flex flex-col sm:flex-row gap-3 items-center">
+                            
+                            {/* Botón de Exportar */}
+                            <ExportMenu data={filteredProductos} fileName="Reporte_Productos_Tami" />
+
+                            {/* Botón de Agregar */}
+                            <div className="flex-shrink-0">
+                                <AddProduct onProductAdded={fetchData} />
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
 
@@ -190,10 +346,17 @@ const ProductosTabla = () => {
 
                             <button
                                 onClick={handleDeploy}
-                                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md"
+                                disabled={deployInProgress}
+                                className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
+    ${deployInProgress
+                                        ? "bg-gray-400 cursor-not-allowed text-white"
+                                        : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                                    }`}
                             >
-                                <FaSyncAlt className="h-4 w-4" />
-                                Desplegar Cambios
+                                <FaSyncAlt className={`h-4 w-4 ${deployInProgress ? "animate-spin" : ""}`} />
+                                {deployInProgress
+                                    ? `Desplegando (${deployRemaining}s)`
+                                    : "Desplegar Cambios"}
                             </button>
 
                             <button

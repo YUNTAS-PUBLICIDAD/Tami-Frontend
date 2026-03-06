@@ -10,6 +10,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # ✅ Timeout general del job
 
     steps:
       - name: Checkout code
@@ -36,17 +37,37 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
 
+      - name: Add known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy with Rsync
         run: |
           rsync -avz --delete \
             --exclude='.git/' \
             --exclude='back/' \
             --exclude='.htaccess' \
+            --exclude='.git/' \
             --exclude='*.log' \
             --exclude='node_modules/' \
             -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
             ./dist/ \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
 
+      - name: Verify deployment
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            'ls -la ~/domains/tamimaquinarias.com/public_html/ | head -10'
+
       - name: Notify completion
         run: echo "🚀 Deploy Astro completado con éxito"
+
+      # ✅ NUEVO: Notificar si falla
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Deploy falló. Revisa los logs para más detalles."
+          echo "Posibles causas: timeout SSH, problemas de red, o límites del hosting."

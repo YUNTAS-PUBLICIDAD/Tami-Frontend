@@ -1,4 +1,5 @@
-import { config, getApiUrl } from "../../../../config.ts";
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useDarkMode } from "../../../hooks/darkMode/useDarkMode.ts";
@@ -17,19 +18,11 @@ async function logout() {
 
   if (result.isConfirmed) {
     try {
-      const response = await fetch(getApiUrl(config.endpoints.auth.logout), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await apiClient.post(config.endpoints.auth.logout);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         localStorage.removeItem("token");
+        localStorage.removeItem("userInfo");
         await Swal.fire(
           "¡Sesión cerrada!",
           "Has cerrado sesión exitosamente.",
@@ -37,12 +30,16 @@ async function logout() {
         );
         window.location.href = "/";
       } else {
-        console.error("Error en la respuesta del servidor:", data.message);
-        Swal.fire("Error", data.message || "Error al cerrar sesión", "error");
+        Swal.fire("Error", response.data.message || "Error al cerrar sesión", "error");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error de conexión con el servidor:", error);
-      Swal.fire("Error", "Error de conexión con el servidor.", "error");
+      // even if error, clear local storage for security
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+      Swal.fire("Error", "Error de conexión con el servidor. Se cerrará la sesión localmente.", "error").then(() => {
+        window.location.href = "/";
+      });
     }
   }
 }
@@ -67,9 +64,8 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-full w-full p-4 space-y-4 ${
-        darkMode ? "bg-[#1e1e2f] text-white" : "bg-gray-200 text-gray-800"
-      }`}
+      className={`h-full w-full p-4 space-y-4 ${darkMode ? "bg-[#1e1e2f] text-white" : "bg-gray-200 text-gray-800"
+        }`}
     >
       <nav className="mt-3">
         <ul className="space-y-2">
@@ -80,16 +76,14 @@ const Sidebar = () => {
               <li key={index}>
                 <a
                   href={item.path}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 group relative ${
-                    isActive
-                      ? "text-gray-900  dark:text-teal-700 font-black hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-teal-700 dark:hover:text-teal-300"
-                      : "text-gray-700 dark:text-teal-500  hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-teal-700 dark:hover:text-teal-300"
-                  }`}
+                  className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 group relative ${isActive
+                    ? "text-gray-900  dark:text-teal-700 font-black hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-teal-700 dark:hover:text-teal-300"
+                    : "text-gray-700 dark:text-teal-500  hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-teal-700 dark:hover:text-teal-300"
+                    }`}
                 >
                   <svg
-                    className={`w-6 h-6 fill-current ${
-                      isActive ? "text-white" : "text-teal-500"
-                    } mr-2`}
+                    className={`w-6 h-6 fill-current ${isActive ? "text-white" : "text-teal-500"
+                      } mr-2`}
                     viewBox="0 0 24 24"
                   >
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"></path>
@@ -113,14 +107,12 @@ const Sidebar = () => {
             onChange={toggleDarkMode}
           />
           <div
-            className={`w-10 h-5 rounded-full transition-colors duration-300 ${
-              darkMode ? "bg-gray-700" : "bg-gray-400"
-            }`}
+            className={`w-10 h-5 rounded-full transition-colors duration-300 ${darkMode ? "bg-gray-700" : "bg-gray-400"
+              }`}
           >
             <div
-              className={`absolute w-4 h-4 rounded-full shadow-md transition-transform translate-y-0.5 duration-300 flex items-center justify-center ${
-                darkMode ? "translate-x-5 bg-white" : "translate-x-1 bg-white"
-              }`}
+              className={`absolute w-4 h-4 rounded-full shadow-md transition-transform translate-y-0.5 duration-300 flex items-center justify-center ${darkMode ? "translate-x-5 bg-white" : "translate-x-1 bg-white"
+                }`}
             >
               {!darkMode && (
                 <svg

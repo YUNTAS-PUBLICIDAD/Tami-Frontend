@@ -5,6 +5,9 @@ import type {
 import {
     requestQRService,
     resetSessionService,
+    getTemplateByProductService,
+    updateTemplateByProductService,
+    deleteTemplateByProductService
 } from "src/services/admin/whatsapp/whatsappService";
 
 interface UseWhatsappReturn {
@@ -14,6 +17,9 @@ interface UseWhatsappReturn {
     clearError: () => void;
     requestQR: () => Promise<WhatsappPlantillaServiceResponse<null>>;
     resetSession: () => Promise<WhatsappPlantillaServiceResponse<null>>;
+    getTemplateByProduct: (productoId: number | string) => Promise<WhatsappPlantillaServiceResponse<string>>;
+    updateTemplateByProduct: (productoId: number | string, template: string) => Promise<WhatsappPlantillaServiceResponse<null>>;
+    deleteTemplateByProduct: (productoId: number | string) => Promise<WhatsappPlantillaServiceResponse<null>>;
 }
 
 export function useWhatsapp(): UseWhatsappReturn {
@@ -39,12 +45,39 @@ export function useWhatsapp(): UseWhatsappReturn {
         return result;
     }, []);
 
+    const getTemplateByProduct = useCallback(async (productoId: number | string) => {
+        setIsLoading(true);
+        setError(null);
+        const result = await getTemplateByProductService(productoId);
+        setIsLoading(false);
+        return result;
+    }, []);
+
+    const updateTemplateByProduct = useCallback(async (productoId: number | string, template: string) => {
+        setIsLoading(true);
+        setError(null);
+        const result = await updateTemplateByProductService(productoId, template);
+        setIsLoading(false);
+        return result;
+    }, []);
+
+    const deleteTemplateByProduct = useCallback(async (productoId: number | string) => {
+        setIsLoading(true);
+        setError(null);
+        const result = await deleteTemplateByProductService(productoId);
+        setIsLoading(false);
+        return result;
+    }, []);
+
     return {
         isLoading,
         isRequesting,
         error,
         clearError,
         requestQR,
-        resetSession
+        resetSession,
+        getTemplateByProduct,
+        updateTemplateByProduct,
+        deleteTemplateByProduct
     };
 }
