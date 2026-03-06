@@ -27,7 +27,7 @@ const BlogList = ({ searchTerm, sortOrder }: BlogListProps) => {
         const res = await fetch(apiUrlBlogs);
         if (!res.ok) throw new Error("HTTP error blogs!");
         const data = await res.json();
-        
+
         const blogData = Array.isArray(data) ? data : (data.data || []);
         setBlogs(blogData);
       } catch (err) {
@@ -93,40 +93,40 @@ const BlogList = ({ searchTerm, sortOrder }: BlogListProps) => {
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-           className={`${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-teal-50 hover:-translate-y-0.5 hover:shadow-md'} 
+            className={`${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-teal-50 hover:-translate-y-0.5 hover:shadow-md'} 
                   p-2.5 bg-white border border-gray-200 rounded-lg text-gray-600
                   transition-all duration-300 ease-out`}
             aria-label="Página anterior"
-            >
+          >
             <FaChevronLeft className="w-3 h-3" />
           </button>
 
           {/* Números de página */}
-          
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-               // Lógica simplificada de paginación centrada
-               let pageToShow = i + 1;
-               if (totalPages > 5) {
-                 if (currentPage > 3 && currentPage < totalPages - 2) pageToShow = currentPage - 2 + i;
-                 else if (currentPage >= totalPages - 2) pageToShow = totalPages - 4 + i;
-               }
 
-               return (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(pageToShow)}
-                 className={`min-w-[40px] px-3 py-2 border rounded-lg text-sm font-medium cursor-pointer
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            // Lógica simplificada de paginación centrada
+            let pageToShow = i + 1;
+            if (totalPages > 5) {
+              if (currentPage > 3 && currentPage < totalPages - 2) pageToShow = currentPage - 2 + i;
+              else if (currentPage >= totalPages - 2) pageToShow = totalPages - 4 + i;
+            }
+
+            return (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(pageToShow)}
+                className={`min-w-[40px] px-3 py-2 border rounded-lg text-sm font-medium cursor-pointer
                       transition-all duration-300 ease-out
                     ${currentPage === pageToShow
-                      ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-200"
+                    ? "bg-teal-700 text-white border-teal-700 shadow-md shadow-teal-200"
                     : "bg-white text-gray-600 border-gray-200 hover:bg-teal-50 hover:border-teal-300 hover:-translate-y-0.5 hover:shadow-sm"
                   }`}
-                >
-                  {pageToShow}
-                </button>
-              );
-            })}
-          
+              >
+                {pageToShow}
+              </button>
+            );
+          })}
+
 
           {/* Botón Siguiente */}
           <button

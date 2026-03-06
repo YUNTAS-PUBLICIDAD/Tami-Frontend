@@ -10,6 +10,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # ✅ Timeout general del job
 
     steps:
       - name: Checkout code
@@ -36,17 +37,56 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
 
-      - name: Deploy with Rsync
+      # ✅ NUEVO: Verificar conectividad SSH antes de deploy
+      - name: Test SSH Connection
         run: |
-          rsync -avz --delete \
-            --exclude='.git/' \
-            --exclude='back/' \
-            --exclude='.htaccess' \
-            --exclude='*.log' \
-            --exclude='node_modules/' \
-            -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
-            ./dist/ \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
+          for i in {1..3}; do
+            if ssh -p ${{ secrets.SERVER_PORT }} \
+                -o ConnectTimeout=30 \
+                -o StrictHostKeyChecking=no \
+                ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'echo "SSH OK"'; then
+              echo "✅ Conexión SSH exitosa en intento $i"
+              exit 0
+            else
+              echo "⚠️ Intento $i/3 falló, esperando 15s..."
+              sleep 15
+            fi
+          done
+          echo "❌ No se pudo establecer conexión SSH después de 3 intentos"
+          exit 1
+
+      # ✅ MEJORADO: Deploy con reintentos automáticos
+      - name: Deploy with Rsync
+        uses: nick-fields/retry-action@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            rsync -avz --delete \
+              --timeout=300 \
+              --exclude='.git/' \
+              --exclude='back/' \
+              --exclude='.htaccess' \
+              --exclude='*.log' \
+              --exclude='node_modules/' \
+              -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o ServerAliveInterval=30 -o ServerAliveCountMax=3" \
+              ./dist/ \
+              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
+
+      - name: Verify deployment
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            'ls -la ~/domains/tamimaquinarias.com/public_html/ | head -10'
 
       - name: Notify completion
         run: echo "🚀 Deploy Astro completado con éxito"
+
+      # ✅ NUEVO: Notificar si falla
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Deploy falló. Revisa los logs para más detalles."
+          echo "Posibles causas: timeout SSH, problemas de red, o límites del hosting."

@@ -6,14 +6,14 @@ import CopyText from "./CopyText.astro";
 
 <footer class="bg-teal-700 text-white py-12 sm:px-16">
   <div
-    class="container mx-auto px-2 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 text-center lg:text-left h-full"
+    class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-[50%_22%_28%] gap-8 lg:gap-4 text-center lg:text-left h-full"
   >
-    <!-- Separacion en 3 bloques-->
-    <div
-      class="flex flex-row items-center justify-center lg:items-stretch gap-6 lg:gap-12 gap-y-6 w-full lg:mb-0"
-    >
-      <!-- Logo -->
-      <div class="flex items-center justify-center lg:justify-start">
+    
+    <!-- BLOQUE 1: Logo + Línea + Enlaces -->
+    <div class="flex flex-row items-stretch justify-center w-full gap-4 lg:gap-10">
+      
+      <!-- LOGO -->
+      <div class="w-5/12 lg:w-auto flex items-center justify-end lg:justify-start lg:self-start lg:mt-1">
         <img
           src={logoTami.src}
           alt="Logo de Tami"
@@ -21,94 +21,61 @@ import CopyText from "./CopyText.astro";
           loading="lazy"
           width={120}
           height={60}
-          class="shrink-0"
+          class="shrink-0 w-24 lg:w-[120px] h-auto" 
         />
       </div>
 
-      <!-- Barra vertical blanca -->
-      <div class="border-l-2 border-white opacity-70 self-stretch"></div>
 
-      <!-- Enlaces -->
-      <div
-        class="flex items-center lg:items-start justify-center lg:justify-start p-0 sm:pl-8"
-      >
-        <ul class="space-y-4 font-semibold text-base text-center lg:text-left">
-          <li>
-            <a href="/" class="hover:text-orange-300 transition-colors"
-              >Inicio</a
-            >
-          </li>
-          <li>
-            <a
-              href="/sobre-nosotros"
-              class="hover:text-orange-300 transition-colors">Nosotros</a
-            >
-          </li>
-          <li>
-            <a href="/productos" class="hover:text-orange-300 transition-colors"
-              >Productos</a
-            >
-          </li>
-          <li>
-            <a
-              href="/politicas-de-envio"
-              class="hover:text-orange-300 transition-colors"
-              >Políticas de Envíos</a
-            >
-          </li>
-          <li>
-            <a href="/blog" class="hover:text-orange-300 transition-colors"
-              >Blogs</a
-            >
-          </li>
-          <li>
-            <a
-              href="/libro-de-reclamaciones"
-              class="hover:text-orange-300 transition-colors"
-              >Libro de reclamaciones</a
-            >
-          </li>
-          <li>
-            <a
-              href="/terminos-y-condiciones"
-              class="hover:text-orange-300 transition-colors"
-              >Términos y Condiciones</a
-            >
-          </li>
-          <li>
-            <a
-              href="/politicas-de-privacidad"
-              class="hover:text-orange-300 transition-colors"
-              >Políticas de Privacidad</a
-            >
-          </li>
-        </ul>
-      </div>
-    </div>
+      <div class="block border-l-2 border-white opacity-70 self-stretch"></div>
 
-    <!-- Bloque 2: Horario de atención -->
-    <div class="flex justify-center lg:mb-0">
-      <div
-        class="flex flex-col justify-between text-center lg:text-left h-[200px]"
-      >
-        <!-- Arriba: Horario de atención -->
-        <div>
-          <p class="font-semibold mb-1 text-base">Horario de atención</p>
-          <p class="text-base">Lunes a Viernes<br />9:00 am a 9:00 pm</p>
-        </div>
+      <!-- 3. ENLACES -->
+      <!-- 
 
-        <!-- Abajo: Información de contacto -->
-        <div>
-          <p class="font-semibold mb-1 text-base">Para mayor información</p>
-          <CopyText>informestami01@gmail.com</CopyText>
-          <CopyText>+51978883199</CopyText>
+      -->
+      <div class="w-6/12 lg:w-full flex flex-col justify-center lg:block pt-1">
+        
+        <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-16 font-semibold text-sm lg:text-base text-center lg:text-left">
+          
+          <!-- Primera lista -->
+          <ul class="space-y-3 mb-3 lg:mb-0">
+            <li><a href="/" class="hover:text-orange-300 transition-colors">Inicio</a></li>
+            <li><a href="/sobre-nosotros" class="hover:text-orange-300 transition-colors">Nosotros</a></li>
+            <li><a href="/productos" class="hover:text-orange-300 transition-colors">Productos</a></li>
+            <li><a href="/politicas-de-envio" class="hover:text-orange-300 transition-colors">Políticas de Envíos</a></li>
+            <li><a href="/blog" class="hover:text-orange-300 transition-colors">Blogs</a></li>
+          </ul>
+
+          <!-- Segunda lista -->
+          <ul class="space-y-3">
+            <li><a href="/libro-de-reclamaciones" class="hover:text-orange-300 transition-colors">Libro de reclamaciones</a></li>
+            <li><a href="/terminos-y-condiciones" class="hover:text-orange-300 transition-colors">Términos y Condiciones</a></li>
+            <li><a href="/politicas-de-privacidad" class="hover:text-orange-300 transition-colors">Políticas de Privacidad</a></li>
+          </ul>
+
         </div>
       </div>
     </div>
 
-    <div
-      class="flex flex-col items-center justify-center space-y-6 h-full text-white"
-    >
+    <!-- BLOQUE 2: Horario de atención -->
+
+    <div class="flex justify-center lg:justify-start lg:pl-8 pt-1">
+      <div class="flex flex-col justify-between h-auto lg:h-[200px] gap-8 lg:gap-0 text-center lg:text-left">
+        <div>
+          <p class="font-semibold mb-2 text-base">Horario de atención</p>
+          <p class="text-base leading-relaxed">Lunes a Viernes<br />9:00 am a 9:00 pm</p>
+        </div>
+        <div>
+          <p class="font-semibold mb-2 text-base">Para mayor información</p>
+          <div class="flex flex-col gap-1 items-center lg:items-start">
+             <CopyText>informestami01@gmail.com</CopyText>
+             <CopyText>+51978883199</CopyText>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 3: Contacto -->
+    <div class="flex flex-col items-center justify-start space-y-8 lg:space-y-6 text-white pt-1">
       <button
         type="button"
         title="Abrir formulario de asesoría"
@@ -127,7 +94,7 @@ import CopyText from "./CopyText.astro";
                 target="_blank"
                 rel="noopener noreferrer"
                 title={item.linkTitle}
-                class="w-10 h-10 bg-black rounded-full flex items-center justify-center"
+                class="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
               >
                 <img
                   src={item.image.src}

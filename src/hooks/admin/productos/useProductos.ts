@@ -5,7 +5,8 @@
  */
 
 import { useState, useEffect } from "react";
-import { getApiUrl, config } from "config";
+import { config } from "config";
+import apiClient from "../../../services/apiClient";
 import type Producto from "../../../models/Product.ts";
 
 const useProductos = (trigger: boolean, page: number = 1) => {
@@ -28,29 +29,15 @@ const useProductos = (trigger: boolean, page: number = 1) => {
              * Si no se encuentra el token, lanza un error.
              */
             try {
-                const token = localStorage.getItem("token");
-                if (!token) throw new Error("No se encontró el token de autenticación");
-
                 /**
-                 * Realiza la solicitud a la API para obtener la lista de productos.
+                 * Realiza la solicitud a la API para obtener la lista de productos usando apiClient.
                  */
-                const url = `${getApiUrl(config.endpoints.productos.list)}?page=${page}`;
-                const response = await fetch(url, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
-                    },
-                });
-
-                if (!response.ok)
-                    throw new Error(`Error al obtener productos: ${response.statusText}`);
+                const response = await apiClient.get(`${config.endpoints.productos.list}?page=${page}`);
 
                 /**
                  * Convierte la respuesta a JSON y maneja los datos.
                  */
-                const data = await response.json();
+                const data = response.data;
 
                 /**
                  * Extrae la lista de productos y el número total de páginas de la respuesta.
