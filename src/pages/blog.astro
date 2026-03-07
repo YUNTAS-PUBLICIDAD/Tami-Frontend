@@ -1,9 +1,11 @@
 ---
 import Layout from "src/layouts/Layout.astro";
 import bgBlog from "@images/blog/bg_blog.webp";
-import paleta from "@images/blog/paleta.webp";
+// import paleta from "@images/blog/paleta.webp";
 import BlogPage from "../components/blog/BlogPage.tsx";
 ---
+
+<link rel="preload" as="image" href={bgBlog.src} />
 
 <Layout
   title="Blog de Maquinaria Industrial | Tips para Emprendedores"
@@ -61,5 +63,5 @@ import BlogPage from "../components/blog/BlogPage.tsx";
   </div>
 </section>
 
-  <BlogPage client:load />
+  <BlogPage client:idle />
 </Layout>
