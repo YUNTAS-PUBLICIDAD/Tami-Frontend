@@ -128,7 +128,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
     if (blogToEdit) {
       const productoEncontrado = productos.find(
-        (p) => p.nombre === blogToEdit.nombre_producto
+        (p) => p.nombre === blogToEdit.nombre_producto,
       );
       setFormData({
         titulo: blogToEdit.titulo || "",
@@ -152,9 +152,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               : "",
           };
         }) || [
-            { imagen: null, parrafo: "", text_alt: "", url: "" },
-            { imagen: null, parrafo: "", text_alt: "", url: "" },
-          ],
+          { imagen: null, parrafo: "", text_alt: "", url: "" },
+          { imagen: null, parrafo: "", text_alt: "", url: "" },
+        ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
@@ -186,7 +186,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
 
@@ -245,7 +245,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleFileChangeAdicional = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -264,7 +264,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleParrafoChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
-    index: number
+    index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = { ...nuevoArray[index], parrafo: e.target.value };
@@ -273,7 +273,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleAltTextChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = { ...nuevoArray[index], text_alt: e.target.value };
@@ -282,7 +282,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleInsertLinkClick = (index: number) => {
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`
+      `crear_descripcion_antes_${index}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -293,7 +293,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Selecciona texto",
         "Selecciona texto para enlazar.",
-        "warning"
+        "warning",
       );
       return;
     }
@@ -305,7 +305,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleProductLinkClick = (index: number) => {
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`
+      `crear_descripcion_antes_${index}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -316,7 +316,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Selecciona texto",
         "Selecciona texto para enlazar.",
-        "warning"
+        "warning",
       );
       return;
     }
@@ -333,18 +333,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       return;
     }
     const productoSeleccionado = productos.find(
-      (p) => String(p.id) === String(formData.producto_id)
+      (p) => String(p.id) === String(formData.producto_id),
     );
     if (!productoSeleccionado?.link) {
       Swal.fire(
         "Producto no encontrado",
         "No se encontró el producto.",
-        "error"
+        "error",
       );
       return;
     }
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`
+      `crear_descripcion_antes_${activeIndex}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -375,12 +375,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Enlace inválido",
         "Ingresa una URL válida (https://...).",
-        "error"
+        "error",
       );
       return;
     }
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`
+      `crear_descripcion_antes_${activeIndex}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -437,7 +437,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `El título es obligatorio y máx. ${LENGTHS.titulo} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -449,7 +449,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `El párrafo es obligatorio y máx. ${LENGTHS.parrafo} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -461,7 +461,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `La descripción es obligatoria y máx. ${LENGTHS.descripcion} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -473,7 +473,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `El título del video es obligatorio y máx. ${LENGTHS.videoTitulo} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -486,7 +486,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `La URL del video es obligatoria, máx. ${LENGTHS.videoUrl} y debe ser válida.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -507,13 +507,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     // Validación imágenes adicionales y párrafos
     if (
       formData.imagenes.some(
-        (img) => (!blogToEdit && !img.imagen) || !img.parrafo
+        (img) => (!blogToEdit && !img.imagen) || !img.parrafo,
       )
     ) {
       Swal.fire(
         "Error",
         "Cada imagen adicional y su descripción son obligatorias.",
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -534,7 +534,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("video_url", formData.video_url || "");
       formDataToSend.append("video_titulo", formData.video_titulo || "");
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
-      formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
+      formDataToSend.append(
+        "meta_descripcion",
+        formData.etiqueta.meta_descripcion,
+      );
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
       if (formData.miniatura instanceof File) {
@@ -568,8 +571,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           title: blogToEdit
             ? "Blog actualizado con éxito"
             : "Blog creado con éxito",
-          text: `El blog "${data.data.titulo}" ha sido ${blogToEdit ? "actualizado" : "creado"
-            } correctamente.`,
+          text: `El blog "${data.data.titulo}" ha sido ${
+            blogToEdit ? "actualizado" : "creado"
+          } correctamente.`,
           confirmButtonColor: "#3085d6",
         });
         closeModal();
@@ -593,8 +597,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         // Formatear los errores de Laravel
         const errors = error.response.data.errors;
         errorMessage = Object.keys(errors)
-          .map(key => `${key}: ${errors[key].join(', ')}`)
-          .join('\n');
+          .map((key) => `${key}: ${errors[key].join(", ")}`)
+          .join("\n");
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else {
@@ -612,7 +616,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       setIsSaving(false);
     }
   };
-
 
   // Cuenta palabras en un string
   function contarPalabras(texto: string): number {
@@ -735,7 +738,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         ...formData.etiqueta,
                         meta_titulo: e.target.value.slice(
                           0,
-                          LENGTHS.metaTitulo
+                          LENGTHS.metaTitulo,
                         ),
                       },
                     })
@@ -760,7 +763,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         ...formData.etiqueta,
                         meta_descripcion: e.target.value.slice(
                           0,
-                          LENGTHS.metaDescripcion
+                          LENGTHS.metaDescripcion,
                         ),
                       },
                     })
@@ -773,7 +776,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               </div>
 
               <div className="form-input">
-                <label className="font-medium">Párrafo corto (100 palabras)*</label>
+                <label className="font-medium">
+                  Párrafo corto (100 palabras)*
+                </label>
                 <textarea
                   name="subtitulo1"
                   value={formData.subtitulo1}
@@ -783,12 +788,15 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   rows={3}
                 />
                 <small className="text-gray-500 text-end block">
-                  {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
+                  {contarPalabras(formData.subtitulo1)} palabras (Máx{" "}
+                  {LENGTHS.parrafo})
                 </small>
               </div>
 
               <div className="form-input">
-                <label className="font-medium">Descripción (255 palabras)*</label>
+                <label className="font-medium">
+                  Descripción (255 caracteres)*
+                </label>
                 <textarea
                   name="subtitulo2"
                   value={formData.subtitulo2}
@@ -798,12 +806,15 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   rows={3}
                 />
                 <small className="text-gray-500 text-end block">
-                  {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
+                  {formData.subtitulo2.length} caracteres (Máx{" "}
+                  {LENGTHS.descripcion})
                 </small>
               </div>
 
               <div className="form-input">
-                <label className="font-medium">Título del video para YouTube*</label>
+                <label className="font-medium">
+                  Título del video para YouTube*
+                </label>
                 <input
                   type="text"
                   name="video_titulo"
@@ -844,7 +855,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               </div>
 
               <div className="form-input">
-                <label className="font-medium block mb-2">Miniatura del Blog*</label>
+                <label className="font-medium block mb-2">
+                  Miniatura del Blog*
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -861,22 +874,33 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       {(formData.miniatura as any).name || "Imagen cargada"}
                     </span>
                   ) : (
-                    <span className="text-gray-400">Click para subir miniatura</span>
+                    <span className="text-gray-400">
+                      Click para subir miniatura
+                    </span>
                   )}
                 </label>
               </div>
 
               <div className="col-span-1 md:col-span-2 mt-4">
-                <h3 className="text-xl font-bold text-teal-600 mb-4">Contenido del Blog</h3>
+                <h3 className="text-xl font-bold text-teal-600 mb-4">
+                  Contenido del Blog
+                </h3>
                 {formData.imagenes.map((imagen, index) => (
-                  <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50">
+                  <div
+                    key={index}
+                    className="mb-6 p-4 border rounded-lg bg-gray-50"
+                  >
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold text-teal-700">Sección {numeroAPalabras(index + 1)}</span>
+                      <span className="font-bold text-teal-700">
+                        Sección {numeroAPalabras(index + 1)}
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Imagen*</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Imagen*
+                        </label>
                         <input
                           type="file"
                           accept="image/*"
@@ -884,7 +908,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           className="w-full text-sm"
                         />
                         <div className="mt-2">
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Texto Alternativo (SEO)*</label>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Texto Alternativo (SEO)*
+                          </label>
                           <input
                             type="text"
                             value={imagen.text_alt}
@@ -896,13 +922,19 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         </div>
                         {imagen.url && (
                           <div className="mt-2">
-                            <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
+                            <img
+                              src={imagen.url}
+                              alt={`Sección ${index + 1}`}
+                              className="w-20 h-20 object-cover rounded"
+                            />
                           </div>
                         )}
                       </div>
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <label className="block text-sm font-medium text-gray-700">Párrafo de la sección*</label>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Párrafo de la sección*
+                          </label>
                           <div className="space-x-2">
                             <button
                               type="button"
@@ -960,7 +992,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
           <div className="bg-white p-6 rounded-xl w-96">
             <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
-            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
+            <p className="text-sm text-gray-600 mb-2">
+              Enlace para: <strong>{selectedText}</strong>
+            </p>
             <input
               type="text"
               placeholder="https://..."
@@ -969,8 +1003,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-              <button onClick={handleAddLink} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 text-gray-500"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddLink}
+                className="px-4 py-2 bg-teal-600 text-white rounded"
+              >
+                Insertar
+              </button>
             </div>
           </div>
         </div>
@@ -981,27 +1025,44 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
           <div className="bg-white p-6 rounded-xl w-96">
             <h3 className="text-xl font-bold mb-4">Enlace a Producto</h3>
-            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
+            <p className="text-sm text-gray-600 mb-2">
+              Enlace para: <strong>{selectedText}</strong>
+            </p>
             <select
               value={formData.producto_id}
-              onChange={(e) => setFormData({ ...formData, producto_id: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, producto_id: e.target.value })
+              }
               className="w-full border p-2 rounded mb-4"
             >
               <option value="">Selecciona un producto</option>
               {productos.map((producto: any) => (
-                <option key={producto.id} value={producto.id}>{producto.nombre}</option>
+                <option key={producto.id} value={producto.id}>
+                  {producto.nombre}
+                </option>
               ))}
             </select>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setIsProductLinkModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-              <button onClick={handleAddProduct} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
+              <button
+                onClick={() => setIsProductLinkModalOpen(false)}
+                className="px-4 py-2 text-gray-500"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddProduct}
+                className="px-4 py-2 bg-teal-600 text-white rounded"
+              >
+                Insertar
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .dialog-overlay {
           position: fixed;
           top: 0; left: 0; right: 0; bottom: 0;
@@ -1034,7 +1095,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         .form-input input:focus, .form-input select:focus, .form-input textarea:focus {
           border-color: #0d9488;
         }
-      `}} />
+      `,
+        }}
+      />
     </>
   );
 };

@@ -46,13 +46,17 @@ const ClientesTable = () => {
 
   const ITEMS_PER_PAGE = 5;
 
-  // Primero filtramos los clientes según búsqueda
-  const filteredClientes = clientes.filter(cliente =>
-    cliente.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.celular?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.id.toString().includes(searchTerm)
-  );
+  // Primero filtramos los clientes según búsqueda (con optional chaining por seguridad)
+  const filteredClientes = (clientes || []).filter(cliente => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      cliente?.name?.toLowerCase().includes(term) ||
+      cliente?.email?.toLowerCase().includes(term) ||
+      cliente?.celular?.toLowerCase().includes(term) ||
+      cliente?.id?.toString().includes(term)
+    );
+  });
 
   const totalFiltered = filteredClientes.length;
   const totalPages = Math.ceil(totalFiltered / ITEMS_PER_PAGE);
@@ -62,7 +66,6 @@ const ClientesTable = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-
 
   const handleRefetch = () => setRefetchTrigger(prev => !prev);
 
@@ -98,6 +101,8 @@ const ClientesTable = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        
+       
         <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-6 rounded-t-2xl">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
@@ -153,16 +158,13 @@ const ClientesTable = () => {
               {totalFiltered === 1 ? "cliente" : "clientes"} encontrados
             </div>
             
-            {/* Stats globales de WhatsApp - solo en modo monitoreo */}
             {monitoringMode && globalTotals && (
               <div className="flex flex-wrap items-center gap-3 text-sm">
-                {/* Stats Popup */}
                 <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-full">
                   <FaWhatsapp className="text-green-600 dark:text-green-400" />
                   <span className="font-semibold">{globalTotals.whatsapp.popup.total_messages}</span>
                   <span className="text-green-600 dark:text-green-400 text-xs">msgs</span>
                 </div>
-                {/* Stats Campaign */}
                 {globalTotals.whatsapp.campaign && (
                   <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
                     <FaWhatsapp className="text-blue-600 dark:text-blue-400" />
@@ -175,8 +177,73 @@ const ClientesTable = () => {
           </div>
         </div>
 
-        {/* Tabla de clientes */}
-        <div className="overflow-x-auto">
+        {/* ========================================= */}
+        {/* VISTA MÓVIL (NUEVO - SOLO VISIBLE EN CELULAR) */}
+        {/* ========================================= */}
+        <div className="block md:hidden px-4 pb-6 space-y-4">
+          {displayedClientes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+              <FaUsers className="h-10 w-10 text-gray-300 mb-3" />
+              <p className="text-gray-500 dark:text-gray-400 text-center font-medium">No se encontraron clientes</p>
+            </div>
+          ) : (
+            displayedClientes.map((item) => (
+              <div key={item.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-center border-b border-gray-50 dark:border-gray-700 pb-2">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ID #{item.id}</span>
+                  <span className="text-xs text-gray-500">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
+                </div>
+                
+                <div>
+                  <h3 className="font-bold text-gray-800 dark:text-gray-100 text-lg">{item.name}</h3>
+                  <p className="text-blue-500 text-sm">{item.email}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg">
+                    <p className="text-[10px] text-gray-400 uppercase font-bold">Teléfono</p>
+                    <p className="font-medium">{item.celular || "-"}</p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg">
+                    <p className="text-[10px] text-gray-400 uppercase font-bold">Origen</p>
+                    <p className="font-medium">{item.source ?? "-"}</p>
+                  </div>
+                </div>
+
+                {monitoringMode && (
+                  <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg flex justify-between items-center text-sm">
+                    <div className="flex gap-4">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-purple-400 font-bold uppercase">Pop</span>
+                        <FaWhatsapp className="text-green-500" />
+                        <span className="font-bold text-green-600">{item.stats?.whatsapp?.popup?.total_messages ?? 0}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-purple-400 font-bold uppercase">Camp</span>
+                        <FaWhatsapp className="text-blue-500" />
+                        <span className="font-bold text-blue-600">{item.stats?.whatsapp?.campaign?.total_messages ?? 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-2 mt-2">
+                  <button onClick={() => openModalForEdit(item)} className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg flex justify-center items-center gap-2 font-bold text-xs transition-colors">
+                    <FaEdit /> Editar
+                  </button>
+                  <button onClick={() => openDeleteModal(item.id)} className="flex-1 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg flex justify-center items-center gap-2 font-bold text-xs transition-colors">
+                    <FaTrash /> Borrar
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* ========================================= */}
+        {/* VISTA ESCRITORIO */}
+        {/* ========================================= */}
+        <div className="hidden md:block overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
