@@ -38,18 +38,17 @@ const BlogsTable = () => {
   const [editBlog, setEditBlog] = useState<Blog | null>(null);
   const itemsPerPage = 6;
 
-
-
-
-
-
   const exportToCSV = () => {
-    const ws = XLSX.utils.json_to_sheet(data.map(blog => ({
-      ID: blog.id,
-      Titulo: blog.titulo,
-      Subtitulo: blog.subtitulo1,
-      Fecha: blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'N/A'
-    })));
+    const ws = XLSX.utils.json_to_sheet(
+      data.map((blog) => ({
+        ID: blog.id,
+        Titulo: blog.titulo,
+        Subtitulo: blog.subtitulo1,
+        Fecha: blog.created_at
+          ? new Date(blog.created_at).toLocaleDateString()
+          : "N/A",
+      })),
+    );
     const csv = XLSX.utils.sheet_to_csv(ws);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -59,12 +58,16 @@ const BlogsTable = () => {
   };
 
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(data.map(blog => ({
-      ID: blog.id,
-      Titulo: blog.titulo,
-      Subtitulo: blog.subtitulo1,
-      Fecha: blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'N/A'
-    })));
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((blog) => ({
+        ID: blog.id,
+        Titulo: blog.titulo,
+        Subtitulo: blog.subtitulo1,
+        Fecha: blog.created_at
+          ? new Date(blog.created_at).toLocaleDateString()
+          : "N/A",
+      })),
+    );
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Blogs");
     XLSX.writeFile(workbook, "blogs_reporte.xlsx");
@@ -75,11 +78,11 @@ const BlogsTable = () => {
     doc.text("Reporte de Blogs", 14, 15);
 
     const tableColumn = ["ID", "Titulo", "Subtitulo", "Fecha"];
-    const tableRows = data.map(blog => [
+    const tableRows = data.map((blog) => [
       blog.id,
       blog.titulo,
       blog.subtitulo1,
-      blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'N/A'
+      blog.created_at ? new Date(blog.created_at).toLocaleDateString() : "N/A",
     ]);
 
     autoTable(doc, {
@@ -118,11 +121,13 @@ const BlogsTable = () => {
   const handleBlogAdded = () => {
     fetchData(); // recarga la tabla
     setIsAddModalOpen(false); // opcional, si controlas el modal desde aquí
+    setEditBlog(null);
   };
 
-  const filteredData = data.filter(blog =>
-    blog.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.subtitulo2.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = data.filter(
+    (blog) =>
+      blog.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      blog.subtitulo2.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -142,16 +147,23 @@ const BlogsTable = () => {
 
     if (confirmResult.isConfirmed) {
       try {
-        const response = await fetch(getApiUrl(config.endpoints.blogs.delete(id)), {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          getApiUrl(config.endpoints.blogs.delete(id)),
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
         if (response.ok) {
           setData((prev) => prev.filter((item) => item.id !== id));
-          await Swal.fire("Eliminado", "Blog eliminado exitosamente", "success");
+          await Swal.fire(
+            "Eliminado",
+            "Blog eliminado exitosamente",
+            "success",
+          );
         } else {
           await Swal.fire("Error", "Error al eliminar el blog", "error");
         }
@@ -163,6 +175,7 @@ const BlogsTable = () => {
   };
 
   const openAddModal = () => {
+    setEditBlog(null); // Limpiar edición
     setIsAddModalOpen(true);
   };
 
@@ -195,37 +208,59 @@ const BlogsTable = () => {
               onClick={onClose}
               className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg cursor-pointer"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
               </svg>
             </button>
           </div>
 
           <div className="p-6">
-            <h2 className="text-3xl font-bold text-teal-700 mb-2">{blog.titulo}</h2>
+            <h2 className="text-3xl font-bold text-teal-700 mb-2">
+              {blog.titulo}
+            </h2>
             <p className="text-gray-500 mb-4">
-              {blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'Fecha no disponible'}
+              {blog.created_at
+                ? new Date(blog.created_at).toLocaleDateString()
+                : "Fecha no disponible"}
             </p>
 
             <div className="prose max-w-none">
               {/* Subtítulo principal */}
-              <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.subtitulo1}</h3>
+              <h3 className="text-xl font-semibold text-teal-600 mb-2">
+                {blog.subtitulo1}
+              </h3>
 
               {/* Subtítulo 2 como bloque nuevo */}
               <div className="my-6">
-                <h4 className="text-lg font-medium text-teal-600 mb-2">Acerca de este blog</h4>
+                <h4 className="text-lg font-medium text-teal-600 mb-2">
+                  Acerca de este blog
+                </h4>
                 <p className="text-gray-700">{blog.subtitulo2}</p>
               </div>
 
               {/* Parrafos */}
               {blog.parrafos?.map((p, i) => (
-                <p key={i} className="text-gray-700 mb-4">{p.parrafo}</p>
+                <p key={i} className="text-gray-700 mb-4">
+                  {p.parrafo}
+                </p>
               ))}
 
               {/* Video */}
               {blog.video_id?.trim() && (
                 <div className="my-6">
-                  <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.video_titulo || 'Video relacionado'}</h4>
+                  <h4 className="text-lg font-medium text-teal-600 mb-2">
+                    {blog.video_titulo || "Video relacionado"}
+                  </h4>
                   <div className="aspect-w-16 aspect-h-9">
                     <iframe
                       src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
@@ -247,7 +282,9 @@ const BlogsTable = () => {
       <div className="bg-gradient-to-r from-teal-600 to-teal-400 text-white p-8 shadow-md">
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold mb-2">Gestión de Blog</h1>
-          <p className="text-teal-50">Administra todas las publicaciones del blog de tu empresa</p>
+          <p className="text-teal-50">
+            Administra todas las publicaciones del blog de tu empresa
+          </p>
         </div>
       </div>
 
@@ -369,7 +406,9 @@ const BlogsTable = () => {
                       {blog.subtitulo2}
                     </p>
                     <div className="mt-auto pt-4 flex justify-between items-center">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">ID: {blog.id}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        ID: {blog.id}
+                      </span>
                       <span className="px-3 py-1 bg-teal-50 dark:bg-teal-800 text-teal-600 dark:text-teal-200 rounded-full text-xs font-medium">
                         Blog
                       </span>
@@ -393,7 +432,9 @@ const BlogsTable = () => {
                   d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                 />
               </svg>
-              <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No se encontraron blogs</h3>
+              <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">
+                No se encontraron blogs
+              </h3>
               <p className="mt-1 text-gray-500 dark:text-gray-400">
                 Intenta con otra búsqueda o crea un nuevo blog.
               </p>
@@ -406,7 +447,7 @@ const BlogsTable = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className={`${currentPage === 1 ? '' : 'cursor-pointer'} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
+                className={`${currentPage === 1 ? "" : "cursor-pointer"} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
               >
                 Anterior
               </button>
@@ -427,10 +468,11 @@ const BlogsTable = () => {
                   <button
                     key={i}
                     onClick={() => setCurrentPage(pageToShow)}
-                    className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${currentPage === pageToShow
-                      ? "bg-teal-500 text-white border-teal-500"
-                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                      }`}
+                    className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${
+                      currentPage === pageToShow
+                        ? "bg-teal-500 text-white border-teal-500"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    }`}
                   >
                     {pageToShow}
                   </button>
@@ -438,9 +480,11 @@ const BlogsTable = () => {
               })}
 
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? '' : 'cursor-pointer'} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
+                className={`${currentPage === totalPages ? "" : "cursor-pointer"} px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
               >
                 Siguiente
               </button>
@@ -449,7 +493,9 @@ const BlogsTable = () => {
         </div>
       </div>
 
-      {selectedBlog && <BlogPreview blog={selectedBlog} onClose={closePreview} />}
+      {selectedBlog && (
+        <BlogPreview blog={selectedBlog} onClose={closePreview} />
+      )}
     </div>
   );
 };
