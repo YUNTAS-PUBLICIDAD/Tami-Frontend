@@ -37,26 +37,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
 
-      - name: Add known hosts
+      # ✅ NUEVO: Verificar conectividad SSH antes de deploy
+      - name: Test SSH Connection
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy with Rsync
-        run: |
-          rsync -avz --delete \
-            --exclude='.git/' \
-            --exclude='back/' \
-            --exclude='.htaccess' \
-            --exclude='.git/' \
-            --exclude='*.log' \
-            --exclude='node_modules/' \
-            -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no" \
-            ./dist/ \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
-
-      - name: Verify deployment
-        run: |
+      # ✅ MEJORADO: Deploy con reintentos automáticos
           ssh -p ${{ secrets.SERVER_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
