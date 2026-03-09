@@ -4,8 +4,7 @@ import AddBlogModal from "./AddBlogModel.tsx";
 import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
 
-import { FaFileCsv, FaFileExcel, FaFilePdf, FaDownload } from "react-icons/fa";
-import { saveAs } from "file-saver"; // Opcional, xlsx suele bastar
+import { FaFileCsv, FaFileExcel, FaFilePdf } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -112,7 +111,8 @@ const BlogsTable = () => {
   };
 
   useEffect(() => {
-    fetchData();
+  fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleBlogAdded = () => {
@@ -120,9 +120,9 @@ const BlogsTable = () => {
     setIsAddModalOpen(false); // opcional, si controlas el modal desde aquí
   };
 
-  const filteredData = data.filter(blog =>
-    blog.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.subtitulo2.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = data.filter((blog) =>
+  (blog.titulo ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (blog.subtitulo2 ?? "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -186,10 +186,12 @@ const BlogsTable = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
           <div className="relative">
-            <img
+             <img
               src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
               alt={blog.titulo}
-              className="w-full h-64 object-cover rounded-t-xl"
+              loading="lazy"
+              decoding="async"
+              className="max-w-full max-h-full object-contain mx-auto"
             />
             <button
               onClick={onClose}
