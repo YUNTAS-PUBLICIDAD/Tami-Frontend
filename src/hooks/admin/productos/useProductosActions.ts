@@ -3,45 +3,22 @@
  * @description Este archivo contiene los hooks para las acciones de los productos.
  */
 
-import { getApiUrl, config } from "config"; // importa la configuración de la API
+import { config } from "config"; // importa la configuración de la API
+import apiClient from "../../../services/apiClient";
 import type Producto from "../../../models/Product.ts"; // importa el modelo de producto
 
 const useProductoAcciones = () => {
   /**
-   * Obtiene el token de autenticación del localStorage y realiza la solicitud a la API.
-   * Si no se encuentra el token, lanza un error.
-   */
-
-  const getValidToken = () => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No se encontró el token");
-    return token;
-  };
-
-  /**
    * Funcion para añadir un producto usando FormData
    */
   const addProducto = async (productoData: FormData): Promise<Producto> => {
-    const token = getValidToken();
-    const url = getApiUrl(config.endpoints.productos.create);
-
-    const response = await fetch(url, {
-      method: "POST",
+    const response = await apiClient.post(config.endpoints.productos.create, productoData, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-      body: productoData,
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error en la respuesta:", errorData);
-      throw new Error("Error al agregar producto");
-    }
-
-    const result: { data: Producto } = await response.json();
-    return result.data;
+    return response.data.data;
   };
 
   /**
@@ -51,47 +28,21 @@ const useProductoAcciones = () => {
     id: number,
     updatedData: FormData
   ): Promise<Producto> => {
-    const token = getValidToken();
-    const url = getApiUrl(config.endpoints.productos.update(id));
-
-    const response = await fetch(url, {
-      method: "POST",
+    const response = await apiClient.post(config.endpoints.productos.update(id), updatedData, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-      body: updatedData,
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error al actualizar producto:", errorData);
-      throw new Error("Error al actualizar producto");
-    }
-
-    const result: { data: Producto } = await response.json();
-    return result.data;
+    return response.data.data;
   };
 
   /**
    * Función para eliminar un producto, usando los tipos
    */
-
   const deleteProducto = async (id: number): Promise<{ message: string }> => {
-    const token = getValidToken();
-    const url = getApiUrl(config.endpoints.productos.delete(id));
-
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) throw new Error("Error al eliminar producto");
-
-    const result: { message: string } = await response.json();
-    return result;
+    const response = await apiClient.delete(config.endpoints.productos.delete(id));
+    return response.data;
   };
 
   return {

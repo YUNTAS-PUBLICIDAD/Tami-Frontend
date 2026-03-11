@@ -4,6 +4,11 @@ import AddBlogModal from "./AddBlogModel.tsx";
 import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
 
+import { FaFileCsv, FaFileExcel, FaFilePdf } from "react-icons/fa";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 interface Blog {
   id: number;
   titulo: string;
@@ -32,6 +37,58 @@ const BlogsTable = () => {
   const [editBlog, setEditBlog] = useState<Blog | null>(null);
   const itemsPerPage = 6;
 
+
+
+
+
+
+  const exportToCSV = () => {
+    const ws = XLSX.utils.json_to_sheet(data.map(blog => ({
+      ID: blog.id,
+      Titulo: blog.titulo,
+      Subtitulo: blog.subtitulo1,
+      Fecha: blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'N/A'
+    })));
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "blogs_reporte.csv";
+    link.click();
+  };
+
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data.map(blog => ({
+      ID: blog.id,
+      Titulo: blog.titulo,
+      Subtitulo: blog.subtitulo1,
+      Fecha: blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'N/A'
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Blogs");
+    XLSX.writeFile(workbook, "blogs_reporte.xlsx");
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Reporte de Blogs", 14, 15);
+
+    const tableColumn = ["ID", "Titulo", "Subtitulo", "Fecha"];
+    const tableRows = data.map(blog => [
+      blog.id,
+      blog.titulo,
+      blog.subtitulo1,
+      blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'N/A'
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+    doc.save("blogs_reporte.pdf");
+  };
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -54,7 +111,8 @@ const BlogsTable = () => {
   };
 
   useEffect(() => {
-    fetchData();
+  fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleBlogAdded = () => {
@@ -62,9 +120,9 @@ const BlogsTable = () => {
     setIsAddModalOpen(false); // opcional, si controlas el modal desde aquí
   };
 
-  const filteredData = data.filter(blog =>
-    blog.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.subtitulo2.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = data.filter((blog) =>
+  (blog.titulo ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (blog.subtitulo2 ?? "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -128,10 +186,12 @@ const BlogsTable = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
           <div className="relative">
-            <img
+             <img
               src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
               alt={blog.titulo}
-              className="w-full h-64 object-cover rounded-t-xl"
+              loading="lazy"
+              decoding="async"
+              className="max-w-full max-h-full object-contain mx-auto"
             />
             <button
               onClick={onClose}
@@ -209,14 +269,47 @@ const BlogsTable = () => {
               />
             </div>
 
-            <button
-              type="button"
-              onClick={openAddModal}
-              className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-full shadow hover:bg-teal-700 flex-shrink-0"
-            >
-              <FaPlus />
-              Añadir Blog
-            </button>
+            <div className="flex flex-wrap gap-2 flex-shrink-0">
+              {/* Botón Excel */}
+              <button
+                onClick={exportToExcel}
+                className="flex items-center gap-2 bg-green-600 text-white px-3 py-2 rounded-lg shadow hover:bg-green-700 text-sm transition-colors"
+                title="Exportar a Excel"
+              >
+                <FaFileExcel />
+                <span className="hidden sm:inline">Excel</span>
+              </button>
+
+              {/* Botón CSV */}
+              <button
+                onClick={exportToCSV}
+                className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg shadow hover:bg-blue-700 text-sm transition-colors"
+                title="Exportar a CSV"
+              >
+                <FaFileCsv />
+                <span className="hidden sm:inline">CSV</span>
+              </button>
+
+              {/* Botón PDF */}
+              <button
+                onClick={exportToPDF}
+                className="flex items-center gap-2 bg-red-600 text-white px-3 py-2 rounded-lg shadow hover:bg-red-700 text-sm transition-colors"
+                title="Exportar a PDF"
+              >
+                <FaFilePdf />
+                <span className="hidden sm:inline">PDF</span>
+              </button>
+
+              {/* Botón Añadir Blog (El tuyo original) */}
+              <button
+                type="button"
+                onClick={openAddModal}
+                className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg shadow hover:bg-teal-700 flex-shrink-0 font-medium"
+              >
+                <FaPlus />
+                Añadir Blog
+              </button>
+            </div>
 
             <AddBlogModal
               onBlogAdded={handleBlogAdded}
@@ -337,8 +430,8 @@ const BlogsTable = () => {
                     key={i}
                     onClick={() => setCurrentPage(pageToShow)}
                     className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${currentPage === pageToShow
-                        ? "bg-teal-500 text-white border-teal-500"
-                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      ? "bg-teal-500 text-white border-teal-500"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                       }`}
                   >
                     {pageToShow}
