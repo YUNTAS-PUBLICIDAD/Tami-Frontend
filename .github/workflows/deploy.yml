@@ -76,6 +76,7 @@ jobs:
 
       - name: Verify deployment
         run: |
+
           ssh -p ${{ secrets.SERVER_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
