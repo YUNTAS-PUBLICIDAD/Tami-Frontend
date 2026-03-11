@@ -454,6 +454,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup3_sin_fondo]",
                 formData.etiqueta.popup3_sin_fondo ? "true" : "false"
             );
+            formDataToSend.append(
+                "etiqueta[popup_button_color]",
+                formData.etiqueta.popup_button_color || "#008B8B"
+            );
+            formDataToSend.append(
+                "etiqueta[popup_text_color]",
+                formData.etiqueta.popup_text_color || "#000000"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -1381,6 +1389,58 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     )}
                                                 </label>
                                             ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Color del Botón del Popup:</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="color"
+                                                value={formData.etiqueta.popup_button_color || "#008B8B"}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        etiqueta: {
+                                                            ...prev.etiqueta,
+                                                            popup_button_color: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
+                                            />
+                                            <div className="flex flex-col gap-2">
+                                                <span className="text-sm font-medium text-gray-700">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 px-3 py-1 rounded border border-gray-300">
+                                                    {formData.etiqueta.popup_button_color || "#008B8B"}
+                                                </code>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Color del Texto del Popup:</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="color"
+                                                value={formData.etiqueta.popup_text_color || "#000000"}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        etiqueta: {
+                                                            ...prev.etiqueta,
+                                                            popup_text_color: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
+                                            />
+                                            <div className="flex flex-col gap-2">
+                                                <span className="text-sm font-medium text-gray-700">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 px-3 py-1 rounded border border-gray-300">
+                                                    {formData.etiqueta.popup_text_color || "#000000"}
+                                                </code>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
