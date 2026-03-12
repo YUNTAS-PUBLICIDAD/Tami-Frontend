@@ -1331,39 +1331,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     <p className="text-sm text-gray-600 text-center px-2">
                                                         {descripcionesPopup[index]}
                                                     </p>
-                                                    {formData.etiqueta.popup_estilo === estilo && (
-                                                        <div className="w-full mt-2">
-                                                            <input
-                                                                type="text"
-                                                                placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
-                                                                value={
-                                                                    estilo === "estilo1"
-                                                                        ? formData.etiqueta.titulo_popup_1 || ""
-                                                                        : estilo === "estilo2"
-                                                                            ? formData.etiqueta.titulo_popup_2 || ""
-                                                                            : formData.etiqueta.titulo_popup_3 || ""
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setFormData((prev) => ({
-                                                                        ...prev,
-                                                                        etiqueta: {
-                                                                            ...prev.etiqueta,
-                                                                            ...(estilo === "estilo1" && {
-                                                                                titulo_popup_1: e.target.value,
-                                                                            }),
-                                                                            ...(estilo === "estilo2" && {
-                                                                                titulo_popup_2: e.target.value,
-                                                                            }),
-                                                                            ...(estilo === "estilo3" && {
-                                                                                titulo_popup_3: e.target.value,
-                                                                            }),
-                                                                        },
-                                                                    }))
-                                                                }
-                                                                className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
-                                                            />
-                                                        </div>
-                                                    )}
+                                                    {/* El título del popup fue removido a petición */}
 
 
                                                     {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
