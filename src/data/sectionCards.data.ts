@@ -1,6 +1,12 @@
-import bg_card1 from "@images/index/cards/negocio.png";
-import bg_card2 from "@images/index/cards/decoracion.png";
-import bg_card3 from "@images/index/cards/maquinarias.png";
+// import bg_card1 from "@images/index/cards/negocio.png";
+import bg_card1 from "@images/index/cards/negocio.webp";
+
+// import bg_card2 from "@images/index/cards/decoracion.png";
+import bg_card2 from "@images/index/cards/decoracion.webp";
+
+// import bg_card3 from "@images/index/cards/maquinarias.png";
+import bg_card3 from "@images/index/cards/maquinarias.webp";
+
 
 const sectionCards = [
   {

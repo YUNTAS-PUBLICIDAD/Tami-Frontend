@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WhatsappConnection from './WhatsappConnection';
 import CampañaForm from './CampañaForm';
+import { useWhatsapp } from 'src/hooks/admin/whatsapp/useWhatsapp';
 interface WhatsappFormWithTabsProps {
     onClose: () => void;
 }
@@ -35,6 +36,7 @@ Atentamente,
 *Tami Maquinarias*`;
 
 export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsProps) {
+    const { getTemplateByProduct, updateTemplateByProduct, deleteTemplateByProduct } = useWhatsapp();
     const [productos, setProductos] = useState<Producto[]>([]);
     const [selectedProductoId, setSelectedProductoId] = useState<number | null>(null);
     const [template, setTemplate] = useState('');
@@ -72,13 +74,9 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
         const fetchTemplate = async () => {
             setIsLoadingTemplate(true);
             try {
-                const response = await fetch(
-                    `${import.meta.env.PUBLIC_API_URL}/api/v1/whatsapp/template/product/${selectedProductoId}`
-                );
-                const data = await response.json();
-                
-                if (data && data.data && data.data.content) {
-                    setTemplate(data.data.content);
+                const response = await getTemplateByProduct(selectedProductoId);
+                if (response.success && response.data) {
+                    setTemplate(response.data);
                     setHasCustomTemplate(true);
                 } else {
                     setTemplate(DEFAULT_TEMPLATE);
@@ -104,16 +102,9 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
 
         setIsSaving(true);
         try {
-            const response = await fetch(
-                `${import.meta.env.PUBLIC_API_URL}/api/v1/whatsapp/template/product/${selectedProductoId}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: template })
-                }
-            );
+            const response = await updateTemplateByProduct(selectedProductoId, template);
 
-            if (response.ok) {
+            if (response.success) {
                 setHasCustomTemplate(true);
                 alert('¡Plantilla guardada para este producto!');
             } else {
@@ -138,12 +129,9 @@ export default function WhatsappFormWithTabs({ onClose }: WhatsappFormWithTabsPr
 
         if (confirm('¿Estás seguro de que quieres eliminar la plantilla personalizada? Se usará la plantilla por defecto.')) {
             try {
-                const response = await fetch(
-                    `${import.meta.env.PUBLIC_API_URL}/api/v1/whatsapp/template/product/${selectedProductoId}`,
-                    { method: 'DELETE' }
-                );
+                const response = await deleteTemplateByProduct(selectedProductoId);
 
-                if (response.ok) {
+                if (response.success) {
                     setTemplate(DEFAULT_TEMPLATE);
                     setHasCustomTemplate(false);
                     alert('Plantilla personalizada eliminada. Se usará la plantilla por defecto.');
