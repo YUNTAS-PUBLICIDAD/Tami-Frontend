@@ -70,12 +70,12 @@ const { link = "" } = Astro.props as ModalProps;
         >
         </h2>
 
-        <form id="form-cotizacion-producto" class="flex flex-col gap-3">
+        <form id="form-cotizacion-producto" class="flex flex-col gap-2">
           <!-- <label class="text-base sm:text-lg font-bold select-none">Nombre</label> -->
           <input
             type="text"
             name="nombre"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="input-style"
             placeholder="Nombre y Apellidos"
             required
           />
@@ -84,7 +84,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="email"
             name="correo"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="input-style"
             placeholder="Correo@gmail.com"
             required
           />
@@ -105,12 +105,6 @@ const { link = "" } = Astro.props as ModalProps;
           >
             buttonText
           </button>
-          <p
-            id="modal-negocios-text"
-            class="text-center mt-3 text-base sm:text-lg text-white hidden font-bold tracking-wide"
-          >
-            Asesoría gratuita
-          </p>
         </form>
         <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
       </div>
@@ -526,12 +520,6 @@ const { link = "" } = Astro.props as ModalProps;
       backgroundModal.classList.add(sectionConfig.gradient);
     }
 
-    const negociosText = document.getElementById("modal-negocios-text");
-
-    if (negociosText) {
-      negociosText.classList.remove("hidden");
-    }
-
     if (btn) {
       // Resetear clases de botón completamente para evitar conflictos de Tailwind
       btn.className =
@@ -631,6 +619,16 @@ const { link = "" } = Astro.props as ModalProps;
 </script>
 
 <style>
+  .input-style {
+    background: white;
+    color: #111;
+    padding: 8px, 12px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    font-size: 14px;
+    width: 100%;
+  }
+
   /* GRADIENTES DEL MODAL */
   .custom-gradient-negocio,
   .custom-gradient-maquinaria,
@@ -675,9 +673,9 @@ const { link = "" } = Astro.props as ModalProps;
     /* 📱 SOLO MÓVIL */
   @media (max-width: 640px) {
     .input-style {
-      padding: 10px 12px;   /* ↓ menos alto */
-      font-size: 14px;      /* ↓ texto un poco más chico */
-      border-radius: 12px;  /* opcional */
+      padding: 7px 10px;   /* ↓ menos alto */
+      font-size: 13px;      /* ↓ texto un poco más chico */
+      border-radius: 8px;  /* opcional */
     }
   }
 

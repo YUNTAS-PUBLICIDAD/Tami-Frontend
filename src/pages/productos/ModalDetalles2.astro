@@ -50,7 +50,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         <span class="font-extrabold">Gratis</span>
       </h2>
 
-      <form id="form-cotizacion-producto-2" class="flex flex-col gap-4">
+      <form id="form-cotizacion-producto-2" class="flex flex-col gap-2">
         <input
           type="text"
           name="nombre"
@@ -72,7 +72,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           required
           class="input-style"
         />
-
+        <p id="modal2-cotizacion-mensaje" class="text-center mt-2 text-sm"></p>
         <button
           type="submit"
           class="btn-white-pill mt-4 font-bold text-lg sm:text-3xl self-center w-auto px-10 sm:px-14"
@@ -91,21 +91,22 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     background: linear-gradient(180deg, #002ade 0%, #003a9f 40%, #004c5d 100%);
   }
 
-.input-style {
-  background: white;
-  color: #111;
-  padding: 14px;
-  border-radius: 14px;
-  border: 2px solid #7aa2ff;
-  box-shadow: 0 0 0 3px rgba(122,162,255,.15);
-}
+  .input-style {
+    background: white;
+    color: #111;
+    padding: 8px 12px;   
+    border-radius: 10px; 
+    border: 2px solid #7aa2ff;
+    box-shadow: 0 0 0 3px rgba(122,162,255,.15);
+    font-size: 14px;
+  }
 /* 📱 SOLO MÓVIL */
 @media (max-width: 640px) {
-  .input-style {
-    padding: 10px 12px;   /* ↓ menos alto */
-    font-size: 14px;      /* ↓ texto un poco más chico */
-    border-radius: 12px;  /* opcional */
-  }
+    .input-style {
+      padding: 7px 10px; 
+      font-size: 13px;    
+      border-radius: 8px; 
+    }
 }
 
   .btn-white-pill {
