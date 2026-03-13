@@ -439,6 +439,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo);
+      formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "");
       formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto)
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo)
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho)
@@ -1026,6 +1027,25 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         </label>
                       ))}
                     </div>
+                  </div>
+                  <div className="form-input mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Texto del botón del popup:</label>
+                    <input
+                      type="text"
+                      value={formData.etiqueta.popup_button_text || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          etiqueta: {
+                            ...prev.etiqueta,
+                            popup_button_text: e.target.value,
+                          },
+                        }))
+                      }
+                      placeholder="Ej: ¡COTIZA AHORA!"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Si se deja vacío, se usará el texto por defecto según el estilo.</p>
                   </div>
                 </div>
 

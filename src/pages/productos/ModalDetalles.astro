@@ -247,7 +247,7 @@ const { link = "" } = Astro.props as ModalProps;
     }
 
     // ---- ESTILO 1 (TU MODAL ACTUAL) ----
-    aplicarConfig();
+    aplicarConfig(producto?.etiqueta?.popup_button_text);
 
     const modal = document.getElementById("modal-cotizacion-producto");
     const mensaje = document.getElementById("modal-cotizacion-mensaje");
@@ -509,7 +509,7 @@ const { link = "" } = Astro.props as ModalProps;
     });
   });
 
-  function aplicarConfig() {
+  function aplicarConfig(customButtonText?: string) {
     const backgroundModal = document.getElementById("background-modal");
     const formContainer = document.getElementById("modal-form-container");
     const title = document.getElementById("modal-title");
@@ -542,7 +542,7 @@ const { link = "" } = Astro.props as ModalProps;
       btn.classList.add(...extraClasses);
 
       // Aplicar texto
-      btn.textContent = sectionConfig.buttonText || "¡COTIZA AHORA!";
+      btn.textContent = customButtonText || sectionConfig.buttonText || "¡COTIZA AHORA!";
     }
   }
 

@@ -182,6 +182,18 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     }
   }
 
+  async function actualizarBotonModal2() {
+    const producto = await obtenerProductoActual();
+    const submitBtn = document.querySelector(
+      "#modal-detalles-2 button[type='submit']",
+    ) as HTMLButtonElement | null;
+    if (!submitBtn) return;
+    const textoBoton = producto?.etiqueta?.popup_button_text;
+    if (textoBoton) {
+      submitBtn.textContent = textoBoton;
+    }
+  }
+
   /* ================= IMAGEN DINÁMICA ================= */
   async function actualizarImagenModal2() {
     const container = document.querySelector("#modal2-form-container");
@@ -237,6 +249,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       if (!modal2.classList.contains("hidden")) {
         await actualizarImagenModal2();
         await actualizarTituloModal2();
+        await actualizarBotonModal2();
       }
     });
 

@@ -454,6 +454,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup3_sin_fondo]",
                 formData.etiqueta.popup3_sin_fondo ? "true" : "false"
             );
+            formDataToSend.append(
+                "etiqueta[popup_button_text]",
+                formData.etiqueta.popup_button_text || ""
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -720,6 +724,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
                     titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
                     popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+                    popup_button_text: product.etiqueta?.popup_button_text || "",
                 },
                 stock: product.stock,
                 precio: product.precio,
@@ -1382,6 +1387,25 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 </label>
                                             ))}
                                         </div>
+                                    </div>
+                                    <div className="form-input mt-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Texto del botón del popup:</label>
+                                        <input
+                                            type="text"
+                                            value={formData.etiqueta.popup_button_text || ""}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    etiqueta: {
+                                                        ...prev.etiqueta,
+                                                        popup_button_text: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            placeholder="Ej: ¡COTIZA AHORA!"
+                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Si se deja vacío, se usará el texto por defecto según el estilo.</p>
                                     </div>
                                 </div>
 

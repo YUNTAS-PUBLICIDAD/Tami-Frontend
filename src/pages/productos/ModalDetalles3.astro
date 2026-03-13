@@ -184,6 +184,13 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           producto.etiqueta?.titulo_popup_3 ||
           "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS";
       }
+
+      const submitBtn = document.querySelector(
+        "#modal-detalles-3 button[type='submit']",
+      ) as HTMLButtonElement | null;
+      if (submitBtn && producto.etiqueta?.popup_button_text) {
+        submitBtn.textContent = producto.etiqueta.popup_button_text;
+      }
     }
 
     modalImg.src = imagen;
