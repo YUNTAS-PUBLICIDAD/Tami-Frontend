@@ -174,16 +174,16 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       }
 
       // Estilos del boton
-    document
-      .getElementById("modal3-submit-btn")
-      ?.style.setProperty(
+      const submitBtn3 = document.getElementById("modal3-submit-btn");
+      submitBtn3?.style.setProperty(
         "background",
         producto?.etiqueta?.popup_button_color,
         "important",
       );
-    document
-      .getElementById("modal3-submit-btn")
-      ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+      submitBtn3?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+      if (submitBtn3 && producto?.etiqueta?.popup_button_text) {
+        submitBtn3.textContent = producto.etiqueta.popup_button_text;
+      }
     }
 
     const tituloModal3 = document.getElementById("modal3-title");

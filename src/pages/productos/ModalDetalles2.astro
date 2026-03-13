@@ -221,16 +221,16 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       }
 
       // Estilos del boton
-    document
-      .getElementById("modal2-submit-btn")
-      ?.style.setProperty(
+      const submitBtn2 = document.getElementById("modal2-submit-btn");
+      submitBtn2?.style.setProperty(
         "background",
         producto?.etiqueta?.popup_button_color,
         "important",
       );
-    document
-      .getElementById("modal-submit-btn")
-      ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+      submitBtn2?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+      if (submitBtn2 && producto?.etiqueta?.popup_button_text) {
+        submitBtn2.textContent = producto.etiqueta.popup_button_text;
+      }
     }
     
 

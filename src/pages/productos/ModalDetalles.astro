@@ -266,9 +266,10 @@ const { link = "" } = Astro.props as ModalProps;
       ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
 
       // Letras del boton modal-submit-btn
-      document
-      .getElementById("modal-submit-btn")
-      ?.style.setProperty("text", producto?.etiqueta?.popup_button_text || "¡Cotiza ahora!");
+      const submitBtnEl = document.getElementById("modal-submit-btn");
+      if (submitBtnEl && producto?.etiqueta?.popup_button_text) {
+        submitBtnEl.textContent = producto.etiqueta.popup_button_text;
+      }
   }
 
   /**
