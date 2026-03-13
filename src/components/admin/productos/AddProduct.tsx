@@ -440,6 +440,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo);
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
+      formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
+      formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "¡COTIZA AHORA!");
       formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto)
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo)
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho)
@@ -1079,6 +1081,25 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         </code>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="form-input">
+                    <label>Texto del Botón del Popup:</label>
+                    <input
+                      type="text"
+                      value={formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          etiqueta: {
+                            ...prev.etiqueta,
+                            popup_button_text: e.target.value,
+                          },
+                        }))
+                      }
+                      placeholder="Ej: ¡COTIZA AHORA!"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
+                    />
                   </div>
                 </div>
 

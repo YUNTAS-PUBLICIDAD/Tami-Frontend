@@ -229,8 +229,14 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         "important",
       );
     document
-      .getElementById("modal-submit-btn")
+      .getElementById("modal2-submit-btn")
       ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+
+    const popupButtonText = producto?.etiqueta?.popup_button_text?.trim();
+    const submitBtn2 = document.getElementById("modal2-submit-btn");
+    if (submitBtn2) {
+      submitBtn2.textContent = popupButtonText || "¡Cotiza ahora!";
+    }
     }
     
 

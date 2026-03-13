@@ -184,6 +184,12 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     document
       .getElementById("modal3-submit-btn")
       ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+
+    const popupButtonText = producto?.etiqueta?.popup_button_text?.trim();
+    const submitBtn3 = document.getElementById("modal3-submit-btn");
+    if (submitBtn3) {
+      submitBtn3.textContent = popupButtonText || "¡Solicitar asesoría!";
+    }
     }
 
     const tituloModal3 = document.getElementById("modal3-title");
