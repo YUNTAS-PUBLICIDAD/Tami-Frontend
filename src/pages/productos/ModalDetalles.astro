@@ -71,7 +71,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="text"
             name="nombre"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="w-full py-1.5 px-3 text-sm rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
             placeholder="Nombre y Apellidos"
             required
           />
@@ -80,7 +80,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="email"
             name="correo"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="w-full py-1.5 px-3 text-sm rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
             placeholder="Correo@gmail.com"
             required
           />
@@ -89,7 +89,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="tel"
             name="telefono"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="w-full py-1.5 px-3 text-sm rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
             placeholder="Teléfono: 905 876 524"
             required
           />
@@ -264,6 +264,11 @@ const { link = "" } = Astro.props as ModalProps;
     document
       .getElementById("modal-submit-btn")
       ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+
+      // Letras del boton modal-submit-btn
+      document
+      .getElementById("modal-submit-btn")
+      ?.style.setProperty("text", producto?.etiqueta?.popup_button_text || "¡Cotiza ahora!");
   }
 
   /**

@@ -53,6 +53,7 @@ export interface ProductFormularioPOST {
     titulo_popup_3?: string;
     popup_button_color?: string;
     popup_text_color?: string;
+    popup_button_text?: string;
   };
 }
 
@@ -104,6 +105,7 @@ export default interface Producto {
     titulo_popup_3?: string;
     popup_button_color?: string;
     popup_text_color?: string;
+    popup_button_text?: string;
   };
   dimensiones: {
     largo: string;
@@ -134,6 +136,7 @@ export const defaultValuesProduct: ProductFormularioPOST = {
     titulo_popup_3: "",
     popup_button_color: "#008B8B",
     popup_text_color: "#000000",
+    popup_button_text: "¡Cotiza ahora!",
   },
   relacionados: [],
   imagenes: [

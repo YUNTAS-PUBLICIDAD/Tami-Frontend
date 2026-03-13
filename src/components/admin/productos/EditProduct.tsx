@@ -462,6 +462,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup_text_color]",
                 formData.etiqueta.popup_text_color || "#000000"
             );
+            formDataToSend.append(
+                "etiqueta[popup_button_text]",
+                formData.etiqueta.popup_button_text || "¡Cotiza ahora!"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -1410,6 +1414,25 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 </code>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Texto del Botón del Popup:</label>
+                                        <input
+                                            type="text"
+                                            value={formData.etiqueta.popup_button_text || "¡Cotiza ahora!"}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    etiqueta: {
+                                                        ...prev.etiqueta,
+                                                        popup_button_text: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            placeholder="Ej: ¡Cotiza ahora!"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        />
                                     </div>
                                 </div>
 
