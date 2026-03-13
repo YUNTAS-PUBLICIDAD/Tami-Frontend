@@ -1378,8 +1378,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
                                             />
                                             <div className="flex flex-col gap-2">
-                                                <span className="text-sm font-medium text-gray-700">Color seleccionado:</span>
-                                                <code className="text-xs bg-gray-100 px-3 py-1 rounded border border-gray-300">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
                                                     {formData.etiqueta.popup_button_color || "#008B8B"}
                                                 </code>
                                             </div>
@@ -1404,8 +1404,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
                                             />
                                             <div className="flex flex-col gap-2">
-                                                <span className="text-sm font-medium text-gray-700">Color seleccionado:</span>
-                                                <code className="text-xs bg-gray-100 px-3 py-1 rounded border border-gray-300">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
                                                     {formData.etiqueta.popup_text_color || "#000000"}
                                                 </code>
                                             </div>
