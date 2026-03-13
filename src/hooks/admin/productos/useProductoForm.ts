@@ -82,6 +82,7 @@ const useProductForm = (
                     meta_titulo: producto.etiqueta.meta_titulo,
                     meta_descripcion: producto.etiqueta.meta_descripcion,
                     popup_estilo: producto.etiqueta.popup_estilo,
+                    popup_button_color: producto.etiqueta.popup_button_color,
                 }
             });
             setIsEditing(true);
