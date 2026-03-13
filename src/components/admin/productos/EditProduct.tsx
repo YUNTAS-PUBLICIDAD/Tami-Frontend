@@ -454,6 +454,14 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup3_sin_fondo]",
                 formData.etiqueta.popup3_sin_fondo ? "true" : "false"
             );
+            formDataToSend.append(
+                "etiqueta[popup_button_color]",
+                formData.etiqueta.popup_button_color || ""
+            );
+            formDataToSend.append(
+                "etiqueta[popup_text_color]",
+                formData.etiqueta.popup_text_color || ""
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -720,6 +728,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
                     titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
                     popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+                    popup_button_color: product.etiqueta?.popup_button_color || "",
+                    popup_text_color: product.etiqueta?.popup_text_color || "",
                 },
                 stock: product.stock,
                 precio: product.precio,
@@ -1381,6 +1391,43 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     )}
                                                 </label>
                                             ))}
+                                        </div>
+                                    </div>
+                                    {/** colores del popup */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                        <div className="form-input">
+                                            <label>Color del botón del Popup:</label>
+                                            <input
+                                                type="color"
+                                                value={formData.etiqueta.popup_button_color || "#000000"}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        etiqueta: {
+                                                            ...prev.etiqueta,
+                                                            popup_button_color: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                className="w-full h-10 px-1 py-1 border border-gray-300 rounded-lg cursor-pointer"
+                                            />
+                                        </div>
+                                        <div className="form-input">
+                                            <label>Color del texto del Popup:</label>
+                                            <input
+                                                type="color"
+                                                value={formData.etiqueta.popup_text_color || "#000000"}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        etiqueta: {
+                                                            ...prev.etiqueta,
+                                                            popup_text_color: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                className="w-full h-10 px-1 py-1 border border-gray-300 rounded-lg cursor-pointer"
+                                            />
                                         </div>
                                     </div>
                                 </div>

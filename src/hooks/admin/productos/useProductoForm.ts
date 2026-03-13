@@ -47,6 +47,8 @@ const useProductForm = (
             meta_titulo: "",
             meta_descripcion: "",
             popup_estilo: "estilo1",
+            popup_button_color: "",
+            popup_text_color: "",
         }
     });
 
@@ -82,6 +84,8 @@ const useProductForm = (
                     meta_titulo: producto.etiqueta.meta_titulo,
                     meta_descripcion: producto.etiqueta.meta_descripcion,
                     popup_estilo: producto.etiqueta.popup_estilo,
+                    popup_button_color: producto.etiqueta.popup_button_color || "",
+                    popup_text_color: producto.etiqueta.popup_text_color || "",
                 }
             });
             setIsEditing(true);
@@ -305,6 +309,8 @@ const useProductForm = (
                 meta_titulo: "",
                 meta_descripcion: "",
                 popup_estilo: "estilo1",
+                popup_button_color: "",
+                popup_text_color: "",
             }
         });
         setIsEditing(false);
