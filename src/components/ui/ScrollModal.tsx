@@ -275,21 +275,23 @@ const ScrollModal = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <h2 className="text-2xl sm:text-3xl text-center font-medium leading-tight select-none animate-fadeInUp mb-2 text-white">
-              DESCARGA <span className="font-bold">GRATIS</span>
-              <br />
-              NUESTRO <span className="font-bold">CATÁLOGO</span>
-            </h2>
+            <div className="flex justify-center w-full mt-4">
+              <h2 className="text-2xl sm:text-3xl text-center font-medium leading-tight select-none animate-fadeInUp mb-2 text-white">
+                DESCARGA <span className="font-bold">GRATIS</span>
+                <br />
+                NUESTRO <span className="font-bold">CATÁLOGO</span>
+              </h2>
+            </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
               <input
                 type="text"
                 placeholder="Nombres y Apellidos"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="p-2 rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               />
-              <p className="text-sm text-yellow-100 min-h-[20px]">{errors.nombre}</p>
+              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
 
 
               <input
@@ -302,25 +304,25 @@ const ScrollModal = () => {
                   const val = e.target.value.replace(/\D/g, '');
                   setTelefono(val);
                 }}
-                className="p-2 rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               />
-              <p className="text-sm text-yellow-100 min-h-[20px]">{errors.telefono}</p>
+              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
 
               <input
                 type="email"
                 placeholder="Correo electrónico"
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
-                className="p-2 rounded-lg bg-white text-black outline-none mb-1 focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
               />
-              <p className={`text-sm text-center min-h-[20px] ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
+              <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
                 {errors.correo || errors.general || successMessage}
               </p>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-2 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-0 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
