@@ -462,6 +462,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup_text_color]",
                 formData.etiqueta.popup_text_color || "#000000"
             );
+            formDataToSend.append(
+                "etiqueta[popup_button_text]",
+                formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -728,6 +732,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
                     titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
                     popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+                    popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
+                    popup_text_color: product.etiqueta?.popup_text_color || "#000000",
+                    popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
                 },
                 stock: product.stock,
                 precio: product.precio,
@@ -1378,8 +1385,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
                                             />
                                             <div className="flex flex-col gap-2">
-                                                <span className="text-sm font-medium text-gray-700">Color seleccionado:</span>
-                                                <code className="text-xs bg-gray-100 px-3 py-1 rounded border border-gray-300">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
                                                     {formData.etiqueta.popup_button_color || "#008B8B"}
                                                 </code>
                                             </div>
@@ -1404,12 +1411,31 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
                                             />
                                             <div className="flex flex-col gap-2">
-                                                <span className="text-sm font-medium text-gray-700">Color seleccionado:</span>
-                                                <code className="text-xs bg-gray-100 px-3 py-1 rounded border border-gray-300">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
                                                     {formData.etiqueta.popup_text_color || "#000000"}
                                                 </code>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Texto del Botón del Popup:</label>
+                                        <input
+                                            type="text"
+                                            value={formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    etiqueta: {
+                                                        ...prev.etiqueta,
+                                                        popup_button_text: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            placeholder="Ej: ¡COTIZA AHORA!"
+                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
+                                        />
                                     </div>
                                 </div>
 
