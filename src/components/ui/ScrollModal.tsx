@@ -7,6 +7,9 @@ import { origenCliente } from "@data/origenCliente";
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
 const SESSION_STORAGE_KEY = "catalogModalSessionShown";
+const DEFAULT_BUTTON_BG_COLOR = "#00625A";
+const DEFAULT_BUTTON_TEXT_COLOR = "#FFFFFF";
+const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/;
 
 const ScrollModal = () => {
   // Hooks
@@ -21,6 +24,8 @@ const ScrollModal = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [buttonBgColor, setButtonBgColor] = useState(DEFAULT_BUTTON_BG_COLOR);
+  const [buttonTextColor, setButtonTextColor] = useState(DEFAULT_BUTTON_TEXT_COLOR);
 
   const lastScrollRef = useRef(0);
   const hasReachedBottomRef = useRef(false);
@@ -38,6 +43,60 @@ const ScrollModal = () => {
     if (typeof window !== "undefined") {
       setPathname(window.location.pathname);
     }
+  }, []);
+
+  // Cargar configuración del popup de Inicio desde backend.
+  useEffect(() => {
+    let isMounted = true;
+
+    const normalizeColor = (value: unknown, fallback: string): string => {
+      if (typeof value !== "string") return fallback;
+      const normalized = value.trim().toUpperCase();
+      return HEX_COLOR_REGEX.test(normalized) ? normalized : fallback;
+    };
+
+    const fetchPopupSettings = async () => {
+      try {
+        const token =
+          typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+        const response = await fetch(getApiUrl("/api/v1/admin/popup-settings"), {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = (await response.json()) as {
+          data?: {
+            button_bg_color?: string;
+            button_text_color?: string;
+          };
+        };
+
+        if (!isMounted) return;
+
+        setButtonBgColor(
+          normalizeColor(payload?.data?.button_bg_color, DEFAULT_BUTTON_BG_COLOR),
+        );
+        setButtonTextColor(
+          normalizeColor(payload?.data?.button_text_color, DEFAULT_BUTTON_TEXT_COLOR),
+        );
+      } catch (error) {
+        console.error("[ScrollModal] Error al cargar popup settings:", error);
+      }
+    };
+
+    fetchPopupSettings();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Mostrar modal automáticamente por tiempo
@@ -320,7 +379,11 @@ const ScrollModal = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-2 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                style={{
+                  backgroundColor: buttonBgColor,
+                  color: buttonTextColor,
+                }}
+                className="rounded w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-2 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-110 hover:scale-105 active:scale-95"
               >
                 {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
               </button>
