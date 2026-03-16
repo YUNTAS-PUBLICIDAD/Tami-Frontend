@@ -159,7 +159,7 @@ const { link = "" } = Astro.props as ModalProps;
   // --- LÓGICA DE MOSTRAR / CERRAR ---
   const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
   const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
-  const POPUP_DELAY_MS = 3 * 60 * 1000; // mostrar popup a los 3 minutos
+  const MODAL_AUTO_SHOW_DELAY_MS = 3 * 60 * 1000; // 3 minutos
   let modalTimeout: ReturnType<typeof setTimeout> | null = null;
   let modalMostrado = false;
 
@@ -351,18 +351,18 @@ const { link = "" } = Astro.props as ModalProps;
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
 
-  function programarPopupDiferido() {
+  function programarPopupAutomatico() {
     if (modalTimeout) {
       clearTimeout(modalTimeout);
       modalTimeout = null;
     }
 
-    if (!puedeMostrarModal()) return;
+    if (!puedeMostrarModal() || modalMostrado) return;
 
     modalTimeout = setTimeout(async () => {
-      if (document.hidden || modalMostrado || !puedeMostrarModal()) return;
+      if (modalMostrado || !puedeMostrarModal()) return;
       await showCotizacionModal();
-    }, POPUP_DELAY_MS);
+    }, MODAL_AUTO_SHOW_DELAY_MS);
   }
 
   const closeBtn = document.getElementById("close-modal-cotizacion");
@@ -604,7 +604,7 @@ const { link = "" } = Astro.props as ModalProps;
     });
   }
 
-  // Mostrar modal por evento manual
+  // Mostrar modal por evento o scroll
   window.addEventListener("open-scroll-modal", async () => {
     await showCotizacionModal();
   });
@@ -641,7 +641,7 @@ const { link = "" } = Astro.props as ModalProps;
         }
         if (mutation.attributeName === "data-product-link") {
           await actualizarImagenDesdeLink();
-          programarPopupDiferido();
+          programarPopupAutomatico();
         }
       });
     });
@@ -659,7 +659,7 @@ const { link = "" } = Astro.props as ModalProps;
     updateSectionFromDataset();
     await actualizarImagenDesdeLink();
     configurarBotonesCotizacion();
-    programarPopupDiferido();
+    programarPopupAutomatico();
   });
 </script>
 
