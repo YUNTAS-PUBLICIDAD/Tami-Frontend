@@ -136,6 +136,56 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                 </div>
 
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2">Tiempo de Aparición de Pop-ups</h2>
+
+                <!-- Tiempo de Aparición del Pop-up de Inicio -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                     <div>
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-up de Inicio</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardará en aparecer el primer pop-up al entrar a la pagina de Inicio.</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                         <div class="relative flex items-center">
+                             <select id="popupInicioDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                 <option value="60" selected>1 minuto</option>
+                                 <option value="120">2 minutos</option>
+                                 <option value="180">3 minutos</option>
+                                 <option value="240">4 minutos</option>
+                                 <option value="300">5 minutos</option>
+                                 <option value="360">6 minutos</option>
+                                 <option value="420">7 minutos</option>
+                                 <option value="480">8 minutos</option>
+                                 <option value="540">9 minutos</option>
+                                 <option value="600">10 minutos</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Tiempo de Aparición del Pop-up de Productos -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                     <div>
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-ups de Productos</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardarán en aparecer los pop-ups al ver el detalle de los productos.</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                         <div class="relative flex items-center">
+                             <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                 <option value="60" selected>1 minuto</option>
+                                 <option value="120">2 minutos</option>
+                                 <option value="180">3 minutos</option>
+                                 <option value="240">4 minutos</option>
+                                 <option value="300">5 minutos</option>
+                                 <option value="360">6 minutos</option>
+                                 <option value="420">7 minutos</option>
+                                 <option value="480">8 minutos</option>
+                                 <option value="540">9 minutos</option>
+                                 <option value="600">10 minutos</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+
             </div>
             
             <div class="mt-8 flex justify-end">
