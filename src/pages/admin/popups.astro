@@ -12,7 +12,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-wide drop-shadow-sm">Configuración de Popups</h1>
+          <h1 class="text-2xl font-bold text-white tracking-wide drop-shadow-sm">Configuración de Pop-ups</h1>
           <p class="text-teal-100 text-sm">Personaliza el aspecto de tus ventanas emergentes</p>
         </div>
       </div>
@@ -20,10 +20,12 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 
     <!-- Contenido Principal -->
     <div class="bg-white dark:bg-gray-800 rounded-b-xl shadow-xl border border-t-0 p-8 border-gray-200 dark:border-gray-700 min-h-[60vh]">
-        <div class="max-w-3xl">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 border-b pb-2">Opciones de Apariencia</h2>
-            
-            <div class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Columna Izquierda: Formulario de Opciones -->
+            <div class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 border-b pb-2">Opciones de Apariencia</h2>
+                
+                <div class="space-y-6">
                 
                 <!-- Añadir Imagen -->
                 <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
@@ -40,6 +42,52 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                         </button>
                     </div>
                 </div>
+                <!-- Añadir Imagen 2 -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                 <div>
+                <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Añadir Imagen 2</h3>
+                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Segunda imagen para el popup. Se mostrará en la mitad derecha.
+                </p>
+            </div>
+            
+            
+
+  <div class="ml-4 flex-shrink-0">
+      <input type="file" id="popupImage2" accept="image/*" class="hidden">
+
+      <button type="button"
+          onclick="document.getElementById('popupImage2').click()"
+          class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+          Subir Imagen 2
+      </button>
+  </div>
+</div>
+<!-- Añadir Imagen para Móvil -->
+<div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+  
+  <div>
+    <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">
+      Añadir Imagen Móvil
+    </h3>
+
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      Imagen que se mostrará cuando el popup se vea en dispositivos móviles.
+    </p>
+  </div>
+
+  <div class="ml-4 flex-shrink-0">
+    <input type="file" id="popupImageMobile" accept="image/*" class="hidden">
+
+    <button
+      type="button"
+      onclick="document.getElementById('popupImageMobile').click()"
+      class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+      Subir Imagen Móvil
+    </button>
+  </div>
+
+</div>
 
                 <!-- Cambiar Color de Texto del Botón -->
                 <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
@@ -49,7 +97,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                     <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                          <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700">
-                             <input type="color" id="btnTextColor" defaultValue="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                             <input type="color" id="btnTextColor" value="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
                          </div>
                          <label htmlFor="btnTextColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
                     </div>
@@ -63,7 +111,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                     <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                          <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700">
-                             <input type="color" id="btnBgColor" defaultValue="#14b8a6" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                             <input type="color" id="btnBgColor" value="#14b8a6" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
                          </div>
                          <label htmlFor="btnBgColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
                     </div>
@@ -136,6 +184,56 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                 </div>
 
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2">Tiempo de Aparición de Pop-ups</h2>
+
+                <!-- Tiempo de Aparición del Pop-up de Inicio -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                     <div>
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-up de Inicio</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardará en aparecer el primer pop-up al entrar a la pagina de Inicio.</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                         <div class="relative flex items-center">
+                             <select id="popupInicioDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                 <option value="60" selected>1 minuto</option>
+                                 <option value="120">2 minutos</option>
+                                 <option value="180">3 minutos</option>
+                                 <option value="240">4 minutos</option>
+                                 <option value="300">5 minutos</option>
+                                 <option value="360">6 minutos</option>
+                                 <option value="420">7 minutos</option>
+                                 <option value="480">8 minutos</option>
+                                 <option value="540">9 minutos</option>
+                                 <option value="600">10 minutos</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Tiempo de Aparición del Pop-up de Productos -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                     <div>
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-ups de Productos</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardarán en aparecer los pop-ups al ver el detalle de los productos.</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                         <div class="relative flex items-center">
+                             <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                 <option value="60" selected>1 minuto</option>
+                                 <option value="120">2 minutos</option>
+                                 <option value="180">3 minutos</option>
+                                 <option value="240">4 minutos</option>
+                                 <option value="300">5 minutos</option>
+                                 <option value="360">6 minutos</option>
+                                 <option value="420">7 minutos</option>
+                                 <option value="480">8 minutos</option>
+                                 <option value="540">9 minutos</option>
+                                 <option value="600">10 minutos</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+
             </div>
             
             <div class="mt-8 flex justify-end">
@@ -143,8 +241,190 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     Guardar Cambios
                 </button>
             </div>
+          </div>
 
-        </div>
-    </div>
+          <!-- Columna Derecha: Vista Previa -->
+          <div class="lg:pl-4">
+              <div class="sticky top-8">
+                  <div class="flex items-center justify-between mb-6 border-b pb-2">
+                      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Vista Previa</h2>
+                      <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                          <button id="btnDesktop" class="px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-teal-600 shadow-sm transition-colors flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              Escritorio
+                          </button>
+                          <button id="btnMobile" class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                              </svg>
+                              Móvil
+                          </button>
+                      </div>
+                  </div>
+                  
+                  <div class="bg-gray-100 dark:bg-gray-900 p-4 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px]">
+                      <!-- Fondo oscuro simulado para el pop-up -->
+                      <div class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
+                      
+                      <!-- Contenedor del Pop-up -->
+                      <div id="previewContainer" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl relative z-10 mx-auto transition-all duration-300 overflow-hidden" data-mode="desktop">
+                          <!-- Botón de Cerrar (simulado) -->
+                          <button type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-500 focus:outline-none z-20">
+                              <span class="sr-only">Cerrar</span>
+                              <svg class="h-6 w-6 opacity-70 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                          </button>
+
+                          <!-- Imagen del Pop-up -->
+                          <div id="previewImage" class="bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative transition-all duration-300">
+                              <span class="text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
+                                  <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                  <span class="text-sm font-medium">Imagen</span>
+                              </span>
+                          </div>
+
+                          <!-- Formulario del Pop-up -->
+                          <div id="previewForm" class="flex flex-col justify-center transition-all duration-300 bg-cover bg-center relative">
+                          <div class="absolute inset-0 bg-white/80 dark:bg-gray-800/80"></div>
+                          
+                              <!-- 3 Casillas de texto en blanco -->
+                                  <div id="previewInputs" class="space-y-4 relative">
+                                  <div class="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"></div>
+                                  <div class="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"></div>
+                                  <div class="h-10 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"></div>
+                              </div>
+
+                              <!-- Botón de Acción -->
+                              <button id="previewButton" type="button" class="w-full flex justify-center px-4 rounded-md shadow-sm text-sm font-semibold transition-colors mt-2" style="background-color: #14b8a6; color: #ffffff;">
+                                  BOTÓN
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+      </div>
   </div>
+
+  <style is:global>
+      /* Desktop Mode Styles */
+      [data-mode="desktop"] {
+          width: 100% !important;
+          max-width: 48rem !important; /* 3xl */
+          display: flex !important;
+          flex-direction: row !important;
+      }
+      [data-mode="desktop"] #previewImage {
+          width: 50% !important;
+          min-height: 300px !important;
+          height: auto !important;
+      }
+      [data-mode="desktop"] #previewForm {
+          width: 50% !important;
+          padding: 2rem !important; /* p-8 */
+          gap: 1.5rem !important; /* space-y-6 */
+      }
+      [data-mode="desktop"] #previewInputs {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 1rem !important;
+      }
+      [data-mode="desktop"] #previewButton {
+          padding-top: 0.75rem !important; /* py-3 */
+          padding-bottom: 0.75rem !important;
+      }
+
+      /* Mobile Mode Styles */
+      [data-mode="mobile"] {
+          width: 100% !important;
+          max-width: 24rem !important; /* sm */
+          display: flex !important;
+          flex-direction: column !important;
+      }
+      [data-mode="mobile"] #previewImage {
+          width: 100% !important;
+          height: 12rem !important; /* h-48 */
+          min-height: 0 !important;
+      }
+      [data-mode="mobile"] #previewForm {
+          width: 100% !important;
+          padding: 1.5rem !important; /* p-6 */
+          gap: 1rem !important; /* space-y-4 */
+      }
+      [data-mode="mobile"] #previewInputs {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 0.75rem !important; /* space-y-3 from original */
+      }
+      [data-mode="mobile"] #previewButton {
+          padding-top: 0.625rem !important; /* py-2.5 */
+          padding-bottom: 0.625rem !important;
+
+      }
+  </style>
+</LayoutAdmin>
+<script>
+  
+      const initPopupSettings = () => {
+        console.log("SCRIPT FUNCIONANDO");
+        const btnTextColorInput = document.getElementById('btnTextColor');
+        const btnBgColorInput = document.getElementById('btnBgColor');
+          const previewButton = document.getElementById('previewButton');
+
+          if (btnTextColorInput && btnBgColorInput && previewButton) {
+              previewButton.style.color = btnTextColorInput.value;
+              previewButton.style.backgroundColor = btnBgColorInput.value;
+
+              btnTextColorInput.oninput = (e) => {
+                  if (previewButton) previewButton.style.color = e.target.value;
+              };
+
+              btnBgColorInput.oninput = (e) => {
+                  if (previewButton) previewButton.style.backgroundColor = e.target.value;
+              };
+          }
+
+          const btnDesktop = document.getElementById('btnDesktop');
+          const btnMobile = document.getElementById('btnMobile');
+          const previewContainer = document.getElementById('previewContainer');
+
+          if (btnDesktop && btnMobile && previewContainer) {
+              const activeBtnClasses = ['bg-white', 'dark:bg-gray-700', 'text-teal-600', 'shadow-sm'];
+              const inactiveBtnClasses = ['text-gray-500', 'hover:text-gray-700', 'dark:text-gray-400', 'dark:hover:text-gray-200'];
+
+              btnDesktop.onclick = () => {
+                  // Button styles
+                  btnDesktop.classList.add(...activeBtnClasses);
+                  btnDesktop.classList.remove(...inactiveBtnClasses);
+                  btnMobile.classList.remove(...activeBtnClasses);
+                  btnMobile.classList.add(...inactiveBtnClasses);
+
+                  // Switch to Desktop Data attribute
+                  previewContainer.setAttribute('data-mode', 'desktop');
+              };
+
+              btnMobile.onclick = () => {
+                  // Button styles
+                  btnMobile.classList.add(...activeBtnClasses);
+                  btnMobile.classList.remove(...inactiveBtnClasses);
+                  btnDesktop.classList.remove(...activeBtnClasses);
+                  btnDesktop.classList.add(...inactiveBtnClasses);
+
+                  // Switch to Mobile Data attribute
+                  previewContainer.setAttribute('data-mode', 'mobile');
+              };
+          }
+      };
+
+// Iniciar el script
+document.addEventListener("DOMContentLoaded", initPopupSettings);
+document.addEventListener("astro:page-load", initPopupSettings);
+
+  </script>
 </LayoutAdmin>
