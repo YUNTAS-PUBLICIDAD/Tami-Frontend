@@ -385,20 +385,24 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
   
       const initPopupSettings = () => {
         console.log("SCRIPT FUNCIONANDO");
-        const btnTextColorInput = document.getElementById('btnTextColor');
-        const btnBgColorInput = document.getElementById('btnBgColor');
-          const previewButton = document.getElementById('previewButton');
+                const btnTextColorInput = document.getElementById('btnTextColor');
+                const btnBgColorInput = document.getElementById('btnBgColor');
+                    const previewButton = document.getElementById('previewButton');
 
-          if (btnTextColorInput && btnBgColorInput && previewButton) {
+          if (
+            btnTextColorInput instanceof HTMLInputElement &&
+            btnBgColorInput instanceof HTMLInputElement &&
+            previewButton instanceof HTMLButtonElement
+          ) {
               previewButton.style.color = btnTextColorInput.value;
               previewButton.style.backgroundColor = btnBgColorInput.value;
 
-              btnTextColorInput.oninput = (e) => {
-                  if (previewButton) previewButton.style.color = e.target.value;
+              btnTextColorInput.oninput = () => {
+                  previewButton.style.color = btnTextColorInput.value;
               };
 
-              btnBgColorInput.oninput = (e) => {
-                  if (previewButton) previewButton.style.backgroundColor = e.target.value;
+              btnBgColorInput.oninput = () => {
+                  previewButton.style.backgroundColor = btnBgColorInput.value;
               };
           }
 
@@ -451,6 +455,7 @@ document.addEventListener("astro:page-load", initPopupSettings);
     const btnTextColor = document.querySelector("#btnTextColor");
     const btnBgColorInput = document.querySelector("#btnBgColorInput");
     const btnTextColorInput = document.querySelector("#btnTextColorInput");
+    const previewButton = document.querySelector("#previewButton");
     const saveButton = document.querySelector("#savePopupSettingsBtn");
     const statusElement = document.querySelector("#popupStatus");
 
@@ -515,6 +520,11 @@ document.addEventListener("astro:page-load", initPopupSettings);
 
         btnTextColor.value = normalizedText;
         btnTextColorInput.value = normalizedText;
+
+        if (previewButton instanceof HTMLButtonElement) {
+            previewButton.style.backgroundColor = normalizedBg;
+            previewButton.style.color = normalizedText;
+        }
     };
 
     const mapHttpError = (error: unknown): string => {
