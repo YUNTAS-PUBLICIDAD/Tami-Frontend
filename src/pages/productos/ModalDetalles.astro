@@ -159,9 +159,9 @@ const { link = "" } = Astro.props as ModalProps;
   // --- LÓGICA DE MOSTRAR / CERRAR ---
   const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
   const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
+  const MODAL_AUTO_SHOW_DELAY_MS = 3 * 60 * 1000; // 3 minutos
   let modalTimeout: ReturnType<typeof setTimeout> | null = null;
   let modalMostrado = false;
-  let scrollActivado = false;
 
   async function obtenerProductoActual() {
     const container = document.getElementById("modal-form-container");
@@ -210,6 +210,11 @@ const { link = "" } = Astro.props as ModalProps;
   }
 
   async function showCotizacionModal() {
+    if (modalTimeout) {
+      clearTimeout(modalTimeout);
+      modalTimeout = null;
+    }
+
     const producto = await obtenerProductoActual();
     console.log("PRODUCTO COMPLETO:", producto);
     console.log("ETIQUETA COMPLETA:", producto?.etiqueta);
@@ -235,11 +240,13 @@ const { link = "" } = Astro.props as ModalProps;
 
     if (popupEstilo === "estilo2") {
       document.getElementById("modal-detalles-2")?.classList.remove("hidden");
+      modalMostrado = true;
       return;
     }
 
     if (popupEstilo === "estilo3") {
       document.getElementById("modal-detalles-3")?.classList.remove("hidden");
+      modalMostrado = true;
       return;
     }
 
@@ -252,6 +259,7 @@ const { link = "" } = Astro.props as ModalProps;
     if (modal && mensaje) {
       modal.classList.remove("hidden");
       mensaje.textContent = "";
+      modalMostrado = true;
     }
 
     // Estilos del boton
@@ -343,11 +351,29 @@ const { link = "" } = Astro.props as ModalProps;
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
 
+  function programarPopupAutomatico() {
+    if (modalTimeout) {
+      clearTimeout(modalTimeout);
+      modalTimeout = null;
+    }
+
+    if (!puedeMostrarModal() || modalMostrado) return;
+
+    modalTimeout = setTimeout(async () => {
+      if (modalMostrado || !puedeMostrarModal()) return;
+      await showCotizacionModal();
+    }, MODAL_AUTO_SHOW_DELAY_MS);
+  }
+
   const closeBtn = document.getElementById("close-modal-cotizacion");
   if (closeBtn) {
     closeBtn.onclick = () => {
       const modal = document.getElementById("modal-cotizacion-producto");
       if (modal) modal.classList.add("hidden");
+      if (modalTimeout) {
+        clearTimeout(modalTimeout);
+        modalTimeout = null;
+      }
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
       modalMostrado = false;
     };
@@ -583,23 +609,6 @@ const { link = "" } = Astro.props as ModalProps;
     await showCotizacionModal();
   });
 
-  window.addEventListener("scroll", async () => {
-    const scrollPercentage =
-      (window.scrollY /
-        (document.documentElement.scrollHeight - window.innerHeight)) *
-      100;
-
-    if (
-      scrollPercentage > 30 &&
-      !scrollActivado &&
-      puedeMostrarModal() &&
-      !modalMostrado
-    ) {
-      scrollActivado = true;
-      await showCotizacionModal();
-    }
-  });
-
   // Actualizar sección dinámicamente
   function updateSectionFromDataset() {
     const container = document.getElementById("modal-form-container");
@@ -632,6 +641,7 @@ const { link = "" } = Astro.props as ModalProps;
         }
         if (mutation.attributeName === "data-product-link") {
           await actualizarImagenDesdeLink();
+          programarPopupAutomatico();
         }
       });
     });
@@ -649,6 +659,7 @@ const { link = "" } = Astro.props as ModalProps;
     updateSectionFromDataset();
     await actualizarImagenDesdeLink();
     configurarBotonesCotizacion();
+    programarPopupAutomatico();
   });
 </script>
 

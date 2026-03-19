@@ -244,7 +244,7 @@ const ScrollModal = () => {
         <div className="hidden sm:block relative w-1/2 h-full overflow-hidden bg-gray-200">
           {/* Imagen 1 (Fondo izquierdo) */}
           <img src={asesoriaImg.src} alt="Imagen Izquierda" className="absolute inset-0 w-full h-full object-cover select-none scale-105" />
-          
+
           <div className="absolute inset-0 bg-black/10"></div> {/* Ligero overlay opcional */}
         </div>
 
@@ -252,7 +252,7 @@ const ScrollModal = () => {
         {/* LADO DERECHO (ESCRITORIO) / COMPLETO (MÓVIL)                */}
         {/* ========================================================= */}
         <div className="relative w-full sm:w-1/2 h-full flex flex-col overflow-hidden">
-          
+
           {/* FONDO ESCRITORIO (IMAGEN 2) */}
           <div className="hidden sm:block absolute inset-0">
             {/* Imagen 2 (Fondo derecho) */}
@@ -273,76 +273,76 @@ const ScrollModal = () => {
           <div className="relative z-10 w-full text-white animate-fadeInRight h-full">
             <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
 
-            <button
-              onClick={closeModal}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
-              aria-label="Cerrar modal"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="flex justify-center w-full mt-4 min-h-[72px]">
-              {/* Espacio reservado para el título originalmente aquí. 
-                  Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
-              <input
-                type="text"
-                placeholder="Nombres y Apellidos"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
-
-
-              <input
-                type="tel"
-                placeholder="Número de celular"
-                maxLength={9}
-                value={telefono}
-                onChange={(e) => {
-                  // Solo permite ingresar números
-                  const val = e.target.value.replace(/\D/g, '');
-                  setTelefono(val);
-                }}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
-
-              <input
-                type="email"
-                placeholder="Correo electrónico"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
-                {errors.correo || errors.general || successMessage}
-              </p>
-
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-0 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                onClick={closeModal}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
+                aria-label="Cerrar modal"
               >
-                {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            </form>
+              <div className="flex justify-center w-full mt-4 min-h-[72px]">
+                {/* Espacio reservado para el título originalmente aquí. 
+                  Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
+              </div>
+
+              <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
+                <input
+                  type="text"
+                  placeholder="Nombres y Apellidos"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                />
+                <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
+
+
+                <input
+                  type="tel"
+                  placeholder="Número de celular"
+                  maxLength={9}
+                  value={telefono}
+                  onChange={(e) => {
+                    // Solo permite ingresar números
+                    const val = e.target.value.replace(/\D/g, '');
+                    setTelefono(val);
+                  }}
+                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                />
+                <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
+
+                <input
+                  type="email"
+                  placeholder="Correo electrónico"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                />
+                <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
+                  {errors.correo || errors.general || successMessage}
+                </p>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-0 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                >
+                  {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   );
 };
 
