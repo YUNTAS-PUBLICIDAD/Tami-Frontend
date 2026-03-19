@@ -236,97 +236,109 @@ const ScrollModal = () => {
       id="catalog-modal"
       className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn"
     >
-      <div className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative rounded-xl transition-all duration-500 h-[480px] ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[95%] max-w-md sm:max-w-4xl relative rounded-xl transition-all duration-500 h-[500px] sm:h-[550px] bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
 
-        {/* Imagen */}
-        <div className="absolute inset-0 sm:flex w-[80%] justify-center items-center bg-gray-100 overflow-hidden">
-          <img src={asesoriaImg.src} alt="Asesoría" className="w-full h-full object-cover select-none scale-105 transition-transform duration-700" />
+        {/* ========================================================= */}
+        {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
+        {/* ========================================================= */}
+        <div className="hidden sm:block relative w-1/2 h-full overflow-hidden bg-gray-200">
+          {/* Imagen 1 (Fondo izquierdo) */}
+          <img src={asesoriaImg.src} alt="Imagen Izquierda" className="absolute inset-0 w-full h-full object-cover select-none scale-105" />
+
+          <div className="absolute inset-0 bg-black/10"></div> {/* Ligero overlay opcional */}
         </div>
 
-        <div className="absolute inset-0 " style={{ background: "linear-gradient(to left, #00786F 0%, #018C86 45%, rgba(1, 160, 158, 0.6) 100%)" }}></div>
+        {/* ========================================================= */}
+        {/* LADO DERECHO (ESCRITORIO) / COMPLETO (MÓVIL)                */}
+        {/* ========================================================= */}
+        <div className="relative w-full sm:w-1/2 h-full flex flex-col overflow-hidden">
 
-        <div className="hidden sm:flex sm:w-6/12 justify-center items-center relative z-10">
-          <img 
-            src={Logo.src} 
-            alt="LogoTami" 
-            className="w-55 h-55 object-contain select-none drop-shadow-2xl animate-fadeIn z-20" 
-          />
-        </div>
+          {/* FONDO ESCRITORIO (IMAGEN 2) */}
+          <div className="hidden sm:block absolute inset-0">
+            {/* Imagen 2 (Fondo derecho) */}
+            <img src={asesoriaImg.src} alt="Imagen Derecha" className="w-full h-full object-cover select-none" />
+            {/* Overlay para legibilidad del texto */}
+            <div className="absolute inset-0 bg-teal-800/85"></div>
+          </div>
 
-        {/* Contenido Formulario */}
-        <div className="w-full sm:w-8/12 text-white relative animate-fadeInRight h-full">
+          {/* FONDO MÓVIL (IMAGEN 3) */}
+          <div className="block sm:hidden absolute inset-0">
+            {/* Imagen 3 (Fondo móvil) */}
+            <img src={asesoriaImg.src} alt="Imagen Móvil" className="w-full h-full object-cover select-none" />
+            {/* Overlay para legibilidad del texto */}
+            <div className="absolute inset-0 bg-teal-800/85"></div>
+          </div>
 
-          <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
-
-
-            <button
-              onClick={closeModal}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
-              aria-label="Cerrar modal"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="flex justify-center w-full mt-4">
-              <h2 className="text-2xl sm:text-3xl text-center font-medium leading-tight select-none animate-fadeInUp mb-2 text-white">
-                DESCARGA <span className="font-bold">GRATIS</span>
-                <br />
-                NUESTRO <span className="font-bold">CATÁLOGO</span>
-              </h2>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
-              <input
-                type="text"
-                placeholder="Nombres y Apellidos"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
-
-
-              <input
-                type="tel"
-                placeholder="Número de celular"
-                maxLength={9}
-                value={telefono}
-                onChange={(e) => {
-                  // Solo permite ingresar números
-                  const val = e.target.value.replace(/\D/g, '');
-                  setTelefono(val);
-                }}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
-
-              <input
-                type="email"
-                placeholder="Correo electrónico"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
-                {errors.correo || errors.general || successMessage}
-              </p>
+          {/* Contenido Formulario (Mantiene la estructura original) */}
+          <div className="relative z-10 w-full text-white animate-fadeInRight h-full">
+            <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
 
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-0 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                onClick={closeModal}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
+                aria-label="Cerrar modal"
               >
-                {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            </form>
+              <div className="flex justify-center w-full mt-4 min-h-[72px]">
+                {/* Espacio reservado para el título originalmente aquí. 
+                  Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
+              </div>
+
+              <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
+                <input
+                  type="text"
+                  placeholder="Nombres y Apellidos"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                />
+                <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
+
+
+                <input
+                  type="tel"
+                  placeholder="Número de celular"
+                  maxLength={9}
+                  value={telefono}
+                  onChange={(e) => {
+                    // Solo permite ingresar números
+                    const val = e.target.value.replace(/\D/g, '');
+                    setTelefono(val);
+                  }}
+                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                />
+                <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
+
+                <input
+                  type="email"
+                  placeholder="Correo electrónico"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
+                />
+                <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
+                  {errors.correo || errors.general || successMessage}
+                </p>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-0 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
+                >
+                  {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
