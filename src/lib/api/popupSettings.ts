@@ -6,6 +6,7 @@ export interface PopupSettings {
   button_bg_color: string;
   button_text_color: string;
   popup_image: string;
+  popup_start_delay_minutes: number;
 }
 
 export interface PopupSettingsResponse {
@@ -14,7 +15,7 @@ export interface PopupSettingsResponse {
 
 export type UpdatePopupSettingsPayload = Pick<
   PopupSettings,
-  "button_bg_color" | "button_text_color"
+  "button_bg_color" | "button_text_color" | "popup_start_delay_minutes"
 >;
 
 export const isHexColor = (value: string): boolean =>
@@ -33,6 +34,7 @@ export async function updatePopupSettings(
     {
       button_bg_color: payload.button_bg_color,
       button_text_color: payload.button_text_color,
+      popup_start_delay_minutes: payload.popup_start_delay_minutes,
     },
   );
 

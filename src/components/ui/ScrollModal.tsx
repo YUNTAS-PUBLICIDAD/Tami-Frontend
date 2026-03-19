@@ -10,6 +10,16 @@ const SESSION_STORAGE_KEY = "catalogModalSessionShown";
 const DEFAULT_BUTTON_BG_COLOR = "#00625A";
 const DEFAULT_BUTTON_TEXT_COLOR = "#FFFFFF";
 const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/;
+const DEFAULT_POPUP_START_DELAY_MINUTES = 1;
+
+const normalizePopupStartDelayMinutes = (value: unknown): number => {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 10) {
+    return DEFAULT_POPUP_START_DELAY_MINUTES;
+  }
+
+  return parsed;
+};
 
 const ScrollModal = () => {
   // Hooks
@@ -27,6 +37,9 @@ const ScrollModal = () => {
   const [buttonBgColor, setButtonBgColor] = useState(DEFAULT_BUTTON_BG_COLOR);
   const [buttonTextColor, setButtonTextColor] = useState(DEFAULT_BUTTON_TEXT_COLOR);
   const [popupImage, setPopupImage] = useState<string>(asesoriaImg.src);
+  const [popupStartDelayMinutes, setPopupStartDelayMinutes] = useState<number>(
+    DEFAULT_POPUP_START_DELAY_MINUTES,
+  );
 
   const lastScrollRef = useRef(0);
   const hasReachedBottomRef = useRef(false);
@@ -58,14 +71,11 @@ const ScrollModal = () => {
 
     const fetchPopupSettings = async () => {
       try {
-        const token =
-          typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-        const response = await fetch(getApiUrl("/api/v1/admin/popup-settings"), {
+        const response = await fetch(getApiUrl("/api/v1/popup-settings/public"), {
           method: "GET",
+          cache: "no-store",
           headers: {
             Accept: "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         });
 
@@ -78,6 +88,7 @@ const ScrollModal = () => {
             button_bg_color?: string;
             button_text_color?: string;
             popup_image?: string;
+            popup_start_delay_minutes?: number;
           };
         };
 
@@ -88,6 +99,9 @@ const ScrollModal = () => {
         );
         setButtonTextColor(
           normalizeColor(payload?.data?.button_text_color, DEFAULT_BUTTON_TEXT_COLOR),
+        );
+        setPopupStartDelayMinutes(
+          normalizePopupStartDelayMinutes(payload?.data?.popup_start_delay_minutes),
         );
         
         // Cargar imagen desde localStorage si existe
@@ -114,32 +128,60 @@ const ScrollModal = () => {
     if (!pathname || !allowedRoutes.includes(pathname)) return;
     if (showModal || isClosing) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let countdownInterval: ReturnType<typeof setInterval> | null = null;
+    const autoShowDelayMs = popupStartDelayMinutes * 60 * 1000;
 
     const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
     const now = Date.now();
     const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
     const isAnyModalOpen = document.querySelector(".modal-overlay");
     const isCatalogModalOpen = document.getElementById("catalog-modal");
+    const isHomepage = pathname === "/";
+    const canScheduleByTime = isHomepage
+      ? !hasShownRef.current && !isAnyModalOpen && !isCatalogModalOpen && !showModal
+      : now - lastClosed >= MODAL_COOLDOWN_MS &&
+        !hasShownRef.current &&
+        !sessionShown &&
+        !isAnyModalOpen &&
+        !isCatalogModalOpen &&
+        !showModal;
 
-    if (
-      now - lastClosed >= MODAL_COOLDOWN_MS &&
-      !hasShownRef.current &&
-      !sessionShown &&
-      !isAnyModalOpen &&
-      !isCatalogModalOpen &&
-      !showModal
-    ) {
-      // 5 segundos 
+    if (canScheduleByTime) {
+      // Espera configurable (1 a 10 minutos)
+      // if (isHomepage) {
+      //   let remainingMs = autoShowDelayMs;
+      //   const printRemaining = () => {
+      //     const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+      //     console.log(
+      //       `[ScrollModal] Popup de Inicio aparece en ${remainingSeconds}s (${popupStartDelayMinutes} min configurado)`,
+      //     );
+      //   };
+      //
+      //   printRemaining();
+      //   countdownInterval = setInterval(() => {
+      //     remainingMs -= 1000;
+      //     if (remainingMs > 0) {
+      //       printRemaining();
+      //     }
+      //   }, 1000);
+      // }
+
       timer = setTimeout(() => {
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+        }
         setShowModal(true);
         hasShownRef.current = true;
         sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
-      }, 5000);
+      }, autoShowDelayMs);
     }
+
     return () => {
       if (timer) clearTimeout(timer);
+      if (countdownInterval) clearInterval(countdownInterval);
     };
-  }, [pathname, showModal, isClosing]);
+  }, [pathname, showModal, isClosing, popupStartDelayMinutes]);
 
   // Intención de salida
   useEffect(() => {

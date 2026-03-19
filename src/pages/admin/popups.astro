@@ -208,16 +208,16 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                          <div class="relative flex items-center">
                              <select id="popupInicioDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
-                                 <option value="60" selected>1 minuto</option>
-                                 <option value="120">2 minutos</option>
-                                 <option value="180">3 minutos</option>
-                                 <option value="240">4 minutos</option>
-                                 <option value="300">5 minutos</option>
-                                 <option value="360">6 minutos</option>
-                                 <option value="420">7 minutos</option>
-                                 <option value="480">8 minutos</option>
-                                 <option value="540">9 minutos</option>
-                                 <option value="600">10 minutos</option>
+                                 <option value="1" selected>1 minuto</option>
+                                 <option value="2">2 minutos</option>
+                                 <option value="3">3 minutos</option>
+                                 <option value="4">4 minutos</option>
+                                 <option value="5">5 minutos</option>
+                                 <option value="6">6 minutos</option>
+                                 <option value="7">7 minutos</option>
+                                 <option value="8">8 minutos</option>
+                                 <option value="9">9 minutos</option>
+                                 <option value="10">10 minutos</option>
                              </select>
                          </div>
                     </div>
@@ -453,11 +453,13 @@ document.addEventListener("astro:page-load", initPopupSettings);
 
     const DEFAULT_BUTTON_BG = "#14B8A6";
     const DEFAULT_BUTTON_TEXT = "#FFFFFF";
+    const DEFAULT_POPUP_START_DELAY_MINUTES = 1;
 
     const btnBgColor = document.querySelector("#btnBgColor");
     const btnTextColor = document.querySelector("#btnTextColor");
     const btnBgColorInput = document.querySelector("#btnBgColorInput");
     const btnTextColorInput = document.querySelector("#btnTextColorInput");
+    const popupInicioDelay = document.querySelector("#popupInicioDelay");
     const previewButton = document.querySelector("#previewButton");
     const saveButton = document.querySelector("#savePopupSettingsBtn");
     const statusElement = document.querySelector("#popupStatus");
@@ -467,6 +469,7 @@ document.addEventListener("astro:page-load", initPopupSettings);
         !(btnTextColor instanceof HTMLInputElement) ||
         !(btnBgColorInput instanceof HTMLInputElement) ||
         !(btnTextColorInput instanceof HTMLInputElement) ||
+        !(popupInicioDelay instanceof HTMLSelectElement) ||
         !(saveButton instanceof HTMLButtonElement) ||
         !(statusElement instanceof HTMLParagraphElement)
     ) {
@@ -474,6 +477,15 @@ document.addEventListener("astro:page-load", initPopupSettings);
     }
 
     const normalizeHex = (value: string): string => value.trim().toUpperCase();
+
+    const normalizePopupStartDelayMinutes = (value: unknown): number => {
+        const parsed = Number(value);
+        if (!Number.isInteger(parsed) || parsed < 1 || parsed > 10) {
+            return DEFAULT_POPUP_START_DELAY_MINUTES;
+        }
+
+        return parsed;
+    };
 
     const setStatus = (
         message: string,
@@ -511,6 +523,7 @@ document.addEventListener("astro:page-load", initPopupSettings);
         btnTextColor.disabled = disabled;
         btnBgColorInput.disabled = disabled;
         btnTextColorInput.disabled = disabled;
+        popupInicioDelay.disabled = disabled;
         saveButton.disabled = disabled;
     };
 
@@ -599,8 +612,12 @@ document.addEventListener("astro:page-load", initPopupSettings);
             const settings = await getPopupSettings();
             const bgColor = normalizeHex(settings?.button_bg_color || DEFAULT_BUTTON_BG);
             const textColor = normalizeHex(settings?.button_text_color || DEFAULT_BUTTON_TEXT);
+            const popupStartDelayMinutes = normalizePopupStartDelayMinutes(
+                settings?.popup_start_delay_minutes,
+            );
 
             applyColorsToForm(bgColor, textColor);
+            popupInicioDelay.value = String(popupStartDelayMinutes);
             
             // Cargar imagen guardada en localStorage
             const savedImage = localStorage.getItem('popupImage');
@@ -620,6 +637,7 @@ document.addEventListener("astro:page-load", initPopupSettings);
     saveButton.addEventListener("click", async () => {
         const buttonBgColor = normalizeHex(btnBgColorInput.value);
         const buttonTextColor = normalizeHex(btnTextColorInput.value);
+        const popupStartDelayMinutes = normalizePopupStartDelayMinutes(popupInicioDelay.value);
 
         if (!isHexColor(buttonBgColor) || !isHexColor(buttonTextColor)) {
             setStatus("Los colores deben tener el formato exacto #RRGGBB.", "error");
@@ -634,9 +652,13 @@ document.addEventListener("astro:page-load", initPopupSettings);
             const updatedSettings = await updatePopupSettings({
                 button_bg_color: buttonBgColor,
                 button_text_color: buttonTextColor,
+                popup_start_delay_minutes: popupStartDelayMinutes,
             });
 
             applyColorsToForm(updatedSettings.button_bg_color, updatedSettings.button_text_color);
+            popupInicioDelay.value = String(
+                normalizePopupStartDelayMinutes(updatedSettings.popup_start_delay_minutes),
+            );
             setStatus("Cambios guardados exitosamente.", "success");
         } catch (error) {
             setStatus(mapHttpError(error), "error");
