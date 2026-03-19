@@ -30,14 +30,17 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                 <!-- Añadir Imagen -->
                 <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
                     <div>
-                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg flex items-center gap-2">
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">
                           Añadir Imagen
-                          <span class="text-xs font-semibold px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Próximamente</span>
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sube una imagen promocional para tu popup. Resoluciones recomendadas: 800x600px.</p>
                     </div>
                     <div class="ml-4 flex-shrink-0">
-                         <button type="button" disabled aria-disabled="true" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-600">
+                         <input type="file" id="popupImageInput" accept="image/*" class="hidden">
+                         <button 
+                             type="button" 
+                             onclick="document.getElementById('popupImageInput').click()"
+                             class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
                             Subir Archivo
                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -291,13 +294,13 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                           </button>
 
                           <!-- Imagen del Pop-up -->
-                          <div id="previewImage" class="bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative transition-all duration-300">
-                              <span class="text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
-                                  <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
-                                  <span class="text-sm font-medium">Imagen</span>
-                              </span>
+                          <div id="previewImage" class="bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative transition-all duration-300 overflow-hidden">
+                              <img 
+                                  id="previewImageEl" 
+                                  src="" 
+                                  alt="Imagen del popup"
+                                  class="w-full h-full object-cover"
+                              />
                           </div>
 
                           <!-- Formulario del Pop-up -->
@@ -527,6 +530,13 @@ document.addEventListener("astro:page-load", initPopupSettings);
         }
     };
 
+    const applyImageToPreview = (imageUrl: string): void => {
+        const previewImageEl = document.getElementById('previewImageEl');
+        if (previewImageEl instanceof HTMLImageElement) {
+            previewImageEl.src = imageUrl;
+        }
+    };
+
     const mapHttpError = (error: unknown): string => {
         const typedError = error as { response?: { status?: number } };
         const status = typedError?.response?.status;
@@ -564,6 +574,23 @@ document.addEventListener("astro:page-load", initPopupSettings);
     btnBgColorInput.addEventListener("blur", () => syncColorPickerFromText(btnBgColorInput, btnBgColor));
     btnTextColorInput.addEventListener("blur", () => syncColorPickerFromText(btnTextColorInput, btnTextColor));
 
+    const popupImageInput = document.getElementById('popupImageInput');
+    if (popupImageInput instanceof HTMLInputElement) {
+        popupImageInput.addEventListener('change', (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imageUrl = event.target?.result as string;
+                    applyImageToPreview(imageUrl);
+                    // Guardar en localStorage
+                    localStorage.setItem('popupImage', imageUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     const loadSettings = async () => {
         setEditableControlsDisabled(true);
         setStatus("Cargando configuración...", "loading");
@@ -574,6 +601,13 @@ document.addEventListener("astro:page-load", initPopupSettings);
             const textColor = normalizeHex(settings?.button_text_color || DEFAULT_BUTTON_TEXT);
 
             applyColorsToForm(bgColor, textColor);
+            
+            // Cargar imagen guardada en localStorage
+            const savedImage = localStorage.getItem('popupImage');
+            if (savedImage) {
+                applyImageToPreview(savedImage);
+            }
+            
             setStatus("Configuración cargada correctamente.", "idle");
         } catch (error) {
             applyColorsToForm(DEFAULT_BUTTON_BG, DEFAULT_BUTTON_TEXT);
@@ -611,6 +645,12 @@ document.addEventListener("astro:page-load", initPopupSettings);
             setEditableControlsDisabled(false);
         }
     });
+
+    // Cargar imagen guardada al inicializar
+    const savedImageOnInit = localStorage.getItem('popupImage');
+    if (savedImageOnInit) {
+        applyImageToPreview(savedImageOnInit);
+    }
 
     loadSettings();
 </script>

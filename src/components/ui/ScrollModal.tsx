@@ -26,6 +26,7 @@ const ScrollModal = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [buttonBgColor, setButtonBgColor] = useState(DEFAULT_BUTTON_BG_COLOR);
   const [buttonTextColor, setButtonTextColor] = useState(DEFAULT_BUTTON_TEXT_COLOR);
+  const [popupImage, setPopupImage] = useState<string>(asesoriaImg.src);
 
   const lastScrollRef = useRef(0);
   const hasReachedBottomRef = useRef(false);
@@ -76,6 +77,7 @@ const ScrollModal = () => {
           data?: {
             button_bg_color?: string;
             button_text_color?: string;
+            popup_image?: string;
           };
         };
 
@@ -87,6 +89,14 @@ const ScrollModal = () => {
         setButtonTextColor(
           normalizeColor(payload?.data?.button_text_color, DEFAULT_BUTTON_TEXT_COLOR),
         );
+        
+        // Cargar imagen desde localStorage si existe
+        const savedImage = typeof window !== "undefined" ? localStorage.getItem('popupImage') : null;
+        if (savedImage) {
+          setPopupImage(savedImage);
+        } else if (payload?.data?.popup_image) {
+          setPopupImage(payload.data.popup_image);
+        }
       } catch (error) {
         console.error("[ScrollModal] Error al cargar popup settings:", error);
       }
@@ -299,7 +309,7 @@ const ScrollModal = () => {
 
         {/* Imagen */}
         <div className="absolute inset-0 sm:flex w-[80%] justify-center items-center bg-gray-100 overflow-hidden">
-          <img src={asesoriaImg.src} alt="Asesoría" className="w-full h-full object-cover select-none scale-105 transition-transform duration-700" />
+          <img src={popupImage} alt="Asesoría" className="w-full h-full object-cover select-none scale-105 transition-transform duration-700" />
         </div>
 
         <div className="absolute inset-0 " style={{ background: "linear-gradient(to left, #00786F 0%, #018C86 45%, rgba(1, 160, 158, 0.6) 100%)" }}></div>

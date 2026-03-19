@@ -5,6 +5,7 @@ const POPUP_SETTINGS_ENDPOINT = "/api/v1/admin/popup-settings";
 export interface PopupSettings {
   button_bg_color: string;
   button_text_color: string;
+  popup_image: string;
 }
 
 export interface PopupSettingsResponse {
