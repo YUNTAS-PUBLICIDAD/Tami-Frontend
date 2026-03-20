@@ -137,6 +137,78 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                 </div>
 
+                <!-- Editar Mensaje de WhatsApp -->
+                  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 transition-colors gap-4 opacity-80">
+                    <div class="sm:w-1/3 space-y-3">
+                      <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg flex items-center gap-2">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="text-green-500 shrink-0" viewBox="0 0 16 16">
+                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                         </svg>
+                         WhatsApp
+                                                 <span class="text-xs font-semibold px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Próximamente</span>
+                       </h3>
+                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Configura la imagen y mensaje predeterminado que se enviarán.</p>
+                                             <button type="button" disabled aria-disabled="true" class="mt-2 inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-400 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-600">
+                            Añadir Imagen a WhatsApp
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="sm:w-2/3 w-full pl-0 sm:pl-4">
+                        <textarea 
+                            rows="4" 
+                            disabled
+                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
+                            placeholder="Escribe tu mensaje aquí... Ej: ¡Hola! Me gustaría obtener el descuento del popup..."
+                        >¡Hola! Me gustaría obtener más información sobre la promoción.</textarea>
+                    </div>
+                </div>
+
+                <!-- Editar Mensaje de Correo -->
+                  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 transition-colors gap-4 opacity-80">
+                    <div class="sm:w-1/3 space-y-3">
+                      <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                           <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        Correo Electrónico
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Próximamente</span>
+                       </h3>
+                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Configura el título, mensaje e imagen para los emails.</p>
+                       <button type="button" disabled aria-disabled="true" class="mt-2 inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-400 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-600">
+                            Añadir Imagen Adjunta
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="sm:w-2/3 w-full pl-0 sm:pl-4 space-y-3">
+                        <div>
+                             <label for="emailTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título / Asunto</label>
+                             <input 
+                                type="text" 
+                                id="emailTitle" 
+                                          disabled
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
+                                placeholder="Ej: Información sobre Promoción Exclusiva"
+                                value="Solicitud de información - Popup Web"
+                             />
+                        </div>
+                        <div>
+                            <label for="emailBody" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mensaje de Correo</label>
+                            <textarea 
+                                id="emailBody"
+                                rows="3" 
+                                disabled
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
+                                placeholder="Escribe el cuerpo del correo aquí..."
+                            >¡Hola! Me interesa la oferta mostrada en su página web y me gustaría recibir más detalles.</textarea>
+                        </div>
+                    </div>
+                </div>
+
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2">Tiempo de Aparición de Pop-ups</h2>
 
                 <!-- Tiempo de Aparición del Pop-up de Inicio -->
@@ -188,85 +260,8 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                 </div>
 
             </div>
-  <!-- TODO lo de imágenes, colores, etc -->
 
-
-
-</div>
-<div id="contentWhatsapp" class="hidden">
-
-                <!-- Editar Mensaje de WhatsApp -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors gap-4">
-                    <div class="sm:w-1/3 space-y-3">
-                       <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg flex items-center gap-2">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="text-green-500 shrink-0" viewBox="0 0 16 16">
-                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-                         </svg>
-                         WhatsApp
-                       </h3>
-                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Configura la imagen y mensaje predeterminado que se enviarán.</p>
-                       <button type="button" class="mt-2 inline-flex items-center px-3 py-1.5 border border-green-500 text-xs font-medium rounded text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors dark:bg-transparent dark:text-green-400 dark:border-green-400 dark:hover:bg-green-900/30">
-                            Añadir Imagen a WhatsApp
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="sm:w-2/3 w-full pl-0 sm:pl-4">
-                        <textarea 
-                            id="whatsappMessage"
-                            rows="4" 
-                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
-                            placeholder="Escribe tu mensaje aquí... Ej: ¡Hola! Me gustaría obtener el descuento del popup..."
-                        >¡Hola! Me gustaría obtener más información sobre la promoción.</textarea>
-                    </div>
-                </div>
-  <!-- TODO WhatsApp -->
-</div>
-<div id="contentCorreo" class="hidden">
-
-                <!-- Editar Mensaje de Correo -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors gap-4">
-                    <div class="sm:w-1/3 space-y-3">
-                       <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                           <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                        </svg>
-                        Correo Electrónico
-                       </h3>
-                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Configura el título, mensaje e imagen para los emails.</p>
-                       <button type="button" class="mt-2 inline-flex items-center px-3 py-1.5 border border-blue-500 text-xs font-medium rounded text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors dark:bg-transparent dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-900/30">
-                            Añadir Imagen Adjunta
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="sm:w-2/3 w-full pl-0 sm:pl-4 space-y-3">
-                        <div>
-                             <label for="emailTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título / Asunto</label>
-                             <input 
-                                type="text" 
-                                id="emailTitle" 
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
-                                placeholder="Ej: Información sobre Promoción Exclusiva"
-                                value="Solicitud de información - Popup Web"
-                             />
-                        </div>
-                        <div>
-                            <label for="emailBody" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mensaje de Correo</label>
-                            <textarea 
-                                id="emailBody"
-                                rows="3" 
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
-                                placeholder="Escribe el cuerpo del correo aquí..."
-                            >¡Hola! Me interesa la oferta mostrada en su página web y me gustaría recibir más detalles.</textarea>
-                        </div>
-                    </div>
-                </div>
-  <!-- TODO Correo -->
-</div>
+          <p id="popupStatus" class="mt-6 text-sm text-gray-600 dark:text-gray-300" role="status" aria-live="polite">Cargando configuración...</p>
             
             <div class="mt-8 flex justify-end">
               <button id="savePopupSettingsBtn" type="button" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
@@ -296,30 +291,29 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                       </div>
                   </div>
                   
-                 <div id="previewStage" class="bg-gray-100 dark:bg-gray-900 p-4 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px] transition-all duration-300">
+                  <div class="bg-gray-100 dark:bg-gray-900 p-4 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px]">
+                      <!-- Fondo oscuro simulado para el pop-up -->
+                      <div class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
+                      
+                      <!-- Contenedor del Pop-up -->
+                      <div id="previewContainer" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl relative z-10 mx-auto transition-all duration-300 overflow-hidden" data-mode="desktop">
+                          <!-- Botón de Cerrar (simulado) -->
+                          <button type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-500 focus:outline-none z-20">
+                              <span class="sr-only">Cerrar</span>
+                              <svg class="h-6 w-6 opacity-70 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                          </button>
 
-  <!-- Fondo oscuro -->
-  <div id="previewOverlay" class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
-
-  <!-- CONTENEDOR RELATIVO -->
-  <div class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
-
-    <!-- ================= POPUPS ================= -->
-    <div id="previewContainer"
-  class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full transition-all duration-300 overflow-hidden"
-  data-mode="desktop">
-
-  <!-- ================= POPUPS ================= -->
-  <div id="previewPopups"
-    class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl relative w-full transition-all duration-300 overflow-hidden min-h-[400px]"
-    data-mode="desktop">
-
-    <button class="absolute top-4 right-4 text-gray-300 z-30 hover:text-gray-500 transition-colors bg-white/50 rounded-full p-1 leading-none text-xs">✕</button>
-
-    <div id="previewImage"
-      class="bg-[#4FB9AF] w-1/2 flex items-center justify-center font-bold text-white text-2xl uppercase tracking-tighter shadow-inner">
-      [Imagen 1]
-    </div>
+                          <!-- Imagen del Pop-up -->
+                          <div id="previewImage" class="bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative transition-all duration-300 overflow-hidden">
+                              <img 
+                                  id="previewImageEl" 
+                                  src="" 
+                                  alt="Imagen del popup"
+                                  class="w-full h-full object-cover"
+                              />
+                          </div>
 
     <div id="previewForm" class="w-1/2 flex flex-col justify-center bg-white dark:bg-gray-800 p-12 space-y-10">
       <div class="flex flex-col items-center text-center">
@@ -576,130 +570,294 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 </LayoutAdmin>
 
 <script>
-function initTabs() {
-  const tabPopups = document.getElementById("tabPopups");
-  const tabWhatsapp = document.getElementById("tabWhatsapp");
-  const tabCorreo = document.getElementById("tabCorreo");
+  
+      const initPopupSettings = () => {
+        console.log("SCRIPT FUNCIONANDO");
+                const btnTextColorInput = document.getElementById('btnTextColor');
+                const btnBgColorInput = document.getElementById('btnBgColor');
+                    const previewButton = document.getElementById('previewButton');
 
-  const contentPopups = document.getElementById("contentPopups");
-  const contentWhatsapp = document.getElementById("contentWhatsapp");
-  const contentCorreo = document.getElementById("contentCorreo");
+          if (
+            btnTextColorInput instanceof HTMLInputElement &&
+            btnBgColorInput instanceof HTMLInputElement &&
+            previewButton instanceof HTMLButtonElement
+          ) {
+              previewButton.style.color = btnTextColorInput.value;
+              previewButton.style.backgroundColor = btnBgColorInput.value;
 
-  // PREVIEWS
-  const previewPopups = document.getElementById("previewPopups");
-  const previewPopupsContainer = document.getElementById("previewContainer");
-  const previewWhatsapp = document.getElementById("previewWhatsapp");
-  const previewCorreo = document.getElementById("previewCorreo");
-  const previewOverlay = document.getElementById("previewOverlay");
-  const previewModesToggle = document.getElementById("previewModesToggle");
-  const previewStage = document.getElementById("previewStage");
+              btnTextColorInput.oninput = () => {
+                  previewButton.style.color = btnTextColorInput.value;
+              };
 
-  if (!tabPopups || !tabWhatsapp || !tabCorreo) {
-    setTimeout(initTabs, 200);
-    return;
-  }
-
-  const tabs = [tabPopups, tabWhatsapp, tabCorreo];
-  const contents = [contentPopups, contentWhatsapp, contentCorreo];
-
-  function activarTab(tab, content, previewActivo) {
-    // Desactivar todos
-    tabs.forEach(t => {
-        t.classList.remove("bg-teal-600", "text-white", "dark:bg-teal-500", "bg-teal-500");
-        t.classList.add("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
-    });
-    
-    contents.forEach(c => c.classList.add("hidden"));
-    
-    // Ocultar todas las vistas previas
-    previewPopupsContainer.classList.add("hidden");
-    previewWhatsapp.classList.add("hidden");
-    previewCorreo.classList.add("hidden");
-
-    // Activar seleccionados
-    tab.classList.remove("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
-    tab.classList.add("bg-teal-600", "text-white", "dark:bg-teal-500");
-    content.classList.remove("hidden");
-
-    // Manejo de la vista previa específica
-    previewActivo.classList.remove("hidden");
-
-    // Toggle "Full Stage" mode for Gmail
-    if (previewActivo === previewCorreo) {
-        if (previewStage) previewStage.classList.add("is-gmail");
-    } else {
-        if (previewStage) previewStage.classList.remove("is-gmail");
-    }
-
-    if (previewActivo === previewPopupsContainer) {
-        if (previewOverlay) previewOverlay.classList.remove("hidden");
-        if (previewModesToggle) previewModesToggle.classList.remove("hidden");
-    } else {
-        if (previewOverlay) previewOverlay.classList.add("hidden");
-        if (previewModesToggle) previewModesToggle.classList.add("hidden");
-    }
-  }
-
-  // EVENTOS TABS
-  tabPopups.onclick = () => activarTab(tabPopups, contentPopups, previewPopupsContainer);
-  tabWhatsapp.onclick = () => activarTab(tabWhatsapp, contentWhatsapp, previewWhatsapp);
-  tabCorreo.onclick = () => activarTab(tabCorreo, contentCorreo, previewCorreo);
-
-  // ESTADO INICIAL
-  activarTab(tabPopups, contentPopups, previewPopupsContainer);
-
-  // WHATSAPP PREVIEW SYNC
-  const textareaWhatsapp = document.getElementById("whatsappMessage");
-  const previewWhatsappText = document.getElementById("previewWhatsappText");
-  if (textareaWhatsapp && previewWhatsappText) {
-    textareaWhatsapp.addEventListener("input", () => {
-      previewWhatsappText.textContent = textareaWhatsapp.value;
-    });
-  }
-
-  // CORREO PREVIEW SYNC
-  const emailTitle = document.getElementById("emailTitle");
-  const emailBody = document.getElementById("emailBody");
-  const previewCorreoTitle = document.getElementById("previewCorreoTitle");
-  const previewCorreoBody = document.getElementById("previewCorreoBody");
-
-  if (emailTitle && previewCorreoTitle) {
-    emailTitle.addEventListener("input", () => {
-      previewCorreoTitle.textContent = emailTitle.value;
-    });
-  }
-  if (emailBody && previewCorreoBody) {
-    emailBody.addEventListener("input", () => {
-      previewCorreoBody.textContent = emailBody.value;
-    });
-  }
-
-  // PREVIEW MODES (Escritorio / Móvil)
-  const btnDesktop = document.getElementById("btnDesktop");
-  const btnMobile = document.getElementById("btnMobile");
-  const previewContainer = document.getElementById("previewContainer");
-
-  if (btnDesktop && btnMobile && previewContainer && previewPopups) {
-      function activeMode(modo) {
-          previewContainer.setAttribute("data-mode", modo);
-          previewPopups.setAttribute("data-mode", modo);
-          if (modo === "desktop") {
-              btnDesktop.classList.add("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnDesktop.classList.remove("text-gray-500", "dark:text-gray-400");
-              btnMobile.classList.remove("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnMobile.classList.add("text-gray-500", "dark:text-gray-400");
-          } else {
-              btnMobile.classList.add("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnMobile.classList.remove("text-gray-500", "dark:text-gray-400");
-              btnDesktop.classList.remove("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnDesktop.classList.add("text-gray-500", "dark:text-gray-400");
+              btnBgColorInput.oninput = () => {
+                  previewButton.style.backgroundColor = btnBgColorInput.value;
+              };
           }
-      }
-      btnDesktop.onclick = () => activeMode("desktop");
-      btnMobile.onclick = () => activeMode("mobile");
-  }
-}
 
-// INICIAR
-initTabs();
+          const btnDesktop = document.getElementById('btnDesktop');
+          const btnMobile = document.getElementById('btnMobile');
+          const previewContainer = document.getElementById('previewContainer');
+
+          if (btnDesktop && btnMobile && previewContainer) {
+              const activeBtnClasses = ['bg-white', 'dark:bg-gray-700', 'text-teal-600', 'shadow-sm'];
+              const inactiveBtnClasses = ['text-gray-500', 'hover:text-gray-700', 'dark:text-gray-400', 'dark:hover:text-gray-200'];
+
+              btnDesktop.onclick = () => {
+                  // Button styles
+                  btnDesktop.classList.add(...activeBtnClasses);
+                  btnDesktop.classList.remove(...inactiveBtnClasses);
+                  btnMobile.classList.remove(...activeBtnClasses);
+                  btnMobile.classList.add(...inactiveBtnClasses);
+
+                  // Switch to Desktop Data attribute
+                  previewContainer.setAttribute('data-mode', 'desktop');
+              };
+
+              btnMobile.onclick = () => {
+                  // Button styles
+                  btnMobile.classList.add(...activeBtnClasses);
+                  btnMobile.classList.remove(...inactiveBtnClasses);
+                  btnDesktop.classList.remove(...activeBtnClasses);
+                  btnDesktop.classList.add(...inactiveBtnClasses);
+
+                  // Switch to Mobile Data attribute
+                  previewContainer.setAttribute('data-mode', 'mobile');
+              };
+          }
+      };
+
+// Iniciar el script
+document.addEventListener("DOMContentLoaded", initPopupSettings);
+document.addEventListener("astro:page-load", initPopupSettings);
+
+  </script>
+</LayoutAdmin>
+
+<script>
+    import { getPopupSettings, updatePopupSettings, isHexColor } from "../../lib/api/popupSettings";
+
+    const DEFAULT_BUTTON_BG = "#14B8A6";
+    const DEFAULT_BUTTON_TEXT = "#FFFFFF";
+    const DEFAULT_POPUP_START_DELAY_MINUTES = 1;
+
+    const btnBgColor = document.querySelector("#btnBgColor");
+    const btnTextColor = document.querySelector("#btnTextColor");
+    const btnBgColorInput = document.querySelector("#btnBgColorInput");
+    const btnTextColorInput = document.querySelector("#btnTextColorInput");
+    const popupInicioDelay = document.querySelector("#popupInicioDelay");
+    const previewButton = document.querySelector("#previewButton");
+    const saveButton = document.querySelector("#savePopupSettingsBtn");
+    const statusElement = document.querySelector("#popupStatus");
+
+    if (
+        !(btnBgColor instanceof HTMLInputElement) ||
+        !(btnTextColor instanceof HTMLInputElement) ||
+        !(btnBgColorInput instanceof HTMLInputElement) ||
+        !(btnTextColorInput instanceof HTMLInputElement) ||
+        !(popupInicioDelay instanceof HTMLSelectElement) ||
+        !(saveButton instanceof HTMLButtonElement) ||
+        !(statusElement instanceof HTMLParagraphElement)
+    ) {
+        throw new Error("No se pudo inicializar el formulario de popup settings.");
+    }
+
+    const normalizeHex = (value: string): string => value.trim().toUpperCase();
+
+    const normalizePopupStartDelayMinutes = (value: unknown): number => {
+        const parsed = Number(value);
+        if (!Number.isInteger(parsed) || parsed < 1 || parsed > 10) {
+            return DEFAULT_POPUP_START_DELAY_MINUTES;
+        }
+
+        return parsed;
+    };
+
+    const setStatus = (
+        message: string,
+        type: "idle" | "loading" | "saving" | "success" | "error" = "idle",
+    ): void => {
+        statusElement.textContent = message;
+        statusElement.classList.remove(
+            "text-gray-600",
+            "text-gray-300",
+            "text-teal-600",
+            "text-red-500",
+            "text-amber-500",
+        );
+
+        if (type === "success") {
+            statusElement.classList.add("text-teal-600");
+            return;
+        }
+
+        if (type === "error") {
+            statusElement.classList.add("text-red-500");
+            return;
+        }
+
+        if (type === "loading" || type === "saving") {
+            statusElement.classList.add("text-amber-500");
+            return;
+        }
+
+        statusElement.classList.add("text-gray-600", "dark:text-gray-300");
+    };
+
+    const setEditableControlsDisabled = (disabled: boolean): void => {
+        btnBgColor.disabled = disabled;
+        btnTextColor.disabled = disabled;
+        btnBgColorInput.disabled = disabled;
+        btnTextColorInput.disabled = disabled;
+        popupInicioDelay.disabled = disabled;
+        saveButton.disabled = disabled;
+    };
+
+    const applyColorsToForm = (buttonBgColor: string, buttonTextColor: string): void => {
+        const normalizedBg = normalizeHex(buttonBgColor);
+        const normalizedText = normalizeHex(buttonTextColor);
+
+        btnBgColor.value = normalizedBg;
+        btnBgColorInput.value = normalizedBg;
+
+        btnTextColor.value = normalizedText;
+        btnTextColorInput.value = normalizedText;
+
+        if (previewButton instanceof HTMLButtonElement) {
+            previewButton.style.backgroundColor = normalizedBg;
+            previewButton.style.color = normalizedText;
+        }
+    };
+
+    const applyImageToPreview = (imageUrl: string): void => {
+        const previewImageEl = document.getElementById('previewImageEl');
+        if (previewImageEl instanceof HTMLImageElement) {
+            previewImageEl.src = imageUrl;
+        }
+    };
+
+    const mapHttpError = (error: unknown): string => {
+        const typedError = error as { response?: { status?: number } };
+        const status = typedError?.response?.status;
+
+        if (status === 401 || status === 403) {
+            return "No tienes sesión activa o permisos para modificar esta configuración.";
+        }
+
+        if (status === 422) {
+            return "El backend rechazó los datos. Verifica los colores ingresados.";
+        }
+
+        if (status === 500) {
+            return "Ocurrió un error interno del servidor. Intenta nuevamente.";
+        }
+
+        return "No fue posible guardar la configuración de popup.";
+    };
+
+    const syncTextFromColorPicker = (colorInput: HTMLInputElement, textInput: HTMLInputElement): void => {
+        textInput.value = normalizeHex(colorInput.value);
+    };
+
+    const syncColorPickerFromText = (textInput: HTMLInputElement, colorInput: HTMLInputElement): void => {
+        const normalized = normalizeHex(textInput.value);
+        textInput.value = normalized;
+
+        if (isHexColor(normalized)) {
+            colorInput.value = normalized;
+        }
+    };
+
+    btnBgColor.addEventListener("input", () => syncTextFromColorPicker(btnBgColor, btnBgColorInput));
+    btnTextColor.addEventListener("input", () => syncTextFromColorPicker(btnTextColor, btnTextColorInput));
+    btnBgColorInput.addEventListener("blur", () => syncColorPickerFromText(btnBgColorInput, btnBgColor));
+    btnTextColorInput.addEventListener("blur", () => syncColorPickerFromText(btnTextColorInput, btnTextColor));
+
+    const popupImageInput = document.getElementById('popupImageInput');
+    if (popupImageInput instanceof HTMLInputElement) {
+        popupImageInput.addEventListener('change', (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imageUrl = event.target?.result as string;
+                    applyImageToPreview(imageUrl);
+                    // Guardar en localStorage
+                    localStorage.setItem('popupImage', imageUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    const loadSettings = async () => {
+        setEditableControlsDisabled(true);
+        setStatus("Cargando configuración...", "loading");
+
+        try {
+            const settings = await getPopupSettings();
+            const bgColor = normalizeHex(settings?.button_bg_color || DEFAULT_BUTTON_BG);
+            const textColor = normalizeHex(settings?.button_text_color || DEFAULT_BUTTON_TEXT);
+            const popupStartDelayMinutes = normalizePopupStartDelayMinutes(
+                settings?.popup_start_delay_minutes,
+            );
+
+            applyColorsToForm(bgColor, textColor);
+            popupInicioDelay.value = String(popupStartDelayMinutes);
+            
+            // Cargar imagen guardada en localStorage
+            const savedImage = localStorage.getItem('popupImage');
+            if (savedImage) {
+                applyImageToPreview(savedImage);
+            }
+            
+            setStatus("Configuración cargada correctamente.", "idle");
+        } catch (error) {
+            applyColorsToForm(DEFAULT_BUTTON_BG, DEFAULT_BUTTON_TEXT);
+            setStatus(mapHttpError(error), "error");
+        } finally {
+            setEditableControlsDisabled(false);
+        }
+    };
+
+    saveButton.addEventListener("click", async () => {
+        const buttonBgColor = normalizeHex(btnBgColorInput.value);
+        const buttonTextColor = normalizeHex(btnTextColorInput.value);
+        const popupStartDelayMinutes = normalizePopupStartDelayMinutes(popupInicioDelay.value);
+
+        if (!isHexColor(buttonBgColor) || !isHexColor(buttonTextColor)) {
+            setStatus("Los colores deben tener el formato exacto #RRGGBB.", "error");
+            return;
+        }
+
+        setEditableControlsDisabled(true);
+        saveButton.textContent = "Guardando...";
+        setStatus("Guardando cambios...", "saving");
+
+        try {
+            const updatedSettings = await updatePopupSettings({
+                button_bg_color: buttonBgColor,
+                button_text_color: buttonTextColor,
+                popup_start_delay_minutes: popupStartDelayMinutes,
+            });
+
+            applyColorsToForm(updatedSettings.button_bg_color, updatedSettings.button_text_color);
+            popupInicioDelay.value = String(
+                normalizePopupStartDelayMinutes(updatedSettings.popup_start_delay_minutes),
+            );
+            setStatus("Cambios guardados exitosamente.", "success");
+        } catch (error) {
+            setStatus(mapHttpError(error), "error");
+        } finally {
+            saveButton.textContent = "Guardar Cambios";
+            setEditableControlsDisabled(false);
+        }
+    });
+
+    // Cargar imagen guardada al inicializar
+    const savedImageOnInit = localStorage.getItem('popupImage');
+    if (savedImageOnInit) {
+        applyImageToPreview(savedImageOnInit);
+    }
+
+    loadSettings();
 </script>
