@@ -5,6 +5,7 @@ import NavBar from "../components/ui/navbar/NavBar";
 import ScrollModal from "../components/ui/ScrollModal.tsx";
 import WhatsApp from "../components/ui/whatsapp.astro";
 import Toast from "../components/ui/Toast.astro";
+import ChatbotWidget from "../components/ui/chatbot/ChatbotWidget.tsx";
 
 interface Props {
   title: string;
@@ -140,6 +141,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       observer.observe(document.body, { childList: true, subtree: true });
     </script>
     <WhatsApp />
+    <ChatbotWidget client:load />
     <Toast />
   </body>
 </html>
