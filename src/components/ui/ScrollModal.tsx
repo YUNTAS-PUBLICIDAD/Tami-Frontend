@@ -236,7 +236,7 @@ const ScrollModal = () => {
       id="catalog-modal"
       className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn"
     >
-      <div className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[95%] max-w-md sm:max-w-4xl relative rounded-xl transition-all duration-500 h-[500px] sm:h-[550px] bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[95%] max-w-md sm:max-w-4xl relative rounded-2xl transition-all duration-500 h-[500px] sm:h-[550px] bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
 
         {/* ========================================================= */}
         {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
@@ -294,49 +294,57 @@ const ScrollModal = () => {
                   Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
               </div>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
-                <input
-                  type="text"
-                  placeholder="Nombres y Apellidos"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-                />
-                <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3 animate-fadeInUp mt-28 sm:mt-36 w-full max-w-[320px] mx-auto">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                  />
+                  {errors.nombre && <p className="text-xs text-yellow-100 mt-1 pl-2 mb-0">{errors.nombre}</p>}
+                </div>
 
+                <div>
+                  <input
+                    type="tel"
+                    placeholder="Teléfono"
+                    maxLength={9}
+                    value={telefono}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setTelefono(val);
+                    }}
+                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                  />
+                  {errors.telefono && <p className="text-xs text-yellow-100 mt-1 pl-2 mb-0">{errors.telefono}</p>}
+                </div>
 
-                <input
-                  type="tel"
-                  placeholder="Número de celular"
-                  maxLength={9}
-                  value={telefono}
-                  onChange={(e) => {
-                    // Solo permite ingresar números
-                    const val = e.target.value.replace(/\D/g, '');
-                    setTelefono(val);
-                  }}
-                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-                />
-                <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
+                <div>
+                  <input
+                    type="email"
+                    placeholder="Correo"
+                    value={correo}
+                    onChange={(e) => setCorreo(e.target.value)}
+                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                  />
+                  {(errors.correo || errors.general || successMessage) && (
+                    <p className={`text-xs text-center mt-1 mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
+                      {errors.correo || errors.general || successMessage}
+                    </p>
+                  )}
+                </div>
 
-                <input
-                  type="email"
-                  placeholder="Correo electrónico"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
-                  className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-                />
-                <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
-                  {errors.correo || errors.general || successMessage}
-                </p>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-[#00625a] rounded text-white w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-0 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-teal-700 hover:scale-105 active:scale-95"
-                >
-                  {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
-                </button>
+                <div className="mt-6 flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-[#4FB9AF] rounded-full text-white w-fit py-2.5 px-4 text-base uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-[#3d9189] hover:scale-105 active:scale-95"
+                  >
+                    {isSubmitting ? "Enviando..." : "CONOCER MÁS"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
