@@ -73,7 +73,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           class="input-style"
         />
 
-        <button
+        <button id="modal2-submit-btn"
           type="submit"
           class="btn-white-pill mt-4 font-bold text-lg sm:text-3xl self-center w-auto px-10 sm:px-14"
         >
@@ -109,8 +109,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 }
 
   .btn-white-pill {
-    background: white;
-    color: #2702aa;
+   /* background: white;
+    color: #2702aa; */
     border-radius: 999px;
     font-weight: bold;
     line-height: 1.2;
@@ -129,6 +129,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   import { origenCliente } from "@data/origenCliente";
   
   window.__detalleProducto = window.__detalleProducto || null;
+
+  
 
   /* ================= OBTENER PRODUCTO ================= */
   async function obtenerProductoActual() {
@@ -217,7 +219,26 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
         imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
       }
+
+      // Estilos del boton
+    document
+      .getElementById("modal2-submit-btn")
+      ?.style.setProperty(
+        "background",
+        producto?.etiqueta?.popup_button_color,
+        "important",
+      );
+    document
+      .getElementById("modal2-submit-btn")
+      ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+
+    const popupButtonText = producto?.etiqueta?.popup_button_text?.trim();
+    const submitBtn2 = document.getElementById("modal2-submit-btn");
+    if (submitBtn2) {
+      submitBtn2.textContent = popupButtonText || "¡Cotiza ahora!";
     }
+    }
+    
 
     modalImg.src = imagen;
     modalImg.alt = imagenAlt;
@@ -239,6 +260,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         await actualizarTituloModal2();
       }
     });
+
+  
 
     observer.observe(modal2, { attributes: true, attributeFilter: ["class"] });
   }

@@ -109,7 +109,14 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       <slot />
     </main>
     <Footer />
-    <ScrollModal client:load />
+    {/**
+     * don't inject the catalog popup on the productos section
+     * (the modal itself also checks allowedRoutes, but excluding
+     * it here avoids mounting it entirely).
+     */}
+    {!(Astro.url.pathname === "/productos") && (
+      <ScrollModal client:load />
+    )}
     {/* Activado con el atributo `client:load`.*/}
     <script is:inline>
       function addOpenScrollListeners() {

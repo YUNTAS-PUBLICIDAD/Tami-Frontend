@@ -73,7 +73,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           class="input-style"
         />
 
-        <button
+        <button id="modal3-submit-btn"
           type="submit"
           class="btn-white-pill mt-4 font-bold text-base sm:text-xl self-center w-auto px-8 sm:px-12"
         >
@@ -112,8 +112,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
 
 .btn-white-pill {
-  background: #160063;
-  color: white;
+  /* background: #160063;
+  color: white; */
   border-radius: 999px;
   font-weight: bold;
   transition: .3s;
@@ -172,6 +172,24 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       if (producto.etiqueta?.popup_estilo === "estilo3") {
         modoVisual = producto.etiqueta.popup3_sin_fondo ? "recorte" : "fondo";
       }
+
+      // Estilos del boton
+    document
+      .getElementById("modal3-submit-btn")
+      ?.style.setProperty(
+        "background",
+        producto?.etiqueta?.popup_button_color,
+        "important",
+      );
+    document
+      .getElementById("modal3-submit-btn")
+      ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
+
+    const popupButtonText = producto?.etiqueta?.popup_button_text?.trim();
+    const submitBtn3 = document.getElementById("modal3-submit-btn");
+    if (submitBtn3) {
+      submitBtn3.textContent = popupButtonText || "¡Solicitar asesoría!";
+    }
     }
 
     const tituloModal3 = document.getElementById("modal3-title");
