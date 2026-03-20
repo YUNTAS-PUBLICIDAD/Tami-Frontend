@@ -3,7 +3,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 ---
 
 <LayoutAdmin title="POPUPS">
-  <div class="p-6 h-full w-full bg-gray-50 dark:bg-gray-900 rounded-tl-xl border-t border-l border-gray-200 dark:border-gray-700">
+  <div class="p-0 h-full w-full bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
     
     <div class="bg-teal-500 rounded-t-xl p-4 flex justify-between items-center shadow-lg relative z-10 w-full">
       <div class="flex items-center gap-3">
@@ -12,7 +12,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-wide drop-shadow-sm">Configuración de Popups</h1>
+          <h1 class="text-2xl font-bold text-white tracking-wide drop-shadow-sm">Configuración de Pop-ups</h1>
           <p class="text-teal-100 text-sm">Personaliza el aspecto de tus ventanas emergentes</p>
         </div>
       </div>
@@ -20,11 +20,26 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 
     <!-- Contenido Principal -->
     <div class="bg-white dark:bg-gray-800 rounded-b-xl shadow-xl border border-t-0 p-8 border-gray-200 dark:border-gray-700 min-h-[60vh]">
-        <div class="max-w-3xl">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 border-b pb-2">Opciones de Apariencia</h2>
-            
-            <div class="space-y-6">
-                
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
+            <!-- Columna Izquierda: Formulario de Opciones -->
+            <div class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8">
+<div class="flex gap-2 mb-6 border-b pb-2">
+  <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-500 text-white text-sm font-medium">
+    Pop-ups
+  </button>
+
+  <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+    WhatsApp
+  </button>
+
+  <button id="tabCorreo" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+    Correo
+  </button>
+</div>
+
+                <div class="space-y-6">
+                     <div id="contentPopups">
+
                 <!-- Añadir Imagen -->
                 <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
                     <div>
@@ -40,6 +55,51 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                         </button>
                     </div>
                 </div>
+                <!-- Añadir Imagen 2 -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                 <div>
+                <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Añadir Imagen 2</h3>
+                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Segunda imagen para el popup. Se mostrará en la mitad derecha.
+                </p>
+            </div>
+            
+
+  <div class="ml-4 flex-shrink-0">
+      <input type="file" id="popupImage2" accept="image/*" class="hidden">
+
+      <button type="button"
+          onclick="document.getElementById('popupImage2').click()"
+          class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+          Subir Imagen 2
+      </button>
+  </div>
+</div>
+<!-- Añadir Imagen para Móvil -->
+<div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+  
+  <div>
+    <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">
+      Añadir Imagen Móvil
+    </h3>
+
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      Imagen que se mostrará cuando el popup se vea en dispositivos móviles.
+    </p>
+  </div>
+
+  <div class="ml-4 flex-shrink-0">
+    <input type="file" id="popupImageMobile" accept="image/*" class="hidden">
+
+    <button
+      type="button"
+      onclick="document.getElementById('popupImageMobile').click()"
+      class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+      Subir Imagen Móvil
+    </button>
+  </div>
+
+</div>
 
                 <!-- Cambiar Color de Texto del Botón -->
                 <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
@@ -49,7 +109,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                     <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                          <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700">
-                             <input type="color" id="btnTextColor" defaultValue="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                             <input type="color" id="btnTextColor" value="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
                          </div>
                          <label htmlFor="btnTextColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
                     </div>
@@ -63,11 +123,69 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                     <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                          <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700">
-                             <input type="color" id="btnBgColor" defaultValue="#14b8a6" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                             <input type="color" id="btnBgColor" value="#14b8a6" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
                          </div>
                          <label htmlFor="btnBgColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
                     </div>
                 </div>
+
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2">Tiempo de Aparición de Pop-ups</h2>
+
+                <!-- Tiempo de Aparición del Pop-up de Inicio -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                     <div>
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-up de Inicio</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardará en aparecer el primer pop-up al entrar a la pagina de Inicio.</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                         <div class="relative flex items-center">
+                             <select id="popupInicioDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                 <option value="60" selected>1 minuto</option>
+                                 <option value="120">2 minutos</option>
+                                 <option value="180">3 minutos</option>
+                                 <option value="240">4 minutos</option>
+                                 <option value="300">5 minutos</option>
+                                 <option value="360">6 minutos</option>
+                                 <option value="420">7 minutos</option>
+                                 <option value="480">8 minutos</option>
+                                 <option value="540">9 minutos</option>
+                                 <option value="600">10 minutos</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Tiempo de Aparición del Pop-up de Productos -->
+                <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                     <div>
+                        <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-ups de Productos</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardarán en aparecer los pop-ups al ver el detalle de los productos.</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                         <div class="relative flex items-center">
+                             <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                 <option value="60" selected>1 minuto</option>
+                                 <option value="120">2 minutos</option>
+                                 <option value="180">3 minutos</option>
+                                 <option value="240">4 minutos</option>
+                                 <option value="300">5 minutos</option>
+                                 <option value="360">6 minutos</option>
+                                 <option value="420">7 minutos</option>
+                                 <option value="480">8 minutos</option>
+                                 <option value="540">9 minutos</option>
+                                 <option value="600">10 minutos</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+  <!-- TODO lo de imágenes, colores, etc -->
+
+
+
+</div>
+<div id="contentWhatsapp" class="hidden">
 
                 <!-- Editar Mensaje de WhatsApp -->
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors gap-4">
@@ -88,12 +206,16 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                     </div>
                     <div class="sm:w-2/3 w-full pl-0 sm:pl-4">
                         <textarea 
+                            id="whatsappMessage"
                             rows="4" 
                             class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
                             placeholder="Escribe tu mensaje aquí... Ej: ¡Hola! Me gustaría obtener el descuento del popup..."
                         >¡Hola! Me gustaría obtener más información sobre la promoción.</textarea>
                     </div>
                 </div>
+  <!-- TODO WhatsApp -->
+</div>
+<div id="contentCorreo" class="hidden">
 
                 <!-- Editar Mensaje de Correo -->
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors gap-4">
@@ -135,16 +257,441 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                         </div>
                     </div>
                 </div>
-
-            </div>
+  <!-- TODO Correo -->
+</div>
             
             <div class="mt-8 flex justify-end">
                  <button type="button" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                     Guardar Cambios
                 </button>
             </div>
+          </div>
 
-        </div>
+          <!-- Columna Derecha: Vista Previa -->
+          <div class="lg:pl-4">
+              <div class="sticky top-8">
+                  <div class="flex items-center justify-between mb-6 border-b pb-2">
+                      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Vista Previa</h2>
+                      <div id="previewModesToggle" class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                          <button id="btnDesktop" class="px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-teal-600 shadow-sm transition-colors flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              Escritorio
+                          </button>
+                          <button id="btnMobile" class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                              </svg>
+                              Móvil
+                          </button>
+                      </div>
+                  </div>
+                  
+                 <div id="previewStage" class="bg-gray-100 dark:bg-gray-900 p-4 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px] transition-all duration-300">
+
+  <!-- Fondo oscuro -->
+  <div id="previewOverlay" class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
+
+  <!-- CONTENEDOR RELATIVO -->
+  <div class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
+
+    <!-- ================= POPUPS ================= -->
+    <div id="previewContainer"
+  class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full transition-all duration-300 overflow-hidden"
+  data-mode="desktop">
+
+  <!-- ================= POPUPS ================= -->
+  <div id="previewPopups"
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl relative w-full transition-all duration-300 overflow-hidden min-h-[400px]"
+    data-mode="desktop">
+
+    <button class="absolute top-4 right-4 text-gray-300 z-30 hover:text-gray-500 transition-colors bg-white/50 rounded-full p-1 leading-none text-xs">✕</button>
+
+    <div id="previewImage"
+      class="bg-[#4FB9AF] w-1/2 flex items-center justify-center font-bold text-white text-2xl uppercase tracking-tighter shadow-inner">
+      [Imagen 1]
+    </div>
+
+    <div id="previewForm" class="w-1/2 flex flex-col justify-center bg-white dark:bg-gray-800 p-12 space-y-10">
+      <div class="flex flex-col items-center text-center">
+        <h3 class="text-4xl font-black text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-tighter">Imagen 2</h3>
+      </div>
+
+      <div id="previewInputs" class="space-y-3 w-full max-w-[280px] mx-auto">
+        <div class="h-10 w-full rounded-full bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 flex items-center px-6 text-gray-400 text-xs shadow-inner italic">Nombre</div>
+        <div class="h-10 w-full rounded-full bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 flex items-center px-6 text-gray-400 text-xs shadow-inner italic">Teléfono</div>
+        <div class="h-10 w-full rounded-full bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 flex items-center px-6 text-gray-400 text-xs shadow-inner italic">Correo</div>
+      </div>
+
+      <div class="mt-6 flex justify-center">
+          <button id="previewButton"
+            class="px-12 py-3 text-white bg-[#4FB9AF] rounded-full font-black hover:bg-[#3d9189] shadow-lg shadow-teal-500/20 transition-all active:scale-95 text-[10px] uppercase tracking-[0.2em] w-fit">
+            CONOCER MÁS
+          </button>
+      </div>
     </div>
   </div>
+</div>
+
+  <!-- ================= WHATSAPP REALISTIC PREVIEW ================= -->
+  <div id="previewWhatsapp"
+    class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden">
+
+    <div class="bg-[#e5ddd5] rounded-xl shadow-2xl w-[320px] h-[500px] flex flex-col overflow-hidden border border-gray-300 relative scale-90 sm:scale-100">
+      <!-- Header -->
+      <div class="bg-[#075e54] p-3 flex items-center gap-3 text-white shadow-md shrink-0 relative z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+              <div class="font-bold text-sm leading-tight truncate">Jhon Doe</div>
+              <div class="text-[10px] opacity-70">En línea</div>
+          </div>
+          <div class="flex items-center gap-4 px-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-90" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-90" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-90" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+              </svg>
+          </div>
+      </div>
+
+      <!-- Chat Body -->
+      <div class="flex-1 p-4 overflow-y-auto space-y-4 relative">
+          <!-- Background Pattern placeholder -->
+          <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#000 1px, transparent 0); background-size: 20px 20px;"></div>
+
+          <!-- Incoming Bubble -->
+          <div class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm max-w-[85%] text-[13px] relative z-10">
+              Hola!, me gustaria saber mas informacion de....
+              <div class="text-[10px] text-gray-400 mt-1 text-right">10:45 AM</div>
+              <div class="absolute -left-2 top-0 w-0 h-0 border-r-[8px] border-r-white border-b-[8px] border-b-transparent"></div>
+          </div>
+
+          <!-- Outgoing Bubble (Linked to Textarea) -->
+          <div class="self-end bg-[#dcf8c6] p-3 rounded-lg rounded-tr-none shadow-sm max-w-[85%] text-[13px] relative z-10 ml-auto mr-0 flex flex-col items-end">
+              <div id="previewWhatsappText" class="w-full break-words">
+                  ¡Hola! Me gustaría obtener más información sobre la promoción.
+              </div>
+              <div class="flex items-center justify-end gap-1 mt-1 shrink-0">
+                  <div class="text-[10px] text-gray-500">10:46 AM</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/>
+                  </svg>
+              </div>
+              <div class="absolute -right-2 top-0 w-0 h-0 border-l-[8px] border-l-[#dcf8c6] border-b-[8px] border-b-transparent"></div>
+          </div>
+      </div>
+
+      <!-- Footer / Input Bar -->
+      <div class="p-2 flex items-center gap-2 bg-[#f0f2f5] shrink-0">
+          <div class="bg-white rounded-full px-4 py-2 flex-1 flex items-center gap-3 text-gray-400 shadow-sm overflow-hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="text-[13px] opacity-60 flex-1 truncate">Escribe un mensaje</div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+          </div>
+          <div class="w-10 h-10 bg-[#00a884] rounded-full flex items-center justify-center text-white shadow-md shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform translate-x-0.5" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+              </svg>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="previewCorreo"
+    class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden">
+
+    <div class="bg-white w-full h-full flex flex-col overflow-hidden relative transition-all duration-300">
+      <!-- Header -->
+      <div class="bg-[#404040] p-3 px-6 flex items-center justify-between text-white text-sm">
+        <span class="font-medium text-base">Mensaje nuevo</span>
+        <div class="flex items-center gap-4 opacity-80 scale-100">
+          <span class="cursor-pointer hover:opacity-100 transition-opacity text-lg">—</span>
+          <span class="cursor-pointer hover:opacity-100 transition-opacity text-lg">⤢</span>
+          <span class="cursor-pointer hover:opacity-100 transition-opacity text-lg">✕</span>
+        </div>
+      </div>
+
+      <!-- Fields -->
+      <div class="px-6 py-3 border-b border-gray-100 flex items-center gap-6 text-sm">
+        <span class="text-gray-400 w-16">Para</span>
+        <span class="text-gray-700 font-medium">contacto@tami.com</span>
+        <div class="flex-1"></div>
+        <div class="flex gap-3 text-xs text-gray-400 pr-4">
+          <span class="hover:underline cursor-pointer">Cc</span>
+          <span class="hover:underline cursor-pointer">Cco</span>
+        </div>
+      </div>
+      
+      <div class="px-6 py-3 border-b border-gray-100 flex items-center gap-6 text-sm">
+        <span class="text-gray-400 w-16">Asunto</span>
+        <div id="previewCorreoTitle" class="text-gray-800 font-medium flex-1 text-base">
+          Solicitud de información - Popup Web
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div id="previewCorreoBody" class="p-10 sm:p-12 flex-1 overflow-y-auto text-base sm:text-lg text-gray-800 whitespace-pre-wrap leading-relaxed min-h-[300px]">
+        ¡Hola! Me interesa la oferta mostrada...
+      </div>
+
+      <!-- Footer / Toolbar -->
+      <div class="p-3 border-t border-gray-100 bg-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-1">
+          <div class="bg-[#1a73e8] text-white px-5 py-2 rounded-md font-medium text-sm flex items-center gap-2 hover:bg-[#1557b0] transition-shadow cursor-pointer shadow-md">
+            Enviar
+            <span class="border-l border-white/20 pl-2 ml-1 text-[10px] opacity-70">▼</span>
+          </div>
+          
+          <div class="flex items-center gap-0.5 ml-2">
+            <div class="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors cursor-help tooltip-trigger" title="Opciones de formato">
+              <span class="font-serif italic font-bold text-lg leading-none">A</span>
+              <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-[#1a73e8] rounded-full"></div>
+            </div>
+            <div class="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors cursor-pointer">
+              <svg class="w-5 h-5 opacity-70" fill="currentColor" viewBox="0 0 24 24"><path d="M12.5 5.5A3.5 3.5 0 0 0 9 9v7.5a2 2 0 0 0 4 0V9a.5.5 0 0 0-1 0v7.5a1 1 0 0 1-2 0V9a2.5 2.5 0 1 1 5 0V16a3.5 3.5 0 0 1-7 0V9a4.5 4.5 0 1 0 9 0V5.5a.5.5 0 0 0-1 0Z"/></svg>
+            </div>
+            <div class="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors cursor-pointer hidden sm:block">
+              <svg class="w-5 h-5 opacity-70" fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5s.67 1.5 1.5 1.5zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+            </div>
+            <div class="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors cursor-pointer">
+               <svg class="w-5 h-5 opacity-70" fill="currentColor" viewBox="0 0 24 24"><path d="M19,7H5V19H19V7M16.39,9,12,13.39,7.61,9H6.39l5.61,5.61,5.61-5.61H16.39Z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer px-2 py-2">
+          <svg class="w-5 h-5 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</div>
+  <style is:global>
+      /* Desktop Mode Styles */
+      #previewContainer[data-mode="desktop"]:not(.hidden) {
+          width: 100%;
+          max-width: 70rem; /* Full Horizontal Expansion */
+          display: flex;
+          flex-direction: row;
+      }
+
+      /* Full Stage Mode for Gmail */
+      #previewStage.is-gmail {
+          background: white !important;
+          padding: 0 !important;
+          border: none !important;
+          box-shadow: none !important;
+      }
+      #previewStage.is-gmail #previewOverlay {
+          display: none !important;
+      }
+      #previewPopups[data-mode="desktop"]:not(.hidden) {
+          display: flex;
+          flex-direction: row;
+      }
+      #previewPopups[data-mode="desktop"] #previewImage {
+          width: 50%;
+          min-height: 300px;
+          height: auto;
+      }
+      #previewPopups[data-mode="desktop"] #previewForm {
+          width: 50%;
+          padding: 2rem; /* p-8 */
+          gap: 1.5rem; /* space-y-6 */
+      }
+      #previewPopups[data-mode="desktop"] #previewInputs {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+      }
+      #previewPopups[data-mode="desktop"] #previewButton {
+          padding-top: 0.75rem; /* py-3 */
+          padding-bottom: 0.75rem;
+      }
+
+      /* Mobile Mode Styles */
+      #previewContainer[data-mode="mobile"]:not(.hidden) {
+          width: 100%;
+          max-width: 24rem; /* sm */
+          display: flex;
+          flex-direction: column;
+      }
+      #previewPopups[data-mode="mobile"]:not(.hidden) {
+          display: flex;
+          flex-direction: column;
+      }
+      #previewPopups[data-mode="mobile"] #previewImage {
+          width: 100%;
+          height: 12rem; /* h-48 */
+          min-height: 0;
+      }
+      #previewPopups[data-mode="mobile"] #previewForm {
+          width: 100%;
+          padding: 1.5rem; /* p-6 */
+          gap: 1rem; /* space-y-4 */
+      }
+      #previewPopups[data-mode="mobile"] #previewInputs {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem; /* space-y-3 from original */
+      }
+      #previewPopups[data-mode="mobile"] #previewButton {
+          padding-top: 0.625rem;
+          padding-bottom: 0.625rem;
+      }
+
+    .previewBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+  </style>
 </LayoutAdmin>
+
+<script>
+function initTabs() {
+  const tabPopups = document.getElementById("tabPopups");
+  const tabWhatsapp = document.getElementById("tabWhatsapp");
+  const tabCorreo = document.getElementById("tabCorreo");
+
+  const contentPopups = document.getElementById("contentPopups");
+  const contentWhatsapp = document.getElementById("contentWhatsapp");
+  const contentCorreo = document.getElementById("contentCorreo");
+
+  // PREVIEWS
+  const previewPopups = document.getElementById("previewPopups");
+  const previewPopupsContainer = document.getElementById("previewContainer");
+  const previewWhatsapp = document.getElementById("previewWhatsapp");
+  const previewCorreo = document.getElementById("previewCorreo");
+  const previewOverlay = document.getElementById("previewOverlay");
+  const previewModesToggle = document.getElementById("previewModesToggle");
+  const previewStage = document.getElementById("previewStage");
+
+  if (!tabPopups || !tabWhatsapp || !tabCorreo) {
+    setTimeout(initTabs, 200);
+    return;
+  }
+
+  const tabs = [tabPopups, tabWhatsapp, tabCorreo];
+  const contents = [contentPopups, contentWhatsapp, contentCorreo];
+
+  function activarTab(tab, content, previewActivo) {
+    // Desactivar todos
+    tabs.forEach(t => {
+        t.classList.remove("bg-teal-600", "text-white", "dark:bg-teal-500", "bg-teal-500");
+        t.classList.add("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
+    });
+    
+    contents.forEach(c => c.classList.add("hidden"));
+    
+    // Ocultar todas las vistas previas
+    previewPopupsContainer.classList.add("hidden");
+    previewWhatsapp.classList.add("hidden");
+    previewCorreo.classList.add("hidden");
+
+    // Activar seleccionados
+    tab.classList.remove("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
+    tab.classList.add("bg-teal-600", "text-white", "dark:bg-teal-500");
+    content.classList.remove("hidden");
+
+    // Manejo de la vista previa específica
+    previewActivo.classList.remove("hidden");
+
+    // Toggle "Full Stage" mode for Gmail
+    if (previewActivo === previewCorreo) {
+        if (previewStage) previewStage.classList.add("is-gmail");
+    } else {
+        if (previewStage) previewStage.classList.remove("is-gmail");
+    }
+
+    if (previewActivo === previewPopupsContainer) {
+        if (previewOverlay) previewOverlay.classList.remove("hidden");
+        if (previewModesToggle) previewModesToggle.classList.remove("hidden");
+    } else {
+        if (previewOverlay) previewOverlay.classList.add("hidden");
+        if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    }
+  }
+
+  // EVENTOS TABS
+  tabPopups.onclick = () => activarTab(tabPopups, contentPopups, previewPopupsContainer);
+  tabWhatsapp.onclick = () => activarTab(tabWhatsapp, contentWhatsapp, previewWhatsapp);
+  tabCorreo.onclick = () => activarTab(tabCorreo, contentCorreo, previewCorreo);
+
+  // ESTADO INICIAL
+  activarTab(tabPopups, contentPopups, previewPopupsContainer);
+
+  // WHATSAPP PREVIEW SYNC
+  const textareaWhatsapp = document.getElementById("whatsappMessage");
+  const previewWhatsappText = document.getElementById("previewWhatsappText");
+  if (textareaWhatsapp && previewWhatsappText) {
+    textareaWhatsapp.addEventListener("input", () => {
+      previewWhatsappText.textContent = textareaWhatsapp.value;
+    });
+  }
+
+  // CORREO PREVIEW SYNC
+  const emailTitle = document.getElementById("emailTitle");
+  const emailBody = document.getElementById("emailBody");
+  const previewCorreoTitle = document.getElementById("previewCorreoTitle");
+  const previewCorreoBody = document.getElementById("previewCorreoBody");
+
+  if (emailTitle && previewCorreoTitle) {
+    emailTitle.addEventListener("input", () => {
+      previewCorreoTitle.textContent = emailTitle.value;
+    });
+  }
+  if (emailBody && previewCorreoBody) {
+    emailBody.addEventListener("input", () => {
+      previewCorreoBody.textContent = emailBody.value;
+    });
+  }
+
+  // PREVIEW MODES (Escritorio / Móvil)
+  const btnDesktop = document.getElementById("btnDesktop");
+  const btnMobile = document.getElementById("btnMobile");
+  const previewContainer = document.getElementById("previewContainer");
+
+  if (btnDesktop && btnMobile && previewContainer && previewPopups) {
+      function activeMode(modo) {
+          previewContainer.setAttribute("data-mode", modo);
+          previewPopups.setAttribute("data-mode", modo);
+          if (modo === "desktop") {
+              btnDesktop.classList.add("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
+              btnDesktop.classList.remove("text-gray-500", "dark:text-gray-400");
+              btnMobile.classList.remove("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
+              btnMobile.classList.add("text-gray-500", "dark:text-gray-400");
+          } else {
+              btnMobile.classList.add("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
+              btnMobile.classList.remove("text-gray-500", "dark:text-gray-400");
+              btnDesktop.classList.remove("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
+              btnDesktop.classList.add("text-gray-500", "dark:text-gray-400");
+          }
+      }
+      btnDesktop.onclick = () => activeMode("desktop");
+      btnMobile.onclick = () => activeMode("mobile");
+  }
+}
+
+// INICIAR
+initTabs();
+</script>

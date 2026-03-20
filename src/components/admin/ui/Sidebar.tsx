@@ -60,7 +60,7 @@ const Sidebar = () => {
     { name: "Productos", path: "/admin/productos" },
     { name: "Blog", path: "/admin/blog" },
     { name: "Reclamaciones", path: "/admin/reclamaciones" },
-    { name: "Popups", path: "/admin/popups" },
+    { name: "Pop-ups", path: "/admin/popups" },
   ];
 
   return (
