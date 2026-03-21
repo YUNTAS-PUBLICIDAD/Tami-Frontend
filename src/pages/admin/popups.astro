@@ -1,5 +1,6 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
+import ScrollModal from "../../components/ui/ScrollModal.tsx";
 ---
 
 <LayoutAdmin title="POPUPS">
@@ -47,6 +48,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sube una imagen promocional para tu popup. Resoluciones recomendadas: 800x600px.</p>
                     </div>
                     <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
+                         <input type="hidden" name="delete_popupImage1" id="delete_popupImage1" value="0">
                          <input type="file" id="popupImage1" accept="image/*" class="hidden">
                          <button type="button" onclick="document.getElementById('popupImage1').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                             Subir Archivo
@@ -70,6 +72,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
             
 
   <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
+      <input type="hidden" name="delete_popupImage2" id="delete_popupImage2" value="0">
       <input type="file" id="popupImage2" accept="image/*" class="hidden">
 
       <button type="button"
@@ -96,6 +99,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
   </div>
 
   <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
+    <input type="hidden" name="delete_popupImageMobile" id="delete_popupImageMobile" value="0">
     <input type="file" id="popupImageMobile" accept="image/*" class="hidden">
 
     <button
@@ -206,12 +210,19 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                          WhatsApp
                        </h3>
                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">Configura la imagen y mensaje predeterminado que se enviarán.</p>
-                       <button type="button" class="inline-flex items-center px-4 py-2 bg-[#128C7E] text-sm font-medium rounded-md text-white hover:bg-[#075E54] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#128C7E] transition-colors shadow-sm">
-                            Añadir Imagen a WhatsApp
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                        </button>
+                       <div class="flex items-center space-x-2">
+                           <input type="hidden" name="delete_whatsappImage" id="delete_whatsappImage" value="0">
+                           <input type="file" id="whatsappImage" accept="image/*" class="hidden">
+                           <button type="button" onclick="document.getElementById('whatsappImage').click()" class="inline-flex items-center px-4 py-2 bg-[#128C7E] text-sm font-medium rounded-md text-white hover:bg-[#075E54] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#128C7E] transition-colors shadow-sm">
+                                Añadir Imagen a WhatsApp
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                            </button>
+                            <button type="button" id="clearWhatsappImage" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen WhatsApp">
+                                ✕
+                            </button>
+                       </div>
                     </div>
                     <div class="w-full">
                         <label for="whatsappMessage" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mensaje de WhatsApp</label>
@@ -238,12 +249,19 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
                         Correo Electrónico
                        </h3>
                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">Configura el título, mensaje e imagen para los emails.</p>
-                       <button type="button" class="inline-flex items-center px-4 py-2 bg-blue-500 text-sm font-medium rounded-md text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm">
-                            Añadir Imagen Adjunta
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                            </svg>
-                        </button>
+                       <div class="flex items-center space-x-2">
+                           <input type="hidden" name="delete_emailImage" id="delete_emailImage" value="0">
+                           <input type="file" id="emailImage" accept="image/*" class="hidden">
+                           <button type="button" onclick="document.getElementById('emailImage').click()" class="inline-flex items-center px-4 py-2 bg-blue-500 text-sm font-medium rounded-md text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm">
+                                Añadir Imagen Adjunta
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                </svg>
+                            </button>
+                            <button type="button" id="clearEmailImage" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen Correo">
+                                ✕
+                            </button>
+                       </div>
                     </div>
                     <div class="w-full space-y-3">
                         <div>
@@ -271,7 +289,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 </div>
             
             <div class="mt-8 flex justify-end">
-                 <button type="button" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
+                 <button type="button" id="btnGuardarPopups" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                     Guardar Cambios
                 </button>
             </div>
@@ -304,54 +322,9 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
   <div id="previewOverlay" class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
 
   <!-- CONTENEDOR RELATIVO -->
-  <div class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
-
-    <!-- ================= POPUPS ================= -->
-    <div id="previewContainer"
-  class="group bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full transition-all duration-300 overflow-hidden"
-  data-mode="desktop">
-
-  <!-- ================= POPUPS ================= -->
-  <div id="previewPopups"
-    class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl relative w-full transition-all duration-300 overflow-hidden min-h-[400px]"
-    data-mode="desktop">
-
-    <button class="absolute top-4 right-4 text-gray-300 z-30 hover:text-gray-500 transition-colors bg-white/50 rounded-full p-1 leading-none text-xs">✕</button>
-
-    <div id="previewImage"
-      class="bg-[#4FB9AF] w-1/2 flex items-center justify-center font-bold text-white text-2xl uppercase tracking-tighter shadow-inner">
-      <span class="desktop-text">[Imagen 1]</span>
-      <span class="mobile-text" style="display: none;">[Imagen Móvil]</span>
-    </div>
-
-    <div id="previewForm" class="w-1/2 flex flex-col justify-center bg-white dark:bg-gray-800 p-12 relative overflow-hidden">
-      <!-- Fondo Imagen 2 -->
-      <div id="previewFormBg" class="absolute inset-0 z-0 hidden group-data-[mode=mobile]:hidden">
-         <img id="imgFormBg" src="" class="w-full h-full object-cover select-none" />
-         <div class="absolute inset-0 bg-teal-800/85"></div>
-      </div>
-      
-      <div class="relative z-10 w-full flex flex-col justify-center space-y-24">
-        <div id="previewImagen2Header" class="flex flex-col items-center text-center">
-          <h3 class="text-4xl font-black text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-tighter">Imagen 2</h3>
-        </div>
-
-      <div id="previewInputs" class="space-y-3 w-full max-w-[320px] mx-auto">
-        <div class="h-10 w-full rounded-full bg-[#EAEAEA] dark:bg-gray-700/50 border border-[#d5d5d5] dark:border-gray-600 flex items-center px-6 text-gray-600 dark:text-gray-400 text-sm shadow-inner font-medium">Nombre</div>
-        <div class="h-10 w-full rounded-full bg-[#EAEAEA] dark:bg-gray-700/50 border border-[#d5d5d5] dark:border-gray-600 flex items-center px-6 text-gray-600 dark:text-gray-400 text-sm shadow-inner font-medium">Teléfono</div>
-        <div class="h-10 w-full rounded-full bg-[#EAEAEA] dark:bg-gray-700/50 border border-[#d5d5d5] dark:border-gray-600 flex items-center px-6 text-gray-600 dark:text-gray-400 text-sm shadow-inner font-medium">Correo</div>
-      </div>
-
-      <div class="mt-8 flex justify-center">
-          <button id="previewButton"
-            class="px-4 py-2.5 text-white bg-[#4FB9AF] rounded-full font-black hover:bg-[#3d9189] shadow-lg shadow-teal-500/20 transition-all active:scale-95 text-base uppercase tracking-[0.2em] w-fit">
-            CONOCER MÁS
-          </button>
-      </div>
-      </div>
-    </div>
+  <div id="previewScrollModalContainer" class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
+      <ScrollModal client:only="react" isPreview={true} />
   </div>
-</div>
 
   <!-- ================= WHATSAPP REALISTIC PREVIEW ================= -->
   <div id="previewWhatsapp"
@@ -363,7 +336,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20">
+          <div id="previewWhatsappProfileImg" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
@@ -602,20 +575,24 @@ function initTabs() {
   const tabWhatsapp = document.getElementById("tabWhatsapp");
   const tabCorreo = document.getElementById("tabCorreo");
 
+  const btnDesktop = document.getElementById("btnDesktop");
+  const btnMobile = document.getElementById("btnMobile");
+
   const contentPopups = document.getElementById("contentPopups");
   const contentWhatsapp = document.getElementById("contentWhatsapp");
   const contentCorreo = document.getElementById("contentCorreo");
 
   // PREVIEWS
-  const previewPopups = document.getElementById("previewPopups");
-  const previewPopupsContainer = document.getElementById("previewContainer");
+  const previewScrollModalContainer = document.getElementById("previewScrollModalContainer");
   const previewWhatsapp = document.getElementById("previewWhatsapp");
   const previewCorreo = document.getElementById("previewCorreo");
   const previewOverlay = document.getElementById("previewOverlay");
   const previewModesToggle = document.getElementById("previewModesToggle");
   const previewStage = document.getElementById("previewStage");
 
-  if (!tabPopups || !tabWhatsapp || !tabCorreo) {
+  let currentMode = "desktop";
+
+  if (!tabPopups || !tabWhatsapp || !tabCorreo || !btnDesktop || !btnMobile) {
     setTimeout(initTabs, 200);
     return;
   }
@@ -623,7 +600,14 @@ function initTabs() {
   const tabs = [tabPopups, tabWhatsapp, tabCorreo];
   const contents = [contentPopups, contentWhatsapp, contentCorreo];
 
-  function activarTab(tab, content, previewActivo) {
+  function updatePreview(settings = {}, mode = null) {
+    console.log("[popups.astro] Dispatching updatePreview:", { settings, mode });
+    window.dispatchEvent(new CustomEvent("update-popup-preview", {
+      detail: { settings, mode }
+    }));
+  }
+
+  function activarTab(tab, content, type) {
     // Desactivar todos
     tabs.forEach(t => {
         t.classList.remove("bg-teal-600", "text-white", "dark:bg-teal-500", "bg-teal-500");
@@ -632,10 +616,9 @@ function initTabs() {
     
     contents.forEach(c => c.classList.add("hidden"));
     
-    // Ocultar todas las vistas previas
-    previewPopupsContainer.classList.add("hidden");
-    previewWhatsapp.classList.add("hidden");
-    previewCorreo.classList.add("hidden");
+    // Ocultar todas las vistas previas (manuales como Whatsapp/Correo)
+    if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
+    if (previewCorreo) previewCorreo.classList.add("hidden");
 
     // Activar seleccionados
     tab.classList.remove("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
@@ -643,31 +626,57 @@ function initTabs() {
     content.classList.remove("hidden");
 
     // Manejo de la vista previa específica
-    previewActivo.classList.remove("hidden");
-    
-    // Toggle "Full Stage" mode for Gmail
-    if (previewActivo === previewCorreo) {
-        if (previewStage) previewStage.classList.add("is-gmail");
-    } else {
-        if (previewStage) previewStage.classList.remove("is-gmail");
-    }
-
-    if (previewActivo === previewPopupsContainer) {
+    if (type === 'popups') {
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.remove("hidden");
+        // Enviar evento para mostrar el popup
+        updatePreview({ }, currentMode);
         if (previewOverlay) previewOverlay.classList.remove("hidden");
         if (previewModesToggle) previewModesToggle.classList.remove("hidden");
-    } else {
+    } else if (type === 'whatsapp') {
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
+        if (previewWhatsapp) previewWhatsapp.classList.remove("hidden");
         if (previewOverlay) previewOverlay.classList.add("hidden");
         if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    } else if (type === 'correo') {
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
+        if (previewCorreo) previewCorreo.classList.remove("hidden");
+        if (previewStage) previewStage.classList.add("is-gmail");
+        if (previewOverlay) previewOverlay.classList.add("hidden");
+        if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    }
+    
+    // Toggle "Full Stage" mode for Gmail
+    if (type !== 'correo') {
+        if (previewStage) previewStage.classList.remove("is-gmail");
     }
   }
 
   // EVENTOS TABS
-  tabPopups.onclick = () => activarTab(tabPopups, contentPopups, previewPopupsContainer);
-  tabWhatsapp.onclick = () => activarTab(tabWhatsapp, contentWhatsapp, previewWhatsapp);
-  tabCorreo.onclick = () => activarTab(tabCorreo, contentCorreo, previewCorreo);
+  tabPopups.onclick = () => activarTab(tabPopups, contentPopups, 'popups');
+  tabWhatsapp.onclick = () => activarTab(tabWhatsapp, contentWhatsapp, 'whatsapp');
+  tabCorreo.onclick = () => activarTab(tabCorreo, contentCorreo, 'correo');
 
   // ESTADO INICIAL
-  activarTab(tabPopups, contentPopups, previewPopupsContainer);
+  activarTab(tabPopups, contentPopups, 'popups');
+
+  // MODOS MÓVIL / ESCRITORIO
+  btnDesktop.onclick = () => {
+      currentMode = "desktop";
+      btnDesktop.classList.add("bg-white", "text-teal-600", "shadow-sm");
+      btnDesktop.classList.remove("text-gray-500");
+      btnMobile.classList.remove("bg-white", "text-teal-600", "shadow-sm");
+      btnMobile.classList.add("text-gray-500");
+      updatePreview({}, "desktop");
+  };
+
+  btnMobile.onclick = () => {
+      currentMode = "mobile";
+      btnMobile.classList.add("bg-white", "text-teal-600", "shadow-sm");
+      btnMobile.classList.remove("text-gray-500");
+      btnDesktop.classList.remove("bg-white", "text-teal-600", "shadow-sm");
+      btnDesktop.classList.add("text-gray-500");
+      updatePreview({}, "mobile");
+  };
 
   // WHATSAPP PREVIEW SYNC
   const textareaWhatsapp = document.getElementById("whatsappMessage");
@@ -703,40 +712,12 @@ function initTabs() {
   const clearImage1 = document.getElementById("clearImage1");
   const clearImage2 = document.getElementById("clearImage2");
   const clearImageMobile = document.getElementById("clearImageMobile");
-
-  const previewImageContainer = document.getElementById("previewImage");
-  const previewFormBg = document.getElementById("previewFormBg");
-  const imgFormBg = document.getElementById("imgFormBg");
-  const previewImagen2Header = document.getElementById("previewImagen2Header");
-
-  let currentImage1 = null;
-  let currentImageMobile = null;
-  let currentMode = "desktop";
-
-  function updatePreviewImageContainer() {
-      if (!previewImageContainer) return;
-
-      const isMobile = currentMode === "mobile";
-      const targetImage = isMobile ? currentImageMobile : currentImage1;
-
-      if (targetImage) {
-          previewImageContainer.style.backgroundImage = `url(${targetImage})`;
-          previewImageContainer.style.backgroundSize = "cover";
-          previewImageContainer.style.backgroundPosition = "center";
-          
-          const tDesk = previewImageContainer.querySelector('.desktop-text');
-          const tMob = previewImageContainer.querySelector('.mobile-text');
-          if (tDesk) tDesk.style.display = 'none';
-          if (tMob) tMob.style.opacity = '0';
-      } else {
-          previewImageContainer.style.backgroundImage = "none";
-          // Restaurar si borramos o no hay nada
-          const tDesk = previewImageContainer.querySelector('.desktop-text');
-          const tMob = previewImageContainer.querySelector('.mobile-text');
-          if (!isMobile && tDesk) tDesk.style.display = '';
-          if (tMob) tMob.style.opacity = '1';
-      }
-  }
+  
+  // WhatsApp & Email inputs
+  const whatsappImage = document.getElementById("whatsappImage");
+  const clearWhatsappImage = document.getElementById("clearWhatsappImage");
+  const emailImage = document.getElementById("emailImage");
+  const clearEmailImage = document.getElementById("clearEmailImage");
 
   function handleImageUpload(input, callback) {
       if (input && input.files && input.files[0]) {
@@ -750,94 +731,209 @@ function initTabs() {
 
   if (popupImage1) {
       popupImage1.addEventListener("change", function() {
+          console.log("[popups.astro] Image 1 changed");
           handleImageUpload(this, (url) => {
-              currentImage1 = url;
-              updatePreviewImageContainer();
+              console.log("[popups.astro] Image 1 uploaded, size:", url.length);
+              updatePreview({ popup_image_url: url });
               if (clearImage1) clearImage1.classList.remove("hidden");
+              const del1 = document.getElementById("delete_popupImage1");
+              if (del1) del1.value = "0";
           });
       });
   }
   if (clearImage1) {
       clearImage1.addEventListener("click", () => {
-          currentImage1 = null;
           popupImage1.value = "";
-          updatePreviewImageContainer();
+          updatePreview({ popup_image_url: null });
           clearImage1.classList.add("hidden");
+          const del1 = document.getElementById("delete_popupImage1");
+          if (del1) del1.value = "1";
       });
   }
 
   if (popupImageMobile) {
       popupImageMobile.addEventListener("change", function() {
+          console.log("[popups.astro] Mobile Image changed");
           handleImageUpload(this, (url) => {
-              currentImageMobile = url;
-              updatePreviewImageContainer();
+              console.log("[popups.astro] Mobile Image uploaded, size:", url.length);
+              updatePreview({ popup_mobile_image_url: url });
               if (clearImageMobile) clearImageMobile.classList.remove("hidden");
+              const delM = document.getElementById("delete_popupImageMobile");
+              if (delM) delM.value = "0";
           });
       });
   }
   if (clearImageMobile) {
       clearImageMobile.addEventListener("click", () => {
-          currentImageMobile = null;
           popupImageMobile.value = "";
-          updatePreviewImageContainer();
+          updatePreview({ popup_mobile_image_url: null });
           clearImageMobile.classList.add("hidden");
+          const delM = document.getElementById("delete_popupImageMobile");
+          if (delM) delM.value = "1";
       });
   }
 
   if (popupImage2) {
       popupImage2.addEventListener("change", function() {
+          console.log("[popups.astro] Image 2 changed");
           handleImageUpload(this, (url) => {
-              if (previewFormBg && imgFormBg) {
-                  imgFormBg.src = url;
-                  previewFormBg.classList.remove("hidden");
-              }
-              if (previewImagen2Header) {
-                  previewImagen2Header.style.opacity = '0';
-              }
+              console.log("[popups.astro] Image 2 uploaded, size:", url.length);
+              updatePreview({ popup_image2_url: url });
               if (clearImage2) clearImage2.classList.remove("hidden");
+              const del2 = document.getElementById("delete_popupImage2");
+              if (del2) del2.value = "0";
           });
       });
   }
   if (clearImage2) {
       clearImage2.addEventListener("click", () => {
           popupImage2.value = "";
-          if (previewFormBg && imgFormBg) {
-              imgFormBg.src = "";
-              previewFormBg.classList.add("hidden");
-          }
-          if (previewImagen2Header) {
-              previewImagen2Header.style.opacity = '1';
-          }
+          updatePreview({ popup_image2_url: null });
           clearImage2.classList.add("hidden");
+          const del2 = document.getElementById("delete_popupImage2");
+          if (del2) del2.value = "1";
       });
   }
 
-  // PREVIEW MODES (Escritorio / Móvil)
-  const btnDesktop = document.getElementById("btnDesktop");
-  const btnMobile = document.getElementById("btnMobile");
-  const previewContainer = document.getElementById("previewContainer");
+  // Eventos para WhatsApp y Correo
+  if (whatsappImage) {
+      whatsappImage.addEventListener("change", function() {
+          console.log("[popups.astro] WhatsApp Image changed");
+          handleImageUpload(this, (url) => {
+              const previewWAImg = document.getElementById("previewWhatsappProfileImg");
+              if (previewWAImg) {
+                  previewWAImg.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+              }
+              if (clearWhatsappImage) clearWhatsappImage.classList.remove("hidden");
+              const delW = document.getElementById("delete_whatsappImage");
+              if (delW) delW.value = "0";
+          });
+      });
+  }
+  if (clearWhatsappImage) {
+      clearWhatsappImage.addEventListener("click", () => {
+          whatsappImage.value = "";
+          clearWhatsappImage.classList.add("hidden");
+          const delW = document.getElementById("delete_whatsappImage");
+          if (delW) delW.value = "1";
+      });
+  }
 
-  if (btnDesktop && btnMobile && previewContainer && previewPopups) {
-      function activeMode(modo) {
-          currentMode = modo;
-          previewContainer.setAttribute("data-mode", modo);
-          previewPopups.setAttribute("data-mode", modo);
-          
-          if (modo === "desktop") {
-              btnDesktop.classList.add("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnDesktop.classList.remove("text-gray-500", "dark:text-gray-400");
-              btnMobile.classList.remove("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnMobile.classList.add("text-gray-500", "dark:text-gray-400");
-          } else {
-              btnMobile.classList.add("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnMobile.classList.remove("text-gray-500", "dark:text-gray-400");
-              btnDesktop.classList.remove("bg-white", "dark:bg-gray-700", "text-teal-600", "shadow-sm");
-              btnDesktop.classList.add("text-gray-500", "dark:text-gray-400");
-          }
-          updatePreviewImageContainer();
-      }
-      btnDesktop.onclick = () => activeMode("desktop");
-      btnMobile.onclick = () => activeMode("mobile");
+  if (emailImage) {
+      emailImage.addEventListener("change", function() {
+          console.log("[popups.astro] Email Image changed");
+          handleImageUpload(this, (url) => {
+              console.log("[popups.astro] Email Image uploaded");
+              if (clearEmailImage) clearEmailImage.classList.remove("hidden");
+              const delE = document.getElementById("delete_emailImage");
+              if (delE) delE.value = "0";
+          });
+      });
+  }
+  if (clearEmailImage) {
+      clearEmailImage.addEventListener("click", () => {
+          emailImage.value = "";
+          clearEmailImage.classList.add("hidden");
+          const delE = document.getElementById("delete_emailImage");
+          if (delE) delE.value = "1";
+      });
+  }
+
+  // Colores del Botón
+  const btnBgColorInput = document.getElementById("btnBgColor");
+  const btnTextColorInput = document.getElementById("btnTextColor");
+
+  if (btnBgColorInput) {
+      btnBgColorInput.addEventListener("input", () => {
+          updatePreview({ button_bg_color: btnBgColorInput.value });
+      });
+  }
+  if (btnTextColorInput) {
+      btnTextColorInput.addEventListener("input", () => {
+          updatePreview({ button_text_color: btnTextColorInput.value });
+      });
+  }
+
+  // Tiempos de Aparición
+  const popupInicioDelayInput = document.getElementById("popupInicioDelay");
+  const popupProductosDelayInput = document.getElementById("popupProductosDelay");
+
+  if (popupInicioDelayInput) {
+      popupInicioDelayInput.addEventListener("change", () => {
+          updatePreview({ popup_start_delay_minutes: parseInt(popupInicioDelayInput.value) });
+      });
+  }
+  // (popupProductosDelay no se usa por ahora en ScrollModal.tsx, pero lo sincronizaremos por si acaso)
+  if (popupProductosDelayInput) {
+      popupProductosDelayInput.addEventListener("change", () => {
+          updatePreview({ popup_productos_delay_minutes: parseInt(popupProductosDelayInput.value) });
+      });
+  }
+
+  // LÓGICA DE GUARDADO
+  const btnGuardarPopups = document.getElementById("btnGuardarPopups");
+  
+  if (btnGuardarPopups) {
+      btnGuardarPopups.addEventListener("click", async () => {
+          const originalText = btnGuardarPopups.innerText;
+          btnGuardarPopups.innerText = "Guardando...";
+          btnGuardarPopups.disabled = true;
+
+          const formData = new FormData();
+
+          // Imágenes
+          if (popupImage1 && popupImage1.files[0]) formData.append("image1", popupImage1.files[0]);
+          if (popupImage2 && popupImage2.files[0]) formData.append("image2", popupImage2.files[0]);
+          if (popupImageMobile && popupImageMobile.files[0]) formData.append("imageMobile", popupImageMobile.files[0]);
+          if (whatsappImage && whatsappImage.files[0]) formData.append("whatsappImage", whatsappImage.files[0]);
+          if (emailImage && emailImage.files[0]) formData.append("emailImage", emailImage.files[0]);
+
+          // Banderas de eliminación
+          formData.append("delete_image1", document.getElementById("delete_popupImage1")?.value || "0");
+          formData.append("delete_image2", document.getElementById("delete_popupImage2")?.value || "0");
+          formData.append("delete_imageMobile", document.getElementById("delete_popupImageMobile")?.value || "0");
+          formData.append("delete_whatsappImage", document.getElementById("delete_whatsappImage")?.value || "0");
+          formData.append("delete_emailImage", document.getElementById("delete_emailImage")?.value || "0");
+
+          // Textos y Colores
+          formData.append("btnTextColor", document.getElementById("btnTextColor")?.value || "");
+          formData.append("btnBgColor", document.getElementById("btnBgColor")?.value || "");
+          formData.append("popupInicioDelay", document.getElementById("popupInicioDelay")?.value || "");
+          formData.append("popupProductosDelay", document.getElementById("popupProductosDelay")?.value || "");
+          formData.append("whatsappMessage", document.getElementById("whatsappMessage")?.value || "");
+          formData.append("emailTitle", document.getElementById("emailTitle")?.value || "");
+          formData.append("emailBody", document.getElementById("emailBody")?.value || "");
+
+          /* 
+            TODO PARA EL BACKEND:
+            Descomentar e implementar este fetch apuntando a tu API real.
+            
+            try {
+                const response = await fetch('/api/home-popup-settings', {
+                    method: 'POST',
+                    body: formData,
+                    // headers: { 'X-CSRF-TOKEN': ... } // Si usas Laravel
+                });
+
+                if (!response.ok) throw new Error("Error al guardar");
+                const data = await response.json();
+                alert("¡Configuración guardada exitosamente!");
+            } catch (error) {
+                console.error(error);
+                alert("Hubo un error al guardar los cambios.");
+            }
+          */
+
+          setTimeout(() => {
+              alert("¡Datos listos! Abre la consola (F12) para ver la información recopilada. El backend debe conectar la petición fetch().");
+              console.log("=== DATOS PARA EL BACKEND ===");
+              for (let [key, value] of formData.entries()) {
+                  console.log(`${key}:`, value);
+              }
+              btnGuardarPopups.innerText = originalText;
+              btnGuardarPopups.disabled = false;
+          }, 800);
+      });
   }
 }
 

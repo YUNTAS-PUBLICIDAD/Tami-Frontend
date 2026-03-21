@@ -8,11 +8,28 @@ const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
 const SESSION_STORAGE_KEY = "catalogModalSessionShown";
 
-const ScrollModal = () => {
+interface PopupSettings {
+  popup_image_url?: string;
+  popup_image2_url?: string;
+  popup_mobile_image_url?: string;
+  button_bg_color?: string;
+  button_text_color?: string;
+  popup_start_delay_minutes?: number;
+}
+
+interface ScrollModalProps {
+  isPreview?: boolean;
+  initialSettings?: PopupSettings;
+}
+
+const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) => {
   // Hooks
   const [pathname, setPathname] = useState<string>("");
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(isPreview);
+  const [settings, setSettings] = useState<PopupSettings | null>(initialSettings || null);
+  const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
 
   // Estados del formulario
   const [nombre, setNombre] = useState("");
@@ -38,10 +55,56 @@ const ScrollModal = () => {
     if (typeof window !== "undefined") {
       setPathname(window.location.pathname);
     }
-  }, []);
+
+    if (isPreview) {
+      setLoadingSettings(false);
+      return;
+    }
+
+    // Fetch settings
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch(getApiUrl(config.endpoints.popups.getSettings));
+        if (response.ok) {
+          const data = await response.json();
+          // Si es un array (ej. Laravel a veces manda array de un item), tomamos el primero
+          setSettings(Array.isArray(data) ? data[0] : data);
+        }
+      } catch (err) {
+        console.error("Error fetching popup settings:", err);
+      } finally {
+        setLoadingSettings(false);
+      }
+    };
+    fetchSettings();
+  }, [isPreview]);
+
+  // Preview event listener
+  useEffect(() => {
+    if (!isPreview) return;
+
+    const handlePreviewUpdate = (e: any) => {
+      console.log("[ScrollModal] Preview update received:", e.detail);
+      const { settings: newSettings, mode } = e.detail;
+      if (newSettings) {
+        setSettings((prev: any) => {
+          const updated = { ...(prev || {}), ...newSettings };
+          console.log("[ScrollModal] Merged settings:", updated);
+          return updated;
+        });
+      }
+      if (mode) {
+        setPreviewMode(mode);
+      }
+    };
+
+    window.addEventListener("update-popup-preview", handlePreviewUpdate);
+    return () => window.removeEventListener("update-popup-preview", handlePreviewUpdate);
+  }, [isPreview]);
 
   // Mostrar modal automáticamente por tiempo
   useEffect(() => {
+    if (isPreview) return; // Bypasear todo en preview
     if (!pathname || !allowedRoutes.includes(pathname)) return;
     if (showModal || isClosing) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -60,12 +123,16 @@ const ScrollModal = () => {
       !isCatalogModalOpen &&
       !showModal
     ) {
-      // 5 segundos 
+      // Usar delay de la base de datos o 5 segundos por defecto
+      const delayMs = settings?.popup_start_delay_minutes
+        ? (settings.popup_start_delay_minutes * 60 * 1000)
+        : 5000;
+
       timer = setTimeout(() => {
         setShowModal(true);
         hasShownRef.current = true;
         sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
-      }, 5000);
+      }, delayMs);
     }
     return () => {
       if (timer) clearTimeout(timer);
@@ -74,7 +141,7 @@ const ScrollModal = () => {
 
   // Intención de salida
   useEffect(() => {
-    if (!pathname || !allowedRoutes.includes(pathname)) return;
+    if (isPreview) return; 
     const handleMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 0) {
         if (showModal || isClosing) return;
@@ -96,6 +163,7 @@ const ScrollModal = () => {
 
   // Evento global
   useEffect(() => {
+    if (isPreview) return;
     const handler = () => {
       if (!pathname || !allowedRoutes.includes(pathname)) return;
       if (!document.querySelector(".modal-overlay")) {
@@ -108,6 +176,7 @@ const ScrollModal = () => {
 
   // Scroll
   useEffect(() => {
+    if (isPreview) return;
     const handleScroll = () => {
       if (!pathname || !allowedRoutes.includes(pathname)) return;
       if (showModal || isClosing) return;
@@ -228,22 +297,26 @@ const ScrollModal = () => {
     }
   };
 
-  const isAllowed = allowedRoutes.includes(pathname);
+  const isAllowed = isPreview || allowedRoutes.includes(pathname);
   if (!isAllowed || !showModal) return null;
 
   return (
     <div
       id="catalog-modal"
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn"
+      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn`}
     >
-      <div className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[95%] max-w-md sm:max-w-4xl relative rounded-2xl transition-all duration-500 h-[500px] sm:h-[550px] bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-md' : 'flex-row max-w-4xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl'} overflow-hidden shadow-2xl w-[95%] relative rounded-2xl transition-all duration-500 h-[500px] sm:h-[550px] bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
 
         {/* ========================================================= */}
         {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
         {/* ========================================================= */}
-        <div className="hidden sm:block relative w-1/2 h-full overflow-hidden bg-gray-200">
+        <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'hidden sm:block'} relative w-1/2 h-full overflow-hidden bg-gray-200`}>
           {/* Imagen 1 (Fondo izquierdo) */}
-          <img src={asesoriaImg.src} alt="Imagen Izquierda" className="absolute inset-0 w-full h-full object-cover select-none scale-105" />
+          <img
+            src={settings?.popup_image_url || asesoriaImg.src}
+            alt="Imagen Izquierda"
+            className="absolute inset-0 w-full h-full object-cover select-none scale-105"
+          />
 
           <div className="absolute inset-0 bg-black/10"></div> {/* Ligero overlay opcional */}
         </div>
@@ -251,20 +324,28 @@ const ScrollModal = () => {
         {/* ========================================================= */}
         {/* LADO DERECHO (ESCRITORIO) / COMPLETO (MÓVIL)                */}
         {/* ========================================================= */}
-        <div className="relative w-full sm:w-1/2 h-full flex flex-col overflow-hidden">
+        <div className={`relative ${isPreview ? (previewMode === 'mobile' ? 'w-full' : 'w-1/2') : 'w-full sm:w-1/2'} h-full flex flex-col overflow-hidden`}>
 
           {/* FONDO ESCRITORIO (IMAGEN 2) */}
-          <div className="hidden sm:block absolute inset-0">
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'hidden sm:block'} absolute inset-0`}>
             {/* Imagen 2 (Fondo derecho) */}
-            <img src={asesoriaImg.src} alt="Imagen Derecha" className="w-full h-full object-cover select-none" />
+            <img
+              src={settings?.popup_image2_url || asesoriaImg.src}
+              alt="Imagen Derecha"
+              className="w-full h-full object-cover select-none"
+            />
             {/* Overlay para legibilidad del texto */}
             <div className="absolute inset-0 bg-teal-800/85"></div>
           </div>
 
           {/* FONDO MÓVIL (IMAGEN 3) */}
-          <div className="block sm:hidden absolute inset-0">
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'block' : 'hidden') : 'block sm:hidden'} absolute inset-0`}>
             {/* Imagen 3 (Fondo móvil) */}
-            <img src={asesoriaImg.src} alt="Imagen Móvil" className="w-full h-full object-cover select-none" />
+            <img
+              src={settings?.popup_mobile_image_url || settings?.popup_image_url || asesoriaImg.src}
+              alt="Imagen Móvil"
+              className="w-full h-full object-cover select-none"
+            />
             {/* Overlay para legibilidad del texto */}
             <div className="absolute inset-0 bg-teal-800/85"></div>
           </div>
@@ -340,7 +421,11 @@ const ScrollModal = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-[#4FB9AF] rounded-full text-white w-fit py-2.5 px-4 text-base uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-[#3d9189] hover:scale-105 active:scale-95"
+                    style={{
+                      backgroundColor: settings?.button_bg_color || "#4FB9AF",
+                      color: settings?.button_text_color || "#ffffff"
+                    }}
+                    className="rounded-full w-fit py-2.5 px-4 text-base uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95"
                   >
                     {isSubmitting ? "Enviando..." : "CONOCER MÁS"}
                   </button>
