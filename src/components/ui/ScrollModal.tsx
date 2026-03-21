@@ -7,25 +7,29 @@ import { origenCliente } from "@data/origenCliente";
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
 const SESSION_STORAGE_KEY = "catalogModalSessionShown";
-const DEFAULT_BUTTON_BG_COLOR = "#00625A";
-const DEFAULT_BUTTON_TEXT_COLOR = "#FFFFFF";
-const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/;
-const DEFAULT_POPUP_START_DELAY_MINUTES = 1;
 
-const normalizePopupStartDelayMinutes = (value: unknown): number => {
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 10) {
-    return DEFAULT_POPUP_START_DELAY_MINUTES;
-  }
+interface PopupSettings {
+  popup_image_url?: string;
+  popup_image2_url?: string;
+  popup_mobile_image_url?: string;
+  button_bg_color?: string;
+  button_text_color?: string;
+  popup_start_delay_minutes?: number;
+}
 
-  return parsed;
-};
+interface ScrollModalProps {
+  isPreview?: boolean;
+  initialSettings?: PopupSettings;
+}
 
-const ScrollModal = () => {
+const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) => {
   // Hooks
   const [pathname, setPathname] = useState<string>("");
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(isPreview);
+  const [settings, setSettings] = useState<PopupSettings>(initialSettings || {});
+  const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
 
   // Estados del formulario
   const [nombre, setNombre] = useState("");
@@ -34,12 +38,6 @@ const ScrollModal = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [buttonBgColor, setButtonBgColor] = useState(DEFAULT_BUTTON_BG_COLOR);
-  const [buttonTextColor, setButtonTextColor] = useState(DEFAULT_BUTTON_TEXT_COLOR);
-  const [popupImage, setPopupImage] = useState<string>(asesoriaImg.src);
-  const [popupStartDelayMinutes, setPopupStartDelayMinutes] = useState<number>(
-    DEFAULT_POPUP_START_DELAY_MINUTES,
-  );
 
   const lastScrollRef = useRef(0);
   const hasReachedBottomRef = useRef(false);
@@ -57,135 +55,121 @@ const ScrollModal = () => {
     if (typeof window !== "undefined") {
       setPathname(window.location.pathname);
     }
-  }, []);
 
-  // Cargar configuración del popup de Inicio desde backend.
-  useEffect(() => {
-    let isMounted = true;
+    if (isPreview) {
+      setLoadingSettings(false);
+      return;
+    }
 
-    const normalizeColor = (value: unknown, fallback: string): string => {
-      if (typeof value !== "string") return fallback;
-      const normalized = value.trim().toUpperCase();
-      return HEX_COLOR_REGEX.test(normalized) ? normalized : fallback;
-    };
-
-    const fetchPopupSettings = async () => {
+    // Fetch settings
+    const fetchSettings = async () => {
       try {
-        const response = await fetch(getApiUrl("/api/v1/popup-settings/public"), {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            Accept: "application/json",
-          },
+        const response = await fetch(getApiUrl(config.endpoints.popups.getSettings));
+        if (response.ok) {
+          const data = await response.json();
+          // Si es un array (ej. Laravel a veces manda array de un item), tomamos el primero
+          let finalSettings = Array.isArray(data) ? data[0] : data;
+          
+          // Preservar funcionalidad de "Añadir Imagen 1" desde localStorage (Preview)
+          if (typeof window !== "undefined") {
+            const savedImage = localStorage.getItem('popupImage');
+            const savedBgColor = localStorage.getItem('popupBtnBgColor');
+            const savedTextColor = localStorage.getItem('popupBtnTextColor');
+            const savedDelay = localStorage.getItem('popupDelay');
+            
+            if (savedImage) finalSettings = { ...finalSettings, popup_image_url: savedImage };
+            if (savedBgColor) finalSettings = { ...finalSettings, button_bg_color: savedBgColor };
+            if (savedTextColor) finalSettings = { ...finalSettings, button_text_color: savedTextColor };
+            if (savedDelay) finalSettings = { ...finalSettings, popup_start_delay_minutes: parseInt(savedDelay) };
+          }
+
+          setSettings(finalSettings);
+        }
+      } catch (err) {
+        console.error("Error fetching popup settings:", err);
+      } finally {
+        setLoadingSettings(false);
+      }
+    };
+    fetchSettings();
+  }, [isPreview]);
+
+  // Preview event listener
+  useEffect(() => {
+    if (!isPreview) return;
+
+    const handlePreviewUpdate = (e: any) => {
+      const { settings: newSettings, mode } = e.detail;
+      console.log("[ScrollModal] Preview update received:", { newSettings, mode });
+      
+      if (newSettings) {
+        setSettings((prev) => {
+          const updated = { ...prev, ...newSettings };
+          console.log("[ScrollModal] New settings state:", updated);
+          return updated;
         });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const payload = (await response.json()) as {
-          data?: {
-            button_bg_color?: string;
-            button_text_color?: string;
-            popup_image?: string;
-            popup_start_delay_minutes?: number;
-          };
-        };
-
-        if (!isMounted) return;
-
-        setButtonBgColor(
-          normalizeColor(payload?.data?.button_bg_color, DEFAULT_BUTTON_BG_COLOR),
-        );
-        setButtonTextColor(
-          normalizeColor(payload?.data?.button_text_color, DEFAULT_BUTTON_TEXT_COLOR),
-        );
-        setPopupStartDelayMinutes(
-          normalizePopupStartDelayMinutes(payload?.data?.popup_start_delay_minutes),
-        );
-        
-        // Cargar imagen desde localStorage si existe
-        const savedImage = typeof window !== "undefined" ? localStorage.getItem('popupImage') : null;
-        if (savedImage) {
-          setPopupImage(savedImage);
-        } else if (payload?.data?.popup_image) {
-          setPopupImage(payload.data.popup_image);
-        }
-      } catch (error) {
-        console.error("[ScrollModal] Error al cargar popup settings:", error);
+      }
+      if (mode) {
+        setPreviewMode(mode);
       }
     };
 
-    fetchPopupSettings();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    window.addEventListener("update-popup-preview", handlePreviewUpdate);
+    return () => window.removeEventListener("update-popup-preview", handlePreviewUpdate);
+  }, [isPreview]);
 
   // Mostrar modal automáticamente por tiempo
   useEffect(() => {
+    if (isPreview) return; // Bypasear todo en preview
     if (!pathname || !allowedRoutes.includes(pathname)) return;
-    if (showModal || isClosing) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
-    let countdownInterval: ReturnType<typeof setInterval> | null = null;
-    const autoShowDelayMs = popupStartDelayMinutes * 60 * 1000;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
     const now = Date.now();
     const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
     const isAnyModalOpen = document.querySelector(".modal-overlay");
     const isCatalogModalOpen = document.getElementById("catalog-modal");
-    const isHomepage = pathname === "/";
-    const canScheduleByTime = isHomepage
-      ? !hasShownRef.current && !isAnyModalOpen && !isCatalogModalOpen && !showModal
-      : now - lastClosed >= MODAL_COOLDOWN_MS &&
-        !hasShownRef.current &&
-        !sessionShown &&
-        !isAnyModalOpen &&
-        !isCatalogModalOpen &&
-        !showModal;
 
-    if (canScheduleByTime) {
-      // Espera configurable (1 a 10 minutos)
-      // if (isHomepage) {
-      //   let remainingMs = autoShowDelayMs;
-      //   const printRemaining = () => {
-      //     const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
-      //     console.log(
-      //       `[ScrollModal] Popup de Inicio aparece en ${remainingSeconds}s (${popupStartDelayMinutes} min configurado)`,
-      //     );
-      //   };
-      //
-      //   printRemaining();
-      //   countdownInterval = setInterval(() => {
-      //     remainingMs -= 1000;
-      //     if (remainingMs > 0) {
-      //       printRemaining();
-      //     }
-      //   }, 1000);
-      // }
+    if (
+      now - lastClosed >= MODAL_COOLDOWN_MS &&
+      !hasShownRef.current &&
+      !sessionShown &&
+      !isAnyModalOpen &&
+      !isCatalogModalOpen &&
+      !showModal
+    ) {
+      // Usar delay de la base de datos o 5 segundos por defecto
+      const delayMs = (settings?.popup_start_delay_minutes || 1) * 60 * 1000;
+      console.log(`[ScrollModal] El popup se mostrará en ${delayMs / 1000} segundos.`);
+
+      let remainingSeconds = delayMs / 1000;
+      intervalId = setInterval(() => {
+        remainingSeconds -= 1;
+        if (remainingSeconds > 0) {
+          console.log(`[ScrollModal] Tiempo restante para el popup: ${remainingSeconds} segundos...`);
+        } else {
+          if (intervalId) clearInterval(intervalId);
+        }
+      }, 1000);
 
       timer = setTimeout(() => {
-        if (countdownInterval) {
-          clearInterval(countdownInterval);
-          countdownInterval = null;
-        }
         setShowModal(true);
         hasShownRef.current = true;
         sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
-      }, autoShowDelayMs);
+        if (intervalId) clearInterval(intervalId);
+        console.log("[ScrollModal] ¡Popup mostrado!");
+      }, delayMs);
     }
-
     return () => {
       if (timer) clearTimeout(timer);
-      if (countdownInterval) clearInterval(countdownInterval);
+      if (intervalId) clearInterval(intervalId);
     };
-  }, [pathname, showModal, isClosing, popupStartDelayMinutes]);
+  }, [pathname, showModal, isClosing, settings?.popup_start_delay_minutes]);
 
   // Intención de salida
   useEffect(() => {
-    if (!pathname || !allowedRoutes.includes(pathname)) return;
+    if (isPreview) return; 
     const handleMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 0) {
         if (showModal || isClosing) return;
@@ -207,6 +191,7 @@ const ScrollModal = () => {
 
   // Evento global
   useEffect(() => {
+    if (isPreview) return;
     const handler = () => {
       if (!pathname || !allowedRoutes.includes(pathname)) return;
       if (!document.querySelector(".modal-overlay")) {
@@ -219,6 +204,7 @@ const ScrollModal = () => {
 
   // Scroll
   useEffect(() => {
+    if (isPreview) return;
     const handleScroll = () => {
       if (!pathname || !allowedRoutes.includes(pathname)) return;
       if (showModal || isClosing) return;
@@ -339,109 +325,141 @@ const ScrollModal = () => {
     }
   };
 
-  const isAllowed = allowedRoutes.includes(pathname);
+  const isAllowed = isPreview || allowedRoutes.includes(pathname);
   if (!isAllowed || !showModal) return null;
 
   return (
     <div
       id="catalog-modal"
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn"
+      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center px-4 modal-overlay transition-opacity duration-500 animate-fadeIn`}
     >
-      <div className={`flex flex-col sm:flex-row overflow-hidden shadow-2xl w-[90%] max-w-md sm:max-w-3xl relative rounded-xl transition-all duration-500 h-[480px] ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-md' : 'flex-row max-w-4xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl'} overflow-hidden shadow-2xl w-[95%] relative rounded-2xl transition-all duration-500 h-[500px] sm:h-[550px] bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
 
-        {/* Imagen */}
-        <div className="absolute inset-0 sm:flex w-[80%] justify-center items-center bg-gray-100 overflow-hidden">
-          <img src={popupImage} alt="Asesoría" className="w-full h-full object-cover select-none scale-105 transition-transform duration-700" />
-        </div>
-
-        <div className="absolute inset-0 " style={{ background: "linear-gradient(to left, #00786F 0%, #018C86 45%, rgba(1, 160, 158, 0.6) 100%)" }}></div>
-
-        <div className="hidden sm:flex sm:w-6/12 justify-center items-center relative z-10">
-          <img 
-            src={Logo.src} 
-            alt="LogoTami" 
-            className="w-55 h-55 object-contain select-none drop-shadow-2xl animate-fadeIn z-20" 
+        {/* ========================================================= */}
+        {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
+        {/* ========================================================= */}
+        <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'hidden sm:block'} relative w-1/2 h-full overflow-hidden bg-gray-200`}>
+          {/* Imagen 1 (Fondo izquierdo) */}
+          <img
+            src={settings?.popup_image_url || asesoriaImg.src}
+            alt="Imagen Izquierda"
+            className="absolute inset-0 w-full h-full object-cover select-none scale-105"
           />
+
+          <div className="absolute inset-0 bg-black/10"></div> {/* Ligero overlay opcional */}
         </div>
 
-        {/* Contenido Formulario */}
-        <div className="w-full sm:w-8/12 text-white relative animate-fadeInRight h-full">
+        {/* ========================================================= */}
+        {/* LADO DERECHO (ESCRITORIO) / COMPLETO (MÓVIL)                */}
+        {/* ========================================================= */}
+        <div className={`relative ${isPreview ? (previewMode === 'mobile' ? 'w-full' : 'w-1/2') : 'w-full sm:w-1/2'} h-full flex flex-col overflow-hidden`}>
 
-          <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
+          {/* FONDO ESCRITORIO (IMAGEN 2) */}
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'block sm:block'} absolute inset-0`}>
+            {/* Imagen 2 (Fondo derecho) */}
+            <img
+              src={settings?.popup_image2_url || asesoriaImg.src}
+              alt="Imagen Derecha"
+              className="w-full h-full object-cover select-none"
+            />
+            {/* Overlay para legibilidad del texto */}
+            <div className="absolute inset-0 bg-teal-800/85"></div>
+          </div>
 
+          {/* FONDO MÓVIL (IMAGEN 3) */}
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'block' : 'hidden') : 'block sm:hidden'} absolute inset-0`}>
+            {/* Imagen 3 (Fondo móvil) */}
+            <img
+              src={settings?.popup_mobile_image_url || settings?.popup_image_url || asesoriaImg.src}
+              alt="Imagen Móvil"
+              className="w-full h-full object-cover select-none"
+            />
+            {/* Overlay para legibilidad del texto */}
+            <div className="absolute inset-0 bg-teal-800/85"></div>
+          </div>
 
-            <button
-              onClick={closeModal}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
-              aria-label="Cerrar modal"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="flex justify-center w-full mt-4">
-              <h2 className="text-2xl sm:text-3xl text-center font-medium leading-tight select-none animate-fadeInUp mb-2 text-white">
-                DESCARGA <span className="font-bold">GRATIS</span>
-                <br />
-                NUESTRO <span className="font-bold">CATÁLOGO</span>
-              </h2>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1 animate-fadeInUp mt-20 w-[85%] mx-auto">
-              <input
-                type="text"
-                placeholder="Nombres y Apellidos"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.nombre}</p>
-
-
-              <input
-                type="tel"
-                placeholder="Número de celular"
-                maxLength={9}
-                value={telefono}
-                onChange={(e) => {
-                  // Solo permite ingresar números
-                  const val = e.target.value.replace(/\D/g, '');
-                  setTelefono(val);
-                }}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className="text-xs text-yellow-100 min-h-[16px] mb-0">{errors.telefono}</p>
-
-              <input
-                type="email"
-                placeholder="Correo electrónico"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                className="py-1.5 px-3 mb-0 text-sm rounded-lg bg-white text-black outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300"
-              />
-              <p className={`text-xs text-center min-h-[16px] mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
-                {errors.correo || errors.general || successMessage}
-              </p>
+          {/* Contenido Formulario (Mantiene la estructura original) */}
+          <div className="relative z-10 w-full text-white animate-fadeInRight h-full">
+            <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
 
               <button
-                type="submit"
-                disabled={isSubmitting}
-                style={{
-                  backgroundColor: buttonBgColor,
-                  color: buttonTextColor,
-                }}
-                className="rounded w-full sm:max-w-fit py-2 px-10 text-base font-bold mx-auto mt-2 shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-110 hover:scale-105 active:scale-95"
+                onClick={closeModal}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-300 z-50 cursor-pointer hover:scale-110"
+                aria-label="Cerrar modal"
               >
-                {isSubmitting ? "Enviando..." : "¡REGISTRARME!"}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            </form>
+              <div className="flex justify-center w-full mt-4 min-h-[72px]">
+                {/* Espacio reservado para el título originalmente aquí. 
+                  Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
+              </div>
+
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3 animate-fadeInUp mt-28 sm:mt-36 w-full max-w-[320px] mx-auto">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                  />
+                  {errors.nombre && <p className="text-xs text-yellow-100 mt-1 pl-2 mb-0">{errors.nombre}</p>}
+                </div>
+
+                <div>
+                  <input
+                    type="tel"
+                    placeholder="Teléfono"
+                    maxLength={9}
+                    value={telefono}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setTelefono(val);
+                    }}
+                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                  />
+                  {errors.telefono && <p className="text-xs text-yellow-100 mt-1 pl-2 mb-0">{errors.telefono}</p>}
+                </div>
+
+                <div>
+                  <input
+                    type="email"
+                    placeholder="Correo"
+                    value={correo}
+                    onChange={(e) => setCorreo(e.target.value)}
+                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                  />
+                  {(errors.correo || errors.general || successMessage) && (
+                    <p className={`text-xs text-center mt-1 mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
+                      {errors.correo || errors.general || successMessage}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-6 flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    style={{
+                      backgroundColor: settings?.button_bg_color || "#4FB9AF",
+                      color: settings?.button_text_color || "#ffffff"
+                    }}
+                    className="rounded-full w-fit py-2.5 px-4 text-base uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95"
+                  >
+                    {isSubmitting ? "Enviando..." : "CONOCER MÁS"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
