@@ -576,16 +576,16 @@ function initTabs() {
           updatePreview({ popup_image_url: url });
           clearImage1?.classList.remove("hidden");
           localStorage.setItem('popupImage', url);
-          const del = document.getElementById("delete_popupImage1");
+          const del = document.getElementById("delete_popupImage1") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImage1?.addEventListener("click", () => {
-      popupImage1.value = "";
+      if (popupImage1) (popupImage1 as HTMLInputElement).value = "";
       updatePreview({ popup_image_url: null });
       clearImage1.classList.add("hidden");
       localStorage.removeItem('popupImage');
-      const del = document.getElementById("delete_popupImage1");
+      const del = document.getElementById("delete_popupImage1") as HTMLInputElement;
       if (del) del.value = "1";
   });
 
@@ -593,15 +593,17 @@ function initTabs() {
       handleImageUpload(this, (url) => {
           updatePreview({ popup_image2_url: url });
           clearImage2?.classList.remove("hidden");
-          const del = document.getElementById("delete_popupImage2");
+          localStorage.setItem('popupImage2', url);
+          const del = document.getElementById("delete_popupImage2") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImage2?.addEventListener("click", () => {
-      popupImage2.value = "";
+      if (popupImage2) (popupImage2 as HTMLInputElement).value = "";
       updatePreview({ popup_image2_url: null });
       clearImage2.classList.add("hidden");
-      const del = document.getElementById("delete_popupImage2");
+      localStorage.removeItem('popupImage2');
+      const del = document.getElementById("delete_popupImage2") as HTMLInputElement;
       if (del) del.value = "1";
   });
 
@@ -609,15 +611,17 @@ function initTabs() {
       handleImageUpload(this, (url) => {
           updatePreview({ popup_mobile_image_url: url });
           clearImageMobile?.classList.remove("hidden");
-          const del = document.getElementById("delete_popupImageMobile");
+          localStorage.setItem('popupImageMobile', url);
+          const del = document.getElementById("delete_popupImageMobile") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImageMobile?.addEventListener("click", () => {
-      popupImageMobile.value = "";
+      if (popupImageMobile) (popupImageMobile as HTMLInputElement).value = "";
       updatePreview({ popup_mobile_image_url: null });
       clearImageMobile.classList.add("hidden");
-      const del = document.getElementById("delete_popupImageMobile");
+      localStorage.removeItem('popupImageMobile');
+      const del = document.getElementById("delete_popupImageMobile") as HTMLInputElement;
       if (del) del.value = "1";
   });
 
@@ -647,14 +651,24 @@ function initTabs() {
         });
       }
       
-      const savedImage = localStorage.getItem('popupImage');
+      const savedImage1 = localStorage.getItem('popupImage');
+      const savedImage2 = localStorage.getItem('popupImage2');
+      const savedImageMobile = localStorage.getItem('popupImageMobile');
       const savedBgColor = localStorage.getItem('popupBtnBgColor');
       const savedTextColor = localStorage.getItem('popupBtnTextColor');
       const savedDelay = localStorage.getItem('popupDelay');
 
-      if (savedImage) {
-        updatePreview({ popup_image_url: savedImage });
+      if (savedImage1) {
+        updatePreview({ popup_image_url: savedImage1 });
         clearImage1?.classList.remove("hidden");
+      }
+      if (savedImage2) {
+        updatePreview({ popup_image2_url: savedImage2 });
+        clearImage2?.classList.remove("hidden");
+      }
+      if (savedImageMobile) {
+        updatePreview({ popup_mobile_image_url: savedImageMobile });
+        clearImageMobile?.classList.remove("hidden");
       }
       if (savedBgColor && btnBgColorInput) {
         (btnBgColorInput as HTMLInputElement).value = savedBgColor;

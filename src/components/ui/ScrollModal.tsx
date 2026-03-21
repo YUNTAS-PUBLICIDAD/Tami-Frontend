@@ -72,12 +72,16 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
           
           // Preservar funcionalidad de "Añadir Imagen 1" desde localStorage (Preview)
           if (typeof window !== "undefined") {
-            const savedImage = localStorage.getItem('popupImage');
+            const savedImage1 = localStorage.getItem('popupImage');
+            const savedImage2 = localStorage.getItem('popupImage2');
+            const savedImageMobile = localStorage.getItem('popupImageMobile');
             const savedBgColor = localStorage.getItem('popupBtnBgColor');
             const savedTextColor = localStorage.getItem('popupBtnTextColor');
             const savedDelay = localStorage.getItem('popupDelay');
             
-            if (savedImage) finalSettings = { ...finalSettings, popup_image_url: savedImage };
+            if (savedImage1) finalSettings = { ...finalSettings, popup_image_url: savedImage1 };
+            if (savedImage2) finalSettings = { ...finalSettings, popup_image2_url: savedImage2 };
+            if (savedImageMobile) finalSettings = { ...finalSettings, popup_mobile_image_url: savedImageMobile };
             if (savedBgColor) finalSettings = { ...finalSettings, button_bg_color: savedBgColor };
             if (savedTextColor) finalSettings = { ...finalSettings, button_text_color: savedTextColor };
             if (savedDelay) finalSettings = { ...finalSettings, popup_start_delay_minutes: parseInt(savedDelay) };
