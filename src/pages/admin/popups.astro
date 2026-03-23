@@ -472,6 +472,17 @@ function initTabs() {
         if (previewStage) previewStage.classList.add("is-gmail");
         if (previewOverlay) previewOverlay.classList.add("hidden");
         if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    } else if (type === 'correo') {
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
+        if (previewCorreo) previewCorreo.classList.remove("hidden");
+        if (previewStage) previewStage.classList.add("is-gmail");
+        if (previewOverlay) previewOverlay.classList.add("hidden");
+        if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    }
+    
+    // Toggle "Full Stage" mode for Gmail
+    if (type !== 'correo') {
+        if (previewStage) previewStage.classList.remove("is-gmail");
     }
   }
 
