@@ -26,7 +26,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
   // Hooks
   const [pathname, setPathname] = useState<string>("");
   const [showModal, setShowModal] = useState(isPreview);
-  const [settings, setSettings] = useState<PopupSettings | null>(initialSettings || null);
+  const [settings, setSettings] = useState<PopupSettings>(initialSettings || {});
   const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
@@ -68,7 +68,26 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
         if (response.ok) {
           const data = await response.json();
           // Si es un array (ej. Laravel a veces manda array de un item), tomamos el primero
-          setSettings(Array.isArray(data) ? data[0] : data);
+          let finalSettings = Array.isArray(data) ? data[0] : data;
+          
+          // Preservar funcionalidad de "Añadir Imagen 1" desde localStorage (Preview)
+          if (typeof window !== "undefined") {
+            const savedImage1 = localStorage.getItem('popupImage');
+            const savedImage2 = localStorage.getItem('popupImage2');
+            const savedImageMobile = localStorage.getItem('popupImageMobile');
+            const savedBgColor = localStorage.getItem('popupBtnBgColor');
+            const savedTextColor = localStorage.getItem('popupBtnTextColor');
+            const savedDelay = localStorage.getItem('popupDelay');
+            
+            if (savedImage1) finalSettings = { ...finalSettings, popup_image_url: savedImage1 };
+            if (savedImage2) finalSettings = { ...finalSettings, popup_image2_url: savedImage2 };
+            if (savedImageMobile) finalSettings = { ...finalSettings, popup_mobile_image_url: savedImageMobile };
+            if (savedBgColor) finalSettings = { ...finalSettings, button_bg_color: savedBgColor };
+            if (savedTextColor) finalSettings = { ...finalSettings, button_text_color: savedTextColor };
+            if (savedDelay) finalSettings = { ...finalSettings, popup_start_delay_minutes: parseInt(savedDelay) };
+          }
+
+          setSettings(finalSettings);
         }
       } catch (err) {
         console.error("Error fetching popup settings:", err);
@@ -84,12 +103,13 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
     if (!isPreview) return;
 
     const handlePreviewUpdate = (e: any) => {
-      console.log("[ScrollModal] Preview update received:", e.detail);
       const { settings: newSettings, mode } = e.detail;
+      console.log("[ScrollModal] Preview update received:", { newSettings, mode });
+      
       if (newSettings) {
-        setSettings((prev: any) => {
-          const updated = { ...(prev || {}), ...newSettings };
-          console.log("[ScrollModal] Merged settings:", updated);
+        setSettings((prev) => {
+          const updated = { ...prev, ...newSettings };
+          console.log("[ScrollModal] New settings state:", updated);
           return updated;
         });
       }
@@ -106,8 +126,8 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
   useEffect(() => {
     if (isPreview) return; // Bypasear todo en preview
     if (!pathname || !allowedRoutes.includes(pathname)) return;
-    if (showModal || isClosing) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
     const now = Date.now();
@@ -124,20 +144,32 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       !showModal
     ) {
       // Usar delay de la base de datos o 5 segundos por defecto
-      const delayMs = settings?.popup_start_delay_minutes
-        ? (settings.popup_start_delay_minutes * 60 * 1000)
-        : 5000;
+      const delayMs = (settings?.popup_start_delay_minutes || 1) * 60 * 1000;
+      console.log(`[ScrollModal] El popup se mostrará en ${delayMs / 1000} segundos.`);
+
+      let remainingSeconds = delayMs / 1000;
+      intervalId = setInterval(() => {
+        remainingSeconds -= 1;
+        if (remainingSeconds > 0) {
+          console.log(`[ScrollModal] Tiempo restante para el popup: ${remainingSeconds} segundos...`);
+        } else {
+          if (intervalId) clearInterval(intervalId);
+        }
+      }, 1000);
 
       timer = setTimeout(() => {
         setShowModal(true);
         hasShownRef.current = true;
         sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
+        if (intervalId) clearInterval(intervalId);
+        console.log("[ScrollModal] ¡Popup mostrado!");
       }, delayMs);
     }
     return () => {
       if (timer) clearTimeout(timer);
+      if (intervalId) clearInterval(intervalId);
     };
-  }, [pathname, showModal, isClosing]);
+  }, [pathname, showModal, isClosing, settings?.popup_start_delay_minutes]);
 
   // Intención de salida
   useEffect(() => {
@@ -327,7 +359,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
         <div className={`relative ${isPreview ? (previewMode === 'mobile' ? 'w-full' : 'w-1/2') : 'w-full sm:w-1/2'} h-full flex flex-col overflow-hidden`}>
 
           {/* FONDO ESCRITORIO (IMAGEN 2) */}
-          <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'hidden sm:block'} absolute inset-0`}>
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'block sm:block'} absolute inset-0`}>
             {/* Imagen 2 (Fondo derecho) */}
             <img
               src={settings?.popup_image2_url || asesoriaImg.src}

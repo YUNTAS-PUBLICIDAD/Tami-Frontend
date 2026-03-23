@@ -72,9 +72,7 @@ export const config = {
       all: "api/v1/claim-form-data",
     },
     popups: {
-      // Endpoints de configuración de popups
-      getSettings: "/api/v1/home-popup-settings",
-      updateSettings: "/api/v1/home-popup-settings",
+      getSettings: "/api/v1/popup-settings/public",
     },
   },
   socket: {
