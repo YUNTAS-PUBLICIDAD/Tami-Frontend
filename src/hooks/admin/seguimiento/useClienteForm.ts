@@ -4,7 +4,30 @@ import type Cliente from "../../../models/Clients.ts";
 import Swal from "sweetalert2";
 import { origenCliente } from "@data/origenCliente";
 
-const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
+const normalizePhoneDigits = (value: string) => {
+  const onlyDigits = (value ?? "").replace(/\D/g, "");
+
+  // Si viene con prefijo Perú (51) + 9 dígitos, lo quitamos para el formulario.
+  if (onlyDigits.length === 11 && onlyDigits.startsWith("51")) {
+    return onlyDigits.slice(2);
+  }
+
+  return onlyDigits;
+};
+
+const formatPhoneForStorage = (value: string) => {
+  const localPhone = normalizePhoneDigits(value);
+
+  if (localPhone.length !== 9) return null;
+
+  return `+51 ${localPhone.slice(0, 3)} ${localPhone.slice(3, 6)} ${localPhone.slice(6)}`;
+};
+
+const useClienteForm = (
+  cliente?: Cliente | null,
+  onSuccess?: () => void,
+  isOpen?: boolean
+) => {
   type ClienteFormData = Pick<Cliente, "name" | "celular" | "email" | "source_id">;
   const [formData, setFormData] = useState<ClienteFormData>({
     name: "",
@@ -19,10 +42,12 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
   const { addCliente, updateCliente } = useClienteAcciones();
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (cliente) {
       setFormData({
         name: cliente.name,
-        celular: cliente.celular,
+        celular: normalizePhoneDigits(cliente.celular ?? ""),
         email: cliente.email,
       });
       setIsEditing(true);
@@ -30,9 +55,16 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
     } else {
       resetForm();
     }
-  }, [cliente]);
+  }, [cliente, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === "celular") {
+      const normalized = normalizePhoneDigits(e.target.value).slice(0, 9);
+      setFormData({ ...formData, celular: normalized });
+      setErrors({ ...errors, celular: "" });
+      return;
+    }
+
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" }); // Limpiar error al cambiar input
   };
@@ -52,25 +84,27 @@ const useClienteForm = (cliente?: Cliente | null, onSuccess?: () => void) => {
       return;
     }
 
-    if (!/^\d+$/.test(celular)) {
+    const formattedPhone = formatPhoneForStorage(celular);
+
+    if (!formattedPhone) {
       await Swal.fire({
         icon: "warning",
         title: "Teléfono inválido",
-        text: "⚠️ El teléfono solo debe contener números.",
+        text: "⚠️ Ingresa un celular válido de 9 dígitos. No necesitas escribir +51.",
       });
       return;
     }
 
     try {
       if (isEditing) {
-        await updateCliente(cliente!.id, { name, celular, email });
+        await updateCliente(cliente!.id, { name, celular: formattedPhone, email });
         await Swal.fire({
           icon: "success",
           title: "Cliente actualizado",
           text: "✅ Cliente actualizado correctamente",
         });
       } else {
-        await addCliente({ name, celular: `+51${celular}`, email, source_id: origenCliente.ADMINISTRACION });
+        await addCliente({ name, celular: formattedPhone, email, source_id: origenCliente.ADMINISTRACION });
         await Swal.fire({
           icon: "success",
           title: "Cliente registrado",

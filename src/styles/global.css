@@ -198,6 +198,7 @@ div {
 }
 
 .form-input>input[type="text"],
+.form-input>input[type="email"],
 .form-input>input[type="number"],
 .form-input>input[type="file"],
 .form-input>select,
@@ -215,6 +216,25 @@ div {
 
 .form-input>select>option {
   @apply text-gray-500 dark:text-gray-300;
+}
+
+.form-input>input:-webkit-autofill,
+.form-input>input:-webkit-autofill:hover,
+.form-input>input:-webkit-autofill:focus,
+.form-input>input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgb(17 24 39) !important;
+  caret-color: rgb(17 24 39) !important;
+  box-shadow: 0 0 0 1000px rgb(249 250 251) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.dark .form-input>input:-webkit-autofill,
+.dark .form-input>input:-webkit-autofill:hover,
+.dark .form-input>input:-webkit-autofill:focus,
+.dark .form-input>input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgb(243 244 246) !important;
+  caret-color: rgb(243 244 246) !important;
+  box-shadow: 0 0 0 1000px rgb(31 41 55) inset !important;
 }
 
 .group-form {
