@@ -12,6 +12,7 @@ interface PopupSettings {
   popup_image_url?: string;
   popup_image2_url?: string;
   popup_mobile_image_url?: string;
+  popup_mobile_image2_url?: string;
   button_bg_color?: string;
   button_text_color?: string;
   popup_start_delay_minutes?: number;
@@ -77,6 +78,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
             const savedImage1 = localStorage.getItem('popupImage');
             const savedImage2 = localStorage.getItem('popupImage2');
             const savedImageMobile = localStorage.getItem('popupImageMobile');
+            const savedImageMobile2 = localStorage.getItem('popupImageMobile2');
             const savedBgColor = localStorage.getItem('popupBtnBgColor');
             const savedTextColor = localStorage.getItem('popupBtnTextColor');
             const savedDelay = localStorage.getItem('popupDelay');
@@ -84,6 +86,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
             if (savedImage1) finalSettings = { ...finalSettings, popup_image_url: savedImage1 };
             if (savedImage2) finalSettings = { ...finalSettings, popup_image2_url: savedImage2 };
             if (savedImageMobile) finalSettings = { ...finalSettings, popup_mobile_image_url: savedImageMobile };
+            if (savedImageMobile2) finalSettings = { ...finalSettings, popup_mobile_image2_url: savedImageMobile2 };
             if (savedBgColor) finalSettings = { ...finalSettings, button_bg_color: savedBgColor };
             if (savedTextColor) finalSettings = { ...finalSettings, button_text_color: savedTextColor };
             if (savedDelay) finalSettings = { ...finalSettings, popup_start_delay_minutes: parseInt(savedDelay) };
@@ -347,7 +350,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       id="catalog-modal"
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === 'desktop' ? '' : 'px-4'} modal-overlay transition-opacity duration-500 animate-fadeIn`}
     >
-      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-md w-[95%] h-[500px] rounded-2xl' : 'flex-row w-full h-full rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[500px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-md w-[95%] h-[600px] rounded-2xl' : 'flex-row w-full h-full rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
 
         {/* ========================================================= */}
         {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
@@ -376,19 +379,36 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
             />
           </div>
 
-          <div className={`${isPreview ? (previewMode === 'mobile' ? 'block' : 'hidden') : 'block sm:hidden'} absolute inset-0 bg-teal-800`}>
-            {/* Imagen 3 (Fondo móvil) */}
-            {settings?.popup_mobile_image_url ? (
-              <img
-                src={settings?.popup_mobile_image_url}
-                alt="Imagen Móvil"
-                className="w-full h-full object-cover select-none"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-teal-200/20 text-4xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
-                [Imagen móvil]
-              </div>
-            )}
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'flex' : 'hidden') : 'flex sm:hidden'} absolute inset-0 flex-col bg-teal-800`}>
+            {/* Imagen Móvil 1 (Arriba) */}
+            <div className="h-1/2 w-full relative overflow-hidden border-b border-teal-700/30">
+              {settings?.popup_mobile_image_url ? (
+                <img
+                  src={settings?.popup_mobile_image_url}
+                  alt="Imagen Móvil 1"
+                  className="w-full h-full object-cover select-none"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-teal-200/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
+                  [Imagen móvil 1]
+                </div>
+              )}
+            </div>
+            
+            {/* Imagen Móvil 2 (Abajo) */}
+            <div className="h-1/2 w-full relative overflow-hidden">
+              {settings?.popup_mobile_image2_url ? (
+                <img
+                  src={settings?.popup_mobile_image2_url}
+                  alt="Imagen Móvil 2"
+                  className="w-full h-full object-cover select-none"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-teal-200/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
+                  [Imagen móvil 2]
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Contenido Formulario (Mantiene la estructura original) */}
@@ -416,7 +436,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                   Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
               </div>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3 animate-fadeInUp mt-28 sm:mt-36 w-full max-w-[320px] mx-auto">
+              <form onSubmit={handleSubmit} className={`flex flex-col gap-2 animate-fadeInUp ${isPreview ? (previewMode === 'mobile' ? 'mt-auto mb-10' : 'mt-36') : 'mt-auto mb-10 sm:mt-36'} w-full max-w-[320px] mx-auto`}>
                 <div>
                   <input
                     type="text"
@@ -466,7 +486,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                       backgroundColor: settings?.button_bg_color || "#4FB9AF",
                       color: settings?.button_text_color || "#ffffff"
                     }}
-                    className="rounded-full w-fit py-2.5 px-4 text-base uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95"
+                    className="rounded-full w-fit py-2 px-4 text-sm uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95"
                   >
                     {isSubmitting ? "Enviando..." : "CONOCER MÁS"}
                   </button>
