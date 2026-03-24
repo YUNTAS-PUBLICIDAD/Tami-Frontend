@@ -6,6 +6,7 @@ export interface PopupSettings {
   button_bg_color: string;
   button_text_color: string;
   popup_image: string;
+  popup_mobile_image2_url?: string;
   popup_start_delay_minutes: number;
 }
 
