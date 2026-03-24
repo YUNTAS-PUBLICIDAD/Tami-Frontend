@@ -2,7 +2,7 @@
 import Footer from "../components/ui/footer/Footer.astro";
 import NavBar from "../components/ui/navbar/NavBar";
 import ScrollModal from "../components/ui/ScrollModal.tsx";
-import WhatsApp from "../components/ui/whatsapp.astro";
+import SocialSidebar from "../components/ui/SocialSidebar.astro";
 import "@styles/global.css";
 
 interface Props {
@@ -40,7 +40,7 @@ const { title, description, canonicalUrl } = Astro.props;
 <NavBar client:idle />
 <slot />
 <Footer />
-<WhatsApp />
+<SocialSidebar />
 </body>
 </html>
 
