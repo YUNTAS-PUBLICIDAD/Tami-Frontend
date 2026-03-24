@@ -28,7 +28,14 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                   <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-500 text-white text-sm font-medium">
                     Pop-ups
                   </button>
+                <div class="flex gap-2 mb-6 border-b pb-2">
+                  <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-500 text-white text-sm font-medium">
+                    Pop-ups
+                  </button>
 
+                  <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+                    WhatsApp
+                  </button>
                   <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
                     WhatsApp
                   </button>
@@ -37,8 +44,13 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                     Correo
                   </button>
                 </div>
+                  <button id="tabCorreo" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+                    Correo
+                  </button>
+                </div>
 
                 <div class="space-y-6">
+                    <div id="contentPopups">
                     <div id="contentPopups">
 
                         <!-- Añadir Imagen 1 -->
@@ -129,6 +141,19 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                  <label for="btnTextColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
                             </div>
                         </div>
+                        <!-- Cambiar Color de Texto del Botón -->
+                        <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                             <div>
+                                <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Cambiar Color de Texto del Botón</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Define el color del texto que estará dentro del botón principal.</p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                                 <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700">
+                                     <input type="color" id="btnTextColor" value="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                                 </div>
+                                 <label for="btnTextColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
+                            </div>
+                        </div>
 
                         <!-- Cambiar Color de Botón -->
                         <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
@@ -143,7 +168,21 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                  <label for="btnBgColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
                             </div>
                         </div>
+                        <!-- Cambiar Color de Botón -->
+                        <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                             <div>
+                                <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Cambiar Color del Botón</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el color de fondo para los botones de acción principal.</p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                                 <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700">
+                                     <input type="color" id="btnBgColor" value="#14b8a6" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                                 </div>
+                                 <label for="btnBgColor" class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer">Elegir color</label>
+                            </div>
+                        </div>
 
+                        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2">Tiempo de Aparición de Pop-ups</h2>
                         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2">Tiempo de Aparición de Pop-ups</h2>
 
                         <!-- Tiempo de Aparición del Pop-up de Inicio -->
@@ -169,7 +208,53 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                  </div>
                             </div>
                         </div>
+                        <!-- Tiempo de Aparición del Pop-up de Inicio -->
+                        <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                             <div>
+                                <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-up de Inicio</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardará en aparecer el primer pop-up al entrar a la pagina de Inicio.</p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                                 <div class="relative flex items-center">
+                                     <select id="popupInicioDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                         <option value="1" selected>1 minuto</option>
+                                         <option value="2">2 minutos</option>
+                                         <option value="3">3 minutos</option>
+                                         <option value="4">4 minutos</option>
+                                         <option value="5">5 minutos</option>
+                                         <option value="6">6 minutos</option>
+                                         <option value="7">7 minutos</option>
+                                         <option value="8">8 minutos</option>
+                                         <option value="9">9 minutos</option>
+                                         <option value="10">10 minutos</option>
+                                     </select>
+                                 </div>
+                            </div>
+                        </div>
 
+                        <!-- Tiempo de Aparición del Pop-up de Productos -->
+                        <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
+                             <div>
+                                <h3 class="font-medium text-gray-900 dark:text-gray-100 text-lg">Pop-ups de Productos</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Elige el tiempo que tardarán en aparecer los pop-ups al ver el detalle de los productos.</p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
+                                 <div class="relative flex items-center">
+                                     <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
+                                         <option value="60" selected>1 minuto</option>
+                                         <option value="120">2 minutos</option>
+                                         <option value="180">3 minutos</option>
+                                         <option value="240">4 minutos</option>
+                                         <option value="300">5 minutos</option>
+                                         <option value="360">6 minutos</option>
+                                         <option value="420">7 minutos</option>
+                                         <option value="480">8 minutos</option>
+                                         <option value="540">9 minutos</option>
+                                         <option value="600">10 minutos</option>
+                                     </select>
+                                 </div>
+                            </div>
+                        </div>
                         <!-- Tiempo de Aparición del Pop-up de Productos -->
                         <div class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors">
                              <div>
@@ -293,7 +378,18 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                      </div>
                 </div>
             </div>
+                <div class="mt-8 flex flex-col gap-2">
+                     <p id="popupStatus" class="text-sm text-gray-600 dark:text-gray-300" role="status" aria-live="polite"></p>
+                     <div class="flex justify-end">
+                        <button type="button" id="btnGuardarPopups" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-50">
+                            Guardar Cambios
+                        </button>
+                     </div>
+                </div>
+            </div>
 
+            <!-- Columna Derecha: Vista Previa -->
+            <div class="lg:pl-4">
             <!-- Columna Derecha: Vista Previa -->
             <div class="lg:pl-4">
               <div class="sticky top-8">
@@ -319,12 +415,36 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 
                     <!-- Fondo oscuro -->
                     <div id="previewOverlay" class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
+                    <!-- Fondo oscuro -->
+                    <div id="previewOverlay" class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
 
                     <!-- CONTENEDOR RELATIVO -->
                     <div id="previewScrollModalContainer" class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
                         <ScrollModal client:only="react" isPreview={true} />
                     </div>
+                    <!-- CONTENEDOR RELATIVO -->
+                    <div id="previewScrollModalContainer" class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
+                        <ScrollModal client:only="react" isPreview={true} />
+                    </div>
 
+                    <!-- ================= WHATSAPP REALISTIC PREVIEW ================= -->
+                    <div id="previewWhatsapp" class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden">
+                        <div class="bg-[#e5ddd5] rounded-xl shadow-2xl w-[320px] h-[500px] flex flex-col overflow-hidden border border-gray-300 relative scale-90 sm:scale-100">
+                            <!-- Header -->
+                            <div class="bg-[#075e54] p-3 flex items-center gap-3 text-white shadow-md shrink-0 relative z-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                <div id="previewWhatsappProfileImg" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-bold text-sm leading-tight truncate">Jhon Doe</div>
+                                    <div class="text-[10px] opacity-70">En línea</div>
+                                </div>
+                            </div>
                     <!-- ================= WHATSAPP REALISTIC PREVIEW ================= -->
                     <div id="previewWhatsapp" class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden">
                         <div class="bg-[#e5ddd5] rounded-xl shadow-2xl w-[320px] h-[500px] flex flex-col overflow-hidden border border-gray-300 relative scale-90 sm:scale-100">
@@ -391,11 +511,16 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
   <style is:global>
       /* Mobile Mode Styles */
       #previewContainer[data-mode="mobile"]:not(.hidden) {
+      /* Mobile Mode Styles */
+      #previewContainer[data-mode="mobile"]:not(.hidden) {
           width: 100%;
+          max-width: 24rem;
           max-width: 24rem;
           display: flex;
           flex-direction: column;
+          flex-direction: column;
       }
+      
       
       #previewStage.is-gmail {
           background: white !important;
@@ -406,10 +531,13 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
       #previewStage.is-gmail #previewOverlay {
           display: none !important;
       }
+      }
   </style>
 </LayoutAdmin>
 
 <script>
+import { getPopupSettings, updatePopupSettings, isHexColor } from "../../lib/api/popupSettings";
+
 import { getPopupSettings, updatePopupSettings, isHexColor } from "../../lib/api/popupSettings";
 
 function initTabs() {
@@ -431,6 +559,7 @@ function initTabs() {
   const previewModesToggle = document.getElementById("previewModesToggle");
   const previewStage = document.getElementById("previewStage");
   const statusElement = document.getElementById("popupStatus");
+  const statusElement = document.getElementById("popupStatus");
 
   let currentMode = "desktop";
 
@@ -447,6 +576,16 @@ function initTabs() {
     window.dispatchEvent(new CustomEvent("update-popup-preview", {
       detail: { settings, mode }
     }));
+  }
+
+  function setStatus(message, type = "idle") {
+    if (!statusElement) return;
+    statusElement.textContent = message;
+    statusElement.className = "text-sm mt-2";
+    if (type === "success") statusElement.classList.add("text-teal-600");
+    else if (type === "error") statusElement.classList.add("text-red-500");
+    else if (type === "loading") statusElement.classList.add("text-amber-500");
+    else statusElement.classList.add("text-gray-600", "dark:text-gray-300");
   }
 
   function setStatus(message, type = "idle") {
@@ -478,9 +617,17 @@ function initTabs() {
         if (previewOverlay) previewOverlay.classList.remove("hidden");
         if (previewModesToggle) previewModesToggle.classList.remove("hidden");
         if (previewStage) previewStage.classList.remove("is-gmail");
+        if (previewStage) previewStage.classList.remove("is-gmail");
     } else if (type === 'whatsapp') {
         if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
         if (previewWhatsapp) previewWhatsapp.classList.remove("hidden");
+        if (previewOverlay) previewOverlay.classList.add("hidden");
+        if (previewModesToggle) previewModesToggle.classList.add("hidden");
+        if (previewStage) previewStage.classList.remove("is-gmail");
+    } else if (type === 'correo') {
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
+        if (previewCorreo) previewCorreo.classList.remove("hidden");
+        if (previewStage) previewStage.classList.add("is-gmail");
         if (previewOverlay) previewOverlay.classList.add("hidden");
         if (previewModesToggle) previewModesToggle.classList.add("hidden");
         if (previewStage) previewStage.classList.remove("is-gmail");
@@ -529,8 +676,12 @@ function initTabs() {
   };
 
   // SYNC INPUTS TO PREVIEW
+  // SYNC INPUTS TO PREVIEW
   const textareaWhatsapp = document.getElementById("whatsappMessage");
   const previewWhatsappText = document.getElementById("previewWhatsappText");
+  textareaWhatsapp?.addEventListener("input", () => {
+    if (previewWhatsappText) previewWhatsappText.textContent = textareaWhatsapp.value;
+  });
   textareaWhatsapp?.addEventListener("input", () => {
     if (previewWhatsappText) previewWhatsappText.textContent = textareaWhatsapp.value;
   });
@@ -539,6 +690,49 @@ function initTabs() {
   const emailBody = document.getElementById("emailBody");
   const previewCorreoTitle = document.getElementById("previewCorreoTitle");
   const previewCorreoBody = document.getElementById("previewCorreoBody");
+  emailTitle?.addEventListener("input", () => {
+    if (previewCorreoTitle) previewCorreoTitle.textContent = emailTitle.value;
+  });
+  emailBody?.addEventListener("input", () => {
+    if (previewCorreoBody) previewCorreoBody.textContent = emailBody.value;
+  });
+
+  // Colores del Botón
+  const btnBgColorInput = document.getElementById("btnBgColor");
+  const btnTextColorInput = document.getElementById("btnTextColor");
+
+  if (btnBgColorInput) {
+      console.log("[popups.astro] btnBgColorInput found, adding listeners");
+      const handleBgChange = () => {
+          const val = (btnBgColorInput as HTMLInputElement).value;
+          console.log("[popups.astro] BgColor changed:", val);
+          updatePreview({ button_bg_color: val });
+          localStorage.setItem('popupBtnBgColor', val);
+      };
+      btnBgColorInput.addEventListener("input", handleBgChange);
+      btnBgColorInput.addEventListener("change", handleBgChange);
+  }
+
+  if (btnTextColorInput) {
+      console.log("[popups.astro] btnTextColorInput found, adding listeners");
+      const handleTextChange = () => {
+          const val = (btnTextColorInput as HTMLInputElement).value;
+          console.log("[popups.astro] TextColor changed:", val);
+          updatePreview({ button_text_color: val });
+          localStorage.setItem('popupBtnTextColor', val);
+      };
+      btnTextColorInput.addEventListener("input", handleTextChange);
+      btnTextColorInput.addEventListener("change", handleTextChange);
+  }
+
+  const popupInicioDelayInput = document.getElementById("popupInicioDelay");
+  popupInicioDelayInput?.addEventListener("change", () => {
+    const val = (popupInicioDelayInput as HTMLSelectElement).value;
+    updatePreview({ popup_start_delay_minutes: parseInt(val) });
+    localStorage.setItem('popupDelay', val);
+  });
+
+  // IMAGE UPLOADS
   emailTitle?.addEventListener("input", () => {
     if (previewCorreoTitle) previewCorreoTitle.textContent = emailTitle.value;
   });
@@ -597,6 +791,7 @@ function initTabs() {
   function handleImageUpload(input, callback) {
       if (input && input.files && input.files[0]) {
           const reader = new FileReader();
+          reader.onload = (e) => callback(e.target.result);
           reader.onload = (e) => callback(e.target.result);
           reader.readAsDataURL(input.files[0]);
       }
@@ -783,8 +978,45 @@ function initTabs() {
           btnGuardarPopups.disabled = false;
       }
   });
+  btnGuardarPopups?.addEventListener("click", async () => {
+      const originalText = btnGuardarPopups.innerText;
+      btnGuardarPopups.innerText = "Guardando...";
+      btnGuardarPopups.disabled = true;
+      setStatus("Guardando cambios...", "loading");
+
+      try {
+          // Primero guardamos los ajustes JSON (colores y tiempo)
+          const bgColor = btnBgColorInput?.value || "#14b8a6";
+          const textColor = btnTextColorInput?.value || "#ffffff";
+          const delay = parseInt(popupInicioDelayInput?.value || "1");
+
+          if (!isHexColor(bgColor) || !isHexColor(textColor)) {
+              throw new Error("Colores no válidos.");
+          }
+
+          await updatePopupSettings({
+              button_bg_color: bgColor,
+              button_text_color: textColor,
+              popup_start_delay_minutes: delay
+          });
+
+          // Aquí iría la lógica de subida de imágenes si el backend lo soporta vía FormData
+          // Por ahora simulamos éxito en el guardado de imágenes
+          
+          setStatus("¡Guardado exitosamente!", "success");
+          setTimeout(() => setStatus(""), 3000);
+      } catch (error) {
+          console.error(error);
+          setStatus("Error al guardar: " + error.message, "error");
+      } finally {
+          btnGuardarPopups.innerText = originalText;
+          btnGuardarPopups.disabled = false;
+      }
+  });
 }
 
+document.addEventListener("DOMContentLoaded", initTabs);
+document.addEventListener("astro:page-load", initTabs);
 document.addEventListener("DOMContentLoaded", initTabs);
 document.addEventListener("astro:page-load", initTabs);
 </script>

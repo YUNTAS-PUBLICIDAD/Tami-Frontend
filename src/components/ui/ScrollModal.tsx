@@ -28,6 +28,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
   const [pathname, setPathname] = useState<string>("");
   const [showModal, setShowModal] = useState(isPreview);
   const [settings, setSettings] = useState<PopupSettings>(initialSettings || {});
+  const [settings, setSettings] = useState<PopupSettings>(initialSettings || {});
   const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
@@ -115,6 +116,9 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
         setSettings((prev) => {
           const updated = { ...prev, ...newSettings };
           console.log("[ScrollModal] New settings state:", updated);
+        setSettings((prev) => {
+          const updated = { ...prev, ...newSettings };
+          console.log("[ScrollModal] New settings state:", updated);
           return updated;
         });
       }
@@ -132,6 +136,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
     if (isPreview) return; // Bypasear todo en preview
     if (!pathname || !allowedRoutes.includes(pathname)) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const isAnyModalOpen = document.querySelector(".modal-overlay");
@@ -370,6 +375,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
         <div className={`relative ${isPreview ? (previewMode === 'mobile' ? 'w-full' : 'w-1/2') : 'w-full sm:w-1/2'} h-full flex flex-col overflow-hidden`}>
 
           {/* FONDO ESCRITORIO (IMAGEN 2) */}
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'block sm:block'} absolute inset-0`}>
           <div className={`${isPreview ? (previewMode === 'mobile' ? 'hidden' : 'block') : 'block sm:block'} absolute inset-0`}>
             {/* Imagen 2 (Fondo derecho) */}
             <img
