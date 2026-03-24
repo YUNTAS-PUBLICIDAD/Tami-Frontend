@@ -31,6 +31,8 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
   const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+  const [isDelayFinished, setIsDelayFinished] = useState(false);
+
 
   // Estados del formulario
   const [nombre, setNombre] = useState("");
@@ -132,65 +134,70 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
     let timer: ReturnType<typeof setTimeout> | null = null;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
-    const now = Date.now();
-    const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
     const isAnyModalOpen = document.querySelector(".modal-overlay");
     const isCatalogModalOpen = document.getElementById("catalog-modal");
 
+    // Para el temporizador automático, ignoramos el cooldown de localStorage si el usuario refresca la página,
+    // ya que el cliente solicitó que aparezca siempre al recargar.
     if (
-      now - lastClosed >= MODAL_COOLDOWN_MS &&
+      !loadingSettings &&
       !hasShownRef.current &&
-      !sessionShown &&
       !isAnyModalOpen &&
       !isCatalogModalOpen &&
       !showModal
     ) {
-      // Usar delay de la base de datos o 5 segundos por defecto
-      const delayMs = (settings?.popup_start_delay_minutes || 1) * 60 * 1000;
-      console.log(`[ScrollModal] El popup se mostrará en ${delayMs / 1000} segundos.`);
+      const delayMinutes = settings?.popup_start_delay_minutes ?? 1;
+      const delayMs = delayMinutes * 60 * 1000;
+      let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
+      
+      console.log(`[ScrollModal] El popup se mostrará en ${remainingSeconds} segundos.`);
 
-      let remainingSeconds = delayMs / 1000;
+      // Si el delay es 0, mostramos inmediatamente
+      if (remainingSeconds === 0) {
+        setShowModal(true);
+        hasShownRef.current = true;
+        setIsDelayFinished(true);
+        console.log("[ScrollModal] ¡Popup mostrado inmediatamente (delay 0)!");
+        return;
+      }
+
       intervalId = setInterval(() => {
         remainingSeconds -= 1;
         if (remainingSeconds > 0) {
           console.log(`[ScrollModal] Tiempo restante para el popup: ${remainingSeconds} segundos...`);
         } else {
+          setShowModal(true);
+          hasShownRef.current = true;
+          setIsDelayFinished(true);
           if (intervalId) clearInterval(intervalId);
+          console.log("[ScrollModal] ¡Popup mostrado!: Tiempo transcurrido.");
         }
       }, 1000);
-
-      timer = setTimeout(() => {
-        setShowModal(true);
-        hasShownRef.current = true;
-        sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
-        if (intervalId) clearInterval(intervalId);
-        console.log("[ScrollModal] ¡Popup mostrado!");
-      }, delayMs);
     }
+
     return () => {
-      if (timer) clearTimeout(timer);
       if (intervalId) clearInterval(intervalId);
     };
-  }, [pathname, showModal, isClosing, settings?.popup_start_delay_minutes]);
+  }, [pathname, showModal, isClosing, loadingSettings, settings?.popup_start_delay_minutes]);
+
 
   // Intención de salida
   useEffect(() => {
     if (isPreview) return;
     const handleMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 0) {
-        if (showModal || isClosing) return;
+        if (showModal || isClosing || !isDelayFinished) return;
         const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
         const now = Date.now();
-        const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
         const isAnyModalOpen = document.querySelector(".modal-overlay");
 
-        if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current && !sessionShown && !isAnyModalOpen && !showModal) {
+        if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current && !isAnyModalOpen && !showModal) {
           setShowModal(true);
           hasShownRef.current = true;
-          sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
+          console.log("[ScrollModal] Popup mostrado por intención de salida.");
         }
       }
+
     };
     window.addEventListener("mouseout", handleMouseOut);
     return () => window.removeEventListener("mouseout", handleMouseOut);
@@ -222,13 +229,15 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
       if (atBottom) hasReachedBottomRef.current = true;
 
-      if (hasReachedBottomRef.current && scrollDirection === "up" && !hasShownRef.current) {
+      if (hasReachedBottomRef.current && scrollDirection === "up" && !hasShownRef.current && isDelayFinished) {
         const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
         if (Date.now() - lastClosed < MODAL_COOLDOWN_MS) return;
         setShowModal(true);
         hasShownRef.current = true;
         hasReachedBottomRef.current = false;
+        console.log("[ScrollModal] Popup mostrado por scroll.");
       }
+
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -248,8 +257,9 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       setIsClosing(false);
       resetForm();
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
       hasShownRef.current = false;
+      setIsDelayFinished(false); // Resetear estado para la próxima vez
+
     }, 300);
   };
 
