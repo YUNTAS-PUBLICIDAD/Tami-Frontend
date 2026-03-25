@@ -25,15 +25,15 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
             <!-- Columna Izquierda: Formulario de Opciones -->
             <div class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8">
                 <div class="flex gap-2 mb-6 border-b pb-2">
-                  <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-500 text-white text-sm font-medium">
+                  <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-600 dark:bg-teal-500 text-white text-sm font-medium shadow-sm transition-all">
                     Pop-ups
                   </button>
 
-                  <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+                  <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-medium transition-all">
                     WhatsApp
                   </button>
 
-                  <button id="tabCorreo" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+                  <button id="tabCorreo" class="px-4 py-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-medium transition-all">
                     Correo
                   </button>
                 </div>
@@ -50,8 +50,8 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImage1" id="delete_popupImage1" value="0">
                                 <input type="file" id="popupImage1" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImage1').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
-                                    Subir Archivo
+                                <button type="button" onclick="document.getElementById('popupImage1').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
+                                    Subir Imagen 1
                                     <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
@@ -71,8 +71,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImage2" id="delete_popupImage2" value="0">
                                 <input type="file" id="popupImage2" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImage2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+                                <button type="button" onclick="document.getElementById('popupImage2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                                     Subir Imagen 2
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
                                 </button>
                                 <button type="button" id="clearImage2" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen 2">
                                     ✕
@@ -89,8 +92,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImageMobile" id="delete_popupImageMobile" value="0">
                                 <input type="file" id="popupImageMobile" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImageMobile').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
-                                    Subir Imagen Móvil
+                                <button type="button" onclick="document.getElementById('popupImageMobile').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
+                                    Subir Imagen Móvil 1
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
                                 </button>
                                 <button type="button" id="clearImageMobile" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen Móvil">
                                     ✕
@@ -107,8 +113,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImageMobile2" id="delete_popupImageMobile2" value="0">
                                 <input type="file" id="popupImageMobile2" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImageMobile2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+                                <button type="button" onclick="document.getElementById('popupImageMobile2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                                     Subir Imagen Móvil 2
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
                                 </button>
                                 <button type="button" id="clearImageMobile2" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen Móvil 2">
                                     ✕
@@ -482,16 +491,19 @@ function initTabs() {
   }
 
   function activarTab(tab, content, type) {
+    const activeClasses = ["bg-teal-600", "dark:bg-teal-500", "text-white", "shadow-sm"];
+    const inactiveClasses = ["text-gray-500", "dark:text-gray-400", "hover:bg-gray-100", "dark:hover:bg-gray-700/50", "hover:text-gray-700", "dark:hover:text-gray-200"];
+
     tabs.forEach(t => {
-        t.classList.remove("bg-teal-600", "text-white", "dark:bg-teal-500", "bg-teal-500");
-        t.classList.add("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
+        t.classList.remove(...activeClasses);
+        t.classList.add(...inactiveClasses);
     });
     contents.forEach(c => c.classList.add("hidden"));
     if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
     if (previewCorreo) previewCorreo.classList.add("hidden");
 
-    tab.classList.remove("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
-    tab.classList.add("bg-teal-600", "text-white", "dark:bg-teal-500");
+    tab.classList.remove(...inactiveClasses);
+    tab.classList.add(...activeClasses);
     content.classList.remove("hidden");
 
     if (type === 'popups') {
