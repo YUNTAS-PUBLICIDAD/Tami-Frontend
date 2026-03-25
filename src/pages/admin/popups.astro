@@ -397,6 +397,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
           flex-direction: column;
       }
       
+      
       #previewStage.is-gmail {
           background: white !important;
           padding: 0 !important;
@@ -470,7 +471,7 @@ function initTabs() {
     }));
   }
 
-  function setStatus(message, type = "idle") {
+  function setStatus(message: string, type: "success" | "error" | "loading" | "idle" = "idle") {
     if (!statusElement) return;
     statusElement.textContent = message;
     statusElement.className = "text-sm mt-2";
@@ -515,17 +516,6 @@ function initTabs() {
         if (previewStage) previewStage.classList.add("is-gmail");
         if (previewOverlay) previewOverlay.classList.add("hidden");
         if (previewModesToggle) previewModesToggle.classList.add("hidden");
-    } else if (type === 'correo') {
-        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
-        if (previewCorreo) previewCorreo.classList.remove("hidden");
-        if (previewStage) previewStage.classList.add("is-gmail");
-        if (previewOverlay) previewOverlay.classList.add("hidden");
-        if (previewModesToggle) previewModesToggle.classList.add("hidden");
-    }
-    
-    // Toggle "Full Stage" mode for Gmail
-    if (type !== 'correo') {
-        if (previewStage) previewStage.classList.remove("is-gmail");
     }
   }
 
@@ -556,14 +546,14 @@ function initTabs() {
   };
 
   // SYNC INPUTS TO PREVIEW
-  const textareaWhatsapp = document.getElementById("whatsappMessage");
+  const textareaWhatsapp = document.getElementById("whatsappMessage") as HTMLTextAreaElement;
   const previewWhatsappText = document.getElementById("previewWhatsappText");
   textareaWhatsapp?.addEventListener("input", () => {
     if (previewWhatsappText) previewWhatsappText.textContent = textareaWhatsapp.value;
   });
 
-  const emailTitle = document.getElementById("emailTitle");
-  const emailBody = document.getElementById("emailBody");
+  const emailTitle = document.getElementById("emailTitle") as HTMLInputElement;
+  const emailBody = document.getElementById("emailBody") as HTMLTextAreaElement;
   const previewCorreoTitle = document.getElementById("previewCorreoTitle");
   const previewCorreoBody = document.getElementById("previewCorreoBody");
   emailTitle?.addEventListener("input", () => {
@@ -574,14 +564,12 @@ function initTabs() {
   });
 
   // Colores del Botón
-  const btnBgColorInput = document.getElementById("btnBgColor");
-  const btnTextColorInput = document.getElementById("btnTextColor");
+  const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement;
+  const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement;
 
   if (btnBgColorInput) {
-      console.log("[popups.astro] btnBgColorInput found, adding listeners");
       const handleBgChange = () => {
-          const val = (btnBgColorInput as HTMLInputElement).value;
-          console.log("[popups.astro] BgColor changed:", val);
+          const val = btnBgColorInput.value;
           updatePreview({ button_bg_color: val });
           localStorage.setItem('popupBtnBgColor', val);
       };
@@ -590,10 +578,8 @@ function initTabs() {
   }
 
   if (btnTextColorInput) {
-      console.log("[popups.astro] btnTextColorInput found, adding listeners");
       const handleTextChange = () => {
-          const val = (btnTextColorInput as HTMLInputElement).value;
-          console.log("[popups.astro] TextColor changed:", val);
+          const val = btnTextColorInput.value;
           updatePreview({ button_text_color: val });
           localStorage.setItem('popupBtnTextColor', val);
       };
@@ -601,45 +587,44 @@ function initTabs() {
       btnTextColorInput.addEventListener("change", handleTextChange);
   }
 
-  const popupInicioDelayInput = document.getElementById("popupInicioDelay");
+  const popupInicioDelayInput = document.getElementById("popupInicioDelay") as HTMLSelectElement;
   popupInicioDelayInput?.addEventListener("change", () => {
-    const val = (popupInicioDelayInput as HTMLSelectElement).value;
+    const val = popupInicioDelayInput.value;
     updatePreview({ popup_start_delay_minutes: parseInt(val) });
     localStorage.setItem('popupDelay', val);
   });
 
   // IMAGE UPLOADS
-  const popupImage1 = document.getElementById("popupImage1");
-  const popupImage2 = document.getElementById("popupImage2");
-  const popupImageMobile = document.getElementById("popupImageMobile");
-  const popupImageMobile2 = document.getElementById("popupImageMobile2");
-  const whatsappImage = document.getElementById("whatsappImage");
-  const emailImage = document.getElementById("emailImage");
+  const popupImage1 = document.getElementById("popupImage1") as HTMLInputElement;
+  const popupImage2 = document.getElementById("popupImage2") as HTMLInputElement;
+  const popupImageMobile = document.getElementById("popupImageMobile") as HTMLInputElement;
+  const popupImageMobile2 = document.getElementById("popupImageMobile2") as HTMLInputElement;
+  const whatsappImage = document.getElementById("whatsappImage") as HTMLInputElement;
 
   const clearImage1 = document.getElementById("clearImage1");
   const clearImage2 = document.getElementById("clearImage2");
   const clearImageMobile = document.getElementById("clearImageMobile");
   const clearImageMobile2 = document.getElementById("clearImageMobile2");
 
-  function handleImageUpload(input, callback) {
+  function handleImageUpload(input: HTMLInputElement, callback: (url: string | ArrayBuffer | null | undefined) => void) {
       if (input && input.files && input.files[0]) {
           const reader = new FileReader();
-          reader.onload = (e) => callback(e.target.result);
+          reader.onload = (e) => callback(e.target?.result);
           reader.readAsDataURL(input.files[0]);
       }
   }
 
   popupImage1?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_image_url: url });
+          updatePreview({ popup_image_url: url as string });
           clearImage1?.classList.remove("hidden");
-          localStorage.setItem('popupImage', url);
+          localStorage.setItem('popupImage', url as string);
           const del = document.getElementById("delete_popupImage1") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImage1?.addEventListener("click", () => {
-      if (popupImage1) (popupImage1 as HTMLInputElement).value = "";
+      if (popupImage1) popupImage1.value = "";
       updatePreview({ popup_image_url: null });
       clearImage1.classList.add("hidden");
       localStorage.removeItem('popupImage');
@@ -649,15 +634,15 @@ function initTabs() {
 
   popupImage2?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_image2_url: url });
+          updatePreview({ popup_image2_url: url as string });
           clearImage2?.classList.remove("hidden");
-          localStorage.setItem('popupImage2', url);
+          localStorage.setItem('popupImage2', url as string);
           const del = document.getElementById("delete_popupImage2") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImage2?.addEventListener("click", () => {
-      if (popupImage2) (popupImage2 as HTMLInputElement).value = "";
+      if (popupImage2) popupImage2.value = "";
       updatePreview({ popup_image2_url: null });
       clearImage2.classList.add("hidden");
       localStorage.removeItem('popupImage2');
@@ -667,15 +652,15 @@ function initTabs() {
 
   popupImageMobile?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_mobile_image_url: url });
+          updatePreview({ popup_mobile_image_url: url as string });
           clearImageMobile?.classList.remove("hidden");
-          localStorage.setItem('popupImageMobile', url);
+          localStorage.setItem('popupImageMobile', url as string);
           const del = document.getElementById("delete_popupImageMobile") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImageMobile?.addEventListener("click", () => {
-      if (popupImageMobile) (popupImageMobile as HTMLInputElement).value = "";
+      if (popupImageMobile) popupImageMobile.value = "";
       updatePreview({ popup_mobile_image_url: null });
       clearImageMobile.classList.add("hidden");
       localStorage.removeItem('popupImageMobile');
@@ -685,15 +670,15 @@ function initTabs() {
 
   popupImageMobile2?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_mobile_image2_url: url });
+          updatePreview({ popup_mobile_image2_url: url as string });
           clearImageMobile2?.classList.remove("hidden");
-          localStorage.setItem('popupImageMobile2', url);
+          localStorage.setItem('popupImageMobile2', url as string);
           const del = document.getElementById("delete_popupImageMobile2") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImageMobile2?.addEventListener("click", () => {
-      if (popupImageMobile2) (popupImageMobile2 as HTMLInputElement).value = "";
+      if (popupImageMobile2) popupImageMobile2.value = "";
       updatePreview({ popup_mobile_image2_url: null });
       clearImageMobile2.classList.add("hidden");
       localStorage.removeItem('popupImageMobile2');
@@ -752,15 +737,15 @@ function initTabs() {
         clearImageMobile2?.classList.remove("hidden");
       }
       if (savedBgColor && btnBgColorInput) {
-        (btnBgColorInput as HTMLInputElement).value = savedBgColor;
+        btnBgColorInput.value = savedBgColor;
         updatePreview({ button_bg_color: savedBgColor });
       }
       if (savedTextColor && btnTextColorInput) {
-        (btnTextColorInput as HTMLInputElement).value = savedTextColor;
+        btnTextColorInput.value = savedTextColor;
         updatePreview({ button_text_color: savedTextColor });
       }
       if (savedDelay && popupInicioDelayInput) {
-        (popupInicioDelayInput as HTMLSelectElement).value = savedDelay;
+        popupInicioDelayInput.value = savedDelay;
         updatePreview({ popup_start_delay_minutes: parseInt(savedDelay) });
       }
       
@@ -774,8 +759,9 @@ function initTabs() {
   loadSettings();
 
   // SAVE SETTINGS
-  const btnGuardarPopups = document.getElementById("btnGuardarPopups");
+  const btnGuardarPopups = document.getElementById("btnGuardarPopups") as HTMLButtonElement | null;
   btnGuardarPopups?.addEventListener("click", async () => {
+      if (!btnGuardarPopups) return;
       const originalText = btnGuardarPopups.innerText;
       btnGuardarPopups.innerText = "Guardando...";
       btnGuardarPopups.disabled = true;
@@ -802,7 +788,7 @@ function initTabs() {
           
           setStatus("¡Guardado exitosamente!", "success");
           setTimeout(() => setStatus(""), 3000);
-      } catch (error) {
+      } catch (error: any) {
           console.error(error);
           setStatus("Error al guardar: " + error.message, "error");
       } finally {

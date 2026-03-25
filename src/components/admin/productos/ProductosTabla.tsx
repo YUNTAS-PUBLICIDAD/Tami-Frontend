@@ -167,8 +167,8 @@ const ProductosTabla = () => {
 
                 Swal.fire({
                     icon: "success",
-                    title: "✅ Despliegue completado",
-                    text: "Ya puedes volver a desplegar cambios.",
+                    title: "✅ Actualización completada",
+                    text: "Ya puedes volver a actualizar cambios.",
                     confirmButtonColor: "#14b8a6",
                     timer: 3000,
                     timerProgressBar: true,
@@ -201,111 +201,111 @@ const ProductosTabla = () => {
     if (isLoading) return <LoadingComponent message="cargando productos" />
 
     const handleDeploy = async () => {
-    if (deployInProgress) {
-        Swal.fire({
-            icon: "info",
-            title: "⏳ Despliegue en curso",
-            html: `Podrás volver a desplegar en <b>${deployRemaining}</b> segundos`,
-            confirmButtonColor: "#14b8a6",
-            timer: 2000,
-            timerProgressBar: true,
-        });
-        return;
-    }
-
-    const result = await Swal.fire({
-        title: "¿Desplegar cambios?",
-        text: "Esta acción actualizará el frontend con los últimos datos.",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#14b8a6",
-        cancelButtonColor: "#6b7280",
-        confirmButtonText: "Sí, desplegar",
-        cancelButtonText: "Cancelar",
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-        // ✅ Verificar que el token exista
-        const token = localStorage.getItem("token");
-        
-        if (!token) {
+        if (deployInProgress) {
             Swal.fire({
-                icon: "error",
-                title: "❌ Error de autenticación",
-                text: "No se encontró el token de sesión. Por favor, inicia sesión nuevamente.",
+                icon: "info",
+                title: "⏳ Despliegue en curso",
+                html: `Podrás volver a desplegar en <b>${deployRemaining}</b> segundos`,
                 confirmButtonColor: "#14b8a6",
+                timer: 2000,
+                timerProgressBar: true,
             });
             return;
         }
 
-        setDeployInProgress(true);
-        setDeployRemaining(DEPLOY_TIMEOUT);
+        const result = await Swal.fire({
+            title: "¿Actualizar cambios?",
+            text: "Esta acción actualizará el frontend con los últimos datos.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#14b8a6",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Sí, actualizar",
+            cancelButtonText: "Cancelar",
+        });
 
-        if (typeof window !== "undefined") {
-            localStorage.setItem(
-                "deployCooldownUntil",
-                String(Date.now() + DEPLOY_TIMEOUT * 1000)
+        if (!result.isConfirmed) return;
+
+        try {
+            // ✅ Verificar que el token exista
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                Swal.fire({
+                    icon: "error",
+                    title: "❌ Error de autenticación",
+                    text: "No se encontró el token de sesión. Por favor, inicia sesión nuevamente.",
+                    confirmButtonColor: "#14b8a6",
+                });
+                return;
+            }
+
+            setDeployInProgress(true);
+            setDeployRemaining(DEPLOY_TIMEOUT);
+
+            if (typeof window !== "undefined") {
+                localStorage.setItem(
+                    "deployCooldownUntil",
+                    String(Date.now() + DEPLOY_TIMEOUT * 1000)
+                );
+            }
+
+            Swal.fire({
+                title: "🚀 Despliegue iniciado",
+                html: "El despliegue está en curso. Puedes seguir navegando.",
+                icon: "success",
+                confirmButtonColor: "#14b8a6",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+            });
+
+            const res = await fetch(
+                "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                }
             );
-        }
 
-        Swal.fire({
-            title: "🚀 Despliegue iniciado",
-            html: "El despliegue está en curso. Puedes seguir navegando.",
-            icon: "success",
-            confirmButtonColor: "#14b8a6",
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-        });
+            // ✅ Manejar diferentes tipos de error
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({ message: "Error desconocido" }));
 
-        const res = await fetch(
-            "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
+                if (res.status === 401) {
+                    throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
+                } else if (res.status === 403) {
+                    throw new Error("No tienes permisos para realizar esta acción.");
+                } else {
+                    throw new Error(errorData.message || "Error al iniciar el despliegue");
+                }
             }
-        );
 
-        // ✅ Manejar diferentes tipos de error
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({ message: "Error desconocido" }));
-            
-            if (res.status === 401) {
-                throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
-            } else if (res.status === 403) {
-                throw new Error("No tienes permisos para realizar esta acción.");
-            } else {
-                throw new Error(errorData.message || "Error al iniciar el despliegue");
+            const data = await res.json();
+            console.log("Deploy exitoso:", data);
+
+        } catch (e) {
+            console.error("Error en deploy:", e);
+
+            setDeployInProgress(false);
+            setDeployRemaining(null);
+
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("deployCooldownUntil");
             }
+
+            Swal.fire({
+                icon: "error",
+                title: "❌ Error",
+                text: e instanceof Error ? e.message : "No se pudo iniciar el despliegue.",
+                confirmButtonColor: "#14b8a6",
+            });
         }
-
-        const data = await res.json();
-        console.log("Deploy exitoso:", data);
-
-    } catch (e) {
-        console.error("Error en deploy:", e);
-        
-        setDeployInProgress(false);
-        setDeployRemaining(null);
-
-        if (typeof window !== "undefined") {
-            localStorage.removeItem("deployCooldownUntil");
-        }
-
-        Swal.fire({
-            icon: "error",
-            title: "❌ Error",
-            text: e instanceof Error ? e.message : "No se pudo iniciar el despliegue.",
-            confirmButtonColor: "#14b8a6",
-        });
-    }
-};
+    };
 
 
     return (
@@ -313,7 +313,7 @@ const ProductosTabla = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                 <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                        
+
                         <div>
                             <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
                                 <FaTags />
@@ -325,7 +325,7 @@ const ProductosTabla = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3 items-center">
-                            
+
                             {/* Botón de Exportar */}
                             <ExportMenu data={filteredProductos} fileName="Reporte_Productos_Tami" />
 
@@ -355,8 +355,8 @@ const ProductosTabla = () => {
                             >
                                 <FaSyncAlt className={`h-4 w-4 ${deployInProgress ? "animate-spin" : ""}`} />
                                 {deployInProgress
-                                    ? `Desplegando (${deployRemaining}s)`
-                                    : "Desplegar Cambios"}
+                                    ? `Actualizando (${deployRemaining}s)`
+                                    : "Actualizar Cambios"}
                             </button>
 
                             <button
