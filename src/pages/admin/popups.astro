@@ -315,10 +315,10 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                       </div>
                   </div>
                   
-                 <div id="previewStage" class="bg-gray-100 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px] transition-all duration-300">
+                 <div id="previewStage" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px] transition-all duration-300">
 
-                    <!-- Fondo oscuro -->
-                    <div id="previewOverlay" class="absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
+                    <!-- Fondo oscuro (oculto por defecto) -->
+                    <div id="previewOverlay" class="hidden absolute inset-0 bg-black/40 dark:bg-black/60 z-0"></div>
 
                     <!-- CONTENEDOR RELATIVO -->
                     <div id="previewScrollModalContainer" class="relative z-10 w-full min-h-[500px] flex justify-center items-center">
@@ -406,6 +406,27 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
       #previewStage.is-gmail #previewOverlay {
           display: none !important;
       }
+
+      /* Escalas para las vistas previas */
+      #previewScrollModalContainer {
+          transform: scale(0.85);
+          transform-origin: center center;
+          transition: transform 0.3s ease;
+      }
+
+      #previewStage.is-mobile-view #previewScrollModalContainer {
+          transform: scale(0.75);
+          margin: 2rem 0;
+      }
+      
+      @media (min-width: 1024px) {
+          #previewScrollModalContainer {
+              transform: scale(0.9);
+          }
+          #previewStage.is-mobile-view #previewScrollModalContainer {
+              transform: scale(0.85);
+          }
+      }
   </style>
 </LayoutAdmin>
 
@@ -475,9 +496,13 @@ function initTabs() {
     if (type === 'popups') {
         if (previewScrollModalContainer) previewScrollModalContainer.classList.remove("hidden");
         updatePreview({ }, currentMode);
-        if (previewOverlay) previewOverlay.classList.remove("hidden");
+        if (previewOverlay) previewOverlay.classList.add("hidden");
         if (previewModesToggle) previewModesToggle.classList.remove("hidden");
-        if (previewStage) previewStage.classList.remove("is-gmail");
+        if (previewStage) {
+            previewStage.classList.remove("is-gmail");
+            if (currentMode === 'mobile') previewStage.classList.add("is-mobile-view");
+            else previewStage.classList.remove("is-mobile-view");
+        }
     } else if (type === 'whatsapp') {
         if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
         if (previewWhatsapp) previewWhatsapp.classList.remove("hidden");
@@ -516,6 +541,7 @@ function initTabs() {
       btnDesktop.classList.remove("text-gray-500");
       btnMobile.classList.remove("bg-white", "text-teal-600", "shadow-sm");
       btnMobile.classList.add("text-gray-500");
+      if (previewStage) previewStage.classList.remove("is-mobile-view");
       updatePreview({}, "desktop");
   };
 
@@ -525,6 +551,7 @@ function initTabs() {
       btnMobile.classList.remove("text-gray-500");
       btnDesktop.classList.remove("bg-white", "text-teal-600", "shadow-sm");
       btnDesktop.classList.add("text-gray-500");
+      if (previewStage) previewStage.classList.add("is-mobile-view");
       updatePreview({}, "mobile");
   };
 
