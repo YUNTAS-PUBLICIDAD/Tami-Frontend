@@ -25,15 +25,15 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
             <!-- Columna Izquierda: Formulario de Opciones -->
             <div class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8">
                 <div class="flex gap-2 mb-6 border-b pb-2">
-                  <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-500 text-white text-sm font-medium">
+                  <button id="tabPopups" class="px-4 py-2 rounded-md bg-teal-600 dark:bg-teal-500 text-white text-sm font-medium shadow-sm transition-all">
                     Pop-ups
                   </button>
 
-                  <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+                  <button id="tabWhatsapp" class="px-4 py-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-medium transition-all">
                     WhatsApp
                   </button>
 
-                  <button id="tabCorreo" class="px-4 py-2 rounded-md text-gray-500 hover:bg-gray-100 text-sm font-medium">
+                  <button id="tabCorreo" class="px-4 py-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-medium transition-all">
                     Correo
                   </button>
                 </div>
@@ -50,8 +50,8 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImage1" id="delete_popupImage1" value="0">
                                 <input type="file" id="popupImage1" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImage1').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
-                                    Subir Archivo
+                                <button type="button" onclick="document.getElementById('popupImage1').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
+                                    Subir Imagen 1
                                     <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
@@ -71,8 +71,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImage2" id="delete_popupImage2" value="0">
                                 <input type="file" id="popupImage2" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImage2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+                                <button type="button" onclick="document.getElementById('popupImage2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                                     Subir Imagen 2
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
                                 </button>
                                 <button type="button" id="clearImage2" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen 2">
                                     ✕
@@ -89,8 +92,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImageMobile" id="delete_popupImageMobile" value="0">
                                 <input type="file" id="popupImageMobile" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImageMobile').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
-                                    Subir Imagen Móvil
+                                <button type="button" onclick="document.getElementById('popupImageMobile').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
+                                    Subir Imagen Móvil 1
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
                                 </button>
                                 <button type="button" id="clearImageMobile" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen Móvil">
                                     ✕
@@ -107,8 +113,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                                 <input type="hidden" name="delete_popupImageMobile2" id="delete_popupImageMobile2" value="0">
                                 <input type="file" id="popupImageMobile2" accept="image/*" class="hidden">
-                                <button type="button" onclick="document.getElementById('popupImageMobile2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 text-sm font-medium rounded-md text-teal-600 bg-white hover:bg-teal-50">
+                                <button type="button" onclick="document.getElementById('popupImageMobile2').click()" class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors">
                                     Subir Imagen Móvil 2
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
                                 </button>
                                 <button type="button" id="clearImageMobile2" class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2" title="Borrar Imagen Móvil 2">
                                     ✕
@@ -179,16 +188,16 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                                  <div class="relative flex items-center">
                                      <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
-                                         <option value="60" selected>1 minuto</option>
-                                         <option value="120">2 minutos</option>
-                                         <option value="180">3 minutos</option>
-                                         <option value="240">4 minutos</option>
-                                         <option value="300">5 minutos</option>
-                                         <option value="360">6 minutos</option>
-                                         <option value="420">7 minutos</option>
-                                         <option value="480">8 minutos</option>
-                                         <option value="540">9 minutos</option>
-                                         <option value="600">10 minutos</option>
+                                         <option value="1" selected>1 minuto</option>
+                                         <option value="2">2 minutos</option>
+                                         <option value="3">3 minutos</option>
+                                         <option value="4">4 minutos</option>
+                                         <option value="5">5 minutos</option>
+                                         <option value="6">6 minutos</option>
+                                         <option value="7">7 minutos</option>
+                                         <option value="8">8 minutos</option>
+                                         <option value="9">9 minutos</option>
+                                         <option value="10">10 minutos</option>
                                      </select>
                                  </div>
                             </div>
@@ -482,16 +491,19 @@ function initTabs() {
   }
 
   function activarTab(tab, content, type) {
+    const activeClasses = ["bg-teal-600", "dark:bg-teal-500", "text-white", "shadow-sm"];
+    const inactiveClasses = ["text-gray-500", "dark:text-gray-400", "hover:bg-gray-100", "dark:hover:bg-gray-700/50", "hover:text-gray-700", "dark:hover:text-gray-200"];
+
     tabs.forEach(t => {
-        t.classList.remove("bg-teal-600", "text-white", "dark:bg-teal-500", "bg-teal-500");
-        t.classList.add("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
+        t.classList.remove(...activeClasses);
+        t.classList.add(...inactiveClasses);
     });
     contents.forEach(c => c.classList.add("hidden"));
     if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
     if (previewCorreo) previewCorreo.classList.add("hidden");
 
-    tab.classList.remove("text-gray-500", "dark:text-gray-400", "hover:text-gray-700", "dark:hover:text-gray-200");
-    tab.classList.add("bg-teal-600", "text-white", "dark:bg-teal-500");
+    tab.classList.remove(...inactiveClasses);
+    tab.classList.add(...activeClasses);
     content.classList.remove("hidden");
 
     if (type === 'popups') {
@@ -592,6 +604,13 @@ function initTabs() {
     const val = popupInicioDelayInput.value;
     updatePreview({ popup_start_delay_minutes: parseInt(val) });
     localStorage.setItem('popupDelay', val);
+  });
+
+  const popupProductosDelayInput = document.getElementById("popupProductosDelay") as HTMLSelectElement;
+  popupProductosDelayInput?.addEventListener("change", () => {
+    const val = popupProductosDelayInput.value;
+    updatePreview({ product_popup_delay_minutes: parseInt(val) });
+    localStorage.setItem('popupProductDelay', val);
   });
 
   // IMAGE UPLOADS
@@ -703,12 +722,14 @@ function initTabs() {
         if (btnBgColorInput) btnBgColorInput.value = settings.button_bg_color || "#14b8a6";
         if (btnTextColorInput) btnTextColorInput.value = settings.button_text_color || "#ffffff";
         if (popupInicioDelayInput) popupInicioDelayInput.value = String(settings.popup_start_delay_minutes || 1);
-        
+        if (popupProductosDelayInput) popupProductosDelayInput.value = String(settings.product_popup_delay_minutes || 1);
+
         // Initial Preview update
         updatePreview({
           button_bg_color: settings.button_bg_color,
           button_text_color: settings.button_text_color,
-          popup_start_delay_minutes: settings.popup_start_delay_minutes
+          popup_start_delay_minutes: settings.popup_start_delay_minutes,
+          product_popup_delay_minutes: settings.product_popup_delay_minutes
         });
       }
       
@@ -719,6 +740,7 @@ function initTabs() {
       const savedBgColor = localStorage.getItem('popupBtnBgColor');
       const savedTextColor = localStorage.getItem('popupBtnTextColor');
       const savedDelay = localStorage.getItem('popupDelay');
+      const savedProductDelay = localStorage.getItem('popupProductDelay');
 
       if (savedImage1) {
         updatePreview({ popup_image_url: savedImage1 });
@@ -748,6 +770,10 @@ function initTabs() {
         popupInicioDelayInput.value = savedDelay;
         updatePreview({ popup_start_delay_minutes: parseInt(savedDelay) });
       }
+      if (savedProductDelay && popupProductosDelayInput) {
+        popupProductosDelayInput.value = savedProductDelay;
+        updatePreview({ product_popup_delay_minutes: parseInt(savedProductDelay) });
+      }
       
       setStatus("Configuración cargada.", "idle");
     } catch (err) {
@@ -772,6 +798,7 @@ function initTabs() {
           const bgColor = btnBgColorInput?.value || "#14b8a6";
           const textColor = btnTextColorInput?.value || "#ffffff";
           const delay = parseInt(popupInicioDelayInput?.value || "1");
+          const productDelay = parseInt(popupProductosDelayInput?.value || "1");
 
           if (!isHexColor(bgColor) || !isHexColor(textColor)) {
               throw new Error("Colores no válidos.");
@@ -780,14 +807,18 @@ function initTabs() {
           await updatePopupSettings({
               button_bg_color: bgColor,
               button_text_color: textColor,
-              popup_start_delay_minutes: delay
+              popup_start_delay_minutes: delay,
+              product_popup_delay_minutes: productDelay
           });
 
           // Aquí iría la lógica de subida de imágenes si el backend lo soporta vía FormData
           // Por ahora simulamos éxito en el guardado de imágenes
           
-          setStatus("¡Guardado exitosamente!", "success");
-          setTimeout(() => setStatus(""), 3000);
+          setStatus("¡Guardado exitosamente! Recargando...", "success");
+          setTimeout(() => {
+              setStatus("");
+              location.reload();
+          }, 2000);
       } catch (error: any) {
           console.error(error);
           setStatus("Error al guardar: " + error.message, "error");
