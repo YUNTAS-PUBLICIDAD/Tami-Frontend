@@ -788,8 +788,6 @@ function initTabs() {
           const delay = parseInt(popupInicioDelayInput?.value || "1");
           const productDelay = parseInt(popupProductosDelayInput?.value || "1");
 
-          console.log("DEBUG: Saving settings", { delay, productDelay });
-
           if (!isHexColor(bgColor) || !isHexColor(textColor)) {
               throw new Error("Colores no válidos.");
           }

@@ -11,7 +11,9 @@ interface CardBlogProps {
 const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
 
   const imageUrl = blog.miniatura
-    ? `${config.apiUrl}${blog.miniatura}`
+    ? blog.miniatura.startsWith("http")
+      ? blog.miniatura
+      : `${config.apiUrl}${blog.miniatura}`
     : "/images/default-blog.webp";
 
   const altText = blog.titulo || "Imagen del blog";

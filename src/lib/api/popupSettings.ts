@@ -41,7 +41,6 @@ export async function getPublicPopupSettings(): Promise<PopupSettings> {
 export async function updatePopupSettings(
   payload: UpdatePopupSettingsPayload,
 ): Promise<PopupSettings> {
-  console.log("DEBUG: updatePopupSettings Payload:", payload);
   const response = await apiClient.patch<PopupSettingsResponse>(
     POPUP_SETTINGS_ENDPOINT,
     {
@@ -52,6 +51,5 @@ export async function updatePopupSettings(
     },
   );
 
-  console.log("DEBUG: updatePopupSettings Response:", response.data);
   return response.data.data;
 }

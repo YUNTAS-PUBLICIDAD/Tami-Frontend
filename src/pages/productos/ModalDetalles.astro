@@ -221,13 +221,7 @@ const { link = "" } = Astro.props as ModalProps;
     }
 
     const producto = await obtenerProductoActual();
-    console.log("PRODUCTO COMPLETO:", producto);
-    console.log("ETIQUETA COMPLETA:", producto?.etiqueta);
-    console.log("TITULO 1:", producto?.etiqueta?.titulo_popup_1);
-    console.log("TITULO 2:", producto?.etiqueta?.titulo_popup_2);
-    console.log("TITULO 3:", producto?.etiqueta?.titulo_popup_3);
     await actualizarImagenDesdeLink();
-    console.log("🧾 Titulos popup:", producto?.etiqueta);
 
     cerrarTodosLosModales();
 
@@ -240,8 +234,6 @@ const { link = "" } = Astro.props as ModalProps;
         "<span class='font-extrabold'>GRATIS</span>",
       );
     }
-
-    console.log("🎯 Estilo de modal detectado:", popupEstilo);
 
     if (popupEstilo === "estilo2") {
       document.getElementById("modal-detalles-2")?.classList.remove("hidden");
@@ -392,17 +384,8 @@ const { link = "" } = Astro.props as ModalProps;
         }
       }
 
-      console.log(
-        "%cDEBUG: PRODUCT POPUP SETTINGS FETCHED (PUBLIC)",
-        "background: #000; color: #0f0; font-size: 14px; font-weight: bold; padding: 4px;",
-        settings,
-      );
       const delayMinutes = settings.product_popup_delay_minutes ?? 1;
       const delayMs = delayMinutes * 60 * 1000;
-
-      console.log(
-        `⏱️ [PRODUCT POPUP] Delay Configured: ${delayMinutes} min (${delayMs}ms)`,
-      );
 
       // Final double check before setting timers
       if (modalTimeout) clearTimeout(modalTimeout);
