@@ -118,6 +118,7 @@ const { link = "" } = Astro.props as ModalProps;
 <script>
   import { config } from "config";
   import { origenCliente } from "@data/origenCliente";
+  import { getPublicPopupSettings } from "../../lib/api/popupSettings";
 
   declare global {
     interface Window {
@@ -159,8 +160,8 @@ const { link = "" } = Astro.props as ModalProps;
   // --- LÓGICA DE MOSTRAR / CERRAR ---
   const MODAL_STORAGE_KEY = "asesoriaModalLastClosedDetalle";
   const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos
-  const MODAL_AUTO_SHOW_DELAY_MS = 3 * 60 * 1000; // 3 minutos
   let modalTimeout: ReturnType<typeof setTimeout> | null = null;
+  let countdownInterval: ReturnType<typeof setInterval> | null = null;
   let modalMostrado = false;
 
   async function obtenerProductoActual() {
@@ -213,6 +214,10 @@ const { link = "" } = Astro.props as ModalProps;
     if (modalTimeout) {
       clearTimeout(modalTimeout);
       modalTimeout = null;
+    }
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
     }
 
     const producto = await obtenerProductoActual();
@@ -351,18 +356,94 @@ const { link = "" } = Astro.props as ModalProps;
     return Date.now() - lastClosed >= MODAL_COOLDOWN_MS;
   }
 
-  function programarPopupAutomatico() {
+  let currentCallId = 0;
+
+  async function programarPopupAutomatico() {
+    const myId = ++currentCallId;
+
     if (modalTimeout) {
       clearTimeout(modalTimeout);
       modalTimeout = null;
     }
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
 
     if (!puedeMostrarModal() || modalMostrado) return;
 
-    modalTimeout = setTimeout(async () => {
+    try {
+      let settings = await getPublicPopupSettings();
+
+      // IF a new call started while we were waiting, ABORT this one
+      if (myId !== currentCallId) return;
+
+      // Re-verify after await
       if (modalMostrado || !puedeMostrarModal()) return;
-      await showCotizacionModal();
-    }, MODAL_AUTO_SHOW_DELAY_MS);
+
+      // Override with localStorage if exists (matching ScrollModal.tsx behavior)
+      if (typeof window !== "undefined") {
+        const savedProductDelay = localStorage.getItem("popupProductDelay");
+        if (savedProductDelay) {
+          settings = {
+            ...settings,
+            product_popup_delay_minutes: parseInt(savedProductDelay),
+          };
+        }
+      }
+
+      console.log(
+        "%cDEBUG: PRODUCT POPUP SETTINGS FETCHED (PUBLIC)",
+        "background: #000; color: #0f0; font-size: 14px; font-weight: bold; padding: 4px;",
+        settings,
+      );
+      const delayMinutes = settings.product_popup_delay_minutes ?? 1;
+      const delayMs = delayMinutes * 60 * 1000;
+
+      console.log(
+        `⏱️ [PRODUCT POPUP] Delay Configured: ${delayMinutes} min (${delayMs}ms)`,
+      );
+
+      // Final double check before setting timers
+      if (modalTimeout) clearTimeout(modalTimeout);
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      let remainingMs = delayMs;
+      countdownInterval = setInterval(() => {
+        remainingMs -= 1000;
+        if (remainingMs <= 0) {
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
+          return;
+        }
+        const minutes = Math.floor(remainingMs / 60000);
+        const seconds = Math.floor((remainingMs % 60000) / 1000);
+        console.log(
+          `⏳ Tiempo restante para el popup de producto: ${minutes}m ${seconds}s`,
+        );
+      }, 1000);
+
+      modalTimeout = setTimeout(async () => {
+        if (myId !== currentCallId) return;
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+        }
+        if (modalMostrado || !puedeMostrarModal()) return;
+        await showCotizacionModal();
+      }, delayMs);
+    } catch (error) {
+      if (myId !== currentCallId) return;
+      console.error("Error al obtener configuraciones de popup:", error);
+      // Fallback a 3 minutos si falla la API
+      modalTimeout = setTimeout(async () => {
+        if (myId !== currentCallId) return;
+        if (modalMostrado || !puedeMostrarModal()) return;
+        await showCotizacionModal();
+      }, 3 * 60 * 1000);
+    }
   }
 
   const closeBtn = document.getElementById("close-modal-cotizacion");
@@ -373,6 +454,10 @@ const { link = "" } = Astro.props as ModalProps;
       if (modalTimeout) {
         clearTimeout(modalTimeout);
         modalTimeout = null;
+      }
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
       }
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
       modalMostrado = false;

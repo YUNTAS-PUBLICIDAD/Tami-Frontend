@@ -179,16 +179,16 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                                  <div class="relative flex items-center">
                                      <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
-                                         <option value="60" selected>1 minuto</option>
-                                         <option value="120">2 minutos</option>
-                                         <option value="180">3 minutos</option>
-                                         <option value="240">4 minutos</option>
-                                         <option value="300">5 minutos</option>
-                                         <option value="360">6 minutos</option>
-                                         <option value="420">7 minutos</option>
-                                         <option value="480">8 minutos</option>
-                                         <option value="540">9 minutos</option>
-                                         <option value="600">10 minutos</option>
+                                         <option value="1" selected>1 minuto</option>
+                                         <option value="2">2 minutos</option>
+                                         <option value="3">3 minutos</option>
+                                         <option value="4">4 minutos</option>
+                                         <option value="5">5 minutos</option>
+                                         <option value="6">6 minutos</option>
+                                         <option value="7">7 minutos</option>
+                                         <option value="8">8 minutos</option>
+                                         <option value="9">9 minutos</option>
+                                         <option value="10">10 minutos</option>
                                      </select>
                                  </div>
                             </div>
@@ -567,6 +567,13 @@ function initTabs() {
     localStorage.setItem('popupDelay', val);
   });
 
+  const popupProductosDelayInput = document.getElementById("popupProductosDelay") as HTMLSelectElement;
+  popupProductosDelayInput?.addEventListener("change", () => {
+    const val = popupProductosDelayInput.value;
+    updatePreview({ product_popup_delay_minutes: parseInt(val) });
+    localStorage.setItem('popupProductDelay', val);
+  });
+
   // IMAGE UPLOADS
   const popupImage1 = document.getElementById("popupImage1") as HTMLInputElement;
   const popupImage2 = document.getElementById("popupImage2") as HTMLInputElement;
@@ -676,12 +683,14 @@ function initTabs() {
         if (btnBgColorInput) btnBgColorInput.value = settings.button_bg_color || "#14b8a6";
         if (btnTextColorInput) btnTextColorInput.value = settings.button_text_color || "#ffffff";
         if (popupInicioDelayInput) popupInicioDelayInput.value = String(settings.popup_start_delay_minutes || 1);
-        
+        if (popupProductosDelayInput) popupProductosDelayInput.value = String(settings.product_popup_delay_minutes || 1);
+
         // Initial Preview update
         updatePreview({
           button_bg_color: settings.button_bg_color,
           button_text_color: settings.button_text_color,
-          popup_start_delay_minutes: settings.popup_start_delay_minutes
+          popup_start_delay_minutes: settings.popup_start_delay_minutes,
+          product_popup_delay_minutes: settings.product_popup_delay_minutes
         });
       }
       
@@ -692,6 +701,7 @@ function initTabs() {
       const savedBgColor = localStorage.getItem('popupBtnBgColor');
       const savedTextColor = localStorage.getItem('popupBtnTextColor');
       const savedDelay = localStorage.getItem('popupDelay');
+      const savedProductDelay = localStorage.getItem('popupProductDelay');
 
       if (savedImage1) {
         updatePreview({ popup_image_url: savedImage1 });
@@ -721,6 +731,10 @@ function initTabs() {
         popupInicioDelayInput.value = savedDelay;
         updatePreview({ popup_start_delay_minutes: parseInt(savedDelay) });
       }
+      if (savedProductDelay && popupProductosDelayInput) {
+        popupProductosDelayInput.value = savedProductDelay;
+        updatePreview({ product_popup_delay_minutes: parseInt(savedProductDelay) });
+      }
       
       setStatus("Configuración cargada.", "idle");
     } catch (err) {
@@ -745,6 +759,9 @@ function initTabs() {
           const bgColor = btnBgColorInput?.value || "#14b8a6";
           const textColor = btnTextColorInput?.value || "#ffffff";
           const delay = parseInt(popupInicioDelayInput?.value || "1");
+          const productDelay = parseInt(popupProductosDelayInput?.value || "1");
+
+          console.log("DEBUG: Saving settings", { delay, productDelay });
 
           if (!isHexColor(bgColor) || !isHexColor(textColor)) {
               throw new Error("Colores no válidos.");
@@ -753,14 +770,18 @@ function initTabs() {
           await updatePopupSettings({
               button_bg_color: bgColor,
               button_text_color: textColor,
-              popup_start_delay_minutes: delay
+              popup_start_delay_minutes: delay,
+              product_popup_delay_minutes: productDelay
           });
 
           // Aquí iría la lógica de subida de imágenes si el backend lo soporta vía FormData
           // Por ahora simulamos éxito en el guardado de imágenes
           
-          setStatus("¡Guardado exitosamente!", "success");
-          setTimeout(() => setStatus(""), 3000);
+          setStatus("¡Guardado exitosamente! Recargando...", "success");
+          setTimeout(() => {
+              setStatus("");
+              location.reload();
+          }, 2000);
       } catch (error: any) {
           console.error(error);
           setStatus("Error al guardar: " + error.message, "error");
