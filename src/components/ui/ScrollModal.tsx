@@ -256,8 +256,6 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       setIsClosing(false);
       resetForm();
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      hasShownRef.current = false;
-      setIsDelayFinished(false); // Resetear estado para la próxima vez
 
     }, 300);
   };
