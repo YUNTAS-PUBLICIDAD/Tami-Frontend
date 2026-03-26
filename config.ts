@@ -73,6 +73,7 @@ export const config = {
     },
     popups: {
       getSettings: "/api/v1/popup-settings/public",
+      submit: "/api/v1/whatsapp/popup-submission",
     },
   },
   socket: {
