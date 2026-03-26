@@ -1511,6 +1511,12 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                         });
                         clearImageMobile?.classList.remove("hidden");
                     }
+                    if (settings.imageMobile2) {
+                        updatePreview({
+                            popup_mobile_image2_url: settings.imageMobile2,
+                        });
+                        clearImageMobile2?.classList.remove("hidden");
+                    }
 
                     // Initial Preview update
                     updatePreview({
@@ -1663,6 +1669,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                 addFile("popupImage1", "image1");
                 addFile("popupImage2", "image2");
                 addFile("popupImageMobile", "imageMobile");
+                addFile("popupImageMobile2", "imageMobile2");
                 addFile("whatsappImage", "whatsappImage");
                 addFile("emailImage", "emailImage");
 
