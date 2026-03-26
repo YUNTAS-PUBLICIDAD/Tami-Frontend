@@ -443,7 +443,6 @@ const { link = "" } = Astro.props as ModalProps;
         countdownInterval = null;
       }
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      modalMostrado = false;
     };
   }
 
@@ -546,7 +545,6 @@ const { link = "" } = Astro.props as ModalProps;
           submitBtn.textContent = originalBtnText;
         }
         form.reset();
-        modalMostrado = false;
         localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
       }
     };
