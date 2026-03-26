@@ -1,6 +1,7 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 import ScrollModal from "../../components/ui/ScrollModal.tsx";
+import EmailEditor from "../../components/admin/popups/EmailEditor.tsx";
 ---
 
 <LayoutAdmin title="POPUPS">
@@ -270,15 +271,11 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                         value="Solicitud de información - Popup Web"
                                      />
                                 </div>
-                                <div>
-                                    <label for="emailBody" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mensaje de Correo</label>
-                                    <textarea 
-                                        id="emailBody"
-                                        rows="3" 
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border" 
-                                        placeholder="Escribe el cuerpo del correo aquí..."
-                                    >¡Hola! Me interesa la oferta mostrada en su página web y me gustaría recibir más detalles.</textarea>
-                                </div>
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mensaje de Correo</label>
+                                     <EmailEditor client:only="react" />
+                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -364,22 +361,67 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                     </div>
 
                     <!-- ================= CORREO REALISTIC PREVIEW ================= -->
-                    <div id="previewCorreo" class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden">
-                        <div class="bg-white w-full h-full flex flex-col overflow-hidden relative transition-all duration-300">
-                            <div class="bg-[#404040] p-3 px-6 flex items-center justify-between text-white text-sm">
-                                <span class="font-medium text-base">Mensaje nuevo</span>
+                    <div id="previewCorreo" class="hidden absolute inset-0 flex flex-col z-20 overflow-hidden bg-white">
+
+                      <!-- Gmail top bar -->
+                      <div class="flex items-center gap-3 px-4 py-2 border-b border-gray-200 bg-white shrink-0">
+                        <svg class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        <div id="previewCorreoTitle" class="text-lg font-semibold text-gray-800 truncate flex-1">Solicitud de información - Popup Web</div>
+                        <!-- Labels -->
+                        <span class="text-[10px] font-medium bg-[#e8f0fe] text-[#1a73e8] rounded px-2 py-0.5 border border-[#c5d3f5] hidden sm:inline">Recibidos</span>
+                      </div>
+
+                      <!-- Email thread body -->
+                      <div class="flex-1 overflow-y-auto px-4 py-3 bg-white">
+
+                        <!-- Email message card -->
+                        <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+
+                          <!-- Sender row -->
+                          <div class="flex items-start gap-3 px-4 py-3 bg-white">
+                            <!-- Avatar -->
+                            <div class="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-bold shrink-0 select-none">C</div>
+                            <div class="flex-1 min-w-0">
+                              <div class="flex items-center justify-between gap-2">
+                                <div>
+                                  <span class="font-semibold text-sm text-gray-900">Cliente Interesado</span>
+                                  <span class="text-xs text-gray-500 ml-1">&lt;cliente@email.com&gt;</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                  <span class="text-xs text-gray-400">hace 1 min</span>
+                                  <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                  <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                  <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+                                </div>
+                              </div>
+                              <div class="text-xs text-gray-400 mt-0.5">para <span class="text-gray-600">contacto@tami.com</span> ▾</div>
                             </div>
-                            <div class="px-6 py-3 border-b border-gray-100 flex items-center gap-6 text-sm">
-                                <span class="text-gray-400 w-16">Para</span>
-                                <span class="text-gray-700 font-medium">contacto@tami.com</span>
-                            </div>
-                            <div class="px-6 py-3 border-b border-gray-100 flex items-center gap-6 text-sm">
-                                <span class="text-gray-400 w-16">Asunto</span>
-                                <div id="previewCorreoTitle" class="text-gray-800 font-medium flex-1 text-base">Solicitud de información - Popup Web</div>
-                            </div>
-                            <div id="previewCorreoBody" class="p-10 sm:p-12 flex-1 overflow-y-auto text-base sm:text-lg text-gray-800 whitespace-pre-wrap leading-relaxed min-h-[300px]">¡Hola! Me interesa la oferta mostrada...</div>
+                          </div>
+
+                          <!-- Divider -->
+                          <div class="border-t border-gray-100 mx-4"></div>
+
+                          <!-- Email body -->
+                          <div id="previewCorreoBody" class="px-4 pt-3 pb-5 text-sm text-gray-800 leading-relaxed min-h-[180px] prose prose-sm max-w-none">
+                            ¡Hola! Me interesa la oferta mostrada...
+                          </div>
+
+                          <!-- Footer actions -->
+                          <div class="border-t border-gray-100 px-4 py-3 flex gap-3">
+                            <button class="flex items-center gap-1.5 border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                              Responder
+                            </button>
+                            <button class="flex items-center gap-1.5 border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                              Reenviar
+                            </button>
+                          </div>
                         </div>
+
+                      </div>
                     </div>
+
 
                  </div>
               </div>
@@ -396,7 +438,6 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
           display: flex;
           flex-direction: column;
       }
-      
       
       #previewStage.is-gmail {
           background: white !important;
@@ -428,7 +469,25 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
               transform: scale(0.85);
           }
       }
+
+      /* Estilos del editor de correo (Quill) */
+      .email-editor-wrapper .ql-toolbar {
+          border-radius: 0.375rem 0.375rem 0 0;
+          border-color: #d1d5db !important;
+          background: #f9fafb;
+      }
+      .email-editor-wrapper .ql-container {
+          border-radius: 0 0 0.375rem 0.375rem;
+          border-color: #d1d5db !important;
+          min-height: 160px;
+          font-size: 0.875rem;
+          font-family: inherit;
+      }
+      .email-editor-wrapper .ql-editor {
+          min-height: 160px;
+      }
   </style>
+
 </LayoutAdmin>
 
 <script>
@@ -471,7 +530,7 @@ function initTabs() {
     }));
   }
 
-  function setStatus(message: string, type: "success" | "error" | "loading" | "idle" = "idle") {
+  function setStatus(message, type = "idle") {
     if (!statusElement) return;
     statusElement.textContent = message;
     statusElement.className = "text-sm mt-2";
@@ -516,6 +575,17 @@ function initTabs() {
         if (previewStage) previewStage.classList.add("is-gmail");
         if (previewOverlay) previewOverlay.classList.add("hidden");
         if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    } else if (type === 'correo') {
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
+        if (previewCorreo) previewCorreo.classList.remove("hidden");
+        if (previewStage) previewStage.classList.add("is-gmail");
+        if (previewOverlay) previewOverlay.classList.add("hidden");
+        if (previewModesToggle) previewModesToggle.classList.add("hidden");
+    }
+    
+    // Toggle "Full Stage" mode for Gmail
+    if (type !== 'correo') {
+        if (previewStage) previewStage.classList.remove("is-gmail");
     }
   }
 
@@ -546,30 +616,35 @@ function initTabs() {
   };
 
   // SYNC INPUTS TO PREVIEW
-  const textareaWhatsapp = document.getElementById("whatsappMessage") as HTMLTextAreaElement;
+  const textareaWhatsapp = document.getElementById("whatsappMessage");
   const previewWhatsappText = document.getElementById("previewWhatsappText");
   textareaWhatsapp?.addEventListener("input", () => {
     if (previewWhatsappText) previewWhatsappText.textContent = textareaWhatsapp.value;
   });
 
-  const emailTitle = document.getElementById("emailTitle") as HTMLInputElement;
-  const emailBody = document.getElementById("emailBody") as HTMLTextAreaElement;
+  const emailTitle = document.getElementById("emailTitle");
+  const emailBody = document.getElementById("emailBody");
   const previewCorreoTitle = document.getElementById("previewCorreoTitle");
   const previewCorreoBody = document.getElementById("previewCorreoBody");
   emailTitle?.addEventListener("input", () => {
     if (previewCorreoTitle) previewCorreoTitle.textContent = emailTitle.value;
   });
-  emailBody?.addEventListener("input", () => {
-    if (previewCorreoBody) previewCorreoBody.textContent = emailBody.value;
+  // El EmailEditor sincroniza directamente con #previewCorreoBody vía su prop onChangeHtml
+  // Solo necesitamos observar cambios en emailBodyValue para casos edge
+  const emailBodyHidden = document.getElementById("emailBodyValue");
+  emailBodyHidden?.addEventListener("input", () => {
+    if (previewCorreoBody) previewCorreoBody.innerHTML = (emailBodyHidden as HTMLInputElement).value;
   });
 
   // Colores del Botón
-  const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement;
-  const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement;
+  const btnBgColorInput = document.getElementById("btnBgColor");
+  const btnTextColorInput = document.getElementById("btnTextColor");
 
   if (btnBgColorInput) {
+      console.log("[popups.astro] btnBgColorInput found, adding listeners");
       const handleBgChange = () => {
-          const val = btnBgColorInput.value;
+          const val = (btnBgColorInput as HTMLInputElement).value;
+          console.log("[popups.astro] BgColor changed:", val);
           updatePreview({ button_bg_color: val });
           localStorage.setItem('popupBtnBgColor', val);
       };
@@ -578,8 +653,10 @@ function initTabs() {
   }
 
   if (btnTextColorInput) {
+      console.log("[popups.astro] btnTextColorInput found, adding listeners");
       const handleTextChange = () => {
-          const val = btnTextColorInput.value;
+          const val = (btnTextColorInput as HTMLInputElement).value;
+          console.log("[popups.astro] TextColor changed:", val);
           updatePreview({ button_text_color: val });
           localStorage.setItem('popupBtnTextColor', val);
       };
@@ -587,44 +664,45 @@ function initTabs() {
       btnTextColorInput.addEventListener("change", handleTextChange);
   }
 
-  const popupInicioDelayInput = document.getElementById("popupInicioDelay") as HTMLSelectElement;
+  const popupInicioDelayInput = document.getElementById("popupInicioDelay");
   popupInicioDelayInput?.addEventListener("change", () => {
-    const val = popupInicioDelayInput.value;
+    const val = (popupInicioDelayInput as HTMLSelectElement).value;
     updatePreview({ popup_start_delay_minutes: parseInt(val) });
     localStorage.setItem('popupDelay', val);
   });
 
   // IMAGE UPLOADS
-  const popupImage1 = document.getElementById("popupImage1") as HTMLInputElement;
-  const popupImage2 = document.getElementById("popupImage2") as HTMLInputElement;
-  const popupImageMobile = document.getElementById("popupImageMobile") as HTMLInputElement;
-  const popupImageMobile2 = document.getElementById("popupImageMobile2") as HTMLInputElement;
-  const whatsappImage = document.getElementById("whatsappImage") as HTMLInputElement;
+  const popupImage1 = document.getElementById("popupImage1");
+  const popupImage2 = document.getElementById("popupImage2");
+  const popupImageMobile = document.getElementById("popupImageMobile");
+  const popupImageMobile2 = document.getElementById("popupImageMobile2");
+  const whatsappImage = document.getElementById("whatsappImage");
+  const emailImage = document.getElementById("emailImage");
 
   const clearImage1 = document.getElementById("clearImage1");
   const clearImage2 = document.getElementById("clearImage2");
   const clearImageMobile = document.getElementById("clearImageMobile");
   const clearImageMobile2 = document.getElementById("clearImageMobile2");
 
-  function handleImageUpload(input: HTMLInputElement, callback: (url: string | ArrayBuffer | null | undefined) => void) {
+  function handleImageUpload(input, callback) {
       if (input && input.files && input.files[0]) {
           const reader = new FileReader();
-          reader.onload = (e) => callback(e.target?.result);
+          reader.onload = (e) => callback(e.target.result);
           reader.readAsDataURL(input.files[0]);
       }
   }
 
   popupImage1?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_image_url: url as string });
+          updatePreview({ popup_image_url: url });
           clearImage1?.classList.remove("hidden");
-          localStorage.setItem('popupImage', url as string);
+          localStorage.setItem('popupImage', url);
           const del = document.getElementById("delete_popupImage1") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImage1?.addEventListener("click", () => {
-      if (popupImage1) popupImage1.value = "";
+      if (popupImage1) (popupImage1 as HTMLInputElement).value = "";
       updatePreview({ popup_image_url: null });
       clearImage1.classList.add("hidden");
       localStorage.removeItem('popupImage');
@@ -634,15 +712,15 @@ function initTabs() {
 
   popupImage2?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_image2_url: url as string });
+          updatePreview({ popup_image2_url: url });
           clearImage2?.classList.remove("hidden");
-          localStorage.setItem('popupImage2', url as string);
+          localStorage.setItem('popupImage2', url);
           const del = document.getElementById("delete_popupImage2") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImage2?.addEventListener("click", () => {
-      if (popupImage2) popupImage2.value = "";
+      if (popupImage2) (popupImage2 as HTMLInputElement).value = "";
       updatePreview({ popup_image2_url: null });
       clearImage2.classList.add("hidden");
       localStorage.removeItem('popupImage2');
@@ -652,15 +730,15 @@ function initTabs() {
 
   popupImageMobile?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_mobile_image_url: url as string });
+          updatePreview({ popup_mobile_image_url: url });
           clearImageMobile?.classList.remove("hidden");
-          localStorage.setItem('popupImageMobile', url as string);
+          localStorage.setItem('popupImageMobile', url);
           const del = document.getElementById("delete_popupImageMobile") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImageMobile?.addEventListener("click", () => {
-      if (popupImageMobile) popupImageMobile.value = "";
+      if (popupImageMobile) (popupImageMobile as HTMLInputElement).value = "";
       updatePreview({ popup_mobile_image_url: null });
       clearImageMobile.classList.add("hidden");
       localStorage.removeItem('popupImageMobile');
@@ -670,15 +748,15 @@ function initTabs() {
 
   popupImageMobile2?.addEventListener("change", function() {
       handleImageUpload(this, (url) => {
-          updatePreview({ popup_mobile_image2_url: url as string });
+          updatePreview({ popup_mobile_image2_url: url });
           clearImageMobile2?.classList.remove("hidden");
-          localStorage.setItem('popupImageMobile2', url as string);
+          localStorage.setItem('popupImageMobile2', url);
           const del = document.getElementById("delete_popupImageMobile2") as HTMLInputElement;
           if (del) del.value = "0";
       });
   });
   clearImageMobile2?.addEventListener("click", () => {
-      if (popupImageMobile2) popupImageMobile2.value = "";
+      if (popupImageMobile2) (popupImageMobile2 as HTMLInputElement).value = "";
       updatePreview({ popup_mobile_image2_url: null });
       clearImageMobile2.classList.add("hidden");
       localStorage.removeItem('popupImageMobile2');
@@ -737,15 +815,15 @@ function initTabs() {
         clearImageMobile2?.classList.remove("hidden");
       }
       if (savedBgColor && btnBgColorInput) {
-        btnBgColorInput.value = savedBgColor;
+        (btnBgColorInput as HTMLInputElement).value = savedBgColor;
         updatePreview({ button_bg_color: savedBgColor });
       }
       if (savedTextColor && btnTextColorInput) {
-        btnTextColorInput.value = savedTextColor;
+        (btnTextColorInput as HTMLInputElement).value = savedTextColor;
         updatePreview({ button_text_color: savedTextColor });
       }
       if (savedDelay && popupInicioDelayInput) {
-        popupInicioDelayInput.value = savedDelay;
+        (popupInicioDelayInput as HTMLSelectElement).value = savedDelay;
         updatePreview({ popup_start_delay_minutes: parseInt(savedDelay) });
       }
       
@@ -759,9 +837,8 @@ function initTabs() {
   loadSettings();
 
   // SAVE SETTINGS
-  const btnGuardarPopups = document.getElementById("btnGuardarPopups") as HTMLButtonElement | null;
+  const btnGuardarPopups = document.getElementById("btnGuardarPopups");
   btnGuardarPopups?.addEventListener("click", async () => {
-      if (!btnGuardarPopups) return;
       const originalText = btnGuardarPopups.innerText;
       btnGuardarPopups.innerText = "Guardando...";
       btnGuardarPopups.disabled = true;
@@ -788,7 +865,7 @@ function initTabs() {
           
           setStatus("¡Guardado exitosamente!", "success");
           setTimeout(() => setStatus(""), 3000);
-      } catch (error: any) {
+      } catch (error) {
           console.error(error);
           setStatus("Error al guardar: " + error.message, "error");
       } finally {
