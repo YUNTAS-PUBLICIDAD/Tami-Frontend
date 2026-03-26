@@ -289,7 +289,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       formData.append("source_id", origenCliente.INICIO);
 
       const response = await fetch(
-        getApiUrl(config.endpoints.clientes.create),
+        getApiUrl(config.endpoints.popups.submit),
         {
           method: "POST",
           body: formData,

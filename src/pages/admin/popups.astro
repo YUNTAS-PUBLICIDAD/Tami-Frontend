@@ -179,16 +179,16 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <div class="ml-4 flex-shrink-0 flex items-center space-x-3">
                                  <div class="relative flex items-center">
                                      <select id="popupProductosDelay" class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border">
-                                         <option value="60" selected>1 minuto</option>
-                                         <option value="120">2 minutos</option>
-                                         <option value="180">3 minutos</option>
-                                         <option value="240">4 minutos</option>
-                                         <option value="300">5 minutos</option>
-                                         <option value="360">6 minutos</option>
-                                         <option value="420">7 minutos</option>
-                                         <option value="480">8 minutos</option>
-                                         <option value="540">9 minutos</option>
-                                         <option value="600">10 minutos</option>
+                                         <option value="1" selected>1 minuto</option>
+                                         <option value="2">2 minutos</option>
+                                         <option value="3">3 minutos</option>
+                                         <option value="4">4 minutos</option>
+                                         <option value="5">5 minutos</option>
+                                         <option value="6">6 minutos</option>
+                                         <option value="7">7 minutos</option>
+                                         <option value="8">8 minutos</option>
+                                         <option value="9">9 minutos</option>
+                                         <option value="10">10 minutos</option>
                                      </select>
                                  </div>
                             </div>
@@ -410,7 +410,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 </LayoutAdmin>
 
 <script>
-import { getPopupSettings, updatePopupSettings, isHexColor } from "../../lib/api/popupSettings";
+import { getPopupSettings, updatePopupSettingsFormData, isHexColor } from "../../lib/api/popupSettings";
 
 function initTabs() {
   const tabPopups = document.getElementById("tabPopups");
@@ -686,55 +686,59 @@ function initTabs() {
   async function loadSettings() {
     setStatus("Cargando...", "loading");
     try {
-      const settings = await getPopupSettings();
+      const settings = (await getPopupSettings()) as any;
       if (settings) {
-        if (btnBgColorInput) btnBgColorInput.value = settings.button_bg_color || "#14b8a6";
-        if (btnTextColorInput) btnTextColorInput.value = settings.button_text_color || "#ffffff";
-        if (popupInicioDelayInput) popupInicioDelayInput.value = String(settings.popup_start_delay_minutes || 1);
+        if (btnBgColorInput) btnBgColorInput.value = settings.button_bg_color || settings.btnBgColor || "#14b8a6";
+        if (btnTextColorInput) btnTextColorInput.value = settings.button_text_color || settings.btnTextColor || "#ffffff";
+        if (popupInicioDelayInput) popupInicioDelayInput.value = String(settings.popup_start_delay_minutes || settings.popupInicioDelay || 1);
+        
+        const popupProductosDelay = document.getElementById("popupProductosDelay") as HTMLSelectElement;
+        if (popupProductosDelay) popupProductosDelay.value = String(settings.product_popup_delay_minutes || settings.popupProductosDelay || 1);
+
+        const whatsappMessage = document.getElementById("whatsappMessage") as HTMLTextAreaElement;
+        if (whatsappMessage && settings.whatsappMessage) {
+            whatsappMessage.value = settings.whatsappMessage;
+            if (previewWhatsappText) previewWhatsappText.textContent = settings.whatsappMessage;
+        }
+
+        const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
+        if (emailTitleInput && settings.emailTitle) {
+            emailTitleInput.value = settings.emailTitle;
+            if (previewCorreoTitle) previewCorreoTitle.textContent = settings.emailTitle;
+        }
+
+        const emailBodyInput = document.getElementById("emailBody") as HTMLTextAreaElement;
+        if (emailBodyInput && settings.emailBody) {
+            emailBodyInput.value = settings.emailBody;
+            if (previewCorreoBody) previewCorreoBody.textContent = settings.emailBody;
+        }
+
+        // Cargar previsualizaciones de imágenes desde BD si existen
+        if (settings.whatsappImage) {
+            const previewWAImg = document.getElementById("previewWhatsappProfileImg");
+            if (previewWAImg) previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-full object-cover">`;
+            document.getElementById("clearWhatsappImage")?.classList.remove("hidden");
+        }
+
+        if (settings.image1) {
+            updatePreview({ popup_image_url: settings.image1 });
+            clearImage1?.classList.remove("hidden");
+        }
+        if (settings.image2) {
+            updatePreview({ popup_image2_url: settings.image2 });
+            clearImage2?.classList.remove("hidden");
+        }
+        if (settings.imageMobile) {
+            updatePreview({ popup_mobile_image_url: settings.imageMobile });
+            clearImageMobile?.classList.remove("hidden");
+        }
         
         // Initial Preview update
         updatePreview({
-          button_bg_color: settings.button_bg_color,
-          button_text_color: settings.button_text_color,
-          popup_start_delay_minutes: settings.popup_start_delay_minutes
+          button_bg_color: settings.button_bg_color || settings.btnBgColor,
+          button_text_color: settings.button_text_color || settings.btnTextColor,
+          popup_start_delay_minutes: settings.popup_start_delay_minutes || settings.popupInicioDelay
         });
-      }
-      
-      const savedImage1 = localStorage.getItem('popupImage');
-      const savedImage2 = localStorage.getItem('popupImage2');
-      const savedImageMobile = localStorage.getItem('popupImageMobile');
-      const savedImageMobile2 = localStorage.getItem('popupImageMobile2');
-      const savedBgColor = localStorage.getItem('popupBtnBgColor');
-      const savedTextColor = localStorage.getItem('popupBtnTextColor');
-      const savedDelay = localStorage.getItem('popupDelay');
-
-      if (savedImage1) {
-        updatePreview({ popup_image_url: savedImage1 });
-        clearImage1?.classList.remove("hidden");
-      }
-      if (savedImage2) {
-        updatePreview({ popup_image2_url: savedImage2 });
-        clearImage2?.classList.remove("hidden");
-      }
-      if (savedImageMobile) {
-        updatePreview({ popup_mobile_image_url: savedImageMobile });
-        clearImageMobile?.classList.remove("hidden");
-      }
-      if (savedImageMobile2) {
-        updatePreview({ popup_mobile_image2_url: savedImageMobile2 });
-        clearImageMobile2?.classList.remove("hidden");
-      }
-      if (savedBgColor && btnBgColorInput) {
-        (btnBgColorInput as HTMLInputElement).value = savedBgColor;
-        updatePreview({ button_bg_color: savedBgColor });
-      }
-      if (savedTextColor && btnTextColorInput) {
-        (btnTextColorInput as HTMLInputElement).value = savedTextColor;
-        updatePreview({ button_text_color: savedTextColor });
-      }
-      if (savedDelay && popupInicioDelayInput) {
-        (popupInicioDelayInput as HTMLSelectElement).value = savedDelay;
-        updatePreview({ popup_start_delay_minutes: parseInt(savedDelay) });
       }
       
       setStatus("Configuración cargada.", "idle");
@@ -755,7 +759,7 @@ function initTabs() {
       setStatus("Guardando cambios...", "loading");
 
       try {
-          // Primero guardamos los ajustes JSON (colores y tiempo)
+          // Preparar todos los datos para enviar
           const bgColor = btnBgColorInput?.value || "#14b8a6";
           const textColor = btnTextColorInput?.value || "#ffffff";
           const delay = parseInt(popupInicioDelayInput?.value || "1");
@@ -764,20 +768,55 @@ function initTabs() {
               throw new Error("Colores no válidos.");
           }
 
-          await updatePopupSettings({
-              button_bg_color: bgColor,
-              button_text_color: textColor,
-              popup_start_delay_minutes: delay
-          });
+          const formData = new FormData();
+          
+          formData.append('button_bg_color', bgColor);
+          formData.append('button_text_color', textColor);
+          formData.append('popup_start_delay_minutes', delay.toString());
+          
+          const popupProductosDelay = document.getElementById("popupProductosDelay") as HTMLSelectElement;
+          if (popupProductosDelay) formData.append('product_popup_delay_minutes', popupProductosDelay.value);
 
-          // Aquí iría la lógica de subida de imágenes si el backend lo soporta vía FormData
-          // Por ahora simulamos éxito en el guardado de imágenes
+          // WhatsApp configs
+          const whatsappMessage = document.getElementById("whatsappMessage") as HTMLTextAreaElement;
+          if (whatsappMessage) formData.append('whatsappMessage', whatsappMessage.value);
+          formData.append('whatsapp_enabled', '1'); // Habilitado implicitamente
+
+          // Email configs
+          const emailTitle = document.getElementById("emailTitle") as HTMLInputElement;
+          const emailBody = document.getElementById("emailBody") as HTMLTextAreaElement;
+          if (emailTitle) formData.append('emailTitle', emailTitle.value);
+          if (emailBody) formData.append('emailBody', emailBody.value);
+          formData.append('email_enabled', '1'); // Habilitado implicitamente
+
+          // Añadir imágenes
+          const addFile = (id, name) => {
+              const input = document.getElementById(id) as HTMLInputElement;
+              if (input && input.files && input.files.length > 0) {
+                  formData.append(name, input.files[0]);
+              } else {
+                  const deleteInput = document.getElementById("delete_" + id) as HTMLInputElement;
+                  if (deleteInput && deleteInput.value === "1") {
+                      formData.append("delete_" + name, "1");
+                  }
+              }
+          };
+
+          addFile('popupImage1', 'image1');
+          addFile('popupImage2', 'image2');
+          addFile('popupImageMobile', 'imageMobile');
+          addFile('whatsappImage', 'whatsappImage');
+          addFile('emailImage', 'emailImage');
+
+          // Enviar datos
+          await updatePopupSettingsFormData(formData);
           
           setStatus("¡Guardado exitosamente!", "success");
           setTimeout(() => setStatus(""), 3000);
       } catch (error) {
           console.error(error);
-          setStatus("Error al guardar: " + error.message, "error");
+          const errMessage = error instanceof Error ? error.message : String(error);
+          setStatus("Error al guardar: " + errMessage, "error");
       } finally {
           btnGuardarPopups.innerText = originalText;
           btnGuardarPopups.disabled = false;

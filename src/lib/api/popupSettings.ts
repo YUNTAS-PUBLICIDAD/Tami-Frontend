@@ -41,3 +41,19 @@ export async function updatePopupSettings(
 
   return response.data.data;
 }
+
+export async function updatePopupSettingsFormData(
+  formData: FormData,
+): Promise<PopupSettings> {
+  const response = await apiClient.post<PopupSettingsResponse>(
+    POPUP_SETTINGS_ENDPOINT,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+
+  return response.data.data;
+}
