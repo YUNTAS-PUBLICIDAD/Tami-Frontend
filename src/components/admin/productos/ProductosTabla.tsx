@@ -261,7 +261,7 @@ const ProductosTabla = () => {
             });
 
             const res = await fetch(
-                "https://apitami.tamimaquinarias.com/api/v1/frontend/deploy",
+                `${config.apiUrl}/api/v1/frontend/deploy`,
                 {
                     method: "POST",
                     headers: {
@@ -425,7 +425,9 @@ const ProductosTabla = () => {
                                         <div className="flex items-center">
                                             {item.imagenes?.[0]?.url_imagen ? (
                                                 <img
-                                                    src={`${getApiUrl}${item.imagenes[0].url_imagen}`}
+                                                    src={item.imagenes[0].url_imagen.startsWith("http") 
+                                                        ? item.imagenes[0].url_imagen 
+                                                        : `${getApiUrl}${item.imagenes[0].url_imagen}`}
                                                     alt={item.nombre}
                                                     className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
                                                 // onError={(e) => {

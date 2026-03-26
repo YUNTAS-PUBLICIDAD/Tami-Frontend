@@ -9,11 +9,24 @@ interface Props {
 }
 
 const SimilarProductCard: React.FC<Props> = ({ product }) => {
-  const imgUrl = product.imagenes.filter(img => img.tipo === 'galeria')[0]?.url_imagen;
-  const cacheBuster = `?t=${Date.now()}`;
-  const finalImageSrc = imgUrl
-    ? `${config.apiUrl}${imgUrl}${cacheBuster}`
-    : '/placeholder.png';
+  const [cacheBuster, setCacheBuster] = React.useState("");
+
+  React.useEffect(() => {
+    setCacheBuster(`?t=${Date.now()}`);
+  }, []);
+
+  const imgUrl = product.imagenes.filter((img) => img.tipo === "galeria")[0]
+    ?.url_imagen;
+
+  let finalImageSrc = "/placeholder.png";
+
+  if (imgUrl) {
+    if (imgUrl.startsWith("http")) {
+      finalImageSrc = `${imgUrl}${cacheBuster}`;
+    } else {
+      finalImageSrc = `${config.apiUrl}${imgUrl}${cacheBuster}`;
+    }
+  }
 
   return (
     <a
