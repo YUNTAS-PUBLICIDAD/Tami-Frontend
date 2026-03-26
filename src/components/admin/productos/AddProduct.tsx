@@ -19,6 +19,12 @@ const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 const AddProduct = ({ onProductAdded }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const getFullImageUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+    return `${config.apiUrl}${url}`;
+  };
   const [formPage, setFormPage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
   const [productos, setProductos] = useState<Product[]>([]);
@@ -1259,7 +1265,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             <div className="relative flex items-center justify-center">
                               {item.imagenes?.[0]?.url_imagen ? (
                                 <img
-                                  src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                  src={getFullImageUrl(item.imagenes[0].url_imagen)}
                                   alt={item.nombre}
                                   className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${formData.relacionados.includes(item.id)
                                     ? 'border-teal-600'

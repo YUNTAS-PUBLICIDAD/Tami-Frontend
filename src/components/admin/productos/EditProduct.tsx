@@ -690,6 +690,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
     }, [showModal]);
 
+    const getFullImageUrl = (url: string) => {
+        if (!url) return "";
+        if (url.startsWith("http")) return url;
+        return `${config.apiUrl}${url}`;
+    };
+
     useEffect(() => {
         if (showModal && product) {
             const refreshCache = Date.now();
@@ -697,7 +703,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             console.log("Imágenes originales:", product.imagenes);
             let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
                 id: img.id,
-                url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
+                url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
                 texto_alt_SEO: img.texto_alt_SEO || "",
                 original_path: img.url_imagen
             })) || [];
@@ -751,11 +757,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     ancho: product.dimensiones?.ancho || "",
                 },
                 video_url: product.video_url || "",
-                imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
+                imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-                imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
+                imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
                 asunto: imagenEmail?.asunto || "",
-                imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
+                imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
                 texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "" // Asegúrate que tu back mande esto
             });
         }
@@ -1649,7 +1655,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         <div className="relative flex items-center justify-center">
                                                             {item.imagenes?.[0]?.url_imagen ? (
                                                                 <img
-                                                                    src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                                                    src={getFullImageUrl(item.imagenes[0].url_imagen)}
                                                                     alt={item.nombre}
                                                                     className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${formData.relacionados.includes(item.id)
                                                                         ? 'border-teal-600'

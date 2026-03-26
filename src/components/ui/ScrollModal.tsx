@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import asesoriaImg from "../../assets/images/Diseno.webp";
-import Logo from "../../assets/images/logos/logo-blanco-tami.gif";
 import { config, getApiUrl } from "../../../config";
 import { origenCliente } from "@data/origenCliente";
 
@@ -31,6 +30,8 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
   const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+  const [isDelayFinished, setIsDelayFinished] = useState(false);
+
 
   // Estados del formulario
   const [nombre, setNombre] = useState("");
@@ -132,65 +133,70 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
     let timer: ReturnType<typeof setTimeout> | null = null;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
-    const now = Date.now();
-    const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
     const isAnyModalOpen = document.querySelector(".modal-overlay");
     const isCatalogModalOpen = document.getElementById("catalog-modal");
 
+    // Para el temporizador automático, ignoramos el cooldown de localStorage si el usuario refresca la página,
+    // ya que el cliente solicitó que aparezca siempre al recargar.
     if (
-      now - lastClosed >= MODAL_COOLDOWN_MS &&
+      !loadingSettings &&
       !hasShownRef.current &&
-      !sessionShown &&
       !isAnyModalOpen &&
       !isCatalogModalOpen &&
       !showModal
     ) {
-      // Usar delay de la base de datos o 5 segundos por defecto
-      const delayMs = (settings?.popup_start_delay_minutes || 1) * 60 * 1000;
-      console.log(`[ScrollModal] El popup se mostrará en ${delayMs / 1000} segundos.`);
+      const delayMinutes = settings?.popup_start_delay_minutes ?? 1;
+      const delayMs = delayMinutes * 60 * 1000;
+      let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
+      
+      console.log(`[ScrollModal] El popup se mostrará en ${remainingSeconds} segundos.`);
 
-      let remainingSeconds = delayMs / 1000;
+      // Si el delay es 0, mostramos inmediatamente
+      if (remainingSeconds === 0) {
+        setShowModal(true);
+        hasShownRef.current = true;
+        setIsDelayFinished(true);
+        console.log("[ScrollModal] ¡Popup mostrado inmediatamente (delay 0)!");
+        return;
+      }
+
       intervalId = setInterval(() => {
         remainingSeconds -= 1;
         if (remainingSeconds > 0) {
           console.log(`[ScrollModal] Tiempo restante para el popup: ${remainingSeconds} segundos...`);
         } else {
+          setShowModal(true);
+          hasShownRef.current = true;
+          setIsDelayFinished(true);
           if (intervalId) clearInterval(intervalId);
+          console.log("[ScrollModal] ¡Popup mostrado!: Tiempo transcurrido.");
         }
       }, 1000);
-
-      timer = setTimeout(() => {
-        setShowModal(true);
-        hasShownRef.current = true;
-        sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
-        if (intervalId) clearInterval(intervalId);
-        console.log("[ScrollModal] ¡Popup mostrado!");
-      }, delayMs);
     }
+
     return () => {
-      if (timer) clearTimeout(timer);
       if (intervalId) clearInterval(intervalId);
     };
-  }, [pathname, showModal, isClosing, settings?.popup_start_delay_minutes]);
+  }, [pathname, showModal, isClosing, loadingSettings, settings?.popup_start_delay_minutes]);
+
 
   // Intención de salida
   useEffect(() => {
     if (isPreview) return;
     const handleMouseOut = (e: MouseEvent) => {
       if (e.clientY <= 0) {
-        if (showModal || isClosing) return;
+        if (showModal || isClosing || !isDelayFinished) return;
         const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
         const now = Date.now();
-        const sessionShown = sessionStorage.getItem(SESSION_STORAGE_KEY);
         const isAnyModalOpen = document.querySelector(".modal-overlay");
 
-        if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current && !sessionShown && !isAnyModalOpen && !showModal) {
+        if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current && !isAnyModalOpen && !showModal) {
           setShowModal(true);
           hasShownRef.current = true;
-          sessionStorage.setItem(SESSION_STORAGE_KEY, "true");
+          console.log("[ScrollModal] Popup mostrado por intención de salida.");
         }
       }
+
     };
     window.addEventListener("mouseout", handleMouseOut);
     return () => window.removeEventListener("mouseout", handleMouseOut);
@@ -222,13 +228,15 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
       if (atBottom) hasReachedBottomRef.current = true;
 
-      if (hasReachedBottomRef.current && scrollDirection === "up" && !hasShownRef.current) {
+      if (hasReachedBottomRef.current && scrollDirection === "up" && !hasShownRef.current && isDelayFinished) {
         const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
         if (Date.now() - lastClosed < MODAL_COOLDOWN_MS) return;
         setShowModal(true);
         hasShownRef.current = true;
         hasReachedBottomRef.current = false;
+        console.log("[ScrollModal] Popup mostrado por scroll.");
       }
+
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -248,30 +256,28 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       setIsClosing(false);
       resetForm();
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
-      hasShownRef.current = false;
+
     }, 300);
   };
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+    const isInvalid = !nombre.trim() ||
+      nombre.trim().length < 3 ||
+      nombre.trim().length > 75 ||
+      !/^9\d{8}$/.test(telefono) ||
+      !correo.trim() ||
+      !correo.includes("@") ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim());
 
-    if (nombre.trim().length < 3 || nombre.trim().length > 75) {
-      newErrors.nombre = "El nombre debe tener entre 3 y 75 caracteres.";
+    if (isInvalid) {
+      newErrors.general_top = "Por favor completar datos";
+      setErrors(newErrors);
+      return false;
     }
 
-    const phoneRegex = /^9\d{8}$/;
-
-    if (!phoneRegex.test(telefono)) {
-      newErrors.telefono = "El celular debe tener 9 dígitos (Ej: 987654321)";
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
-      newErrors.correo = "El correo no es válido.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -340,7 +346,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       id="catalog-modal"
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === 'desktop' ? '' : 'px-4'} modal-overlay transition-opacity duration-500 animate-fadeIn`}
     >
-      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-md w-[95%] h-[600px] rounded-2xl' : 'flex-row w-full h-full rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-[320px] w-[95%] h-[600px] rounded-2xl' : 'flex-row max-w-4xl w-[95%] h-[550px] rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
 
         {/* ========================================================= */}
         {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
@@ -369,9 +375,9 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
             />
           </div>
 
-          <div className={`${isPreview ? (previewMode === 'mobile' ? 'flex' : 'hidden') : 'flex sm:hidden'} absolute inset-0 flex-col bg-teal-800`}>
+          <div className={`${isPreview ? (previewMode === 'mobile' ? 'flex' : 'hidden') : 'flex sm:hidden'} absolute inset-0 flex-col bg-white overflow-hidden`}>
             {/* Imagen Móvil 1 (Arriba) */}
-            <div className="h-1/2 w-full relative overflow-hidden border-b border-teal-700/30">
+            <div className="h-1/2 w-full relative overflow-hidden">
               {settings?.popup_mobile_image_url ? (
                 <img
                   src={settings?.popup_mobile_image_url}
@@ -379,14 +385,14 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                   className="w-full h-full object-cover select-none"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-teal-200/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
-                  [Imagen móvil 1]
+                <div className="w-full h-full flex items-center justify-center text-black/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
+                  [IMAGEN MÓVIL 1]
                 </div>
               )}
             </div>
-            
+
             {/* Imagen Móvil 2 (Abajo) */}
-            <div className="h-1/2 w-full relative overflow-hidden">
+            <div className="flex-1 w-full relative overflow-hidden -mt-1">
               {settings?.popup_mobile_image2_url ? (
                 <img
                   src={settings?.popup_mobile_image2_url}
@@ -394,8 +400,8 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                   className="w-full h-full object-cover select-none"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-teal-200/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
-                  [Imagen móvil 2]
+                <div className="w-full h-full flex items-start justify-center pt-10 text-black/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
+                  [IMAGEN MÓVIL 2]
                 </div>
               )}
             </div>
@@ -403,7 +409,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
 
           {/* Contenido Formulario (Mantiene la estructura original) */}
           <div className="relative z-10 w-full text-white animate-fadeInRight h-full">
-            <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-center gap-6">
+            <div className="sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-start gap-6">
 
               <button
                 onClick={closeModal}
@@ -426,8 +432,13 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                   Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
               </div>
 
-              <form onSubmit={handleSubmit} className={`flex flex-col gap-2 animate-fadeInUp ${isPreview ? (previewMode === 'mobile' ? 'mt-auto mb-10' : 'mt-36') : 'mt-auto mb-10 sm:mt-36'} w-full max-w-[320px] mx-auto`}>
-                <div>
+              <form onSubmit={handleSubmit} className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === 'mobile' ? 'mt-auto mb-1 max-w-[280px]' : 'mt-48 max-w-[320px]') : 'mt-auto mb-1 sm:mb-4 sm:mt-48 max-w-[280px] sm:max-w-[320px]'} w-full mx-auto`}>
+                <div className="relative mb-3">
+                  {errors.general_top && (
+                    <p className="absolute bottom-full left-0 right-0 text-sm font-bold text-[#FF0000] text-center mb-1 whitespace-nowrap">
+                      {errors.general_top}
+                    </p>
+                  )}
                   <input
                     type="text"
                     placeholder="Nombre"
@@ -435,10 +446,9 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                     onChange={(e) => setNombre(e.target.value)}
                     className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
                   />
-                  {errors.nombre && <p className="text-xs text-yellow-100 mt-1 pl-2 mb-0">{errors.nombre}</p>}
                 </div>
 
-                <div>
+                <div className="relative mb-3">
                   <input
                     type="tel"
                     placeholder="Teléfono"
@@ -450,10 +460,9 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                     }}
                     className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
                   />
-                  {errors.telefono && <p className="text-xs text-yellow-100 mt-1 pl-2 mb-0">{errors.telefono}</p>}
                 </div>
 
-                <div>
+                <div className="relative mb-3">
                   <input
                     type="email"
                     placeholder="Correo"
@@ -461,14 +470,14 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                     onChange={(e) => setCorreo(e.target.value)}
                     className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
                   />
-                  {(errors.correo || errors.general || successMessage) && (
-                    <p className={`text-xs text-center mt-1 mb-0 ${errors.correo || errors.general ? "text-red-100" : successMessage ? "text-green-100" : "text-yellow-100"}`}>
-                      {errors.correo || errors.general || successMessage}
+                  {successMessage && (
+                    <p className="absolute left-0 right-0 top-10 text-[10px] text-center mb-0 mt-0.5 leading-none text-green-100">
+                      {successMessage}
                     </p>
                   )}
                 </div>
 
-                <div className="mt-6 flex justify-center">
+                <div className="mt-2 flex justify-center">
                   <button
                     type="submit"
                     disabled={isSubmitting}
