@@ -73,13 +73,18 @@ const { link = "" } = Astro.props as ModalProps;
           <span class="font-extrabold">GRATIS</span>
         </h2>
 
-        <form id="form-cotizacion-producto" class="flex flex-col gap-3">
+        <form id="form-cotizacion-producto" class="flex flex-col gap-3" novalidate>
+          <p
+            data-validation-message
+            class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
+          ></p>
+
           <!-- <label class="text-base sm:text-lg font-bold select-none">Nombre</label> -->
           <input
             type="text"
             name="nombre"
             class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
-            placeholder="Nombre y Apellidos"
+            placeholder="Nombre"
             required
           />
 
@@ -88,7 +93,7 @@ const { link = "" } = Astro.props as ModalProps;
             type="email"
             name="correo"
             class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
-            placeholder="Correo@gmail.com"
+            placeholder="Correo"
             inputmode="email"
             autocomplete="email"
             oninput="this.setCustomValidity(this.validity.typeMismatch ? 'Ingresa un correo valido' : '')"
@@ -100,7 +105,7 @@ const { link = "" } = Astro.props as ModalProps;
             type="tel"
             name="telefono"
             class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
-            placeholder="Teléfono: 905 876 524"
+            placeholder="Telefono"
             inputmode="numeric"
             autocomplete="tel"
             maxlength="9"
@@ -543,7 +548,33 @@ const { link = "" } = Astro.props as ModalProps;
     return "";
   };
 
+  const setInlineValidationMessage = (
+    formElement: HTMLFormElement,
+    message: string,
+  ) => {
+    const messageEl = formElement.querySelector(
+      "[data-validation-message]",
+    ) as HTMLElement | null;
+
+    if (!messageEl) return;
+
+    if (message) {
+      messageEl.textContent = message;
+      messageEl.classList.remove("hidden");
+      return;
+    }
+
+    messageEl.textContent = "";
+    messageEl.classList.add("hidden");
+  };
+
   if (form) {
+    form
+      .querySelectorAll('input[name="nombre"], input[name="telefono"], input[name="correo"]')
+      .forEach((input) => {
+        input.addEventListener("input", () => setInlineValidationMessage(form, ""));
+      });
+
     form.onsubmit = async (e) => {
       e.preventDefault();
 
@@ -560,16 +591,11 @@ const { link = "" } = Astro.props as ModalProps;
       });
 
       if (validationMessage) {
-        window.dispatchEvent(
-          new CustomEvent("show-toast", {
-            detail: {
-              message: validationMessage,
-              type: "error",
-            },
-          }),
-        );
+        setInlineValidationMessage(form, validationMessage);
         return;
       }
+
+      setInlineValidationMessage(form, "");
 
       const telefonoConCodigo = `+51${telefono}`;
       const container = document.getElementById("modal-form-container");
@@ -839,6 +865,11 @@ const { link = "" } = Astro.props as ModalProps;
 </script>
 
 <style>
+  :global(html),
+  :global(body) {
+    overflow-x: clip;
+  }
+
   /* GRADIENTES DEL MODAL */
   .custom-gradient-negocio,
   .custom-gradient-maquinaria,
@@ -874,9 +905,11 @@ const { link = "" } = Astro.props as ModalProps;
   @media (max-width: 640px) {
     #modal-product-img {
       max-height: 180px !important;
-      width: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
       object-fit: contain !important;
-      margin: 20px auto 0 auto !important;
+      margin: 0 auto !important;
       display: block !important;
     }
 

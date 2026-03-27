@@ -50,18 +50,23 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
        class="text-2xl sm:text-4xl font-bold text-center leading-snug mb-4">
       </h2>
 
-      <form id="form-cotizacion-producto-3" class="flex flex-col gap-4">
+      <form id="form-cotizacion-producto-3" class="flex flex-col gap-4" novalidate>
+        <p
+          data-validation-message
+          class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
+        ></p>
+
         <input
           type="text"
           name="nombre"
-          placeholder="Nombre y Apellidos"
+          placeholder="Nombre"
           required
           class="input-style"
         />
         <input
           type="email"
           name="correo"
-          placeholder="Correo@gmail.com"
+          placeholder="Correo"
           inputmode="email"
           autocomplete="email"
           oninput="this.setCustomValidity(this.validity.typeMismatch ? 'Ingresa un correo valido' : '')"
@@ -71,7 +76,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         <input
           type="tel"
           name="telefono"
-          placeholder="Teléfono: 905 876 524"
+          placeholder="Telefono"
           inputmode="numeric"
           autocomplete="tel"
           maxlength="9"
@@ -98,6 +103,16 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 </div>
 
 <style>
+  :global(html),
+  :global(body) {
+    overflow-x: clip;
+  }
+
+  #modal-detalles-3,
+  #modal-detalles-3 > div {
+    overflow-x: hidden;
+  }
+
   .modal3-panel {
     background: #2702aa;
   }
@@ -293,7 +308,33 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     return "";
   };
 
+  const setInlineValidationMessage = (
+    formElement: HTMLFormElement,
+    message: string,
+  ) => {
+    const messageEl = formElement.querySelector(
+      "[data-validation-message]",
+    ) as HTMLElement | null;
+
+    if (!messageEl) return;
+
+    if (message) {
+      messageEl.textContent = message;
+      messageEl.classList.remove("hidden");
+      return;
+    }
+
+    messageEl.textContent = "";
+    messageEl.classList.add("hidden");
+  };
+
   if (form3 && container3) {
+    form3
+      .querySelectorAll('input[name="nombre"], input[name="telefono"], input[name="correo"]')
+      .forEach((input) => {
+        input.addEventListener("input", () => setInlineValidationMessage(form3, ""));
+      });
+
     form3.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -310,16 +351,11 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       });
 
       if (validationMessage) {
-        window.dispatchEvent(
-          new CustomEvent("show-toast", {
-            detail: {
-              message: validationMessage,
-              type: "error",
-            },
-          }),
-        );
+        setInlineValidationMessage(form3, validationMessage);
         return;
       }
+
+      setInlineValidationMessage(form3, "");
 
       const telefonoConCodigo = `+51${telefono}`;
       const productLink = container3.dataset.productLink;
