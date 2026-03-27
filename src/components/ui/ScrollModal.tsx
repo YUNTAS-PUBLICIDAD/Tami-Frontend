@@ -257,7 +257,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       resetForm();
       localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
 
-    }, 300);
+    }, 1000);
   };
 
   const validateForm = () => {
@@ -329,7 +329,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       setTimeout(() => {
         closeModal();
         setErrors({});
-      }, 1500);
+      }, 1000);
     } catch (err: any) {
       console.error("[ScrollModal] Error al enviar:", err);
       setErrors({ general: err.message || "Error desconocido." });
@@ -344,9 +344,9 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
   return (
     <div
       id="catalog-modal"
-      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === 'desktop' ? '' : 'px-4'} modal-overlay transition-opacity duration-500 animate-fadeIn`}
+      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === 'desktop' ? '' : 'px-4'} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
-      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-[320px] w-[95%] h-[600px] rounded-2xl' : 'flex-row max-w-4xl w-[95%] h-[550px] rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOut" : "animate-slideIn"}`}>
+      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-[320px] w-[95%] h-[600px] rounded-2xl' : 'flex-row max-w-4xl w-[95%] h-[550px] rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOutSlow" : "animate-slideIn"}`}>
 
         {/* ========================================================= */}
         {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}

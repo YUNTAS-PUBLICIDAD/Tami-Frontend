@@ -977,6 +977,10 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                     >
                                         ¡Hola! Me interesa la oferta mostrada...
                                     </div>
+                                    <div id="previewCorreoImageContainer" class="hidden px-10 sm:px-12 pb-10">
+                                        <p class="text-sm text-gray-400 mb-2 font-medium">Archivo adjunto:</p>
+                                        <img id="previewCorreoImage" src="" class="max-w-full sm:max-w-[250px] rounded-lg border border-gray-200 shadow-sm object-cover" alt="Adjunto Correo" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1305,11 +1309,15 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
         const whatsappImage = document.getElementById(
             "whatsappImage",
         ) as HTMLInputElement;
+        const emailImage = document.getElementById(
+            "emailImage",
+        ) as HTMLInputElement;
 
         const clearImage1 = document.getElementById("clearImage1");
         const clearImage2 = document.getElementById("clearImage2");
         const clearImageMobile = document.getElementById("clearImageMobile");
         const clearImageMobile2 = document.getElementById("clearImageMobile2");
+        const clearEmailImage = document.getElementById("clearEmailImage");
 
         function handleImageUpload(
             input: HTMLInputElement,
@@ -1423,6 +1431,35 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
             });
         });
 
+        // Configuración de imagen para el Correo (Gmail)
+        emailImage?.addEventListener("change", function () {
+            handleImageUpload(this, (url) => {
+                const previewCorreoImageContainer = document.getElementById("previewCorreoImageContainer");
+                const previewCorreoImage = document.getElementById("previewCorreoImage") as HTMLImageElement;
+                if (previewCorreoImageContainer && previewCorreoImage) {
+                    previewCorreoImage.src = url as string;
+                    previewCorreoImageContainer.classList.remove("hidden");
+                }
+                clearEmailImage?.classList.remove("hidden");
+                // Resetear estado de eliminación al subir nueva imagen
+                const del = document.getElementById("delete_emailImage") as HTMLInputElement;
+                if (del) del.value = "0";
+            });
+        });
+
+        // Botón para limpiar la imagen del Correo
+        clearEmailImage?.addEventListener("click", () => {
+            if (emailImage) emailImage.value = "";
+            const previewCorreoImageContainer = document.getElementById("previewCorreoImageContainer");
+            const previewCorreoImage = document.getElementById("previewCorreoImage") as HTMLImageElement;
+            if (previewCorreoImageContainer) previewCorreoImageContainer.classList.add("hidden");
+            if (previewCorreoImage) previewCorreoImage.src = "";
+            clearEmailImage.classList.add("hidden");
+            // Marcar para eliminación en el backend
+            const del = document.getElementById("delete_emailImage") as HTMLInputElement;
+            if (del) del.value = "1";
+        });
+
         // LOAD SETTINGS FROM API
         async function loadSettings() {
             setStatus("Cargando...", "loading");
@@ -1495,6 +1532,18 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                         document
                             .getElementById("clearWhatsappImage")
                             ?.classList.remove("hidden");
+                    }
+
+                    // Cargar imagen de Correo si existe en la base de datos
+                    if (settings.emailImage) {
+                        const previewCorreoImageContainer = document.getElementById("previewCorreoImageContainer");
+                        const previewCorreoImage = document.getElementById("previewCorreoImage") as HTMLImageElement;
+                        if (previewCorreoImageContainer && previewCorreoImage) {
+                            previewCorreoImage.src = settings.emailImage;
+                            previewCorreoImageContainer.classList.remove("hidden");
+                        }
+                        const clearEmailImageBtn = document.getElementById("clearEmailImage");
+                        clearEmailImageBtn?.classList.remove("hidden");
                     }
 
                     if (settings.image1) {
