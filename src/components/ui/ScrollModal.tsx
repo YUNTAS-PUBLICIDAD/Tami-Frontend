@@ -260,18 +260,23 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
     }, 300);
   };
 
-  const validateForm = () => {
+  const validateForm = (formValues: { nombre: string; telefono: string; correo: string }) => {
+    const { nombre, telefono, correo } = formValues;
     const newErrors: { [key: string]: string } = {};
-    const isInvalid = !nombre.trim() ||
-      nombre.trim().length < 3 ||
-      nombre.trim().length > 75 ||
-      !/^9\d{8}$/.test(telefono) ||
-      !correo.trim() ||
-      !correo.includes("@") ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim());
+    if (!nombre || nombre.length < 3 || nombre.length > 75) {
+      newErrors.general_top = "Ingresa un nombre valido (3 a 75 caracteres)";
+      setErrors(newErrors);
+      return false;
+    }
 
-    if (isInvalid) {
-      newErrors.general_top = "Por favor completar datos";
+    if (!/^\d{9}$/.test(telefono)) {
+      newErrors.general_top = "Ingresa un telefono valido de 9 digitos";
+      setErrors(newErrors);
+      return false;
+    }
+
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      newErrors.general_top = "Ingresa un correo valido";
       setErrors(newErrors);
       return false;
     }
@@ -282,15 +287,36 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    const formElement = e.currentTarget as HTMLFormElement;
+    const submittedFormData = new FormData(formElement);
+
+    // Read current DOM values to handle browser autofill cases where React state may be stale.
+    const submittedNombre = (submittedFormData.get("nombre")?.toString() ?? nombre).trim();
+    const submittedTelefono = (submittedFormData.get("telefono")?.toString() ?? telefono)
+      .replace(/\D/g, "")
+      .trim();
+    const submittedCorreo = (submittedFormData.get("correo")?.toString() ?? correo).trim();
+
+    setNombre(submittedNombre);
+    setTelefono(submittedTelefono);
+    setCorreo(submittedCorreo);
+
+    if (
+      !validateForm({
+        nombre: submittedNombre,
+        telefono: submittedTelefono,
+        correo: submittedCorreo,
+      })
+    )
+      return;
 
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append("name", nombre);
-      formData.append("email", correo);
+      formData.append("name", submittedNombre);
+      formData.append("email", submittedCorreo);
 
-      const telefonoAEnviar = `+51${telefono}`;
+      const telefonoAEnviar = `+51${submittedTelefono}`;
       formData.append("celular", telefonoAEnviar);
       formData.append("source_id", origenCliente.INICIO);
 
@@ -441,6 +467,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                   )}
                   <input
                     type="text"
+                    name="nombre"
                     placeholder="Nombre"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
@@ -451,6 +478,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                 <div className="relative mb-3">
                   <input
                     type="tel"
+                    name="telefono"
                     placeholder="Teléfono"
                     maxLength={9}
                     value={telefono}
@@ -465,6 +493,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                 <div className="relative mb-3">
                   <input
                     type="email"
+                    name="correo"
                     placeholder="Correo"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
