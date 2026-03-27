@@ -62,6 +62,9 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           type="email"
           name="correo"
           placeholder="Correo@gmail.com"
+          inputmode="email"
+          autocomplete="email"
+          oninput="this.setCustomValidity(this.validity.typeMismatch ? 'Ingresa un correo valido' : '')"
           required
           class="input-style"
         />
@@ -69,6 +72,12 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           type="tel"
           name="telefono"
           placeholder="Teléfono: 905 876 524"
+          inputmode="numeric"
+          autocomplete="tel"
+          maxlength="9"
+          pattern="[0-9]{9}"
+          title="Ingresa un telefono de 9 digitos"
+          oninput="this.value=this.value.replace(/\D/g,'').slice(0,9)"
           required
           class="input-style"
         />
@@ -267,9 +276,48 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   }
 
   /* ================= ENVÍO WHATSAPP + EMAIL ================= */
-  const form2 = document.getElementById("form-cotizacion-producto-2");
-  const container2 = document.getElementById("modal2-form-container");
+  const form2 = document.getElementById(
+    "form-cotizacion-producto-2",
+  ) as HTMLFormElement | null;
+  const container2 = document.getElementById(
+    "modal2-form-container",
+  ) as HTMLElement | null;
   const mensaje2 = document.getElementById("modal2-cotizacion-mensaje");
+
+  const normalizeLeadFormValues = (formElement: HTMLFormElement) => {
+    const data = new FormData(formElement);
+    return {
+      nombre: (data.get("nombre")?.toString() || "").trim(),
+      telefono: (data.get("telefono")?.toString() || "")
+        .replace(/\D/g, "")
+        .trim(),
+      correo: (data.get("correo")?.toString() || "").trim(),
+    };
+  };
+
+  const getLeadValidationMessage = ({
+    nombre,
+    telefono,
+    correo,
+  }: {
+    nombre: string;
+    telefono: string;
+    correo: string;
+  }) => {
+    if (!nombre || nombre.length < 3 || nombre.length > 75) {
+      return "Ingresa un nombre valido (3 a 75 caracteres)";
+    }
+
+    if (!/^\d{9}$/.test(telefono)) {
+      return "Ingresa un telefono valido de 9 digitos";
+    }
+
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      return "Ingresa un correo valido";
+    }
+
+    return "";
+  };
 
   if (form2 && container2) {
     form2.addEventListener("submit", async (e) => {
@@ -280,10 +328,26 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       ) as HTMLButtonElement | null;
       const originalBtnText = submitBtn ? submitBtn.textContent : "";
 
-      const data = new FormData(form2);
-      const nombre = data.get("nombre");
-      const telefono = "+51 " + data.get("telefono");
-      const correo = data.get("correo");
+      const { nombre, telefono, correo } = normalizeLeadFormValues(form2);
+      const validationMessage = getLeadValidationMessage({
+        nombre,
+        telefono,
+        correo,
+      });
+
+      if (validationMessage) {
+        window.dispatchEvent(
+          new CustomEvent("show-toast", {
+            detail: {
+              message: validationMessage,
+              type: "error",
+            },
+          }),
+        );
+        return;
+      }
+
+      const telefonoConCodigo = `+51${telefono}`;
       const productLink = container2.dataset.productLink;
 
       // 1. Estado de carga
@@ -311,7 +375,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         const formData = new FormData();
         formData.append("name", nombre);
         formData.append("email", correo);
-        formData.append("celular", telefono.replace(" ", ""));
+        formData.append("celular", telefonoConCodigo);
         formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
         formData.append("producto_id", window.__detalleProducto?.id || "");
 
@@ -326,7 +390,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               link: productLink,
-              phone: telefono,
+              phone: telefonoConCodigo,
               email: correo ?? null,
             }),
           }).catch(() => {});
@@ -338,7 +402,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 name: nombre,
-                celular: telefono,
+                celular: telefonoConCodigo,
                 email: correo,
                 link: productLink,
               }),
