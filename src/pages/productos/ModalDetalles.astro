@@ -465,9 +465,9 @@ const { link = "" } = Astro.props as ModalProps;
         }
         const minutes = Math.floor(remainingMs / 60000);
         const seconds = Math.floor((remainingMs % 60000) / 1000);
-        console.log(
-          `⏳ Tiempo restante para el popup de producto: ${minutes}m ${seconds}s`,
-        );
+        // console.log(
+        //   `⏳ Tiempo restante para el popup de producto: ${minutes}m ${seconds}s`,
+        // );
       }, 1000);
 
       modalTimeout = setTimeout(async () => {

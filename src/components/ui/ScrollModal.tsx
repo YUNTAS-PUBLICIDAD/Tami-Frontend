@@ -149,27 +149,27 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       const delayMs = delayMinutes * 60 * 1000;
       let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
       
-      console.log(`[ScrollModal] El popup se mostrará en ${remainingSeconds} segundos.`);
+      // console.log(`[ScrollModal] El popup se mostrará en ${remainingSeconds} segundos.`);
 
       // Si el delay es 0, mostramos inmediatamente
       if (remainingSeconds === 0) {
         setShowModal(true);
         hasShownRef.current = true;
         setIsDelayFinished(true);
-        console.log("[ScrollModal] ¡Popup mostrado inmediatamente (delay 0)!");
+        // console.log("[ScrollModal] ¡Popup mostrado inmediatamente (delay 0)!");
         return;
       }
 
       intervalId = setInterval(() => {
         remainingSeconds -= 1;
         if (remainingSeconds > 0) {
-          console.log(`[ScrollModal] Tiempo restante para el popup: ${remainingSeconds} segundos...`);
+          // console.log(`[ScrollModal] Tiempo restante para el popup: ${remainingSeconds} segundos...`);
         } else {
           setShowModal(true);
           hasShownRef.current = true;
           setIsDelayFinished(true);
           if (intervalId) clearInterval(intervalId);
-          console.log("[ScrollModal] ¡Popup mostrado!: Tiempo transcurrido.");
+          // console.log("[ScrollModal] ¡Popup mostrado!: Tiempo transcurrido.");
         }
       }, 1000);
     }
