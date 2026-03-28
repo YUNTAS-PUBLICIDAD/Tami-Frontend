@@ -23,19 +23,14 @@ const EmailEditor = ({
   const handleChange = (content: string) => {
     setValue(content);
     onChangeHtml?.(content);
-    // Mantener el campo hidden sincronizado para que popups.astro pueda leerlo
+
+    // Dispatch event to update preview in popups.astro
+    window.dispatchEvent(new CustomEvent('update-email-preview', { detail: content }));
+
+    // Sync hidden input
     const hidden = document.getElementById("emailBodyValue") as HTMLInputElement | null;
     if (hidden) {
       hidden.value = content;
-      // Disparar evento de input para que los listeners en popups.astro reaccionen
-      hidden.dispatchEvent(new Event('input', { bubbles: true }));
-      hidden.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    // Disparar evento de sincronización con la vista previa del correo específico para el texto
-    const previewBodyText = document.getElementById("previewCorreoBodyText");
-    if (previewBodyText) {
-      previewBodyText.innerHTML = content;
     }
   };
 
