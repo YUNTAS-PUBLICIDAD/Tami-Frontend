@@ -50,25 +50,39 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
        class="text-2xl sm:text-4xl font-bold text-center leading-snug mb-4">
       </h2>
 
-      <form id="form-cotizacion-producto-3" class="flex flex-col gap-4">
+      <form id="form-cotizacion-producto-3" class="flex flex-col gap-4" novalidate>
+        <p
+          data-validation-message
+          class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
+        ></p>
+
         <input
           type="text"
           name="nombre"
-          placeholder="Nombre y Apellidos"
+          placeholder="Nombre"
           required
           class="input-style"
         />
         <input
           type="email"
           name="correo"
-          placeholder="Correo@gmail.com"
+          placeholder="Correo"
+          inputmode="email"
+          autocomplete="email"
+          oninput="this.setCustomValidity(this.validity.typeMismatch ? 'Ingresa un correo valido' : '')"
           required
           class="input-style"
         />
         <input
           type="tel"
           name="telefono"
-          placeholder="Teléfono: 905 876 524"
+          placeholder="Telefono"
+          inputmode="numeric"
+          autocomplete="tel"
+          maxlength="9"
+          pattern="[0-9]{9}"
+          title="Ingresa un telefono de 9 digitos"
+          oninput="this.value=this.value.replace(/\D/g,'').slice(0,9)"
           required
           class="input-style"
         />
@@ -89,6 +103,16 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 </div>
 
 <style>
+  :global(html),
+  :global(body) {
+    overflow-x: clip;
+  }
+
+  #modal-detalles-3,
+  #modal-detalles-3 > div {
+    overflow-x: hidden;
+  }
+
   .modal3-panel {
     background: #2702aa;
   }
@@ -241,11 +265,76 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   observer3.observe(modal3, { attributes: true, attributeFilter: ["class"] });
 
   /* Envío */
-  const form3 = document.getElementById("form-cotizacion-producto-3");
-  const container3 = document.getElementById("modal3-form-container");
+  const form3 = document.getElementById(
+    "form-cotizacion-producto-3",
+  ) as HTMLFormElement | null;
+  const container3 = document.getElementById(
+    "modal3-form-container",
+  ) as HTMLElement | null;
   const mensaje3 = document.getElementById("modal3-mensaje");
 
+  const normalizeLeadFormValues = (formElement: HTMLFormElement) => {
+    const data = new FormData(formElement);
+    return {
+      nombre: (data.get("nombre")?.toString() || "").trim(),
+      telefono: (data.get("telefono")?.toString() || "")
+        .replace(/\D/g, "")
+        .trim(),
+      correo: (data.get("correo")?.toString() || "").trim(),
+    };
+  };
+
+  const getLeadValidationMessage = ({
+    nombre,
+    telefono,
+    correo,
+  }: {
+    nombre: string;
+    telefono: string;
+    correo: string;
+  }) => {
+    if (!nombre || nombre.length < 3 || nombre.length > 75) {
+      return "Ingresa un nombre valido (3 a 75 caracteres)";
+    }
+
+    if (!/^\d{9}$/.test(telefono)) {
+      return "Ingresa un telefono valido de 9 digitos";
+    }
+
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      return "Ingresa un correo valido";
+    }
+
+    return "";
+  };
+
+  const setInlineValidationMessage = (
+    formElement: HTMLFormElement,
+    message: string,
+  ) => {
+    const messageEl = formElement.querySelector(
+      "[data-validation-message]",
+    ) as HTMLElement | null;
+
+    if (!messageEl) return;
+
+    if (message) {
+      messageEl.textContent = message;
+      messageEl.classList.remove("hidden");
+      return;
+    }
+
+    messageEl.textContent = "";
+    messageEl.classList.add("hidden");
+  };
+
   if (form3 && container3) {
+    form3
+      .querySelectorAll('input[name="nombre"], input[name="telefono"], input[name="correo"]')
+      .forEach((input) => {
+        input.addEventListener("input", () => setInlineValidationMessage(form3, ""));
+      });
+
     form3.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -254,10 +343,21 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       ) as HTMLButtonElement | null;
       const originalBtnText = submitBtn ? submitBtn.textContent : "";
 
-      const data = new FormData(form3);
-      const telefono = "+51 " + data.get("telefono");
-      const nombre = data.get("nombre");
-      const correo = data.get("correo");
+      const { nombre, telefono, correo } = normalizeLeadFormValues(form3);
+      const validationMessage = getLeadValidationMessage({
+        nombre,
+        telefono,
+        correo,
+      });
+
+      if (validationMessage) {
+        setInlineValidationMessage(form3, validationMessage);
+        return;
+      }
+
+      setInlineValidationMessage(form3, "");
+
+      const telefonoConCodigo = `+51${telefono}`;
       const productLink = container3.dataset.productLink;
 
       // 1. Estado de carga
@@ -285,7 +385,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         const formData = new FormData();
         formData.append("name", nombre);
         formData.append("email", correo);
-        formData.append("celular", telefono.replace(" ", ""));
+        formData.append("celular", telefonoConCodigo);
         formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
         formData.append("producto_id", window.__detalleProducto?.id || "");
 
@@ -300,7 +400,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               link: productLink,
-              phone: telefono,
+              phone: telefonoConCodigo,
               email: correo ?? null,
             }),
           }).catch(() => {});
@@ -312,7 +412,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 name: nombre,
-                celular: telefono,
+                celular: telefonoConCodigo,
                 email: correo,
                 link: productLink,
               }),
