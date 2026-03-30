@@ -148,7 +148,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       const delayMinutes = settings?.popup_start_delay_minutes ?? 1;
       const delayMs = delayMinutes * 60 * 1000;
       let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
-      
+
       // console.log(`[ScrollModal] El popup se mostrará en ${remainingSeconds} segundos.`);
 
       // Si el delay es 0, mostramos inmediatamente
@@ -372,7 +372,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
       id="catalog-modal"
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === 'desktop' ? '' : 'px-4'} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
-      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-[320px] w-[95%] h-[600px] rounded-2xl' : 'flex-row max-w-4xl w-[95%] h-[550px] rounded-xl') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl'} overflow-hidden shadow-2xl relative transition-all duration-500 bg-white ${isClosing ? "animate-slideOutSlow" : "animate-slideIn"}`}>
+      <div className={`flex ${isPreview ? (previewMode === 'mobile' ? 'flex-col max-w-[320px] w-[95%] h-[600px] rounded-2xl shadow-xl' : 'flex-row w-[1100px] max-w-none h-[550px] rounded-xl shadow-lg border-none translate-y-0') : 'flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl shadow-2xl'} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}>
 
         {/* ========================================================= */}
         {/* DESKTOP: LADO IZQUIERDO (IMAGEN 1)                          */}
@@ -382,7 +382,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
           <img
             src={settings?.popup_image_url || asesoriaImg.src}
             alt="Imagen Izquierda"
-            className="absolute inset-0 w-full h-full object-cover select-none scale-105"
+            className={`absolute inset-0 w-full h-full object-cover select-none ${isPreview && previewMode === 'desktop' ? 'scale-100' : 'scale-105'}`}
           />
         </div>
 
@@ -458,7 +458,7 @@ const ScrollModal = ({ isPreview = false, initialSettings }: ScrollModalProps) =
                   Se mantiene el div de 72px de altura para no afectar la posición del formulario. */}
               </div>
 
-              <form onSubmit={handleSubmit} className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === 'mobile' ? 'mt-auto mb-1 max-w-[280px]' : 'mt-48 max-w-[320px]') : 'mt-auto mb-1 sm:mb-4 sm:mt-48 max-w-[280px] sm:max-w-[320px]'} w-full mx-auto`}>
+              <form onSubmit={handleSubmit} className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === 'mobile' ? 'mt-auto mb-1 max-w-[280px]' : 'sm:mt-48 mb-4 max-w-[320px]') : 'mt-auto mb-1 sm:mb-4 sm:mt-48 max-w-[280px] sm:max-w-[320px]'} w-full mx-auto`}>
                 <div className="relative mb-3">
                   {errors.general_top && (
                     <p className="absolute bottom-full left-0 right-0 text-sm font-bold text-[#FF0000] text-center mb-1 whitespace-nowrap">

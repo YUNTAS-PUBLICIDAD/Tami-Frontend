@@ -1,6 +1,7 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 import ScrollModal from "../../components/ui/ScrollModal.tsx";
+import EmailEditor from "../../components/admin/popups/EmailEditor.tsx";
 ---
 
 <LayoutAdmin title="POPUPS">
@@ -47,7 +48,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
         <div
             class="bg-white dark:bg-gray-800 rounded-b-xl shadow-xl border border-t-0 p-8 border-gray-200 dark:border-gray-700 min-h-[60vh]"
         >
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-[450px_1fr] gap-10">
                 <!-- Columna Izquierda: Formulario de Opciones -->
                 <div
                     class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8"
@@ -77,449 +78,224 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 
                     <div class="space-y-6">
                         <div id="contentPopups" class="flex flex-col gap-4">
-                            <!-- Añadir Imagen 1 -->
+                            <!-- Primera Imagen -->
                             <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
+                                class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
                             >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Añadir Imagen 1
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Sube una imagen promocional para tu
-                                        popup. Resolución recomendada:
-                                        448x550px.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-2"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="delete_popupImage1"
-                                        id="delete_popupImage1"
-                                        value="0"
-                                    />
-                                    <input
-                                        type="file"
-                                        id="popupImage1"
-                                        accept="image/*"
-                                        class="hidden"
-                                    />
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                    Sube una imagen promocional para tu popup. Resolución recomendada: 448x550px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <input type="hidden" name="delete_popupImage1" id="delete_popupImage1" value="0" />
+                                    <input type="file" id="popupImage1" accept="image/*" class="hidden" />
                                     <button
                                         type="button"
                                         onclick="document.getElementById('popupImage1').click()"
-                                        class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
                                     >
                                         Subir Imagen 1
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="ml-2 -mr-1 h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                                            ></path>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                         </svg>
                                     </button>
                                     <button
                                         type="button"
                                         id="clearImage1"
-                                        class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2"
+                                        class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
                                         title="Borrar Imagen 1"
                                     >
-                                        ✕
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Añadir Imagen 2 -->
+                            <!-- Segunda Imagen -->
                             <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
+                                class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
                             >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Añadir Imagen 2
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Segunda imagen para el popup (mitad
-                                        derecha). Resolución recomendada:
-                                        448x550px.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-2"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="delete_popupImage2"
-                                        id="delete_popupImage2"
-                                        value="0"
-                                    />
-                                    <input
-                                        type="file"
-                                        id="popupImage2"
-                                        accept="image/*"
-                                        class="hidden"
-                                    />
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                    Segunda imagen para el popup (mitad derecha). Resolución recomendada: 448x550px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <input type="hidden" name="delete_popupImage2" id="delete_popupImage2" value="0" />
+                                    <input type="file" id="popupImage2" accept="image/*" class="hidden" />
                                     <button
                                         type="button"
                                         onclick="document.getElementById('popupImage2').click()"
-                                        class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
                                     >
                                         Subir Imagen 2
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="ml-2 -mr-1 h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                                            ></path>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                         </svg>
                                     </button>
                                     <button
                                         type="button"
                                         id="clearImage2"
-                                        class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2"
+                                        class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
                                         title="Borrar Imagen 2"
                                     >
-                                        ✕
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Añadir Imagen para Móvil -->
+                            <!-- Primera Imagen Móvil -->
                             <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
+                                class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
                             >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Añadir Imagen Móvil
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Imagen para vista en dispositivos
-                                        móviles. Resolución recomendada:
-                                        448x640px.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-2"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="delete_popupImageMobile"
-                                        id="delete_popupImageMobile"
-                                        value="0"
-                                    />
-                                    <input
-                                        type="file"
-                                        id="popupImageMobile"
-                                        accept="image/*"
-                                        class="hidden"
-                                    />
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                    Imagen para vista en dispositivos móviles. Resolución recomendada: 448x640px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <input type="hidden" name="delete_popupImageMobile" id="delete_popupImageMobile" value="0" />
+                                    <input type="file" id="popupImageMobile" accept="image/*" class="hidden" />
                                     <button
                                         type="button"
                                         onclick="document.getElementById('popupImageMobile').click()"
-                                        class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
                                     >
                                         Subir Imagen Móvil 1
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="ml-2 -mr-1 h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                                            ></path>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                         </svg>
                                     </button>
                                     <button
                                         type="button"
                                         id="clearImageMobile"
-                                        class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2"
+                                        class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
                                         title="Borrar Imagen Móvil"
                                     >
-                                        ✕
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Añadir Imagen Móvil 2 -->
+                            <!-- Segunda Imagen Móvil -->
                             <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
+                                class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
                             >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Añadir Imagen Móvil 2
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Segunda imagen para vista en
-                                        dispositivos móviles (abajo). Resolución
-                                        recomendada: 448x640px.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-2"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="delete_popupImageMobile2"
-                                        id="delete_popupImageMobile2"
-                                        value="0"
-                                    />
-                                    <input
-                                        type="file"
-                                        id="popupImageMobile2"
-                                        accept="image/*"
-                                        class="hidden"
-                                    />
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: 448x640px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <input type="hidden" name="delete_popupImageMobile2" id="delete_popupImageMobile2" value="0" />
+                                    <input type="file" id="popupImageMobile2" accept="image/*" class="hidden" />
                                     <button
                                         type="button"
                                         onclick="document.getElementById('popupImageMobile2').click()"
-                                        class="inline-flex items-center px-4 py-2 border border-teal-500 dark:border-teal-400 text-sm font-medium rounded-md text-teal-600 dark:text-teal-400 bg-white dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-teal-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
                                     >
                                         Subir Imagen Móvil 2
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="ml-2 -mr-1 h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                                            ></path>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                         </svg>
                                     </button>
                                     <button
                                         type="button"
                                         id="clearImageMobile2"
-                                        class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2"
+                                        class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
                                         title="Borrar Imagen Móvil 2"
                                     >
-                                        ✕
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Cambiar Color de Texto del Botón -->
-                            <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
-                            >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Cambiar Color de Texto del Botón
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Define el color del texto que estará
-                                        dentro del botón principal.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-3"
-                                >
-                                    <div
-                                        class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700"
-                                    >
-                                        <input
-                                            type="color"
-                                            id="btnTextColor"
-                                            value="#ffffff"
-                                            class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                        />
+                            <!-- Configuración de Colores -->
+                            <div class="grid grid-cols-[1fr_1.2fr] gap-4 mt-4">
+                                <!-- Color del Botón -->
+                                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+                                    <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3">Color del Botón</span>
+                                    <div class="flex items-center gap-3">
+                                        <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
+                                            <input
+                                                type="color"
+                                                id="btnBgColor"
+                                                value="#14b8a6"
+                                                class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                                            />
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                                            <span class="text-xs text-gray-400">fondo</span>
+                                        </div>
                                     </div>
-                                    <label
-                                        for="btnTextColor"
-                                        class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer"
-                                        >Elegir color</label
-                                    >
                                 </div>
-                            </div>
 
-                            <!-- Cambiar Color de Botón -->
-                            <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
-                            >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Cambiar Color del Botón
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Elige el color de fondo para los botones
-                                        de acción principal.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-3"
-                                >
-                                    <div
-                                        class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm ring-2 ring-gray-100 dark:border-gray-600 dark:ring-gray-700"
-                                    >
-                                        <input
-                                            type="color"
-                                            id="btnBgColor"
-                                            value="#14b8a6"
-                                            class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                        />
-                                    </div>
-                                    <label
-                                        for="btnBgColor"
-                                        class="text-sm text-gray-500 hover:text-teal-600 underline cursor-pointer"
-                                        >Elegir color</label
-                                    >
-                                </div>
-                            </div>
-
-                            <h2
-                                class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-10 mb-6 border-b pb-2"
-                            >
-                                Tiempo de Aparición de Pop-ups
-                            </h2>
-
-                            <!-- Tiempo de Aparición del Pop-up de Inicio -->
-                            <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
-                            >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
-                                    >
-                                        Pop-up de Inicio
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Elige el tiempo que tardará en aparecer
-                                        el primer pop-up al entrar a la pagina
-                                        de Inicio.
-                                    </p>
-                                </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-3"
-                                >
-                                    <div class="relative flex items-center">
-                                        <select
-                                            id="popupInicioDelay"
-                                            class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border"
-                                        >
-                                            <option value="1" selected
-                                                >1 minuto</option
-                                            >
-                                            <option value="2">2 minutos</option>
-                                            <option value="3">3 minutos</option>
-                                            <option value="4">4 minutos</option>
-                                            <option value="5">5 minutos</option>
-                                            <option value="6">6 minutos</option>
-                                            <option value="7">7 minutos</option>
-                                            <option value="8">8 minutos</option>
-                                            <option value="9">9 minutos</option>
-                                            <option value="10"
-                                                >10 minutos</option
-                                            >
-                                        </select>
+                                <!-- Color del Texto -->
+                                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+                                    <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3">Color del Texto</span>
+                                    <div class="flex items-center gap-3">
+                                        <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
+                                            <input
+                                                type="color"
+                                                id="btnTextColor"
+                                                value="#ffffff"
+                                                class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                                            />
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                                            <span class="text-xs text-gray-400">texto</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Tiempo de Aparición del Pop-up de Productos -->
-                            <div
-                                class="flex items-start justify-between p-4 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors"
-                            >
-                                <div>
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg"
+                            <h2 class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-8 mb-4">Tiempo de Aparición</h2>
+
+                            <div class="grid grid-cols-[1fr_1.2fr] gap-4">
+                                <!-- Pop-up de Inicio -->
+                                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+                                    <label for="popupInicioDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">Pop-up de Inicio</label>
+                                    <select
+                                        id="popupInicioDelay"
+                                        class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner"
                                     >
-                                        Pop-ups de Productos
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                    >
-                                        Elige el tiempo que tardarán en aparecer
-                                        los pop-ups al ver el detalle de los
-                                        productos.
-                                    </p>
+                                        <option value="1" selected>1 minuto</option>
+                                        <option value="2">2 minutos</option>
+                                        <option value="3">3 minutos</option>
+                                        <option value="4">4 minutos</option>
+                                        <option value="5">5 minutos</option>
+                                        <option value="6">6 minutos</option>
+                                        <option value="7">7 minutos</option>
+                                        <option value="8">8 minutos</option>
+                                        <option value="9">9 minutos</option>
+                                        <option value="10">10 minutos</option>
+                                    </select>
                                 </div>
-                                <div
-                                    class="ml-4 flex-shrink-0 flex items-center space-x-3"
-                                >
-                                    <div class="relative flex items-center">
-                                        <select
-                                            id="popupProductosDelay"
-                                            class="block w-40 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5 border"
-                                        >
-                                            <option value="1" selected
-                                                >1 minuto</option
-                                            >
-                                            <option value="2">2 minutos</option>
-                                            <option value="3">3 minutos</option>
-                                            <option value="4">4 minutos</option>
-                                            <option value="5">5 minutos</option>
-                                            <option value="6">6 minutos</option>
-                                            <option value="7">7 minutos</option>
-                                            <option value="8">8 minutos</option>
-                                            <option value="9">9 minutos</option>
-                                            <option value="10"
-                                                >10 minutos</option
-                                            >
-                                            <option value="1" selected
-                                                >1 minuto</option
-                                            >
-                                            <option value="2">2 minutos</option>
-                                            <option value="3">3 minutos</option>
-                                            <option value="4">4 minutos</option>
-                                            <option value="5">5 minutos</option>
-                                            <option value="6">6 minutos</option>
-                                            <option value="7">7 minutos</option>
-                                            <option value="8">8 minutos</option>
-                                            <option value="9">9 minutos</option>
-                                            <option value="10"
-                                                >10 minutos</option
-                                            >
-                                        </select>
-                                    </div>
+
+                                <!-- Pop-ups de Productos -->
+                                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+                                    <label for="popupProductosDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">Pop-ups de Productos</label>
+                                    <select
+                                        id="popupProductosDelay"
+                                        class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner"
+                                    >
+                                        <option value="1" selected>1 minuto</option>
+                                        <option value="2">2 minutos</option>
+                                        <option value="3">3 minutos</option>
+                                        <option value="4">4 minutos</option>
+                                        <option value="5">5 minutos</option>
+                                        <option value="6">6 minutos</option>
+                                        <option value="7">7 minutos</option>
+                                        <option value="8">8 minutos</option>
+                                        <option value="9">9 minutos</option>
+                                        <option value="10">10 minutos</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -554,7 +330,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                         class="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4"
                                     >
                                         Configura la imagen y mensaje
-                                        predeterminado que se enviarán.
+                                        predeterminado que se enviarán. La imagen debe pesar 2MB como máximo, recomendación formato webp.
                                     </p>
                                     <div class="flex items-center space-x-2">
                                         <input
@@ -620,111 +396,66 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 
                         <div
                             id="contentCorreo"
-                            class="hidden flex flex-col gap-4"
+                            class="hidden space-y-6"
                         >
                             <!-- Editar Mensaje de Correo -->
                             <div
-                                class="flex flex-col p-6 rounded-lg bg-gray-50 hover:bg-teal-50 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-600 transition-colors gap-6"
+                                class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm space-y-6"
                             >
-                                <div class="w-full">
-                                    <h3
-                                        class="font-medium text-gray-900 dark:text-gray-100 text-lg flex items-center gap-2"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 text-blue-500 shrink-0"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-                                            ></path>
-                                            <path
-                                                d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-                                            ></path>
-                                        </svg>
-                                        Correo Electrónico
-                                    </h3>
-                                    <p
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4"
-                                    >
-                                        Configura el título, mensaje e imagen
-                                        para los emails.
-                                    </p>
-                                    <div class="flex items-center space-x-2">
-                                        <input
-                                            type="hidden"
-                                            name="delete_emailImage"
-                                            id="delete_emailImage"
-                                            value="0"
-                                        />
-                                        <input
-                                            type="file"
-                                            id="emailImage"
-                                            accept="image/*"
-                                            class="hidden"
-                                        />
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Correo Electrónico</h3>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Configura el título, mensaje e imagen para los emails. Recomendación formato webp.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="flex items-center gap-3">
+                                        <input type="hidden" name="delete_emailImage" id="delete_emailImage" value="0" />
+                                        <input type="file" id="emailImage" accept="image/*" class="hidden" />
                                         <button
                                             type="button"
                                             onclick="document.getElementById('emailImage').click()"
-                                            class="inline-flex items-center px-4 py-2 bg-blue-500 text-sm font-medium rounded-md text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm"
+                                            class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md group active:scale-95"
                                         >
                                             Añadir Imagen Adjunta
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="ml-2 h-4 w-4"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                                                ></path>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                                             </svg>
                                         </button>
                                         <button
                                             type="button"
                                             id="clearEmailImage"
-                                            class="hidden text-red-500 hover:text-red-700 text-sm font-semibold p-2"
+                                            class="hidden p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                             title="Borrar Imagen Correo"
                                         >
-                                            ✕
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
                                         </button>
                                     </div>
-                                </div>
-                                <div class="w-full space-y-3">
-                                    <div>
-                                        <label
-                                            for="emailTitle"
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                            >Título / Asunto</label
-                                        >
+
+                                    <div class="space-y-2">
+                                        <label for="emailTitle" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Título / Asunto</label>
                                         <input
                                             type="text"
                                             id="emailTitle"
-                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border"
+                                            class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
                                             placeholder="Ej: Información sobre Promoción Exclusiva"
                                             value="Solicitud de información - Popup Web"
                                         />
                                     </div>
-                                    <div>
-                                        <label
-                                            for="emailBody"
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                            >Mensaje de Correo</label
-                                        >
-                                        <textarea
-                                            id="emailBody"
-                                            rows="3"
-                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3 border"
-                                            placeholder="Escribe el cuerpo del correo aquí..."
-                                            >¡Hola! Me interesa la oferta
-                                            mostrada en su página web y me
-                                            gustaría recibir más detalles.</textarea
-                                        >
+
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de Correo</label>
+                                        <EmailEditor client:only="react" />
                                     </div>
                                 </div>
                             </div>
@@ -752,7 +483,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                 </div>
 
                 <!-- Columna Derecha: Vista Previa -->
-                <div class="lg:pl-4">
+                <div>
                     <div class="sticky top-8">
                         <div
                             class="flex items-center justify-between mb-6 border-b pb-2"
@@ -811,7 +542,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 
                         <div
                             id="previewStage"
-                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative overflow-hidden min-h-[500px] transition-all duration-300"
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative min-h-[500px] transition-all duration-300"
                         >
                             <!-- Fondo oscuro (oculto por defecto) -->
                             <div
@@ -900,8 +631,10 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                             </div>
                                         </div>
                                         <div
-                                            class="self-end bg-[#dcf8c6] p-3 rounded-lg rounded-tr-none shadow-sm max-w-[85%] text-[13px] relative z-10 ml-auto mr-0 text-gray-800"
+                                            class="self-end bg-[#dcf8c6] p-2 pb-1 rounded-lg rounded-tr-none shadow-sm max-w-[85%] text-[13px] relative z-10 ml-auto mr-0 text-gray-800"
                                         >
+                                            <div id="previewWhatsappImageContainer" class="hidden mb-2 -mx-1 -mt-1 rounded-md overflow-hidden bg-white/20">
+                                            </div>
                                             <div
                                                 id="previewWhatsappText"
                                                 class="w-full break-words"
@@ -936,46 +669,72 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                             <!-- ================= CORREO REALISTIC PREVIEW ================= -->
                             <div
                                 id="previewCorreo"
-                                class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden"
+                                class="hidden absolute inset-0 bg-white dark:bg-gray-900 z-20 flex flex-col overflow-hidden"
                             >
-                                <div
-                                    class="bg-white w-full h-full flex flex-col overflow-hidden relative transition-all duration-300"
-                                >
-                                    <div
-                                        class="bg-[#404040] p-3 px-6 flex items-center justify-between text-white text-sm"
-                                    >
-                                        <span class="font-medium text-base"
-                                            >Mensaje nuevo</span
-                                        >
+                                <!-- Header de correo similar a Gmail -->
+                                <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                                    <div class="flex items-center gap-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                        </svg>
+                                        <h2 id="previewCorreoTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate max-w-md">Solicitud de información - Popup Web</h2>
                                     </div>
-                                    <div
-                                        class="px-6 py-3 border-b border-gray-100 flex items-center gap-6 text-sm"
-                                    >
-                                        <span class="text-gray-400 w-16"
-                                            >Para</span
-                                        >
-                                        <span class="text-gray-700 font-medium"
-                                            >contacto@tami.com</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="px-6 py-3 border-b border-gray-100 flex items-center gap-6 text-sm"
-                                    >
-                                        <span class="text-gray-400 w-16"
-                                            >Asunto</span
-                                        >
-                                        <div
-                                            id="previewCorreoTitle"
-                                            class="text-gray-800 font-medium flex-1 text-base"
-                                        >
-                                            Solicitud de información - Popup Web
+                                    <span class="text-[10px] sm:text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-800 font-medium">Recibidos</span>
+                                </div>
+
+                                <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                                    <!-- Cabecera de remitente -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">C</div>
+                                            <div class="flex flex-col">
+                                                <div class="flex items-center gap-1">
+                                                    <span class="font-bold text-sm text-gray-900 dark:text-gray-100">Cliente Interesado</span>
+                                                    <span class="text-xs text-gray-500">&lt;cliente@email.com&gt;</span>
+                                                </div>
+                                                <div class="flex items-center gap-1 text-xs text-gray-400">
+                                                    para contacto@tami.com
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-4 text-gray-400">
+                                            <span class="text-xs">hace 1 min</span>
+                                            <div class="flex items-center gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.175 0l-3.976 2.888c-.783.57-1.838-.197-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div
-                                        id="previewCorreoBody"
-                                        class="p-10 sm:p-12 flex-1 overflow-y-auto text-base sm:text-lg text-gray-800 whitespace-pre-wrap leading-relaxed min-h-[300px]"
-                                    >
-                                        ¡Hola! Me interesa la oferta mostrada...
+
+                                    <!-- Cuerpo del mensaje RICH TEXT -->
+                                    <div id="previewCorreoBody" class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed !p-0 font-sans min-h-0 break-words">
+                                        <!-- El contenido se inyecta desde Quill -->
+                                    </div>
+
+                                    <!-- Archivos adjuntos -->
+                                    <div id="previewEmailAttachementContainer" class="hidden pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">1 ARCHIVO ADJUNTO</span>
+                                        <div class="w-48 h-32 rounded-xl border border-gray-200 dark:border-gray-700 p-2 bg-gray-50 dark:bg-gray-800 group cursor-pointer overflow-hidden">
+                                            <div id="previewEmailImageThumb" class="w-full h-full rounded-lg overflow-hidden relative">
+                                                <!-- Imagen adjunta -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botones inferiores -->
+                                    <div class="flex items-center gap-3 pt-4">
+                                        <button disabled class="flex items-center gap-2 px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                                            Responder
+                                        </button>
+                                        <button disabled class="flex items-center gap-2 px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                            Reenviar
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1007,7 +766,7 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 
         /* Escalas para las vistas previas */
         #previewScrollModalContainer {
-            transform: scale(0.85);
+            transform: scale(0.95);
             transform-origin: center center;
             transition: transform 0.3s ease;
         }
@@ -1019,11 +778,34 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
 
         @media (min-width: 1024px) {
             #previewScrollModalContainer {
-                transform: scale(0.9);
+                transform: scale(0.8);
             }
             #previewStage.is-mobile-view #previewScrollModalContainer {
-                transform: scale(0.85);
+                transform: scale(0.95);
             }
+        }
+
+        /* Quill Dark Mode Fixes */
+        .dark .ql-toolbar.ql-snow {
+            border-color: #374151;
+            background-color: #1f2937;
+        }
+        .dark .ql-container.ql-snow {
+            border-color: #374151;
+        }
+        .dark .ql-snow .ql-stroke {
+            stroke: #fff;
+        }
+        .dark .ql-snow .ql-fill {
+            fill: #fff;
+        }
+        .dark .ql-snow .ql-picker {
+            color: #fff;
+            background-color: transparent;
+        }
+        .dark .ql-snow .ql-picker-options {
+            background-color: #111827;
+            border-color: #374151;
         }
     </style>
 </LayoutAdmin>
@@ -1410,18 +1192,79 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
             if (del) del.value = "1";
         });
 
+        emailImage?.addEventListener("change", function () {
+            handleImageUpload(this, (url) => {
+                const previewImg = document.getElementById(
+                    "previewEmailImageThumb",
+                );
+                const container = document.getElementById(
+                    "previewEmailAttachementContainer",
+                );
+                if (previewImg && container) {
+                    previewImg.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+                    container.classList.remove("hidden");
+                }
+                clearEmailImage?.classList.remove("hidden");
+            });
+        });
+        clearEmailImage?.addEventListener("click", () => {
+            if (emailImage) emailImage.value = "";
+            const previewImg = document.getElementById(
+                "previewEmailImageThumb",
+            );
+            const container = document.getElementById(
+                "previewEmailAttachementContainer",
+            );
+            if (previewImg && container) {
+                previewImg.innerHTML = "";
+                container.classList.add("hidden");
+            }
+            clearEmailImage.classList.add("hidden");
+            const del = document.getElementById(
+                "delete_emailImage",
+            ) as HTMLInputElement;
+            if (del) del.value = "1";
+        });
+
+        // Event for Email Preview update from EmailEditor.tsx (Rich Text)
+        window.addEventListener("update-email-preview", (e: any) => {
+            const previewCorreoBody =
+                document.getElementById("previewCorreoBody");
+            if (previewCorreoBody) {
+                previewCorreoBody.innerHTML = e.detail;
+            }
+        });
+
         whatsappImage?.addEventListener("change", function () {
             handleImageUpload(this, (url) => {
                 const previewWAImg = document.getElementById(
-                    "previewWhatsappProfileImg",
+                    "previewWhatsappImageContainer",
                 );
-                if (previewWAImg)
-                    previewWAImg.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+                if (previewWAImg) {
+                    previewWAImg.innerHTML = `<img src="${url}" class="w-full h-auto object-contain">`;
+                    previewWAImg.classList.remove("hidden");
+                }
                 document
                     .getElementById("clearWhatsappImage")
                     ?.classList.remove("hidden");
             });
         });
+
+        document
+            .getElementById("clearWhatsappImage")
+            ?.addEventListener("click", () => {
+                if (whatsappImage) whatsappImage.value = "";
+                const previewWAImg = document.getElementById(
+                    "previewWhatsappImageContainer",
+                );
+                if (previewWAImg) {
+                    previewWAImg.innerHTML = "";
+                    previewWAImg.classList.add("hidden");
+                }
+                document
+                    .getElementById("clearWhatsappImage")
+                    ?.classList.add("hidden");
+            });
 
         // LOAD SETTINGS FROM API
         async function loadSettings() {
@@ -1476,25 +1319,46 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                                 settings.emailTitle;
                     }
 
-                    const emailBodyInput = document.getElementById(
-                        "emailBody",
-                    ) as HTMLTextAreaElement;
-                    if (emailBodyInput && settings.emailBody) {
-                        emailBodyInput.value = settings.emailBody;
-                        if (previewCorreoBody)
-                            previewCorreoBody.textContent = settings.emailBody;
-                    }
-
                     // Cargar previsualizaciones de imágenes desde BD si existen
                     if (settings.whatsappImage) {
                         const previewWAImg = document.getElementById(
-                            "previewWhatsappProfileImg",
+                            "previewWhatsappImageContainer",
                         );
-                        if (previewWAImg)
-                            previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-full object-cover">`;
+                        if (previewWAImg) {
+                            previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-auto object-contain">`;
+                            previewWAImg.classList.remove("hidden");
+                        }
                         document
                             .getElementById("clearWhatsappImage")
                             ?.classList.remove("hidden");
+                    }
+
+                    if (settings.emailImage) {
+                        const previewImg = document.getElementById(
+                            "previewEmailImageThumb",
+                        );
+                        const container = document.getElementById(
+                            "previewEmailAttachementContainer",
+                        );
+                        if (previewImg && container) {
+                            previewImg.innerHTML = `<img src="${settings.emailImage}" class="w-full h-full object-cover">`;
+                            container.classList.remove("hidden");
+                        }
+                        clearEmailImage?.classList.remove("hidden");
+                    }
+
+                    if (settings.emailBody) {
+                        const previewCorreoBody =
+                            document.getElementById("previewCorreoBody");
+                        if (previewCorreoBody) {
+                            previewCorreoBody.innerHTML = settings.emailBody;
+                        }
+                        // Update the React component value via hidden input and custom event if needed
+                        window.dispatchEvent(
+                            new CustomEvent("update-email-editor", {
+                                detail: settings.emailBody,
+                            }),
+                        );
                     }
 
                     if (settings.image1) {
@@ -1642,11 +1506,19 @@ import ScrollModal from "../../components/ui/ScrollModal.tsx";
                 const emailTitle = document.getElementById(
                     "emailTitle",
                 ) as HTMLInputElement;
-                const emailBody = document.getElementById(
-                    "emailBody",
-                ) as HTMLTextAreaElement;
+                const emailBodyInput = document.getElementById("emailBody") as HTMLInputElement;
                 if (emailTitle) formData.append("emailTitle", emailTitle.value);
-                if (emailBody) formData.append("emailBody", emailBody.value);
+                if (emailBodyInput) {
+                    // Limpiamos las etiquetas HTML para que el correo llegue como texto plano 
+                    // y no se vean los <p> en el buzón del cliente.
+                    const htmlValue = emailBodyInput.value;
+                    const plainText = htmlValue
+                        .replace(/<\/p>/g, "\n") // Convertir cierres de párrafo en saltos de línea
+                        .replace(/<br\s*\/?>/g, "\n") // Convertir <br> en saltos de línea
+                        .replace(/<[^>]*>/g, "") // Eliminar cualquier otra etiqueta
+                        .trim();
+                    formData.append("emailBody", plainText);
+                }
                 formData.append("email_enabled", "1"); // Habilitado implicitamente
 
                 // Añadir imágenes
