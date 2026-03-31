@@ -1,0 +1,69 @@
+---
+import EmailEditor from "./EmailEditor.tsx";
+---
+<div
+    id="contentCorreo"
+    class="hidden space-y-6"
+>
+    <!-- Editar Mensaje de Correo -->
+    <div
+        class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm space-y-6"
+    >
+        <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Correo Electrónico</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Configura el título, mensaje e imagen para los emails. Recomendación formato webp.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex items-center gap-3">
+                <input type="hidden" name="delete_emailImage" id="delete_emailImage" value="0" />
+                <input type="file" id="emailImage" accept="image/*" class="hidden" />
+                <button
+                    type="button"
+                    onclick="document.getElementById('emailImage').click()"
+                    class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md group active:scale-95"
+                >
+                    Añadir Imagen Adjunta
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                    </svg>
+                </button>
+                <button
+                    type="button"
+                    id="clearEmailImage"
+                    class="hidden p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    title="Borrar Imagen Correo"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-2">
+                <label for="emailTitle" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Título / Asunto</label>
+                <input
+                    type="text"
+                    id="emailTitle"
+                    class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                    placeholder="Ej: Información sobre Promoción Exclusiva"
+                    value="Solicitud de información - Popup Web"
+                />
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de Correo</label>
+                <EmailEditor client:only="react" />
+            </div>
+        </div>
+    </div>
+</div>
