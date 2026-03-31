@@ -61,6 +61,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         return 'bg-[#00b6ff]';
     };
 
+    const getFullImageUrl = (url: string) => {
+        if (!url || url === '/placeholder.png') return '/placeholder.png';
+        if (url.startsWith('http')) return url;
+        return `${config.apiUrl}${url}`;
+    };
+
     const relatedProducts = producto.productos_relacionados || [];
     const carouselThreshold = 3;
     const handleWhatsAppClick = () => {
@@ -128,7 +134,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             <div className="absolute inset-0 bg-white rounded-full shadow-2xl" />
 
                             <img
-                                src={`${config.apiUrl}${producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png'}`}
+                                src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
                                 alt={producto.nombre}
                                 title={producto.nombre}
                                 className="relative w-full h-full object-contain"
@@ -148,7 +154,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
                                 <img
                                     title={producto.nombre}
-                                    src={`${config.apiUrl}${productViewer}`}
+                                    src={getFullImageUrl(productViewer)}
                                     alt={producto.titulo}
                                     className="w-full h-full object-contain"
                                     loading="lazy"
@@ -163,7 +169,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     >
                                         <img
                                             title={image.texto_alt_SEO || producto.nombre}
-                                            src={`${config.apiUrl}${image.url_imagen}`}
+                                            src={getFullImageUrl(image.url_imagen)}
                                             alt={image.texto_alt_SEO || `Vista de ${producto.nombre}`}
                                             className="w-full h-full object-contain"
                                             loading="lazy"

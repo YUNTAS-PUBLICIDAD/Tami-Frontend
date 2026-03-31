@@ -71,6 +71,10 @@ export const config = {
       // Endpoint para obtener estadísticas de reclamaciones
       all: "api/v1/claim-form-data",
     },
+    popups: {
+      getSettings: "/api/v1/popup-settings/public",
+      submit: "/api/v1/whatsapp/popup-submission",
+    },
   },
   socket: {
     whatsapp: import.meta.env.PUBLIC_WHATSAPP_SOCKET_URL || "https://apitami.tamimaquinarias.com",

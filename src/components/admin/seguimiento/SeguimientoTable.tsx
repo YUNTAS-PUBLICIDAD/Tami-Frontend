@@ -241,10 +241,10 @@ const ClientesTable = () => {
                       </TableCell>
                       
                       <TableCell>
-                        < span className="text-gray-500 text-sm">{item.producto ?? "-"}</span>
+                        < span className="text-gray-500 dark:text-gray-300 text-sm">{item.producto ?? "-"}</span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-gray-500 text-sm">{item.source ?? "-"}</span>
+                        <span className="text-gray-500 dark:text-gray-300 text-sm">{item.source ?? "-"}</span>
                       </TableCell>
                       
                       {/* Columnas de monitoreo WhatsApp */}
@@ -293,7 +293,7 @@ const ClientesTable = () => {
                       )}
                       
                       <TableCell className="whitespace-nowrap">
-                        <span className="text-gray-500 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
+                        <span className="text-gray-500 dark:text-gray-300 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
                       </TableCell>
 
                       <TableCell>

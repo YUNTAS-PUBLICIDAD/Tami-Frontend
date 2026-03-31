@@ -2,6 +2,7 @@ import { config } from "../../../../config.ts";
 import apiClient from "../../../services/apiClient";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { IoMdCloseCircle } from "react-icons/io";
 
 interface ImagenAdicional {
   imagen: File | null;
@@ -679,24 +680,25 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     <>
       {(isOpen || propIsOpen) && (
         <div className="dialog-overlay">
-          <div className="max-h-[90vh] dialog">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-teal-600">
+          <div className="dialog max-h-[90vh] md:max-h-[92vh] !pt-0">
+            <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !mt-0">
+              <h2 className="dialog-title flex-1 text-center">
                 {blogToEdit ? "Editar Blog" : "Añadir Nuevo Blog"}
               </h2>
               <button
                 type="button"
                 onClick={onClose ? onClose : closeModal}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl ml-2"
+                aria-label="Cerrar"
               >
-                &times;
+                <IoMdCloseCircle />
               </button>
             </div>
 
             <form
               encType="multipart/form-data"
               onSubmit={handleSubmit}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3"
             >
               <div className="form-input">
                 <label className="font-medium">Título para web*</label>
@@ -854,43 +856,43 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 />
                 <label
                   htmlFor="miniatura-upload"
-                  className="cursor-pointer border-2 border-dashed border-teal-300 p-4 rounded-lg block text-center hover:bg-teal-50 transition-colors"
+                  className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 p-4 rounded-lg block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   {formData.miniatura ? (
                     <span className="text-teal-600 font-medium">
                       {(formData.miniatura as any).name || "Imagen cargada"}
                     </span>
                   ) : (
-                    <span className="text-gray-400">Click para subir miniatura</span>
+                    <span className="text-gray-400 dark:text-gray-300">Click para subir miniatura</span>
                   )}
                 </label>
               </div>
 
-              <div className="col-span-1 md:col-span-2 mt-4">
-                <h3 className="text-xl font-bold text-teal-600 mb-4">Contenido del Blog</h3>
+              <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
+                <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4">Contenido del Blog</h3>
                 {formData.imagenes.map((imagen, index) => (
-                  <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50">
+                  <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/60 dark:border-gray-700">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold text-teal-700">Sección {numeroAPalabras(index + 1)}</span>
+                      <span className="font-bold text-teal-700 dark:text-teal-300">Sección {numeroAPalabras(index + 1)}</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Imagen*</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagen*</label>
                         <input
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleFileChangeAdicional(e, index)}
-                          className="w-full text-sm"
+                          className="w-full text-sm text-gray-700 dark:text-gray-300"
                         />
                         <div className="mt-2">
-                          <label className="block text-xs font-medium text-gray-600 mb-1">Texto Alternativo (SEO)*</label>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Texto Alternativo (SEO)*</label>
                           <input
                             type="text"
                             value={imagen.text_alt}
                             onChange={(e) => handleAltTextChange(e, index)}
                             placeholder="Descripción de la imagen"
-                            className="w-full border rounded p-1 text-xs"
+                            className="w-full border rounded p-1 text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                             required
                           />
                         </div>
@@ -902,7 +904,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       </div>
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <label className="block text-sm font-medium text-gray-700">Párrafo de la sección*</label>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Párrafo de la sección*</label>
                           <div className="space-x-2">
                             <button
                               type="button"
@@ -924,7 +926,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           id={`crear_descripcion_antes_${index}`}
                           value={imagen.parrafo}
                           onChange={(e) => handleParrafoChange(e, index)}
-                          className="w-full border rounded p-2 text-sm"
+                          className="w-full border rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                           rows={4}
                           required
                         />
@@ -934,18 +936,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 ))}
               </div>
 
-              <div className="col-span-1 md:col-span-2 flex justify-end gap-4 mt-6">
+              <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"
                   onClick={onClose ? onClose : closeModal}
-                  className="px-6 py-2 border rounded-full text-gray-600 hover:bg-gray-100"
+                  className="neutral-btn w-full sm:w-auto !text-base !px-6 !py-2 !bg-amber-100 !text-amber-900 !border-amber-300 hover:!bg-amber-200 hover:!text-amber-950 dark:!bg-gray-700 dark:!text-gray-100 dark:!border-gray-500 dark:hover:!bg-gray-600"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving || isSubmitting}
-                  className="px-8 py-2 bg-teal-600 text-white rounded-full hover:bg-teal-700 disabled:bg-gray-400 shadow-lg"
+                  className="admin-act-btn w-full sm:w-auto !text-base !px-6 !py-2 disabled:opacity-60 disabled:hover:cursor-not-allowed"
                 >
                   {isSaving || isSubmitting ? "Guardando..." : "Guardar Blog"}
                 </button>
@@ -1000,41 +1002,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         </div>
       )}
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        .dialog-overlay {
-          position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0,0,0,0.5);
-          display: flex; justify-content: center; align-items: center;
-          z-index: 999;
-          padding: 20px;
-        }
-        .dialog {
-          background: #fff;
-          width: 100%;
-          max-width: 900px;
-          padding: 30px;
-          border-radius: 20px;
-          overflow-y: auto;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .form-input {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-        .form-input input, .form-input select, .form-input textarea {
-          border: 1px solid #ddd;
-          padding: 10px;
-          border-radius: 10px;
-          outline: none;
-          transition: border-color 0.2s;
-        }
-        .form-input input:focus, .form-input select:focus, .form-input textarea:focus {
-          border-color: #0d9488;
-        }
-      `}} />
     </>
   );
 };

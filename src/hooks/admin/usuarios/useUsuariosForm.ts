@@ -11,7 +11,11 @@ import Swal from "sweetalert2";
 /**
  * Funcion para manejar el formulario de Usuario
  */
-const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
+const useUsuarioForm = (
+  usuario?: Usuario | null,
+  onSuccess?: () => void,
+  isOpen?: boolean
+) => {
   type UsuarioFormData = Pick<Usuario, "name" | "celular" | "email" /* | "rol" */ >;
 
   /**
@@ -33,6 +37,8 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
    * Si se pasa un Usuario, se cargan sus datos en el formulario.
    */
   useEffect(() => {
+    if (!isOpen) return;
+
     if (usuario) {
 
       /**
@@ -53,7 +59,7 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
       resetForm();
       setIsEditing(false);
     }
-  }, [usuario]);
+  }, [usuario, isOpen]);
 
   /**
    * Función para manejar los cambios en los inputs del formulario.
@@ -148,6 +154,8 @@ const useUsuarioForm = (usuario?: Usuario | null, onSuccess?: () => void) => {
 
   return {
     formData, // Retornamos los datos del formulario
+    errors: {}, // Placeholder para compatibilidad
+    resetForm,
     handleChange, // Retornamos la función para manejar los cambios en los inputs
     handleSubmit, // Retornamos la función para manejar el envío del formulario
   };

@@ -454,6 +454,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup3_sin_fondo]",
                 formData.etiqueta.popup3_sin_fondo ? "true" : "false"
             );
+            formDataToSend.append(
+                "etiqueta[popup_button_color]",
+                formData.etiqueta.popup_button_color || "#008B8B"
+            );
+            formDataToSend.append(
+                "etiqueta[popup_text_color]",
+                formData.etiqueta.popup_text_color || "#000000"
+            );
+            formDataToSend.append(
+                "etiqueta[popup_button_text]",
+                formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"
+            );
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
@@ -678,6 +690,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
     }, [showModal]);
 
+    const getFullImageUrl = (url: string) => {
+        if (!url) return "";
+        if (url.startsWith("http")) return url;
+        return `${config.apiUrl}${url}`;
+    };
+
     useEffect(() => {
         if (showModal && product) {
             const refreshCache = Date.now();
@@ -685,7 +703,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             console.log("Imágenes originales:", product.imagenes);
             let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
                 id: img.id,
-                url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
+                url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
                 texto_alt_SEO: img.texto_alt_SEO || "",
                 original_path: img.url_imagen
             })) || [];
@@ -720,6 +738,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
                     titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
                     popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+                    popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
+                    popup_text_color: product.etiqueta?.popup_text_color || "#000000",
+                    popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
                 },
                 stock: product.stock,
                 precio: product.precio,
@@ -736,11 +757,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     ancho: product.dimensiones?.ancho || "",
                 },
                 video_url: product.video_url || "",
-                imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
+                imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-                imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
+                imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
                 asunto: imagenEmail?.asunto || "",
-                imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
+                imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
                 texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "" // Asegúrate que tu back mande esto
             });
         }
@@ -1323,39 +1344,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     <p className="text-sm text-gray-600 text-center px-2">
                                                         {descripcionesPopup[index]}
                                                     </p>
-                                                    {formData.etiqueta.popup_estilo === estilo && (
-                                                        <div className="w-full mt-2">
-                                                            <input
-                                                                type="text"
-                                                                placeholder={`Título popup estilo ${index + 1} (usa {categoria})`}
-                                                                value={
-                                                                    estilo === "estilo1"
-                                                                        ? formData.etiqueta.titulo_popup_1 || ""
-                                                                        : estilo === "estilo2"
-                                                                            ? formData.etiqueta.titulo_popup_2 || ""
-                                                                            : formData.etiqueta.titulo_popup_3 || ""
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setFormData((prev) => ({
-                                                                        ...prev,
-                                                                        etiqueta: {
-                                                                            ...prev.etiqueta,
-                                                                            ...(estilo === "estilo1" && {
-                                                                                titulo_popup_1: e.target.value,
-                                                                            }),
-                                                                            ...(estilo === "estilo2" && {
-                                                                                titulo_popup_2: e.target.value,
-                                                                            }),
-                                                                            ...(estilo === "estilo3" && {
-                                                                                titulo_popup_3: e.target.value,
-                                                                            }),
-                                                                        },
-                                                                    }))
-                                                                }
-                                                                className="w-full p-2 text-sm rounded-lg border border-gray-300 focus:ring-teal-500 focus:border-teal-500"
-                                                            />
-                                                        </div>
-                                                    )}
+                                                    {/* El título del popup fue removido a petición */}
 
 
                                                     {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
@@ -1382,6 +1371,77 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 </label>
                                             ))}
                                         </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Color del Botón del Popup:</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="color"
+                                                value={formData.etiqueta.popup_button_color || "#008B8B"}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        etiqueta: {
+                                                            ...prev.etiqueta,
+                                                            popup_button_color: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
+                                            />
+                                            <div className="flex flex-col gap-2">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
+                                                    {formData.etiqueta.popup_button_color || "#008B8B"}
+                                                </code>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Color del Texto del Popup:</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="color"
+                                                value={formData.etiqueta.popup_text_color || "#000000"}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        etiqueta: {
+                                                            ...prev.etiqueta,
+                                                            popup_text_color: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
+                                            />
+                                            <div className="flex flex-col gap-2">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
+                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
+                                                    {formData.etiqueta.popup_text_color || "#000000"}
+                                                </code>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Texto del Botón del Popup:</label>
+                                        <input
+                                            type="text"
+                                            value={formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    etiqueta: {
+                                                        ...prev.etiqueta,
+                                                        popup_button_text: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            placeholder="Ej: ¡COTIZA AHORA!"
+                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
+                                        />
                                     </div>
                                 </div>
 
@@ -1595,7 +1655,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         <div className="relative flex items-center justify-center">
                                                             {item.imagenes?.[0]?.url_imagen ? (
                                                                 <img
-                                                                    src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                                                    src={getFullImageUrl(item.imagenes[0].url_imagen)}
                                                                     alt={item.nombre}
                                                                     className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${formData.relacionados.includes(item.id)
                                                                         ? 'border-teal-600'
