@@ -1,0 +1,225 @@
+---
+import asesoriaImg from "../../../assets/images/Diseno.webp";
+---
+<div id="contentPopups" class="flex flex-col gap-4">
+    <!-- Primera Imagen -->
+    <div
+        class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
+    >
+        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Sube una imagen promocional para tu popup. Resolución recomendada: 448x550px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+        </p>
+        <div class="flex items-center gap-3">
+            <input type="hidden" name="delete_popupImage1" id="delete_popupImage1" value="0" />
+            <input type="file" id="popupImage1" accept="image/*" class="hidden" />
+            <button
+                type="button"
+                onclick="document.getElementById('popupImage1').click()"
+                class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
+            >
+                Subir Imagen 1
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+            </button>
+            <button
+                type="button"
+                id="clearImage1"
+                class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
+                title="Borrar Imagen 1"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Segunda Imagen -->
+    <div
+        class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
+    >
+        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Segunda imagen para el popup (mitad derecha). Resolución recomendada: 448x550px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+        </p>
+        <div class="flex items-center gap-3">
+            <input type="hidden" name="delete_popupImage2" id="delete_popupImage2" value="0" />
+            <input type="file" id="popupImage2" accept="image/*" class="hidden" />
+            <button
+                type="button"
+                onclick="document.getElementById('popupImage2').click()"
+                class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
+            >
+                Subir Imagen 2
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+            </button>
+            <button
+                type="button"
+                id="clearImage2"
+                class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
+                title="Borrar Imagen 2"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Primera Imagen Móvil -->
+    <div
+        class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
+    >
+        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Imagen para vista en dispositivos móviles. Resolución recomendada: 448x640px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+        </p>
+        <div class="flex items-center gap-3">
+            <input type="hidden" name="delete_popupImageMobile" id="delete_popupImageMobile" value="0" />
+            <input type="file" id="popupImageMobile" accept="image/*" class="hidden" />
+            <button
+                type="button"
+                onclick="document.getElementById('popupImageMobile').click()"
+                class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
+            >
+                Subir Imagen Móvil 1
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+            </button>
+            <button
+                type="button"
+                id="clearImageMobile"
+                class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
+                title="Borrar Imagen Móvil"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Segunda Imagen Móvil -->
+    <div
+        class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
+    >
+        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: 448x640px. La imagen debe pesar 2MB como máximo, recomendación formato webp.
+        </p>
+        <div class="flex items-center gap-3">
+            <input type="hidden" name="delete_popupImageMobile2" id="delete_popupImageMobile2" value="0" />
+            <input type="file" id="popupImageMobile2" accept="image/*" class="hidden" />
+            <button
+                type="button"
+                onclick="document.getElementById('popupImageMobile2').click()"
+                class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-all shadow-md active:scale-95"
+            >
+                Subir Imagen Móvil 2
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+            </button>
+            <button
+                type="button"
+                id="clearImageMobile2"
+                class="hidden text-red-500 hover:text-red-600 transition-colors p-2"
+                title="Borrar Imagen Móvil 2"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Configuración de Colores -->
+    <div class="grid grid-cols-[1fr_1.2fr] gap-4 mt-4">
+        <!-- Color del Botón -->
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+            <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3">Color del Botón</span>
+            <div class="flex items-center gap-3">
+                <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
+                    <input
+                        type="color"
+                        id="btnBgColor"
+                        value="#14b8a6"
+                        class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                    />
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                    <span class="text-xs text-gray-400">fondo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color del Texto -->
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+            <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3">Color del Texto</span>
+            <div class="flex items-center gap-3">
+                <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
+                    <input
+                        type="color"
+                        id="btnTextColor"
+                        value="#ffffff"
+                        class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                    />
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                    <span class="text-xs text-gray-400">texto</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-8 mb-4">Tiempo de Aparición</h2>
+
+    <div class="grid grid-cols-[1fr_1.2fr] gap-4">
+        <!-- Pop-up de Inicio -->
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+            <label for="popupInicioDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">Pop-up de Inicio</label>
+            <select
+                id="popupInicioDelay"
+                class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner"
+            >
+                <option value="1" selected>1 minuto</option>
+                <option value="2">2 minutos</option>
+                <option value="3">3 minutos</option>
+                <option value="4">4 minutos</option>
+                <option value="5">5 minutos</option>
+                <option value="6">6 minutos</option>
+                <option value="7">7 minutos</option>
+                <option value="8">8 minutos</option>
+                <option value="9">9 minutos</option>
+                <option value="10">10 minutos</option>
+            </select>
+        </div>
+
+        <!-- Pop-ups de Productos -->
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm">
+            <label for="popupProductosDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">Pop-ups de Productos</label>
+            <select
+                id="popupProductosDelay"
+                class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner"
+            >
+                <option value="1" selected>1 minuto</option>
+                <option value="2">2 minutos</option>
+                <option value="3">3 minutos</option>
+                <option value="4">4 minutos</option>
+                <option value="5">5 minutos</option>
+                <option value="6">6 minutos</option>
+                <option value="7">7 minutos</option>
+                <option value="8">8 minutos</option>
+                <option value="9">9 minutos</option>
+                <option value="10">10 minutos</option>
+            </select>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,264 @@
+---
+import ScrollModal from "../../ui/ScrollModal.tsx";
+---
+<!-- Columna Derecha: Vista Previa -->
+<div>
+    <div class="sticky top-8">
+        <div
+            class="flex items-center justify-between mb-6 border-b pb-2"
+        >
+            <h2
+                class="text-xl font-semibold text-gray-800 dark:text-gray-100"
+            >
+                Vista Previa
+            </h2>
+            <div
+                id="previewModesToggle"
+                class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg"
+            >
+                <button
+                    id="btnDesktop"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 shadow-sm transition-all flex items-center gap-2"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                    </svg>
+                    Escritorio
+                </button>
+                <button
+                    id="btnMobile"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-all flex items-center gap-2"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        ></path>
+                    </svg>
+                    Móvil
+                </button>
+            </div>
+        </div>
+
+        <div
+            id="previewStage"
+            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative min-h-[500px] transition-all duration-300"
+        >
+            <!-- Fondo oscuro (oculto por defecto) -->
+            <div
+                id="previewOverlay"
+                class="hidden absolute inset-0 bg-black/40 dark:bg-black/60 z-0"
+            >
+            </div>
+
+            <!-- CONTENEDOR RELATIVO -->
+            <div
+                id="previewScrollModalContainer"
+                class="relative z-10 w-full min-h-[500px] flex justify-center items-center"
+            >
+                <ScrollModal
+                    client:only="react"
+                    isPreview={true}
+                />
+            </div>
+
+
+            <!-- ================= WHATSAPP REALISTIC PREVIEW ================= -->
+
+            <div
+                id="previewWhatsapp"
+                class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden"
+            >
+                <div
+                    class="bg-[#e5ddd5] rounded-xl shadow-2xl w-[320px] h-[500px] flex flex-col overflow-hidden border border-gray-300 relative scale-90 sm:scale-100"
+                >
+                    <!-- Header -->
+                    <div
+                        class="bg-[#075e54] p-3 flex items-center gap-3 text-white shadow-md shrink-0 relative z-10"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 opacity-80"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                            ></path>
+                        </svg>
+                        <div
+                            id="previewWhatsappProfileImg"
+                            class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div
+                                class="font-bold text-sm leading-tight truncate"
+                            >
+                                Jhon Doe
+                            </div>
+                            <div class="text-[10px] opacity-70">
+                                En línea
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Body -->
+                    <div
+                        class="flex-1 p-4 overflow-y-auto space-y-4 relative"
+                    >
+                        <div
+                            class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm max-w-[85%] text-[13px] relative z-10 text-gray-800"
+                        >
+                            Hola!, me gustaria saber mas
+                            informacion de....
+                            <div
+                                class="text-[10px] text-gray-400 mt-1 text-right"
+                            >
+                                10:45 AM
+                            </div>
+                        </div>
+                        <div
+                            class="self-end bg-[#dcf8c6] p-2 pb-1 rounded-lg rounded-tr-none shadow-sm max-w-[85%] text-[13px] relative z-10 ml-auto mr-0 text-gray-800"
+                        >
+                            <div id="previewWhatsappImageContainer" class="hidden mb-2 -mx-1 -mt-1 rounded-md overflow-hidden bg-white/20">
+                            </div>
+                            <div
+                                id="previewWhatsappText"
+                                class="w-full break-words"
+                            >
+                                ¡Hola! Me gustaría obtener más
+                                información sobre la promoción.
+                            </div>
+                            <div
+                                class="flex items-center justify-end gap-1 mt-1 shrink-0"
+                            >
+                                <div
+                                    class="text-[10px] text-gray-500"
+                                >
+                                    10:46 AM
+                                </div>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3 w-3 text-blue-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 16 16"
+                                >
+                                    <path
+                                        d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"
+                                    ></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= CORREO REALISTIC PREVIEW ================= -->
+            <div
+                id="previewCorreo"
+                class="hidden absolute inset-0 bg-white dark:bg-gray-900 z-20 flex flex-col overflow-hidden"
+            >
+                <!-- Header de correo similar a Gmail -->
+                <div class="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                    <div class="flex items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <h2 id="previewCorreoTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate max-w-md">Solicitud de información - Popup Web</h2>
+                    </div>
+                    <span class="text-[10px] sm:text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-800 font-medium">Recibidos</span>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <!-- Cabecera de remitente -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">C</div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-1">
+                                    <span class="font-bold text-sm text-gray-900 dark:text-gray-100">Cliente Interesado</span>
+                                    <span class="text-xs text-gray-500">&lt;cliente@email.com&gt;</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs text-gray-400">
+                                    para contacto@tami.com
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 text-gray-400">
+                            <span class="text-xs">hace 1 min</span>
+                            <div class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.175 0l-3.976 2.888c-.783.57-1.838-.197-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cuerpo del mensaje RICH TEXT -->
+                    <div id="previewCorreoBody" class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed !p-0 font-sans min-h-0 break-words">
+                        <!-- El contenido se inyecta desde Quill -->
+                    </div>
+
+                    <!-- Archivos adjuntos -->
+                    <div id="previewEmailAttachementContainer" class="hidden pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">1 ARCHIVO ADJUNTO</span>
+                        <div class="w-48 h-32 rounded-xl border border-gray-200 dark:border-gray-700 p-2 bg-gray-50 dark:bg-gray-800 group cursor-pointer overflow-hidden">
+                            <div id="previewEmailImageThumb" class="w-full h-full rounded-lg overflow-hidden relative">
+                                <!-- Imagen adjunta -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones inferiores -->
+                    <div class="flex items-center gap-3 pt-4">
+                        <button disabled class="flex items-center gap-2 px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                            Responder
+                        </button>
+                        <button disabled class="flex items-center gap-2 px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            Reenviar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
