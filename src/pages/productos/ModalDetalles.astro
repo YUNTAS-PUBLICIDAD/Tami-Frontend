@@ -283,7 +283,13 @@ const { link = "" } = Astro.props as ModalProps;
     }
 
     const producto = await obtenerProductoActual();
+    console.log("PRODUCTO COMPLETO:", producto);
+    console.log("ETIQUETA COMPLETA:", producto?.etiqueta);
+    console.log("TITULO 1:", producto?.etiqueta?.titulo_popup_1);
+    console.log("TITULO 2:", producto?.etiqueta?.titulo_popup_2);
+    console.log("TITULO 3:", producto?.etiqueta?.titulo_popup_3);
     await actualizarImagenDesdeLink();
+    console.log("🧾 Titulos popup:", producto?.etiqueta);
 
     cerrarTodosLosModales();
 
@@ -921,6 +927,7 @@ const { link = "" } = Astro.props as ModalProps;
         border-radius: 12px; /* opcional */
       }
     }
+  }
 
     /* Botón de cerrar más grande y visible */
   }
