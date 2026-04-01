@@ -46,11 +46,18 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
     >
+      <img
+        id="modal3-product-img-2"
+        src={DEFAULT_IMAGE}
+        alt="Imagen de fondo"
+        class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+      />
+
       <h2 id="modal3-title"
-       class="text-2xl sm:text-4xl font-bold text-center leading-snug mb-4">
+        class="relative z-20 text-2xl sm:text-4xl font-bold text-center leading-snug mb-4 invisible">
       </h2>
 
-      <form id="form-cotizacion-producto-3" class="flex flex-col gap-4" novalidate>
+      <form id="form-cotizacion-producto-3" class="relative z-20 flex flex-col gap-3" novalidate>
         <p
           data-validation-message
           class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
@@ -89,15 +96,15 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
         <button id="modal3-submit-btn"
           type="submit"
-          class="btn-white-pill mt-4 font-bold text-base sm:text-xl self-center w-auto px-8 sm:px-12"
+          class="btn-white-pill mt-4 font-bold text-base sm:text-lg self-center w-auto px-8 sm:px-12"
         >
           ¡Solicitar asesoría!
         </button>
 
-        <p class="text-center font-semibold mt-2">Asesoría gratuita</p>
+        <p class="text-center font-semibold mt-2 invisible">Asesoría gratuita</p>
       </form>
 
-      <p id="modal3-mensaje" class="text-center mt-4"></p>
+      <p id="modal3-mensaje" class="relative z-20 text-center mt-4"></p>
     </div>
   </div>
 </div>
@@ -120,7 +127,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   .input-style {
     background: white;
     color: #111;
-    padding: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
     border-radius: 14px;
     border: 2px solid #7aa2ff;
   }
@@ -141,8 +149,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   border-radius: 999px;
   font-weight: bold;
   transition: .3s;
-  padding: 0.65rem 2rem;
-  font-size: 1rem;
+  padding: 0.5rem 1.8rem;
+  font-size: 0.9rem;
 }
 
   .btn-white-pill:hover {
@@ -157,13 +165,16 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   window.__detalleProducto = window.__detalleProducto || null;
 
   async function actualizarImagenModal3() {
-    const container = document.querySelector("#modal3-form-container");
-    const modalImg = document.querySelector("#modal3-product-img");
+    const container = document.querySelector("#modal3-form-container") as HTMLElement | null;
+    const modalImg = document.querySelector("#modal3-product-img") as HTMLImageElement | null;
+    const modalImg2 = document.querySelector("#modal3-product-img-2") as HTMLImageElement | null;
     if (!container || !modalImg) return;
 
     const productLink = container.dataset.productLink || "";
     let imagen = "/images/popup/default.webp";
     let imagenAlt = "Imagen del producto";
+    let imagen2 = "/images/popup/default.webp";
+    let imagenAlt2 = "Imagen de fondo";
     let modoVisual = "fondo";
 
     if (!window.__detalleProducto && productLink) {
@@ -181,8 +192,12 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
       const imagenPopup = producto.producto_imagenes?.find(
-        (img) => img.tipo === "popup",
+        (img: any) => img.tipo === "popup",
       );
+      const imagenPopup2 = producto.producto_imagenes?.find((img: any) => {
+        const tipo = (img?.tipo || "").toLowerCase();
+        return tipo === "popup2" || tipo === "popup_2";
+      });
 
       if (imagenPopup?.url_imagen) {
         imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
@@ -192,44 +207,40 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
       }
 
+      if (imagenPopup2?.url_imagen) {
+        imagen2 = `${config.apiUrl}${imagenPopup2.url_imagen}`;
+        imagenAlt2 = imagenPopup2.texto_alt_SEO || producto.nombre;
+      } else {
+        imagen2 = imagen;
+        imagenAlt2 = imagenAlt;
+      }
+
       // ⭐ CONTROL DESDE CHECKBOX LARAVEL
       if (producto.etiqueta?.popup_estilo === "estilo3") {
         modoVisual = producto.etiqueta.popup3_sin_fondo ? "recorte" : "fondo";
       }
 
       // Estilos del boton
-    document
-      .getElementById("modal3-submit-btn")
-      ?.style.setProperty(
-        "background",
-        producto?.etiqueta?.popup_button_color,
-        "important",
-      );
-    document
-      .getElementById("modal3-submit-btn")
-      ?.style.setProperty("color", producto?.etiqueta?.popup_text_color);
-
-    const popupButtonText = producto?.etiqueta?.popup_button_text?.trim();
-    const submitBtn3 = document.getElementById("modal3-submit-btn");
-    if (submitBtn3) {
-      submitBtn3.textContent = popupButtonText || "¡Solicitar asesoría!";
-    }
-    }
-
-    const tituloModal3 = document.getElementById("modal3-title");
-
-    if (window.__detalleProducto) {
-      const producto = window.__detalleProducto;
-
-      if (tituloModal3) {
-        tituloModal3.textContent =
-          producto.etiqueta?.titulo_popup_3 ||
-          "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS";
+      const submitBtn3 = document.getElementById("modal3-submit-btn");
+      if (submitBtn3) {
+        submitBtn3.style.setProperty("background", producto?.etiqueta?.popup_button_color || "", "important");
+        submitBtn3.style.setProperty("color", producto?.etiqueta?.popup_text_color || "");
+        submitBtn3.textContent = producto?.etiqueta?.popup_button_text?.trim() || "¡Solicitar asesoría!";
       }
     }
 
-    modalImg.src = imagen;
-    modalImg.alt = imagenAlt;
+    const tituloModal3 = document.getElementById("modal3-title");
+    if (tituloModal3 && window.__detalleProducto) {
+      tituloModal3.textContent = window.__detalleProducto.etiqueta?.titulo_popup_3 || "TU GUÍA DE DECORACIÓN EXCLUSIVA, GRATIS";
+    }
+
+    (modalImg as HTMLImageElement).src = imagen;
+    (modalImg as HTMLImageElement).alt = imagenAlt;
+
+    if (modalImg2) {
+      modalImg2.src = imagen2;
+      modalImg2.alt = imagenAlt2;
+    }
 
     modalImg.classList.remove(
       "absolute",

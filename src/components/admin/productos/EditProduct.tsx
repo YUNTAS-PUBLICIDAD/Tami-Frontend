@@ -274,6 +274,16 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatorio.";
         }
 
+        // Imagen de Pop-up 2 obligatoria
+        if (!formData.imagen_popup2) {
+            newErrors.imagen_popup2 = "La imagen 2 para el Pop-up es obligatoria.";
+        }
+
+        // Texto ALT de Pop-up 2 obligatorio
+        if (!formData.texto_alt_popup2?.trim()) {
+            newErrors.texto_alt_popup2 = "El texto alternativo para la Imagen Pop-up 2 es obligatorio.";
+        }
+
         // Imagen de Email obligatoria
         if (!formData.imagen_email) {
             newErrors.imagen_email = "La imagen para el Email es obligatoria.";
@@ -624,7 +634,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     formDataToSend.append(altKey, altText);
                 }
             };
+
+            const appendPopup2ImageWithAliases = (
+                fileOrUrl: string | File | null | undefined,
+                altText?: string,
+            ) => {
+                if (!fileOrUrl) return;
+
+                if (fileOrUrl instanceof File) {
+                    // Some backend versions parse popup image 2 with different field names.
+                    formDataToSend.append('imagen_popup2', fileOrUrl);
+                    formDataToSend.append('imagen_popup_2', fileOrUrl);
+                    formDataToSend.append('popup_image2', fileOrUrl);
+                }
+
+                if (altText !== undefined) {
+                    formDataToSend.append('texto_alt_popup2', altText);
+                    formDataToSend.append('texto_alt_popup_2', altText);
+                }
+            };
+
             appendSingleImage('imagen_popup', formData.imagen_popup, 'texto_alt_popup', formData.texto_alt_popup);
+            appendPopup2ImageWithAliases(formData.imagen_popup2, formData.texto_alt_popup2);
             appendSingleImage('imagen_email', formData.imagen_email);
             formDataToSend.append('asunto', formData.asunto || '');
             appendSingleImage('imagen_whatsapp', formData.imagen_whatsapp, 'texto_alt_whatsapp', formData.texto_alt_whatsapp);
@@ -719,6 +750,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
 
             const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
+            const imagenPopup2 = product.producto_imagenes?.find((img) => {
+                const tipo = (img.tipo || "").toLowerCase();
+                return tipo === "popup2" || tipo === "popup_2";
+            });
             const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
             const imagenWhatsapp = product.producto_imagenes?.find((img) => img.tipo === "whatsapp");
 
@@ -759,6 +794,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 video_url: product.video_url || "",
                 imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
+                imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
+                texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
                 imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
                 asunto: imagenEmail?.asunto || "",
                 imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
@@ -1271,6 +1308,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 if (e.target.files?.[0]) {
                                                                     setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
                                                                 }
+                                                                if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
                                                             }}
                                                             className="hidden"
                                                         />
@@ -1285,6 +1323,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         if (e.target.files?.[0]) {
                                                             setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
                                                         }
+                                                        if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
                                                     }}
                                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                                                 />
@@ -1299,11 +1338,82 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             type="text"
                                             name="texto_alt_popup"
                                             value={formData.texto_alt_popup || ''}
-                                            onChange={e => setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }))}
+                                            onChange={e => {
+                                                setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }));
+                                                if (errors.texto_alt_popup) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_popup; return n; });
+                                            }}
                                             placeholder="Texto alternativo para SEO..."
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                         />
                                         {errors.texto_alt_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup}</p>}
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Imagen Pop-up 2:</label>
+                                        <div
+                                            ref={el => { fieldRefs.current.imagen_popup2 = el; }}
+                                            className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_popup2 ? "border-red-500" : "border-gray-300"}`}
+                                        >
+                                            {formData.imagen_popup2 ? (
+                                                <div className="flex items-center gap-4">
+                                                    <img
+                                                        src={
+                                                            typeof formData.imagen_popup2 === "string"
+                                                                ? formData.imagen_popup2
+                                                                : URL.createObjectURL(formData.imagen_popup2)
+                                                        }
+                                                        alt={formData.texto_alt_popup2 || "Imagen pop-up 2"}
+                                                        className="w-16 h-16 object-cover rounded border"
+                                                    />
+                                                    <label className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
+                                                        Reemplazar
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            name="imagen_popup2"
+                                                            onChange={e => {
+                                                                if (e.target.files?.[0]) {
+                                                                    setFormData(prev => ({ ...prev, imagen_popup2: e.target.files![0] }));
+                                                                }
+                                                                if (errors.imagen_popup2) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup2; return n; });
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    name="imagen_popup2"
+                                                    onChange={e => {
+                                                        if (e.target.files?.[0]) {
+                                                            setFormData(prev => ({ ...prev, imagen_popup2: e.target.files![0] }));
+                                                        }
+                                                        if (errors.imagen_popup2) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup2; return n; });
+                                                    }}
+                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                                                />
+                                            )}
+                                        </div>
+                                        {errors.imagen_popup2 && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup2}</p>}
+                                    </div>
+
+                                    <div className="form-input">
+                                        <label>Texto ALT Imagen Pop-up 2:</label>
+                                        <input
+                                            ref={el => { fieldRefs.current.texto_alt_popup2 = el; }}
+                                            type="text"
+                                            name="texto_alt_popup2"
+                                            value={formData.texto_alt_popup2 || ''}
+                                            onChange={e => {
+                                                setFormData(prev => ({ ...prev, texto_alt_popup2: e.target.value }));
+                                                if (errors.texto_alt_popup2) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_popup2; return n; });
+                                            }}
+                                            placeholder="Texto alternativo para SEO..."
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup2 ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
+                                        />
+                                        {errors.texto_alt_popup2 && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup2}</p>}
                                     </div>
 
                                     <div className="form-input">

@@ -61,19 +61,25 @@ const { link = "" } = Astro.props as ModalProps;
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
     >
+      <img
+        id="modal-product-img-2"
+        src={DEFAULT_IMAGE}
+        alt="Imagen del fondo del formulario"
+        class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+      />
       <div
-        class="p-8 sm:py-10 sm:mx-8 min-h-[480px] flex flex-col justify-center"
+        class="relative z-20 p-8 sm:py-10 sm:mx-8 min-h-[480px] flex flex-col justify-center"
       >
         <!-- TÍTULO DINÁMICO (ESTILO 1) -->
         <h2
           id="modal-title"
-          class="mx-auto max-w-[320px] text-xl sm:text-3xl font-light text-center leading-[1.25] sm:leading-[1.2] mb-6"
+          class="mx-auto max-w-[320px] text-xl sm:text-3xl font-light text-center leading-[1.25] sm:leading-[1.2] mb-6 invisible"
         >
           Descubre tu guia exclusiva de decoracion TOTALMENTE<br />
           <span class="font-extrabold">GRATIS</span>
         </h2>
 
-        <form id="form-cotizacion-producto" class="flex flex-col gap-3" novalidate>
+        <form id="form-cotizacion-producto" class="relative z-20 flex flex-col gap-3" novalidate>
           <p
             data-validation-message
             class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
@@ -83,7 +89,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="text"
             name="nombre"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="p-1.5 rounded-lg bg-white text-black border-2 mb-1 input-style text-sm"
             placeholder="Nombre"
             required
           />
@@ -92,7 +98,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="email"
             name="correo"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="p-1.5 rounded-lg bg-white text-black border-2 mb-1 input-style text-sm"
             placeholder="Correo"
             inputmode="email"
             autocomplete="email"
@@ -104,7 +110,7 @@ const { link = "" } = Astro.props as ModalProps;
           <input
             type="tel"
             name="telefono"
-            class="p-2 rounded-lg bg-white text-black border-2 mb-1 input-style"
+            class="p-1.5 rounded-lg bg-white text-black border-2 mb-1 input-style text-sm"
             placeholder="Telefono"
             inputmode="numeric"
             autocomplete="tel"
@@ -118,13 +124,13 @@ const { link = "" } = Astro.props as ModalProps;
           <button
             id="modal-submit-btn"
             type="submit"
-            class="mt-4 py-2 rounded-lg text-white font-bold transition-all duration-300 shadow-lg"
+            class="mt-3 py-1.5 rounded-lg text-white font-bold transition-all duration-300 shadow-lg text-sm"
           >
             buttonText
           </button>
           <p
             id="modal-negocios-text"
-            class="text-center mt-3 text-base sm:text-lg text-white hidden font-bold tracking-wide"
+            class="text-center mt-3 text-base sm:text-lg text-white font-bold tracking-wide invisible"
           >
             Asesoría gratuita
           </p>
@@ -356,12 +362,17 @@ const { link = "" } = Astro.props as ModalProps;
     const modalImg = document.getElementById(
       "modal-product-img",
     ) as HTMLImageElement | null;
+    const modalImg2 = document.getElementById(
+      "modal-product-img-2",
+    ) as HTMLImageElement | null;
 
-    if (!container || !modalImg) return;
+    if (!container || (!modalImg && !modalImg2)) return;
 
     const productLink = container.dataset.productLink || "";
     let imagen = DEFAULT_IMAGE;
     let imagenAlt = "Imagen del producto";
+    let imagen2 = DEFAULT_IMAGE;
+    let imagenAlt2 = "Imagen de fondo del formulario";
 
     // Cargar producto desde API si no está en caché
     if (!window.__detalleProducto && productLink) {
@@ -385,6 +396,10 @@ const { link = "" } = Astro.props as ModalProps;
       const imagenPopup = producto.producto_imagenes?.find(
         (img: any) => img.tipo === "popup",
       );
+      const imagenPopup2 = producto.producto_imagenes?.find((img: any) => {
+        const tipo = (img?.tipo || "").toLowerCase();
+        return tipo === "popup2" || tipo === "popup_2";
+      });
 
       if (imagenPopup?.url_imagen) {
         imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
@@ -398,14 +413,36 @@ const { link = "" } = Astro.props as ModalProps;
           producto.nombre ||
           "Imagen del producto";
       }
+
+      if (imagenPopup2?.url_imagen) {
+        imagen2 = `${config.apiUrl}${imagenPopup2.url_imagen}`;
+        imagenAlt2 =
+          imagenPopup2.texto_alt_SEO ||
+          producto.nombre ||
+          "Imagen de fondo del formulario";
+      } else {
+        imagen2 = imagen;
+        imagenAlt2 = imagenAlt;
+      }
     }
 
-    modalImg.src = imagen;
-    modalImg.alt = imagenAlt;
-    modalImg.onerror = function () {
-      modalImg.src = DEFAULT_IMAGE;
-      modalImg.alt = "Imagen por defecto";
-    };
+    if (modalImg) {
+      modalImg.src = imagen;
+      modalImg.alt = imagenAlt;
+      modalImg.onerror = function () {
+        modalImg.src = DEFAULT_IMAGE;
+        modalImg.alt = "Imagen por defecto";
+      };
+    }
+
+    if (modalImg2) {
+      modalImg2.src = imagen2;
+      modalImg2.alt = imagenAlt2;
+      modalImg2.onerror = function () {
+        modalImg2.src = DEFAULT_IMAGE;
+        modalImg2.alt = "Imagen por defecto";
+      };
+    }
   }
 
   function puedeMostrarModal() {
@@ -692,7 +729,9 @@ const { link = "" } = Astro.props as ModalProps;
   }
 
   // ====== CONECTAR OTROS MODALES AL MISMO ENVÍO ======
-  const extraForms = document.querySelectorAll(".form-cotizacion-producto");
+  const extraForms = document.querySelectorAll<HTMLFormElement>(
+    ".form-cotizacion-producto",
+  );
 
   extraForms.forEach((formExtra) => {
     if (formExtra.id === "form-cotizacion-producto") return; // evitar duplicar el principal
@@ -700,7 +739,7 @@ const { link = "" } = Astro.props as ModalProps;
     formExtra.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const container = formExtra.closest("[data-product-link]");
+      const container = formExtra.closest<HTMLElement>("[data-product-link]");
       const mensajeEl = container?.querySelector(".modal-cotizacion-mensaje");
 
       const data = new FormData(formExtra);
@@ -919,17 +958,11 @@ const { link = "" } = Astro.props as ModalProps;
       display: block !important;
     }
 
-    /* 📱 SOLO MÓVIL */
-    @media (max-width: 640px) {
-      .input-style {
-        padding: 10px 12px; /* ↓ menos alto */
-        font-size: 14px; /* ↓ texto un poco más chico */
-        border-radius: 12px; /* opcional */
-      }
+    .input-style {
+      padding: 10px 12px;
+      font-size: 14px;
+      border-radius: 12px;
     }
-  }
-
-    /* Botón de cerrar más grande y visible */
   }
 
   .img-white-zone {

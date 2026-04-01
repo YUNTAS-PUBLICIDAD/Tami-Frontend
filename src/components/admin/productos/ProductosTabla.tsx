@@ -223,8 +223,6 @@ const ProductosTabla = () => {
             confirmButtonText: "Sí, actualizar",
             cancelButtonText: "Cancelar",
         });
-        return;
-    }
 
         if (!result.isConfirmed) return;
 
@@ -307,28 +305,7 @@ const ProductosTabla = () => {
                 confirmButtonColor: "#14b8a6",
             });
         }
-
-        const data = await res.json();
-        console.log("Deploy exitoso:", data);
-
-    } catch (e) {
-        console.error("Error en deploy:", e);
-        
-        setDeployInProgress(false);
-        setDeployRemaining(null);
-
-        if (typeof window !== "undefined") {
-            localStorage.removeItem("deployCooldownUntil");
-        }
-
-        Swal.fire({
-            icon: "error",
-            title: "❌ Error",
-            text: e instanceof Error ? e.message : "No se pudo iniciar el despliegue.",
-            confirmButtonColor: "#14b8a6",
-        });
-    }
-};
+    };
 
 
 
