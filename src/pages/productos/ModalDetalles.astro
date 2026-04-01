@@ -16,7 +16,7 @@ const { link = "" } = Astro.props as ModalProps;
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
+    class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl h-[650px] sm:h-auto max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
   >
     <button
       id="close-modal-cotizacion"
@@ -41,9 +41,9 @@ const { link = "" } = Astro.props as ModalProps;
 
     <!-- Contenedor de imagen - Modificado para centrar y ajustar correctamente -->
 
-    <div class="w-full sm:w-1/2 relative z-20 bg-[#0c1142]">
+    <div class="w-full sm:w-1/2 h-1/2 sm:h-auto relative z-20 bg-[#0c1142]">
       <!-- Wrapper anti-corte -->
-      <div class="h-[220px] sm:h-full flex items-center justify-center p-6">
+      <div class="h-full flex items-center justify-center p-6">
         <img
           id="modal-product-img"
           src={DEFAULT_IMAGE}
@@ -56,7 +56,7 @@ const { link = "" } = Astro.props as ModalProps;
     <!-- Formulario dinámico -->
     <div
       id="modal-form-container"
-      class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 overflow-y-auto sm:overflow-visible"
+      class="w-full h-1/2 sm:w-1/2 py-4 px-6 sm:p-12 text-white flex flex-col justify-center sm:justify-center relative z-30 overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
@@ -73,7 +73,7 @@ const { link = "" } = Astro.props as ModalProps;
         <!-- TÍTULO DINÁMICO (ESTILO 1) -->
         <h2
           id="modal-title"
-          class="mx-auto max-w-[320px] text-xl sm:text-3xl font-light text-center leading-[1.25] sm:leading-[1.2] mb-6 invisible"
+          class="mx-auto max-w-[320px] text-xl sm:text-3xl font-light text-center leading-[1.25] sm:leading-[1.2] mb-6 hidden sm:block sm:invisible"
         >
           Descubre tu guia exclusiva de decoracion TOTALMENTE<br />
           <span class="font-extrabold">GRATIS</span>
@@ -130,7 +130,7 @@ const { link = "" } = Astro.props as ModalProps;
           </button>
           <p
             id="modal-negocios-text"
-            class="text-center mt-3 text-base sm:text-lg text-white font-bold tracking-wide invisible"
+            class="text-center mt-3 text-base sm:text-lg text-white font-bold tracking-wide hidden sm:block sm:invisible"
           >
             Asesoría gratuita
           </p>
@@ -820,11 +820,7 @@ const { link = "" } = Astro.props as ModalProps;
       backgroundModal.classList.add(sectionConfig.gradient);
     }
 
-    const negociosText = document.getElementById("modal-negocios-text");
-
-    if (negociosText) {
-      negociosText.classList.remove("hidden");
-    }
+    /* negociosText movido a invisible/hidden vía CSS en el HTML */
 
     if (btn) {
       // Resetear clases de botón completamente para evitar conflictos de Tailwind

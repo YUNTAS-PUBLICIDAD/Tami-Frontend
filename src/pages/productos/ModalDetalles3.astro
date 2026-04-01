@@ -16,7 +16,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
+    class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl h-[650px] sm:h-auto max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
   >
     <button
       id="close-modal-detalles-3"
@@ -28,7 +28,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     <!-- IMAGEN -->
     <div
       id="modal3-image-container"
-      class="w-full sm:w-1/2 relative z-20 h-[220px] sm:h-auto sm:min-h-[420px] bg-white overflow-hidden flex items-center justify-center"
+      class="w-full h-1/2 sm:w-1/2 relative z-20 sm:h-auto sm:min-h-[420px] bg-white overflow-hidden flex items-center justify-center"
     >
       <img
         id="modal3-product-img"
@@ -41,7 +41,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     <!-- FORMULARIO -->
     <div
       id="modal3-form-container"
-      class="w-full sm:w-1/2 pt-8 pb-6 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal3-panel overflow-y-auto sm:overflow-visible"
+      class="w-full h-1/2 sm:w-1/2 py-4 px-6 sm:p-12 text-white flex flex-col justify-center sm:justify-center relative z-30 modal3-panel overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
@@ -54,7 +54,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       />
 
       <h2 id="modal3-title"
-        class="relative z-20 text-2xl sm:text-4xl font-bold text-center leading-snug mb-4 invisible">
+        class="relative z-20 text-2xl sm:text-4xl font-bold text-center leading-snug mb-4 hidden sm:block sm:invisible">
       </h2>
 
       <form id="form-cotizacion-producto-3" class="relative z-20 flex flex-col gap-3" novalidate>
@@ -101,7 +101,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
           ¡Solicitar asesoría!
         </button>
 
-        <p class="text-center font-semibold mt-2 invisible">Asesoría gratuita</p>
+        <p class="text-center font-semibold mt-2 hidden sm:block sm:invisible">Asesoría gratuita</p>
       </form>
 
       <p id="modal3-mensaje" class="relative z-20 text-center mt-4"></p>
