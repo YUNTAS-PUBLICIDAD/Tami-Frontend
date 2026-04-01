@@ -61,7 +61,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
 
         <div
             id="previewStage"
-            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative min-h-[550px] transition-all duration-300 overflow-hidden"
+            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative min-h-[650px] transition-all duration-300 overflow-hidden"
         >
             <!-- Fondo oscuro (oculto por defecto) -->
             <div
@@ -73,7 +73,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
             <!-- CONTENEDOR RELATIVO -->
             <div
                 id="previewScrollModalContainer"
-                class="relative z-10 w-full min-h-[550px] flex justify-center items-center transition-all duration-300"
+                class="relative z-10 w-full min-h-[650px] flex justify-center items-center transition-all duration-300"
             >
                 <ScrollModal
                     client:only="react"
@@ -304,12 +304,8 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
 
     /* Tamaño de la vista previa de Escritorio (Sin marcos) */
     #previewStage:not(.is-mobile-view):not(.is-gmail) #previewScrollModalContainer {
-        /* Creamos un "lienzo" virtual absoluto 1080p para simular una pantalla completa de PC fiel a la realidad */
-        position: absolute;
-        width: 1920px;
-        height: 1080px;
-        left: 50%;
-        top: 50%;
+        width: 100%;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -317,7 +313,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
         /* ========================================================= */
         /* AQUÍ MODIFICAS EL TAMAÑO DE LA VISTA PREVIA DE ESCRITORIO */
         /* ========================================================= */
-        transform: translate(-50%, -50%) scale(0.65); /* <- Modifica este valor para el tamaño general */
+        transform: scale(1); /* <- Tamaño real del modal para mejor proporción */
     }
 
     /* Gmail preview specific tweaks */
