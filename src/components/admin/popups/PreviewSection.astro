@@ -293,6 +293,33 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
 
+    /* Fondo para la vista previa de escritorio (igual al móvil) */
+    #previewStage:not(.is-mobile-view):not(.is-gmail) {
+        background-color: #f3f4f6;
+    }
+
+    .dark #previewStage:not(.is-mobile-view):not(.is-gmail) {
+        background-color: #111827;
+    }
+
+    /* Tamaño de la vista previa de Escritorio (Sin marcos) */
+    #previewStage:not(.is-mobile-view):not(.is-gmail) #previewScrollModalContainer {
+        /* Creamos un "lienzo" virtual absoluto 1080p para simular una pantalla completa de PC fiel a la realidad */
+        position: absolute;
+        width: 1920px;
+        height: 1080px;
+        left: 50%;
+        top: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* ========================================================= */
+        /* AQUÍ MODIFICAS EL TAMAÑO DE LA VISTA PREVIA DE ESCRITORIO */
+        /* ========================================================= */
+        transform: translate(-50%, -50%) scale(0.65); /* <- Modifica este valor para el tamaño general */
+    }
+
     /* Gmail preview specific tweaks */
     #previewStage.is-gmail {
         background-color: #f8f9fa;

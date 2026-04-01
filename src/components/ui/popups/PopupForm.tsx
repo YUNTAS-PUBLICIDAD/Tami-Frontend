@@ -47,7 +47,7 @@ const PopupForm = ({
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[600px] rounded-[28px] shadow-none" : "flex-row w-[1100px] max-w-none h-[550px] rounded-xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[600px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -110,7 +110,7 @@ const PopupForm = ({
 
           {/* Form Content */}
           <div className="relative z-10 w-full text-white animate-fadeInRight h-full">
-            <div className={`sm:py-10 p-8 sm:px-8 h-full flex flex-col justify-start gap-6 ${isPreview && previewMode === "mobile" ? "!pb-2" : ""}`}>
+            <div className="sm:py-10 p-8 pb-2 sm:px-8 h-full flex flex-col justify-start gap-6">
               {/* Close Button */}
               <button
                 onClick={closeModal}
@@ -135,7 +135,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-0 max-w-[280px]" : "sm:mt-48 mb-4 max-w-[320px]") : "mt-auto mb-6 sm:mb-4 sm:mt-48 max-w-[280px] sm:max-w-[320px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-0 max-w-[250px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-0 sm:mb-4 sm:mt-48 max-w-[250px] sm:max-w-[320px]"} w-full mx-auto`}
               >
                 <div className="relative mb-3">
                   {errors.general_top && (
