@@ -573,6 +573,34 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                         window.dispatchEvent(new CustomEvent("update-email-editor", { detail: settings.emailBody }));
                     }
 
+                    if (settings.emailImage) {
+                        const previewImg = document.getElementById(
+                            "previewEmailImageThumb",
+                        );
+                        const container = document.getElementById(
+                            "previewEmailAttachementContainer",
+                        );
+                        if (previewImg && container) {
+                            previewImg.innerHTML = `<img src="${settings.emailImage}" class="w-full h-full object-cover">`;
+                            container.classList.remove("hidden");
+                        }
+                        clearEmailImage?.classList.remove("hidden");
+                    }
+
+                    if (settings.emailBody) {
+                        const previewCorreoBody =
+                            document.getElementById("previewCorreoBody");
+                        if (previewCorreoBody) {
+                            previewCorreoBody.innerHTML = settings.emailBody;
+                        }
+                        // Update the React component value via hidden input and custom event if needed
+                        window.dispatchEvent(
+                            new CustomEvent("update-email-editor", {
+                                detail: settings.emailBody,
+                            }),
+                        );
+                    }
+
                     if (settings.image1) {
                         updatePreview({ popup_image_url: settings.image1 });
                         clearImage1?.classList.remove("hidden");

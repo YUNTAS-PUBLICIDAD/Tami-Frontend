@@ -61,7 +61,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
 
         <div
             id="previewStage"
-            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative min-h-[500px] transition-all duration-300"
+            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-center items-center relative min-h-[550px] transition-all duration-300 overflow-hidden"
         >
             <!-- Fondo oscuro (oculto por defecto) -->
             <div
@@ -73,7 +73,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
             <!-- CONTENEDOR RELATIVO -->
             <div
                 id="previewScrollModalContainer"
-                class="relative z-10 w-full min-h-[500px] flex justify-center items-center"
+                class="relative z-10 w-full min-h-[550px] flex justify-center items-center transition-all duration-300"
             >
                 <ScrollModal
                     client:only="react"
@@ -262,3 +262,71 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
         </div>
     </div>
 </div>
+
+<style is:global>
+    /* Estilos para cuando la vista previa está en modo móvil */
+    #previewStage.is-mobile-view {
+        min-height: 650px;
+        background-color: #f3f4f6;
+    }
+
+    .dark #previewStage.is-mobile-view {
+        background-color: #111827;
+    }
+
+    #previewStage.is-mobile-view #previewScrollModalContainer {
+        padding: 40px 0;
+        transform: scale(0.85);
+        transform-origin: center center;
+    }
+
+    /* Simulación de marco de teléfono para una vista más premium */
+    #previewStage.is-mobile-view #previewScrollModalContainer::before {
+        content: "";
+        position: absolute;
+        width: 344px;
+        height: 624px;
+        border: 12px solid #1f2937;
+        border-radius: 40px;
+        background: transparent;
+        z-index: -1;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Fondo para la vista previa de escritorio (igual al móvil) */
+    #previewStage:not(.is-mobile-view):not(.is-gmail) {
+        background-color: #f3f4f6;
+    }
+
+    .dark #previewStage:not(.is-mobile-view):not(.is-gmail) {
+        background-color: #111827;
+    }
+
+    /* Tamaño de la vista previa de Escritorio (Sin marcos) */
+    #previewStage:not(.is-mobile-view):not(.is-gmail) #previewScrollModalContainer {
+        /* Creamos un "lienzo" virtual absoluto 1080p para simular una pantalla completa de PC fiel a la realidad */
+        position: absolute;
+        width: 1920px;
+        height: 1080px;
+        left: 50%;
+        top: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* ========================================================= */
+        /* AQUÍ MODIFICAS EL TAMAÑO DE LA VISTA PREVIA DE ESCRITORIO */
+        /* ========================================================= */
+        transform: translate(-50%, -50%) scale(0.65); /* <- Modifica este valor para el tamaño general */
+    }
+
+    /* Gmail preview specific tweaks */
+    #previewStage.is-gmail {
+        background-color: #f8f9fa;
+        min-height: 600px;
+    }
+
+    .dark #previewStage.is-gmail {
+        background-color: #0f172a;
+    }
+</style>
