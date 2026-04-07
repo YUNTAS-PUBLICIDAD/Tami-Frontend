@@ -73,7 +73,7 @@ const { link = "" } = Astro.props as ModalProps;
         <!-- TÍTULO DINÁMICO (ESTILO 1) -->
         <h2
           id="modal-title"
-          class="mx-auto max-w-[320px] text-xl sm:text-3xl font-light text-center leading-[1.25] sm:leading-[1.2] mb-6 hidden sm:block sm:invisible"
+          class="mx-auto max-w-[320px] text-xl sm:text-3xl font-light text-center leading-[1.25] sm:leading-[1.2] mb-6 hidden sm:block sm:invisible break-words"
         >
           Descubre tu guia exclusiva de decoracion TOTALMENTE<br />
           <span class="font-extrabold">GRATIS</span>
@@ -82,7 +82,7 @@ const { link = "" } = Astro.props as ModalProps;
         <form id="form-cotizacion-producto" class="relative z-20 flex flex-col gap-3" novalidate>
           <p
             data-validation-message
-            class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
+            class="hidden text-base font-bold text-[#FF0000] text-center mb-1 break-words"
           ></p>
 
           <!-- <label class="text-base sm:text-lg font-bold select-none">Nombre</label> -->
@@ -135,7 +135,7 @@ const { link = "" } = Astro.props as ModalProps;
             Asesoría gratuita
           </p>
         </form>
-        <p id="modal-cotizacion-mensaje" class="text-center mt-4"></p>
+        <p id="modal-cotizacion-mensaje" class="text-center mt-4 break-words"></p>
       </div>
     </div>
   </div>

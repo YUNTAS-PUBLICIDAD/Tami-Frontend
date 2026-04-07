@@ -101,12 +101,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                 <div className="w-full px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
                     <div className="flex flex-col justify-center text-left">
-                        <h1 className="text-5xl md:text-8xl font-extrabold uppercase mb-6">
+                        <h1 className="text-5xl md:text-8xl font-extrabold uppercase mb-6 break-words">
                             {producto.titulo?.split(' ')[0]}
                             <span className="block text-[#2DCCFF]">{producto.titulo?.split(' ').slice(1).join(' ')}</span>
                         </h1>
 
-                        <p className="text-xl md:text-4xl opacity-90 mb-10 max-full uppercase tracking-wider font-light">
+                        <p className="text-xl md:text-4xl opacity-90 mb-10 max-full uppercase tracking-wider font-light break-words">
                             {producto.subtitulo}
                         </p>
 
@@ -180,13 +180,13 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                         </div>
 
                         <div >
-                            <h2 className="text-center text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4">
+                            <h2 className="text-center text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4 break-words">
                                 {producto.titulo}
                             </h2>
 
                             <div className="mb-6">
                                 <h3 className="text-center text-3xl font-bold text-[#00b6ff] mb-2">Información del producto:</h3>
-                                <p className="text-gray-600 text-base leading-relaxed">
+                                <p className="text-gray-600 text-base leading-relaxed break-words">
                                     {producto.descripcion}
                                 </p>
                             </div>
@@ -197,7 +197,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 <h4 className="font-semibold text-lg text-gray-800 mb-2">Especificaciones técnicas:</h4>
                                 <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
                                     {producto.especificaciones?.map((spec, index) => (
-                                        <li key={index}>{spec.valor}</li>
+                                        <li key={index} className="break-words">{spec.valor}</li>
                                     ))}
                                 </ul>
 
@@ -208,19 +208,19 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     </div>
                                     <ul className="space-y-3">
                                         {producto.dimensiones?.alto && (
-                                            <li className="flex items-center gap-3 text-gray-700 text-lg">
+                                            <li className="flex items-center gap-3 text-gray-700 text-lg break-words">
                                                 <span className={`w-8 h-8 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-base font-bold`}>H</span>
                                                 Alto - {producto.dimensiones.alto} cm
                                             </li>
                                         )}
                                         {producto.dimensiones?.largo && (
-                                            <li className="flex items-center gap-3 text-gray-700 text-lg">
+                                            <li className="flex items-center gap-3 text-gray-700 text-lg break-words">
                                                 <span className={`w-8 h-8 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-base font-bold`}>L</span>
                                                 Largo - {producto.dimensiones.largo} cm
                                             </li>
                                         )}
                                         {producto.dimensiones?.ancho && (
-                                            <li className="flex items-center gap-3 text-gray-700 text-lg">
+                                            <li className="flex items-center gap-3 text-gray-700 text-lg break-words">
                                                 <span className={`w-8 h-8 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-base font-bold`}>A</span>
                                                 Ancho - {producto.dimensiones.ancho} cm
                                             </li>
