@@ -303,7 +303,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
     }
 
     /* Tamaño de la vista previa de Escritorio (Sin marcos) */
-    #previewStage:not(.is-mobile-view):not(.is-gmail) #previewScrollModalContainer {
+    #previewStage:not(.is-mobile-view):not(.is-gmail) #previewScrollModalContainer:not(.hidden) {
         /* Creamos un "lienzo" virtual absoluto 1080p para simular una pantalla completa de PC fiel a la realidad */
         position: absolute;
         width: 1920px;
