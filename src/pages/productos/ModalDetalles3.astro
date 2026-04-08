@@ -54,13 +54,13 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       />
 
       <h2 id="modal3-title"
-        class="relative z-20 text-2xl sm:text-4xl font-bold text-center leading-snug mb-4 hidden sm:block sm:invisible">
+        class="relative z-20 text-2xl sm:text-4xl font-bold text-center leading-snug mb-4 hidden sm:block sm:invisible break-words">
       </h2>
 
       <form id="form-cotizacion-producto-3" class="relative z-20 flex flex-col gap-3" novalidate>
         <p
           data-validation-message
-          class="hidden text-base font-bold text-[#FF0000] text-center mb-1"
+          class="hidden text-base font-bold text-[#FF0000] text-center mb-1 break-words"
         ></p>
 
         <input
@@ -104,7 +104,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         <p class="text-center font-semibold mt-2 hidden sm:block sm:invisible">Asesoría gratuita</p>
       </form>
 
-      <p id="modal3-mensaje" class="relative z-20 text-center mt-4"></p>
+      <p id="modal3-mensaje" class="relative z-20 text-center mt-4 break-words"></p>
     </div>
   </div>
 </div>

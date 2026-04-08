@@ -135,7 +135,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-0 max-w-[250px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-0 sm:mb-4 sm:mt-48 max-w-[250px] sm:max-w-[320px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-0 max-w-[210px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-0 sm:mb-4 sm:mt-48 max-w-[225px] sm:max-w-[320px]"} w-full mx-auto`}
               >
                 <div className="relative mb-3">
                   {errors.general_top && (
@@ -192,7 +192,7 @@ const PopupForm = ({
                       backgroundColor: settings?.button_bg_color || "#4FB9AF",
                       color: settings?.button_text_color || "#ffffff",
                     }}
-                    className="rounded-full w-fit py-2 px-4 text-sm uppercase font-black tracking-[0.2em] shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95"
+                    className={`rounded-full w-fit uppercase font-black shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-3 text-[11px] tracking-[0.12em]" : "py-1.5 px-3.5 text-xs sm:py-2 sm:px-4 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
                   >
                     {isSubmitting ? "Enviando..." : "CONOCER MÁS"}
                   </button>
