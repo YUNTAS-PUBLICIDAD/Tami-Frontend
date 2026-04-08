@@ -50,6 +50,13 @@ const EmailEditor = ({
 
   return (
     <div className="email-editor-wrapper dark:text-white">
+      <style>{`
+        .ql-editor {
+          min-height: 200px;
+          max-height: 500px;
+          overflow-y: auto;
+        }
+      `}</style>
       <ReactQuill
         theme="snow"
         value={value}
