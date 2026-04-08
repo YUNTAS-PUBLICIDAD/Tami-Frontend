@@ -57,7 +57,7 @@ jobs:
 
       # ✅ MEJORADO: Deploy con reintentos automáticos
       - name: Deploy with Rsync
-        uses: nick-fields/retry@v3   # modificacion del nombre y version para que funcione el deploy 
+        uses: nick-fields/retry@v3   # modificacion del nombre y version para que funcione el deploy , de cambio a V3 por que pronto github dejara obsoleto la version v2 pq era la que manejaba node 16
         with:
           timeout_minutes: 10
           max_attempts: 3
