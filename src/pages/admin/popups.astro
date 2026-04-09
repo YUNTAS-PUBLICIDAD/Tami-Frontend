@@ -91,7 +91,7 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                                 aria-live="polite"
                             >
                             </p>
-                            <div class="flex justify-end">
+                            <div class="flex justify-center lg:justify-end">
                                 <button
                                     type="button"
                                     id="btnGuardarPopups"
@@ -140,7 +140,8 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
         const previewStage = document.getElementById("previewStage");
         const statusElement = document.getElementById("popupStatus");
 
-        let currentMode = "desktop";
+        const isMobileScreen = window.innerWidth < 1024;
+        let currentMode = isMobileScreen ? "mobile" : "desktop";
 
         if (
             !tabPopups ||
@@ -155,6 +156,33 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 
         const tabs = [tabPopups, tabWhatsapp, tabCorreo];
         const contents = [contentPopups, contentWhatsapp, contentCorreo];
+
+        const activeModeClasses = [
+            "bg-white",
+            "dark:bg-gray-700",
+            "text-teal-600",
+            "dark:text-teal-400",
+            "shadow-sm",
+        ];
+        const inactiveModeClasses = [
+            "text-gray-500",
+            "dark:text-gray-400",
+            "hover:text-gray-700",
+            "dark:hover:text-gray-200",
+        ];
+
+        // Apply initial classes based on mobile screen size
+        if (isMobileScreen) {
+            btnMobile.classList.remove(...inactiveModeClasses);
+            btnMobile.classList.add(...activeModeClasses);
+            btnDesktop.classList.remove(...activeModeClasses);
+            btnDesktop.classList.add(...inactiveModeClasses);
+        } else {
+            btnDesktop.classList.remove(...inactiveModeClasses);
+            btnDesktop.classList.add(...activeModeClasses);
+            btnMobile.classList.remove(...activeModeClasses);
+            btnMobile.classList.add(...inactiveModeClasses);
+        }
 
         function updatePreview(settings = {}, mode = null) {
             console.log("[popups.astro] Dispatching updatePreview:", {
@@ -257,20 +285,6 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 
         activarTab(tabPopups, contentPopups, "popups");
 
-        const activeModeClasses = [
-            "bg-white",
-            "dark:bg-gray-700",
-            "text-teal-600",
-            "dark:text-teal-400",
-            "shadow-sm",
-        ];
-        const inactiveModeClasses = [
-            "text-gray-500",
-            "dark:text-gray-400",
-            "hover:text-gray-700",
-            "dark:hover:text-gray-200",
-        ];
-
         btnDesktop.onclick = () => {
             currentMode = "desktop";
             btnDesktop.classList.remove(...inactiveModeClasses);
@@ -290,6 +304,14 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
             if (previewStage) previewStage.classList.add("is-mobile-view");
             updatePreview({}, "mobile");
         };
+
+        window.addEventListener("resize", () => {
+            const isNowMobile = window.innerWidth < 1024;
+            if (isNowMobile && currentMode !== "mobile") {
+                // Forzar modo móvil si la pantalla se reduce
+                if (btnMobile) btnMobile.click();
+            }
+        });
 
         // SYNC INPUTS TO PREVIEW
         const textareaWhatsapp = document.getElementById(

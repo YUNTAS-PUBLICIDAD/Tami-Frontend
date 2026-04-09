@@ -12,10 +12,10 @@ import CopyText from "./CopyText.astro";
   >
     
     <!-- BLOQUE 1: Logo + Línea + Enlaces -->
-    <div class="flex flex-row items-stretch justify-center w-full gap-4 lg:gap-10">
+    <div class="flex flex-col lg:flex-row items-center lg:items-stretch justify-center w-full gap-4 lg:gap-10">
       
       <!-- LOGO -->
-      <div class="w-5/12 lg:w-auto flex items-center justify-end lg:justify-start lg:self-start lg:mt-1">
+      <div class="w-full lg:w-auto flex items-center justify-center lg:justify-start lg:self-start lg:mt-1">
         <img
           src={logoTami.src}
           alt="Logo de Tami"
@@ -28,15 +28,15 @@ import CopyText from "./CopyText.astro";
       </div>
 
 
-      <div class="block border-l-2 border-white opacity-70 self-stretch"></div>
+      <div class="hidden lg:block lg:border-l-2 border-white opacity-70 self-stretch"></div>
 
       <!-- 3. ENLACES -->
       <!-- 
 
       -->
-      <div class="w-6/12 lg:w-full flex flex-col justify-center lg:block pt-1">
+      <div class="w-full flex flex-col items-center justify-center lg:block pt-1">
         
-        <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-16 font-semibold text-sm lg:text-base text-center lg:text-left">
+        <div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-16 font-semibold text-base text-center lg:text-left">
           
           <!-- Primera lista -->
           <ul class="space-y-3 mb-3 lg:mb-0">
@@ -56,6 +56,9 @@ import CopyText from "./CopyText.astro";
 
         </div>
       </div>
+
+      <!-- Separador móvil después de enlaces -->
+      <div class="block lg:hidden w-50 border-t-2 border-white opacity-70"></div>
     </div>
 
     <!-- BLOQUE 2: Horario de atención -->
