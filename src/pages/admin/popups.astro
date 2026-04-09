@@ -390,12 +390,24 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
         });
 
         // IMAGE UPLOADS
-        const popupImage1 = document.getElementById("popupImage1") as HTMLInputElement;
-        const popupImage2 = document.getElementById("popupImage2") as HTMLInputElement;
-        const popupImageMobile = document.getElementById("popupImageMobile") as HTMLInputElement;
-        const popupImageMobile2 = document.getElementById("popupImageMobile2") as HTMLInputElement;
-        const whatsappImage = document.getElementById("whatsappImage") as HTMLInputElement;
-        const emailImage = document.getElementById("emailImage") as HTMLInputElement;
+        const popupImage1 = document.getElementById(
+            "popupImage1",
+        ) as HTMLInputElement;
+        const popupImage2 = document.getElementById(
+            "popupImage2",
+        ) as HTMLInputElement;
+        const popupImageMobile = document.getElementById(
+            "popupImageMobile",
+        ) as HTMLInputElement;
+        const popupImageMobile2 = document.getElementById(
+            "popupImageMobile2",
+        ) as HTMLInputElement;
+        const whatsappImage = document.getElementById(
+            "whatsappImage",
+        ) as HTMLInputElement;
+        const emailImage = document.getElementById(
+            "emailImage",
+        ) as HTMLInputElement;
 
         const clearImage1 = document.getElementById("clearImage1");
         const clearImage2 = document.getElementById("clearImage2");
@@ -419,7 +431,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 updatePreview({ popup_image_url: url as string });
                 clearImage1?.classList.remove("hidden");
                 localStorage.setItem("popupImage", url as string);
-                const del = document.getElementById("delete_popupImage1") as HTMLInputElement;
+                const del = document.getElementById(
+                    "delete_popupImage1",
+                ) as HTMLInputElement;
                 if (del) del.value = "0";
             });
         });
@@ -428,7 +442,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
             updatePreview({ popup_image_url: null });
             clearImage1.classList.add("hidden");
             localStorage.removeItem("popupImage");
-            const del = document.getElementById("delete_popupImage1") as HTMLInputElement;
+            const del = document.getElementById(
+                "delete_popupImage1",
+            ) as HTMLInputElement;
             if (del) del.value = "1";
         });
 
@@ -437,7 +453,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 updatePreview({ popup_image2_url: url as string });
                 clearImage2?.classList.remove("hidden");
                 localStorage.setItem("popupImage2", url as string);
-                const del = document.getElementById("delete_popupImage2") as HTMLInputElement;
+                const del = document.getElementById(
+                    "delete_popupImage2",
+                ) as HTMLInputElement;
                 if (del) del.value = "0";
             });
         });
@@ -446,7 +464,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
             updatePreview({ popup_image2_url: null });
             clearImage2.classList.add("hidden");
             localStorage.removeItem("popupImage2");
-            const del = document.getElementById("delete_popupImage2") as HTMLInputElement;
+            const del = document.getElementById(
+                "delete_popupImage2",
+            ) as HTMLInputElement;
             if (del) del.value = "1";
         });
 
@@ -455,7 +475,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 updatePreview({ popup_mobile_image_url: url as string });
                 clearImageMobile?.classList.remove("hidden");
                 localStorage.setItem("popupImageMobile", url as string);
-                const del = document.getElementById("delete_popupImageMobile") as HTMLInputElement;
+                const del = document.getElementById(
+                    "delete_popupImageMobile",
+                ) as HTMLInputElement;
                 if (del) del.value = "0";
             });
         });
@@ -464,7 +486,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
             updatePreview({ popup_mobile_image_url: null });
             clearImageMobile.classList.add("hidden");
             localStorage.removeItem("popupImageMobile");
-            const del = document.getElementById("delete_popupImageMobile") as HTMLInputElement;
+            const del = document.getElementById(
+                "delete_popupImageMobile",
+            ) as HTMLInputElement;
             if (del) del.value = "1";
         });
 
@@ -473,7 +497,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 updatePreview({ popup_mobile_image2_url: url as string });
                 clearImageMobile2?.classList.remove("hidden");
                 localStorage.setItem("popupImageMobile2", url as string);
-                const del = document.getElementById("delete_popupImageMobile2") as HTMLInputElement;
+                const del = document.getElementById(
+                    "delete_popupImageMobile2",
+                ) as HTMLInputElement;
                 if (del) del.value = "0";
             });
         });
@@ -482,14 +508,20 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
             updatePreview({ popup_mobile_image2_url: null });
             clearImageMobile2.classList.add("hidden");
             localStorage.removeItem("popupImageMobile2");
-            const del = document.getElementById("delete_popupImageMobile2") as HTMLInputElement;
+            const del = document.getElementById(
+                "delete_popupImageMobile2",
+            ) as HTMLInputElement;
             if (del) del.value = "1";
         });
 
         emailImage?.addEventListener("change", function () {
             handleImageUpload(this, (url) => {
-                const previewImg = document.getElementById("previewEmailImageThumb");
-                const container = document.getElementById("previewEmailAttachementContainer");
+                const previewImg = document.getElementById(
+                    "previewEmailImageThumb",
+                );
+                const container = document.getElementById(
+                    "previewEmailAttachementContainer",
+                );
                 if (previewImg && container) {
                     previewImg.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
                     container.classList.remove("hidden");
@@ -499,20 +531,27 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
         });
         clearEmailImage?.addEventListener("click", () => {
             if (emailImage) emailImage.value = "";
-            const previewImg = document.getElementById("previewEmailImageThumb");
-            const container = document.getElementById("previewEmailAttachementContainer");
+            const previewImg = document.getElementById(
+                "previewEmailImageThumb",
+            );
+            const container = document.getElementById(
+                "previewEmailAttachementContainer",
+            );
             if (previewImg && container) {
                 previewImg.innerHTML = "";
                 container.classList.add("hidden");
             }
             clearEmailImage.classList.add("hidden");
-            const del = document.getElementById("delete_emailImage") as HTMLInputElement;
+            const del = document.getElementById(
+                "delete_emailImage",
+            ) as HTMLInputElement;
             if (del) del.value = "1";
         });
 
         // Event for Email Preview update from EmailEditor.tsx (Rich Text)
         window.addEventListener("update-email-preview", (e: any) => {
-            const previewCorreoBody = document.getElementById("previewCorreoBody");
+            const previewCorreoBody =
+                document.getElementById("previewCorreoBody");
             if (previewCorreoBody) {
                 previewCorreoBody.innerHTML = e.detail;
             }
@@ -520,24 +559,34 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 
         whatsappImage?.addEventListener("change", function () {
             handleImageUpload(this, (url) => {
-                const previewWAImg = document.getElementById("previewWhatsappImageContainer");
+                const previewWAImg = document.getElementById(
+                    "previewWhatsappImageContainer",
+                );
                 if (previewWAImg) {
                     previewWAImg.innerHTML = `<img src="${url}" class="w-full h-auto object-contain">`;
                     previewWAImg.classList.remove("hidden");
                 }
-                document.getElementById("clearWhatsappImage")?.classList.remove("hidden");
+                document
+                    .getElementById("clearWhatsappImage")
+                    ?.classList.remove("hidden");
             });
         });
 
-        document.getElementById("clearWhatsappImage")?.addEventListener("click", () => {
-            if (whatsappImage) whatsappImage.value = "";
-            const previewWAImg = document.getElementById("previewWhatsappImageContainer");
-            if (previewWAImg) {
-                previewWAImg.innerHTML = "";
-                previewWAImg.classList.add("hidden");
-            }
-            document.getElementById("clearWhatsappImage")?.classList.add("hidden");
-        });
+        document
+            .getElementById("clearWhatsappImage")
+            ?.addEventListener("click", () => {
+                if (whatsappImage) whatsappImage.value = "";
+                const previewWAImg = document.getElementById(
+                    "previewWhatsappImageContainer",
+                );
+                if (previewWAImg) {
+                    previewWAImg.innerHTML = "";
+                    previewWAImg.classList.add("hidden");
+                }
+                document
+                    .getElementById("clearWhatsappImage")
+                    ?.classList.add("hidden");
+            });
 
         // LOAD SETTINGS FROM API
         async function loadSettings() {
@@ -546,53 +595,63 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 const settings = (await getPopupSettings()) as any;
                 if (settings) {
                     if (btnBgColorInput)
-                        btnBgColorInput.value = settings.button_bg_color || settings.btnBgColor || "#14b8a6";
+                        btnBgColorInput.value =
+                            settings.button_bg_color ||
+                            settings.btnBgColor ||
+                            "#14b8a6";
                     if (btnTextColorInput)
-                        btnTextColorInput.value = settings.button_text_color || settings.btnTextColor || "#ffffff";
+                        btnTextColorInput.value =
+                            settings.button_text_color ||
+                            settings.btnTextColor ||
+                            "#ffffff";
                     if (popupInicioDelayInput)
-                        popupInicioDelayInput.value = String(settings.popup_start_delay_minutes || settings.popupInicioDelay || 1);
+                        popupInicioDelayInput.value = String(
+                            settings.popup_start_delay_minutes ||
+                                settings.popupInicioDelay ||
+                                1,
+                        );
 
-                    const popupProductosDelay = document.getElementById("popupProductosDelay") as HTMLSelectElement;
+                    const popupProductosDelay = document.getElementById(
+                        "popupProductosDelay",
+                    ) as HTMLSelectElement;
                     if (popupProductosDelay)
-                        popupProductosDelay.value = String(settings.product_popup_delay_minutes || settings.popupProductosDelay || 1);
+                        popupProductosDelay.value = String(
+                            settings.product_popup_delay_minutes ||
+                                settings.popupProductosDelay ||
+                                1,
+                        );
 
-                    const whatsappMessage = document.getElementById("whatsappMessage") as HTMLTextAreaElement;
+                    const whatsappMessage = document.getElementById(
+                        "whatsappMessage",
+                    ) as HTMLTextAreaElement;
                     if (whatsappMessage && settings.whatsappMessage) {
                         whatsappMessage.value = settings.whatsappMessage;
-                        if (previewWhatsappText) previewWhatsappText.textContent = settings.whatsappMessage;
+                        if (previewWhatsappText)
+                            previewWhatsappText.textContent =
+                                settings.whatsappMessage;
                     }
 
-                    const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
+                    const emailTitleInput = document.getElementById(
+                        "emailTitle",
+                    ) as HTMLInputElement;
                     if (emailTitleInput && settings.emailTitle) {
                         emailTitleInput.value = settings.emailTitle;
-                        if (previewCorreoTitle) previewCorreoTitle.textContent = settings.emailTitle;
+                        if (previewCorreoTitle)
+                            previewCorreoTitle.textContent =
+                                settings.emailTitle;
                     }
 
                     if (settings.whatsappImage) {
-                        const previewWAImg = document.getElementById("previewWhatsappImageContainer");
+                        const previewWAImg = document.getElementById(
+                            "previewWhatsappImageContainer",
+                        );
                         if (previewWAImg) {
                             previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-auto object-contain">`;
                             previewWAImg.classList.remove("hidden");
                         }
-                        document.getElementById("clearWhatsappImage")?.classList.remove("hidden");
-                    }
-
-                    if (settings.emailImage) {
-                        const previewImg = document.getElementById("previewEmailImageThumb");
-                        const container = document.getElementById("previewEmailAttachementContainer");
-                        if (previewImg && container) {
-                            previewImg.innerHTML = `<img src="${settings.emailImage}" class="w-full h-full object-cover">`;
-                            container.classList.remove("hidden");
-                        }
-                        clearEmailImage?.classList.remove("hidden");
-                    }
-
-                    if (settings.emailBody) {
-                        const previewCorreoBody = document.getElementById("previewCorreoBody");
-                        if (previewCorreoBody) {
-                            previewCorreoBody.innerHTML = settings.emailBody;
-                        }
-                        window.dispatchEvent(new CustomEvent("update-email-editor", { detail: settings.emailBody }));
+                        document
+                            .getElementById("clearWhatsappImage")
+                            ?.classList.remove("hidden");
                     }
 
                     if (settings.emailImage) {
@@ -615,7 +674,33 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                         if (previewCorreoBody) {
                             previewCorreoBody.innerHTML = settings.emailBody;
                         }
-                        // Update the React component value via hidden input and custom event if needed
+                        window.dispatchEvent(
+                            new CustomEvent("update-email-editor", {
+                                detail: settings.emailBody,
+                            }),
+                        );
+                    }
+
+                    if (settings.emailImage) {
+                        const previewImg = document.getElementById(
+                            "previewEmailImageThumb",
+                        );
+                        const container = document.getElementById(
+                            "previewEmailAttachementContainer",
+                        );
+                        if (previewImg && container) {
+                            previewImg.innerHTML = `<img src="${settings.emailImage}" class="w-full h-full object-cover">`;
+                            container.classList.remove("hidden");
+                        }
+                        clearEmailImage?.classList.remove("hidden");
+                    }
+
+                    if (settings.emailBody) {
+                        const previewCorreoBody =
+                            document.getElementById("previewCorreoBody");
+                        if (previewCorreoBody) {
+                            previewCorreoBody.innerHTML = settings.emailBody;
+                        }
                         window.dispatchEvent(
                             new CustomEvent("update-email-editor", {
                                 detail: settings.emailBody,
@@ -632,39 +717,80 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                         clearImage2?.classList.remove("hidden");
                     }
                     if (settings.imageMobile) {
-                        updatePreview({ popup_mobile_image_url: settings.imageMobile });
+                        updatePreview({
+                            popup_mobile_image_url: settings.imageMobile,
+                        });
                         clearImageMobile?.classList.remove("hidden");
                     }
                     if (settings.imageMobile2) {
-                        updatePreview({ popup_mobile_image2_url: settings.imageMobile2 });
+                        updatePreview({
+                            popup_mobile_image2_url: settings.imageMobile2,
+                        });
                         clearImageMobile2?.classList.remove("hidden");
                     }
 
                     updatePreview({
                         button_bg_color: settings.button_bg_color,
                         button_text_color: settings.button_text_color,
-                        popup_start_delay_minutes: settings.popup_start_delay_minutes,
-                        product_popup_delay_minutes: settings.product_popup_delay_minutes,
+                        popup_start_delay_minutes:
+                            settings.popup_start_delay_minutes,
+                        product_popup_delay_minutes:
+                            settings.product_popup_delay_minutes,
                     });
                 }
 
                 const savedImage1 = localStorage.getItem("popupImage");
                 const savedImage2 = localStorage.getItem("popupImage2");
-                const savedImageMobile = localStorage.getItem("popupImageMobile");
-                const savedImageMobile2 = localStorage.getItem("popupImageMobile2");
+                const savedImageMobile =
+                    localStorage.getItem("popupImageMobile");
+                const savedImageMobile2 =
+                    localStorage.getItem("popupImageMobile2");
                 const savedBgColor = localStorage.getItem("popupBtnBgColor");
-                const savedTextColor = localStorage.getItem("popupBtnTextColor");
+                const savedTextColor =
+                    localStorage.getItem("popupBtnTextColor");
                 const savedDelay = localStorage.getItem("popupDelay");
-                const savedProductDelay = localStorage.getItem("popupProductDelay");
+                const savedProductDelay =
+                    localStorage.getItem("popupProductDelay");
 
-                if (savedImage1) { updatePreview({ popup_image_url: savedImage1 }); clearImage1?.classList.remove("hidden"); }
-                if (savedImage2) { updatePreview({ popup_image2_url: savedImage2 }); clearImage2?.classList.remove("hidden"); }
-                if (savedImageMobile) { updatePreview({ popup_mobile_image_url: savedImageMobile }); clearImageMobile?.classList.remove("hidden"); }
-                if (savedImageMobile2) { updatePreview({ popup_mobile_image2_url: savedImageMobile2 }); clearImageMobile2?.classList.remove("hidden"); }
-                if (savedBgColor && btnBgColorInput) { btnBgColorInput.value = savedBgColor; updatePreview({ button_bg_color: savedBgColor }); }
-                if (savedTextColor && btnTextColorInput) { btnTextColorInput.value = savedTextColor; updatePreview({ button_text_color: savedTextColor }); }
-                if (savedDelay && popupInicioDelayInput) { popupInicioDelayInput.value = savedDelay; updatePreview({ popup_start_delay_minutes: parseInt(savedDelay) }); }
-                if (savedProductDelay && popupProductosDelayInput) { popupProductosDelayInput.value = savedProductDelay; updatePreview({ product_popup_delay_minutes: parseInt(savedProductDelay) }); }
+                if (savedImage1) {
+                    updatePreview({ popup_image_url: savedImage1 });
+                    clearImage1?.classList.remove("hidden");
+                }
+                if (savedImage2) {
+                    updatePreview({ popup_image2_url: savedImage2 });
+                    clearImage2?.classList.remove("hidden");
+                }
+                if (savedImageMobile) {
+                    updatePreview({ popup_mobile_image_url: savedImageMobile });
+                    clearImageMobile?.classList.remove("hidden");
+                }
+                if (savedImageMobile2) {
+                    updatePreview({
+                        popup_mobile_image2_url: savedImageMobile2,
+                    });
+                    clearImageMobile2?.classList.remove("hidden");
+                }
+                if (savedBgColor && btnBgColorInput) {
+                    btnBgColorInput.value = savedBgColor;
+                    updatePreview({ button_bg_color: savedBgColor });
+                }
+                if (savedTextColor && btnTextColorInput) {
+                    btnTextColorInput.value = savedTextColor;
+                    updatePreview({ button_text_color: savedTextColor });
+                }
+                if (savedDelay && popupInicioDelayInput) {
+                    popupInicioDelayInput.value = savedDelay;
+                    updatePreview({
+                        popup_start_delay_minutes: parseInt(savedDelay),
+                    });
+                }
+                if (savedProductDelay && popupProductosDelayInput) {
+                    popupProductosDelayInput.value = savedProductDelay;
+                    updatePreview({
+                        product_popup_delay_minutes:
+                            parseInt(savedProductDelay),
+                    });
+                }
 
                 setStatus("Configuración cargada.", "idle");
             } catch (err) {
@@ -676,7 +802,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
         loadSettings();
 
         // SAVE SETTINGS
-        const btnGuardarPopups = document.getElementById("btnGuardarPopups") as HTMLButtonElement | null;
+        const btnGuardarPopups = document.getElementById(
+            "btnGuardarPopups",
+        ) as HTMLButtonElement | null;
         btnGuardarPopups?.addEventListener("click", async () => {
             if (!btnGuardarPopups) return;
             const originalText = btnGuardarPopups.innerText;
@@ -688,7 +816,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 const bgColor = btnBgColorInput?.value || "#14b8a6";
                 const textColor = btnTextColorInput?.value || "#ffffff";
                 const delay = parseInt(popupInicioDelayInput?.value || "1");
-                const productDelay = parseInt(popupProductosDelayInput?.value || "1");
+                const productDelay = parseInt(
+                    popupProductosDelayInput?.value || "1",
+                );
 
                 if (!isHexColor(bgColor) || !isHexColor(textColor)) {
                     throw new Error("Colores no válidos.");
@@ -699,15 +829,28 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 formData.append("button_text_color", textColor);
                 formData.append("popup_start_delay_minutes", delay.toString());
 
-                const popupProductosDelay = document.getElementById("popupProductosDelay") as HTMLSelectElement;
-                if (popupProductosDelay) formData.append("product_popup_delay_minutes", popupProductosDelay.value);
+                const popupProductosDelay = document.getElementById(
+                    "popupProductosDelay",
+                ) as HTMLSelectElement;
+                if (popupProductosDelay)
+                    formData.append(
+                        "product_popup_delay_minutes",
+                        popupProductosDelay.value,
+                    );
 
-                const whatsappMessage = document.getElementById("whatsappMessage") as HTMLTextAreaElement;
-                if (whatsappMessage) formData.append("whatsappMessage", whatsappMessage.value);
+                const whatsappMessage = document.getElementById(
+                    "whatsappMessage",
+                ) as HTMLTextAreaElement;
+                if (whatsappMessage)
+                    formData.append("whatsappMessage", whatsappMessage.value);
                 formData.append("whatsapp_enabled", "1");
 
-                const emailTitle = document.getElementById("emailTitle") as HTMLInputElement;
-                const emailBodyInput = document.getElementById("emailBody") as HTMLInputElement;
+                const emailTitle = document.getElementById(
+                    "emailTitle",
+                ) as HTMLInputElement;
+                const emailBodyInput = document.getElementById(
+                    "emailBody",
+                ) as HTMLInputElement;
                 if (emailTitle) formData.append("emailTitle", emailTitle.value);
                 if (emailBodyInput) {
                     const htmlValue = emailBodyInput.value;
@@ -722,11 +865,15 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 formData.append("email_enabled", "1");
 
                 const addFile = (id, name) => {
-                    const input = document.getElementById(id) as HTMLInputElement;
+                    const input = document.getElementById(
+                        id,
+                    ) as HTMLInputElement;
                     if (input && input.files && input.files.length > 0) {
                         formData.append(name, input.files[0]);
                     } else {
-                        const deleteInput = document.getElementById("delete_" + id) as HTMLInputElement;
+                        const deleteInput = document.getElementById(
+                            "delete_" + id,
+                        ) as HTMLInputElement;
                         if (deleteInput && deleteInput.value === "1") {
                             formData.append("delete_" + name, "1");
                         }
@@ -749,7 +896,8 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 }, 2000);
             } catch (error: any) {
                 console.error(error);
-                const errMessage = error instanceof Error ? error.message : String(error);
+                const errMessage =
+                    error instanceof Error ? error.message : String(error);
                 setStatus("Error al guardar: " + errMessage, "error");
             } finally {
                 btnGuardarPopups.innerText = originalText;
