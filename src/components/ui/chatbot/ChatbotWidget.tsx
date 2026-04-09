@@ -105,7 +105,7 @@ const ChatbotWidget: React.FC = () => {
           <div className="bg-gradient-to-r from-[#015f86] to-[#0d9488] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
             {/* Decoración sutil en el header */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            
+
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
                 <div className="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl flex items-center justify-center font-bold text-xl shadow-inner">
@@ -121,8 +121,8 @@ const ChatbotWidget: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button 
-              onClick={toggleChat} 
+            <button
+              onClick={toggleChat}
               className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
               aria-label="Cerrar chat"
             >
@@ -235,9 +235,11 @@ const ChatbotWidget: React.FC = () => {
           aria-label="Abrir Chatbot"
         >
           <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 relative z-10 animate-in fade-in zoom-in duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
+          <img
+            src="/robot.png"
+            alt="Chatbot Avatar"
+            className="h-10 w-10 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
+          />
 
           {/* Puntito de notificación rojo con efecto ripple */}
           <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">

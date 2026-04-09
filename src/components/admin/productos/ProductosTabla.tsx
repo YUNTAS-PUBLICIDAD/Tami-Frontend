@@ -308,6 +308,7 @@ const ProductosTabla = () => {
     };
 
 
+
 return (
     <div className="container mx-auto px-4 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">

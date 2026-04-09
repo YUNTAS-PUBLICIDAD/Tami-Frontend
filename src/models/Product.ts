@@ -37,6 +37,8 @@ export interface ProductFormularioPOST {
   textos_alt: string[];
   imagen_popup?: File | string | null;
   texto_alt_popup?: string;
+  imagen_popup2?: File | string | null;
+  texto_alt_popup2?: string;
   imagen_email?: File | string | null;
   asunto: string; 
   imagen_whatsapp?: File |string| null;
@@ -169,6 +171,8 @@ export const defaultValuesProduct: ProductFormularioPOST = {
   },
   imagen_popup: null,
   texto_alt_popup: "",
+  imagen_popup2: null,
+  texto_alt_popup2: "",
   imagen_email: null,
   asunto: "",
   imagen_whatsapp: null,

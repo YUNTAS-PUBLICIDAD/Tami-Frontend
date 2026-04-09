@@ -222,7 +222,17 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
     // Texto ALT de Pop-up obligatorio
     if (!formData.texto_alt_popup?.trim()) {
-      newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatorio.";
+      newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatoria.";
+    }
+
+    // Imagen de Pop-up 2 obligatoria
+    if (!formData.imagen_popup2) {
+      newErrors.imagen_popup2 = "La imagen 2 para el Pop-up es obligatoria.";
+    }
+
+    // Texto ALT de Pop-up 2 obligatorio
+    if (!formData.texto_alt_popup2?.trim()) {
+      newErrors.texto_alt_popup2 = "El texto alternativo para la Imagen Pop-up 2 es obligatoria.";
     }
 
     // Imagen de Email obligatoria
@@ -473,6 +483,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
       if (formData.imagen_popup) {
         formDataToSend.append('imagen_popup', formData.imagen_popup);
         formDataToSend.append('texto_alt_popup', formData.texto_alt_popup || '');
+      }
+
+      // Agregar imagen popup 2 y texto alt popup 2 al FormData (usando alias para compatibilidad)
+      if (formData.imagen_popup2) {
+        formDataToSend.append('imagen_popup2', formData.imagen_popup2);
+        formDataToSend.append('imagen_popup_2', formData.imagen_popup2);
+        formDataToSend.append('popup_image2', formData.imagen_popup2);
+        formDataToSend.append('texto_alt_popup2', formData.texto_alt_popup2 || '');
+        formDataToSend.append('texto_alt_popup_2', formData.texto_alt_popup2 || '');
       }
 
       // Agregar imagen email y texto alt email al FormData
@@ -969,24 +988,69 @@ const AddProduct = ({ onProductAdded }: Props) => {
                 {/* Imagen para Pop Up */}
                 <div className="card mt-6">
                   <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Pop-up</h5>
-                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                    <p className="font-medium">ℹ️ Esta imagen se usará únicamente en el pop-up del producto.</p>
+                  <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900 shadow-sm">
+                    <p className="font-bold flex items-center gap-2 mb-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Resoluciones Sugeridas (WebP recomendado)
+                    </p>
+                    <ul className="space-y-3 list-none">
+                      <li>
+                        <strong>Imagen 1 (Producto):</strong>
+                        <ul className="pl-4 mt-1 space-y-1 text-xs opacity-90">
+                          <li>• <strong>Estilo 1:</strong> 600x600px (transparente). Se ubica centrada.</li>
+                          <li>• <strong>Estilo 2 y 3:</strong> 800x1200px (vertical). Cubre toda la izquierda.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Imagen 2 (Fondo/Derecha):</strong>
+                        <ul className="pl-4 mt-1 space-y-1 text-xs opacity-90">
+                          <li>• <strong>Todos los estilos:</strong> 1000x1000px. Cubre el lado derecho (PC) e inferior (Móvil).</li>
+                        </ul>
+                      </li>
+                    </ul>
                   </div>
                   <div className="form-input">
                     <label>Imagen Pop-up:</label>
-                    <div ref={el => { fieldRefs.current.imagen_popup = el; }} className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        name="imagen_popup"
-                        onChange={e => {
-                          if (e.target.files?.[0]) {
-                            setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
-                          }
-                          if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
-                        }}
-                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                      />
+                    <div ref={el => { fieldRefs.current.imagen_popup = el; }} className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_popup ? "border-red-500" : "border-gray-300"}`}>
+                      {formData.imagen_popup ? (
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={URL.createObjectURL(formData.imagen_popup as File)}
+                            alt="Preview Pop-up"
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                          <label className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
+                            Reemplazar
+                            <input
+                              type="file"
+                              accept="image/*"
+                              name="imagen_popup"
+                              onChange={e => {
+                                if (e.target.files?.[0]) {
+                                  setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
+                                }
+                                if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
+                              }}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      ) : (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          name="imagen_popup"
+                          onChange={e => {
+                            if (e.target.files?.[0]) {
+                              setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
+                            }
+                            if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
+                          }}
+                          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                        />
+                      )}
                     </div>
                     {errors.imagen_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup}</p>}
                   </div>
@@ -1005,6 +1069,68 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                     />
                     {errors.texto_alt_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup}</p>}
+                  </div>
+
+                  {/* Imagen Pop-up 2 */}
+                  <div className="form-input">
+                    <label>Imagen Pop-up 2:</label>
+                    <div ref={el => { fieldRefs.current.imagen_popup2 = el; }} className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_popup2 ? "border-red-500" : "border-gray-300"}`}>
+                      {formData.imagen_popup2 ? (
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={URL.createObjectURL(formData.imagen_popup2 as File)}
+                            alt="Preview Pop-up 2"
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                          <label className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
+                            Reemplazar
+                            <input
+                              type="file"
+                              accept="image/*"
+                              name="imagen_popup2"
+                              onChange={e => {
+                                if (e.target.files?.[0]) {
+                                  setFormData(prev => ({ ...prev, imagen_popup2: e.target.files![0] }));
+                                }
+                                if (errors.imagen_popup2) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup2; return n; });
+                              }}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      ) : (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          name="imagen_popup2"
+                          onChange={e => {
+                            if (e.target.files?.[0]) {
+                              setFormData(prev => ({ ...prev, imagen_popup2: e.target.files![0] }));
+                            }
+                            if (errors.imagen_popup2) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup2; return n; });
+                          }}
+                          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                        />
+                      )}
+                    </div>
+                    {errors.imagen_popup2 && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup2}</p>}
+                  </div>
+
+                  <div className="form-input">
+                    <label>Texto ALT Imagen Pop-up 2:</label>
+                    <input
+                      ref={el => { fieldRefs.current.texto_alt_popup2 = el; }}
+                      type="text"
+                      name="texto_alt_popup2"
+                      value={formData.texto_alt_popup2 || ''}
+                      onChange={e => {
+                        setFormData(prev => ({ ...prev, texto_alt_popup2: e.target.value }));
+                        if (errors.texto_alt_popup2) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_popup2; return n; });
+                      }}
+                      placeholder="Texto alternativo para SEO..."
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup2 ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
+                    />
+                    {errors.texto_alt_popup2 && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup2}</p>}
                   </div>
                   {/** estilos de popup*/}
                   <div className="form-input">

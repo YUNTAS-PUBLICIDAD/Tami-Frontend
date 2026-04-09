@@ -35,7 +35,7 @@ const productsUrl = config.endpoints.productos.list;
       <div class="max-w-5xl mx-auto font-bold w-full">
         <h1
           id="blog-title"
-          class="font-montserrat tracking-tight leading-snug drop-shadow-lg"
+          class="font-montserrat tracking-tight leading-snug drop-shadow-lg break-words"
           style="font-size: clamp(0.85rem, 3.5vw + 0.5rem, 3.75rem); line-height: 1.2;"
         >
         </h1>
@@ -58,12 +58,12 @@ const productsUrl = config.endpoints.productos.list;
             class="text-base md:text-lg lg:text-2xl
            font-semibold font-garet
            text-sky-300
-           mb-3 text-center"
+           mb-3 text-center break-words"
           >
           </h2>
           <p
             id="blog-content-subtitle2"
-            class="px-2 md:px-8 text-base md:text-xl font-semibold text-black text-center md:text-left"
+            class="px-2 md:px-8 text-base md:text-xl font-semibold text-black text-center md:text-left break-words"
           >
           </p>
         </div>
@@ -342,8 +342,8 @@ const productsUrl = config.endpoints.productos.list;
                 
                 <!-- Texto - Siempre arriba en mobile -->
                 <div class="w-full md:w-1/2 px-2 md:px-4 flex flex-col justify-center order-1 md:order-none">
-                  <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed">
-                    <p class="text-sm md:text-base whitespace-pre-line">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
+                  <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
+                    <p class="text-sm md:text-base whitespace-pre-line break-words">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
                   </article>
                 </div>
                 
@@ -367,7 +367,7 @@ const productsUrl = config.endpoints.productos.list;
           if (blogVideoSectionElement && blog.video_id) {
             blogVideoSectionElement.innerHTML = `
             <section class="rounded-lg md:rounded-xl shadow-md py-4 md:py-4 px-4 md:px-20 bg-gray-50">
-                <h1 class="text-lg md:text-xl lg:text-2xl text-sky-400 font-bold mb-4 md:mb-6 text-center md:text-left">${blog.video_titulo}</h1>
+                <h1 class="text-lg md:text-xl lg:text-2xl text-sky-400 font-bold mb-4 md:mb-6 text-center md:text-left break-words">${blog.video_titulo}</h1>
                 <div class="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
                     <iframe
                         width="100%"
