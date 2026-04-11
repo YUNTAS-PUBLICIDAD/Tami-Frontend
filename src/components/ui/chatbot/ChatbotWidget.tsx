@@ -41,6 +41,7 @@ const ChatbotWidget: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstBubble = useRef(true);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -59,9 +60,10 @@ const ChatbotWidget: React.FC = () => {
     let timeoutId: NodeJS.Timeout;
 
     const scheduleNextBubble = () => {
-      // Random time between 3 and 5 minutes (in milliseconds)
-      const min = 180000;
-      const max = 300000;
+      // Diferent timing for first vs subsequent bubbles
+      // First: 30-50s | Subsequent: 3-4 mins
+      const min = isFirstBubble.current ? 30000 : 180000;
+      const max = isFirstBubble.current ? 50000 : 240000;
       const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
 
       timeoutId = setTimeout(() => {
@@ -69,11 +71,12 @@ const ChatbotWidget: React.FC = () => {
           setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
           setShowBubble(true);
 
-          // Hide bubble after 15 seconds
+          // Hide bubble after 20 seconds
           setTimeout(() => {
             setShowBubble(false);
-            scheduleNextBubble(); // Schedule the next one after hiding
-          }, 15000);
+            isFirstBubble.current = false; // Mark first as done
+            scheduleNextBubble(); // Schedule next one (will use the longer delay)
+          }, 20000);
         }
       }, randomTime);
     };
