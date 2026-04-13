@@ -22,6 +22,7 @@ interface Message {
 const ChatbotWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
+  const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const bubbleMessages = [
     "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
@@ -90,7 +91,19 @@ const ChatbotWidget: React.FC = () => {
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) setShowBubble(false);
+    if (!isOpen) {
+      setShowBubble(false);
+      setIsPopping(false);
+    }
+  };
+
+  const handleCloseBubble = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsPopping(true);
+    setTimeout(() => {
+      setShowBubble(false);
+      setIsPopping(false);
+    }, 400);
   };
 
   const sendMessage = async (e?: React.FormEvent) => {
@@ -284,7 +297,7 @@ const ChatbotWidget: React.FC = () => {
         <div className="flex items-end gap-4 mb-8 pointer-events-auto">
           {/* Burbuja de Diálogo Periódica */}
           {showBubble && (
-            <div className="relative group animate-in slide-in-from-right-10 fade-in duration-500 max-w-[280px]">
+            <div className={`relative group max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
               <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
                   setIsOpen(true);
@@ -293,10 +306,7 @@ const ChatbotWidget: React.FC = () => {
               >
                 {/* Botón de cerrar burbuja */}
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowBubble(false);
-                  }}
+                  onClick={handleCloseBubble}
                   className="absolute -top-2.5 -right-2.5 w-7 h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
