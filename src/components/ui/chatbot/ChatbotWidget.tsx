@@ -51,7 +51,7 @@ const ChatbotWidget: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  // Logic for the periodic bubble (random 3-5 minutes)
+  // Logic for the periodic bubble (random 60-90 seconds)
   useEffect(() => {
     if (isOpen) {
       setShowBubble(false);
@@ -62,9 +62,9 @@ const ChatbotWidget: React.FC = () => {
 
     const scheduleNextBubble = () => {
       // Diferent timing for first vs subsequent bubbles
-      // First: 30-50s | Subsequent: 3-4 mins
-      const min = isFirstBubble.current ? 30000 : 180000;
-      const max = isFirstBubble.current ? 50000 : 240000;
+      // First: 30-50s | Subsequent: 60-90s
+      const min = isFirstBubble.current ? 30000 : 60000;
+      const max = isFirstBubble.current ? 50000 : 90000;
       const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
 
       timeoutId = setTimeout(() => {
