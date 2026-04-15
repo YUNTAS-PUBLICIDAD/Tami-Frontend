@@ -228,6 +228,8 @@ const ProductosTabla = () => {
                 timer: 2000,
                 timerProgressBar: true,
             });
+            return;
+        }
 
         const result = await Swal.fire({
             title: "¿Actualizar cambios?",
