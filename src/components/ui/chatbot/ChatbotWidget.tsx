@@ -21,6 +21,17 @@ interface Message {
 
 const ChatbotWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+  const [isPopping, setIsPopping] = useState(false);
+  const [bubbleIndex, setBubbleIndex] = useState(0);
+  const bubbleMessages = [
+    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
+    "¿Tienes dudas sobre nuestros productos? ¡Pregúntame! 🌾",
+    "¿Sabías que tenemos financiamiento disponible? 💳",
+    "¿Necesitas repuestos? Puedo ayudarte a ubicarlos. ⚙️",
+    "¿Buscas algo para tu negocio? 👨‍💼"
+  ];
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'bot',
@@ -31,6 +42,7 @@ const ChatbotWidget: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstBubble = useRef(true);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -39,7 +51,60 @@ const ChatbotWidget: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  const toggleChat = () => setIsOpen(!isOpen);
+  // Logic for the periodic bubble (random 60-90 seconds)
+  useEffect(() => {
+    if (isOpen) {
+      setShowBubble(false);
+      return;
+    }
+
+    let timeoutId: NodeJS.Timeout;
+
+    const scheduleNextBubble = () => {
+      // Diferent timing for first vs subsequent bubbles
+      // First: 30-50s | Subsequent: 60-90s
+      const min = isFirstBubble.current ? 30000 : 60000;
+      const max = isFirstBubble.current ? 50000 : 90000;
+      const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      timeoutId = setTimeout(() => {
+        if (!isOpen) {
+          setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
+          setShowBubble(true);
+
+          // Hide bubble after 20 seconds
+          setTimeout(() => {
+            setShowBubble(false);
+            isFirstBubble.current = false; // Mark first as done
+            scheduleNextBubble(); // Schedule next one (will use the longer delay)
+          }, 20000);
+        }
+      }, randomTime);
+    };
+
+    scheduleNextBubble();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isOpen]);
+
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setShowBubble(false);
+      setIsPopping(false);
+    }
+  };
+
+  const handleCloseBubble = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsPopping(true);
+    setTimeout(() => {
+      setShowBubble(false);
+      setIsPopping(false);
+    }, 400);
+  };
 
   const sendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -105,7 +170,7 @@ const ChatbotWidget: React.FC = () => {
           <div className="bg-gradient-to-r from-[#015f86] to-[#0d9488] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
             {/* Decoración sutil en el header */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            
+
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
                 <div className="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl flex items-center justify-center font-bold text-xl shadow-inner">
@@ -121,8 +186,8 @@ const ChatbotWidget: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button 
-              onClick={toggleChat} 
+            <button
+              onClick={toggleChat}
               className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
               aria-label="Cerrar chat"
             >
@@ -229,22 +294,56 @@ const ChatbotWidget: React.FC = () => {
         </div>
       ) : (
         /* Botón Flotante (Avatar/Icono) */
-        <button
-          onClick={toggleChat}
-          className="group w-16 h-16 mb-8 rounded-[24px] bg-gradient-to-tr from-[#015f86] to-[#0d9488] text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 pointer-events-auto active:shadow-inner"
-          aria-label="Abrir Chatbot"
-        >
-          <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 relative z-10 animate-in fade-in zoom-in duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
+        <div className="flex items-end gap-4 mb-8 pointer-events-auto">
+          {/* Burbuja de Diálogo Periódica */}
+          {showBubble && (
+            <div className={`relative group max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
+              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+                onClick={() => {
+                  setIsOpen(true);
+                  setShowBubble(false);
+                }}
+              >
+                {/* Botón de cerrar burbuja */}
+                <button
+                  onClick={handleCloseBubble}
+                  className="absolute -top-2.5 -right-2.5 w-7 h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
 
-          {/* Puntito de notificación rojo con efecto ripple */}
-          <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">1</span>
-          </span>
-        </button>
+                <p className="text-[14px] font-medium text-gray-800 leading-tight">
+                  {bubbleMessages[bubbleIndex]}
+                </p>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#015f86]">Tami Assistant</span>
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
+                </div>
+              </div>
+              {/* Triangulito de la burbuja (ahora apunta a la derecha) */}
+              <div className="absolute bottom-6 -right-2 w-5 h-5 bg-white/90 backdrop-blur-xl border-r border-b border-white/40 transform rotate-[-45deg] rounded-sm"></div>
+            </div>
+          )}
+
+          <button
+            onClick={toggleChat}
+            className="relative group w-16 h-16 rounded-[24px] bg-gradient-to-tr from-[#015f86] to-[#0d9488] text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 active:shadow-inner"
+            aria-label="Abrir Chatbot"
+          >
+            <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+            <img
+              src="/robot.png"
+              alt="Chatbot Avatar"
+              className="h-10 w-10 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
+            />
+
+            {/* Puntito de notificación rojo con efecto ripple */}
+            <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">1</span>
+            </span>
+          </button>
+        </div>
       )}
     </div>
 
