@@ -16,6 +16,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                 <button
                     id="btnDesktop"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 shadow-sm transition-all hidden lg:flex items-center gap-2"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 shadow-sm transition-all hidden lg:flex items-center gap-2"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -82,11 +83,11 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                 class="hidden absolute inset-0 flex justify-center items-center z-20 overflow-hidden"
             >
                 <div
-                    class="bg-[#e5ddd5] rounded-xl shadow-2xl w-[320px] h-[500px] flex flex-col overflow-hidden border border-gray-300 relative scale-90 sm:scale-100"
+                    class="bg-[#e5ddd5] dark:bg-[#0b141a] rounded-xl shadow-2xl w-[320px] h-[500px] flex flex-col overflow-hidden border border-gray-300 dark:border-gray-700 relative scale-90 sm:scale-100 transition-colors duration-300"
                 >
                     <!-- Header -->
                     <div
-                        class="bg-[#075e54] p-3 flex items-center gap-3 text-white shadow-md shrink-0 relative z-10"
+                        class="bg-[#075e54] dark:bg-[#202c33] p-3 flex items-center gap-3 text-white dark:text-[#e9edef] shadow-md shrink-0 relative z-10 transition-colors duration-300"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -103,11 +104,11 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                         </svg>
                         <div
                             id="previewWhatsappProfileImg"
-                            class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20"
+                            class="w-10 h-10 bg-gray-200 dark:bg-[#6b7780] rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-white/20 transition-colors duration-300"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 text-gray-400"
+                                class="h-6 w-6 text-gray-400 dark:text-[#cfd9df]"
                                 fill="currentColor"
                                 viewBox="0 0 24 24"
                             >
@@ -122,24 +123,28 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                             >
                                 Jhon Doe
                             </div>
-                            <div class="text-[10px] opacity-70">En línea</div>
+                            <div
+                                class="text-[10px] opacity-70 dark:opacity-100 dark:text-[#8696a0]"
+                            >
+                                En línea
+                            </div>
                         </div>
                     </div>
 
                     <!-- Chat Body -->
                     <div class="flex-1 p-4 overflow-y-auto space-y-4 relative">
                         <div
-                            class="bg-white p-3 rounded-lg rounded-tl-none shadow-sm max-w-[85%] text-[13px] relative z-10 text-gray-800"
+                            class="bg-white dark:bg-[#202c33] p-3 rounded-lg rounded-tl-none shadow-sm max-w-[85%] text-[13px] relative z-10 text-gray-800 dark:text-[#e9edef] transition-colors duration-300"
                         >
                             Hola!, me gustaria saber mas informacion de....
                             <div
-                                class="text-[10px] text-gray-400 mt-1 text-right"
+                                class="text-[10px] text-gray-400 dark:text-[#8696a0] mt-1 text-right transition-colors duration-300"
                             >
                                 10:45 AM
                             </div>
                         </div>
                         <div
-                            class="self-end bg-[#dcf8c6] p-2 pb-1 rounded-lg rounded-tr-none shadow-sm max-w-[85%] text-[13px] relative z-10 ml-auto mr-0 text-gray-800"
+                            class="self-end bg-[#dcf8c6] dark:bg-[#005c4b] p-2 pb-1 rounded-lg rounded-tr-none shadow-sm max-w-[85%] text-[13px] relative z-10 ml-auto mr-0 text-gray-800 dark:text-[#e9edef] transition-colors duration-300"
                         >
                             <div
                                 id="previewWhatsappImageContainer"
@@ -156,12 +161,14 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                             <div
                                 class="flex items-center justify-end gap-1 mt-1 shrink-0"
                             >
-                                <div class="text-[10px] text-gray-500">
+                                <div
+                                    class="text-[10px] text-gray-500 dark:text-[#8696a0] transition-colors duration-300"
+                                >
                                     10:46 AM
                                 </div>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    class="h-3 w-3 text-blue-500"
+                                    class="h-3 w-3 text-blue-500 dark:text-[#53bdeb] transition-colors duration-300"
                                     fill="currentColor"
                                     viewBox="0 0 16 16"
                                 >
