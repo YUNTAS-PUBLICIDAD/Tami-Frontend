@@ -1,3 +1,6 @@
+---
+import WhatsappEditor from "./WhatsappEditor";
+---
 <div id="contentWhatsapp" class="hidden flex flex-col gap-4">
     <!-- Editar Mensaje de WhatsApp -->
     <div
@@ -71,17 +74,10 @@
         </div>
         <div class="w-full">
             <label
-                for="whatsappMessage"
                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                 >Mensaje de WhatsApp</label
             >
-            <textarea
-                id="whatsappMessage"
-                rows="8"
-                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-3 border"
-                placeholder="Escribe tu mensaje aquí... Ej: ¡Hola! Me gustaría obtener el descuento del popup..."
-                >¡Hola! Me gustaría obtener más información sobre la promoción.</textarea
-            >
+            <WhatsappEditor client:load />
         </div>
     </div>
 </div>
