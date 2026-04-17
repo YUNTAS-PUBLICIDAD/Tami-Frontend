@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bold, Italic, Strikethrough, Smile, List, ListOrdered } from "lucide-react";
+import { Bold, Italic, Strikethrough, Smile, List, ListOrdered, Underline } from "lucide-react";
 
 interface WhatsappEditorProps {
   defaultValue?: string;
@@ -13,199 +13,150 @@ const COMMON_EMOJIS = [
 const WhatsappEditor = ({
   defaultValue = "¡Hola! Me gustaría obtener más información sobre la promoción.",
 }: WhatsappEditorProps) => {
-  const [value, setValue] = useState(defaultValue);
   const [showEmojis, setShowEmojis] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [activeStyles, setActiveStyles] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    strikeThrough: false,
+    insertOrderedList: false,
+    insertUnorderedList: false,
+  });
+  const editorRef = useRef<HTMLDivElement>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    syncHiddenInput(newValue);
+  const checkActiveStyles = () => {
+    setActiveStyles({
+      bold: document.queryCommandState('bold'),
+      italic: document.queryCommandState('italic'),
+      underline: document.queryCommandState('underline'),
+      strikeThrough: document.queryCommandState('strikeThrough'),
+      insertOrderedList: document.queryCommandState('insertOrderedList'),
+      insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+    });
   };
 
-  const syncHiddenInput = (val: string) => {
+  const handleInput = () => {
+    if (!editorRef.current) return;
+    const content = editorRef.current.innerHTML;
+    
+    // Dispatch event to update preview in popupsManager.ts
+    window.dispatchEvent(new CustomEvent('update-whatsapp-preview', { detail: content }));
+
+    // Sync hidden input
     const hidden = document.getElementById("whatsappMessage") as HTMLInputElement | null;
     if (hidden) {
-      hidden.value = val;
+      hidden.value = content;
     }
-    // Update preview map
-    window.dispatchEvent(new CustomEvent("update-whatsapp-preview", { detail: val }));
   };
 
-  // Sync data from API/storage when available
   useEffect(() => {
+    // Initialize default value safely
+    if (editorRef.current && !editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = defaultValue;
+      handleInput();
+    }
+
     const handleUpdate = (e: CustomEvent) => {
       const content = e.detail;
-      setValue(content);
-      syncHiddenInput(content);
+      if (editorRef.current && editorRef.current.innerHTML !== content) {
+        editorRef.current.innerHTML = content;
+      }
+      const hidden = document.getElementById("whatsappMessage") as HTMLInputElement | null;
+      if (hidden) {
+        hidden.value = content;
+      }
     };
+
     window.addEventListener("update-whatsapp-editor", handleUpdate as EventListener);
     return () => window.removeEventListener("update-whatsapp-editor", handleUpdate as EventListener);
   }, []);
 
-  const insertFormatting = (marker: string) => {
-    if (!textareaRef.current) return;
-    const textarea = textareaRef.current;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-
-    const textBefore = value.substring(0, start);
-    const selectedText = value.substring(start, end);
-    const textAfter = value.substring(end);
-
-    const newText = textBefore + marker + (selectedText || "texto") + marker + textAfter;
-    setValue(newText);
-    syncHiddenInput(newText);
-
-    // Set focus back and adjust cursor position
-    setTimeout(() => {
-      textarea.focus();
-      if (selectedText) {
-        textarea.setSelectionRange(start, start + selectedText.length + (marker.length * 2));
-      } else {
-        textarea.setSelectionRange(start + marker.length, start + marker.length + 5);
-      }
-    }, 0);
-  };
-
-  const insertList = (type: 'ordered' | 'bullet') => {
-    if (!textareaRef.current) return;
-    const textarea = textareaRef.current;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-
-    const textBefore = value.substring(0, start);
-    const selectedText = value.substring(start, end);
-    const textAfter = value.substring(end);
-
-    const lines = selectedText.split('\n');
-    let newSelectedText = lines.map((line, i) => {
-      if (!line.trim() && selectedText.length > 0) return line;
-      const prefix = type === 'ordered' ? `${i + 1}. ` : '- ';
-      return `${prefix}${line}`;
-    }).join('\n');
-
-    const marker = type === 'ordered' ? '1. ' : '- ';
-    const textToInsert = selectedText ? newSelectedText : `${marker}Elemento de lista`;
-
-    const newText = textBefore + (textBefore && !textBefore.endsWith('\n') ? "\n" : "") + textToInsert + textAfter;
-    setValue(newText);
-    syncHiddenInput(newText);
-
-    setTimeout(() => {
-      textarea.focus();
-      const newCursorPos = start + (textBefore && !textBefore.endsWith('\n') ? 1 : 0);
-      if (selectedText) {
-        textarea.setSelectionRange(newCursorPos, newCursorPos + textToInsert.length);
-      } else {
-        textarea.setSelectionRange(newCursorPos + marker.length, newCursorPos + textToInsert.length);
-      }
-    }, 0);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter") {
-      const textarea = textareaRef.current;
-      if (!textarea) return;
-
-      const start = textarea.selectionStart;
-      const textBefore = value.substring(0, start);
-
-      // Encontrar la línea actual (el texto de la última línea antes del cursor)
-      const lines = textBefore.split('\n');
-      const currentLine = lines[lines.length - 1];
-
-      // Si la línea es puramente whitespace, no hacer nada especial
-      if (!currentLine.trim()) return;
-
-      const orderedMatch = currentLine.match(/^(\d+)\.\s(.*)/);
-      const bulletMatch = currentLine.match(/^(-\s)(.*)/);
-
-      if (orderedMatch || bulletMatch) {
-        e.preventDefault();
-
-        let prefix = "";
-        if (orderedMatch) {
-          const num = parseInt(orderedMatch[1], 10);
-          if (!orderedMatch[2].trim()) {
-            // Enter en una línea numerada vacía = eliminar la lista y agregar un salto de línea normal
-            const newTextBefore = textBefore.substring(0, textBefore.length - currentLine.length);
-            const newValue = newTextBefore + '\n' + value.substring(start);
-            setValue(newValue);
-            syncHiddenInput(newValue);
-            setTimeout(() => textarea.setSelectionRange(newTextBefore.length + 1, newTextBefore.length + 1), 0);
-            return;
-          }
-          prefix = `\n${num + 1}. `;
-        } else if (bulletMatch) {
-          if (!bulletMatch[2].trim()) {
-            const newTextBefore = textBefore.substring(0, textBefore.length - currentLine.length);
-            const newValue = newTextBefore + '\n' + value.substring(start);
-            setValue(newValue);
-            syncHiddenInput(newValue);
-            setTimeout(() => textarea.setSelectionRange(newTextBefore.length + 1, newTextBefore.length + 1), 0);
-            return;
-          }
-          prefix = `\n- `;
-        }
-
-        const newValue = textBefore + prefix + value.substring(start);
-        setValue(newValue);
-        syncHiddenInput(newValue);
-
-        setTimeout(() => {
-          const newPos = start + prefix.length;
-          textarea.setSelectionRange(newPos, newPos);
-        }, 0);
-      }
-    }
+  const execCommand = (command: keyof typeof activeStyles) => {
+    document.execCommand(command, false, undefined);
+    editorRef.current?.focus();
+    handleInput();
+    checkActiveStyles();
   };
 
   const insertEmoji = (emoji: string) => {
-    if (!textareaRef.current) return;
-    const textarea = textareaRef.current;
-
-    const start = textarea.selectionStart;
-    const textBefore = value.substring(0, start);
-    const textAfter = value.substring(start);
-
-    const newText = textBefore + emoji + textAfter;
-    setValue(newText);
-    syncHiddenInput(newText);
+    const html = `<span class="inserted-emoji" contenteditable="false">${emoji}</span>&#8203;`;
+    document.execCommand('insertHTML', false, html);
     setShowEmojis(false);
+    editorRef.current?.focus();
+    handleInput();
+    checkActiveStyles();
+  };
 
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + emoji.length, start + emoji.length);
-    }, 0);
+  const getBtnClass = (cmd: keyof typeof activeStyles) => {
+    const base = "p-1.5 rounded transition-colors ";
+    if (activeStyles[cmd]) {
+      return base + "text-green-700 bg-green-200 dark:text-green-300 dark:bg-green-900/80";
+    }
+    return base + "text-gray-600 hover:text-green-600 hover:bg-green-100 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700";
   };
 
   return (
-    <div className="whatsapp-editor-wrapper border rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm flex flex-col">
+    <div className="whatsapp-editor-wrapper border rounded-md border-green-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm flex flex-col">
+      <style>{`
+        .whatsapp-editor-content ul {
+           list-style-type: disc;
+           padding-left: 24px;
+        }
+        .whatsapp-editor-content ol {
+           list-style-type: decimal;
+           padding-left: 24px;
+        }
+        .whatsapp-editor-content a {
+           color: #059669;
+           text-decoration: underline;
+        }
+        .whatsapp-editor-content:empty:before {
+           content: "Escribe el mensaje de WhatsApp aquí...";
+           color: #9ca3af;
+           pointer-events: none;
+           display: block;
+        }
+        .whatsapp-editor-content .inserted-emoji {
+           display: inline-block;
+           text-decoration: none !important;
+           font-style: normal !important;
+        }
+      `}</style>
+
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 rounded-t-md relative">
+      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-green-200 dark:border-gray-700 bg-green-50/50 dark:bg-gray-800/80 rounded-t-md relative">
         <button
           type="button"
-          onClick={() => insertFormatting('*')}
-          className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => execCommand('bold')}
+          className={getBtnClass('bold')}
           title="Negrita"
         >
           <Bold size={18} />
         </button>
         <button
           type="button"
-          onClick={() => insertFormatting('_')}
-          className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => execCommand('italic')}
+          className={getBtnClass('italic')}
           title="Cursiva"
         >
           <Italic size={18} />
         </button>
         <button
           type="button"
-          onClick={() => insertFormatting('~')}
-          className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => execCommand('underline')}
+          className={getBtnClass('underline')}
+          title="Subrayado"
+        >
+          <Underline size={18} />
+        </button>
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => execCommand('strikeThrough')}
+          className={getBtnClass('strikeThrough')}
           title="Tachado"
         >
           <Strikethrough size={18} />
@@ -215,16 +166,18 @@ const WhatsappEditor = ({
 
         <button
           type="button"
-          onClick={() => insertList('ordered')}
-          className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => execCommand('insertOrderedList')}
+          className={getBtnClass('insertOrderedList')}
           title="Lista Numerada"
         >
           <ListOrdered size={18} />
         </button>
         <button
           type="button"
-          onClick={() => insertList('bullet')}
-          className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => execCommand('insertUnorderedList')}
+          className={getBtnClass('insertUnorderedList')}
           title="Lista con Viñetas"
         >
           <List size={18} />
@@ -232,11 +185,12 @@ const WhatsappEditor = ({
 
         <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
-        <div className="relative">
+        <div className="relative border-none m-0 p-0">
           <button
             type="button"
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => setShowEmojis(!showEmojis)}
-            className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
+            className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-100 dark:text-gray-300 dark:hover:text-green-400 dark:hover:bg-gray-700 rounded transition-colors"
             title="Insertar Emoji"
           >
             <Smile size={18} />
@@ -249,6 +203,7 @@ const WhatsappEditor = ({
                   <button
                     key={index}
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => insertEmoji(emoji)}
                     className="p-1.5 text-lg hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                   >
@@ -262,19 +217,27 @@ const WhatsappEditor = ({
       </div>
 
       {/* Editor Area */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        rows={6}
-        className="block w-full p-3 resize-y bg-transparent focus:outline-none dark:text-gray-200 rounded-b-md"
-        placeholder="Escribe tu mensaje aquí... Ej: ¡Hola! Me gustaría obtener el descuento."
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={() => { handleInput(); checkActiveStyles(); }}
+        onBlur={() => { handleInput(); checkActiveStyles(); }}
+        onKeyUp={checkActiveStyles}
+        onMouseUp={checkActiveStyles}
+        onFocus={checkActiveStyles}
+        className="whatsapp-editor-content block w-full p-4 min-h-[180px] max-h-[400px] overflow-y-auto bg-transparent focus:outline-none text-gray-800 dark:text-gray-200 rounded-b-md"
       />
 
-      {/* Hidden input to keep API integration intact */}
-      {/* Note: The ID whatsappMessage allows Astro/vanilla js to read the value on form submit */}
-      <input type="hidden" id="whatsappMessage" name="whatsappMessage" value={value} />
+      <input type="hidden" id="whatsappMessage" name="whatsappMessage" />
+
+      <p className="m-2 mt-0 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-md px-3 py-2">
+        Usa{" "}
+        <code className="font-mono font-bold text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-800 px-1 rounded">
+          {"{{nombre}}"}
+        </code>{" "}
+        para insertar el nombre del cliente automáticamente.
+      </p>
     </div>
   );
 };
