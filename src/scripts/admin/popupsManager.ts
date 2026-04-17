@@ -196,9 +196,28 @@ export function initPopupManager() {
     const previewWhatsappText = document.getElementById(
         "previewWhatsappText",
     );
+    function formatWhatsAppTextToHTML(text: string | null) {
+        if (!text) return "";
+        let html = text;
+        // Escape basic tags to prevent injection (simple approach)
+        html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        // format whatsapp markdown
+        html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+        html = html.replace(/_(.*?)_/g, "<em>$1</em>");
+        html = html.replace(/~(.*?)~/g, "<del>$1</del>");
+        html = html.replace(/\n/g, "<br>");
+        return html;
+    }
+
     textareaWhatsapp?.addEventListener("input", () => {
         if (previewWhatsappText)
-            previewWhatsappText.textContent = textareaWhatsapp.value;
+            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(textareaWhatsapp.value);
+    });
+
+    window.addEventListener("update-whatsapp-preview", (e: any) => {
+        if (previewWhatsappText) {
+            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(e.detail);
+        }
     });
 
     const emailTitle = document.getElementById(
@@ -450,8 +469,13 @@ export function initPopupManager() {
                 if (whatsappMessage && settings.whatsappMessage) {
                     whatsappMessage.value = settings.whatsappMessage;
                     if (previewWhatsappText)
-                        previewWhatsappText.textContent =
-                            settings.whatsappMessage;
+                        previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
+                    
+                    window.dispatchEvent(
+                        new CustomEvent("update-whatsapp-editor", {
+                            detail: settings.whatsappMessage,
+                        }),
+                    );
                 }
 
                 const emailTitleInput = document.getElementById(
@@ -627,14 +651,7 @@ export function initPopupManager() {
             ) as HTMLInputElement;
             if (emailTitle) formData.append("emailTitle", emailTitle.value);
             if (emailBodyInput) {
-                const htmlValue = emailBodyInput.value;
-                const plainText = htmlValue
-                    .replace(/&nbsp;/g, " ")
-                    .replace(/<\/p>/g, "\n")
-                    .replace(/<br\s*\/?>/g, "\n")
-                    .replace(/<[^>]*>/g, "")
-                    .trim();
-                formData.append("emailBody", plainText);
+                formData.append("emailBody", emailBodyInput.value);
             }
             formData.append("email_enabled", "1");
 
