@@ -10,6 +10,10 @@ export interface PopupSettings {
   popup_mobile_image2_url?: string;
   popup_start_delay_minutes: number;
   product_popup_delay_minutes: number;
+  email_btn_text?: string;
+  email_btn_link?: string;
+  email_btn_bg_color?: string;
+  email_btn_text_color?: string;
 }
 
 export interface PopupSettingsResponse {

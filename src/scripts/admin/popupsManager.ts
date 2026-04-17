@@ -242,6 +242,48 @@ export function initPopupManager() {
         btnTextColorInput.addEventListener("change", handleTextChange);
     }
 
+    // Botón Correo
+    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
+    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
+    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
+
+    if (emailBtnTextInput) {
+        const handleEmailBtnTextChange = () => {
+            const val = emailBtnTextInput.value;
+            if (previewEmailBtn) previewEmailBtn.textContent = val || "Ver Productos";
+            localStorage.setItem("emailBtnText", val);
+        };
+        emailBtnTextInput.addEventListener("input", handleEmailBtnTextChange);
+    }
+    if (emailBtnLinkInput) {
+        const handleEmailBtnLinkChange = () => {
+            const val = emailBtnLinkInput.value;
+            if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = val || "#";
+            localStorage.setItem("emailBtnLink", val);
+        };
+        emailBtnLinkInput.addEventListener("input", handleEmailBtnLinkChange);
+    }
+    if (emailBtnBgColorInput) {
+        const handleEmailBtnBgChange = () => {
+            const val = emailBtnBgColorInput.value;
+            if (previewEmailBtn) previewEmailBtn.style.backgroundColor = val;
+            localStorage.setItem("emailBtnBgColor", val);
+        };
+        emailBtnBgColorInput.addEventListener("input", handleEmailBtnBgChange);
+        emailBtnBgColorInput.addEventListener("change", handleEmailBtnBgChange);
+    }
+    if (emailBtnTextColorInput) {
+        const handleEmailBtnTextColChange = () => {
+            const val = emailBtnTextColorInput.value;
+            if (previewEmailBtn) previewEmailBtn.style.color = val;
+            localStorage.setItem("emailBtnTextColor", val);
+        };
+        emailBtnTextColorInput.addEventListener("input", handleEmailBtnTextColChange);
+        emailBtnTextColorInput.addEventListener("change", handleEmailBtnTextColChange);
+    }
+
     const popupInicioDelayInput = document.getElementById(
         "popupInicioDelay",
     ) as HTMLSelectElement;
@@ -422,6 +464,27 @@ export function initPopupManager() {
                         settings.button_text_color ||
                         settings.btnTextColor ||
                         "#ffffff";
+                
+                if (emailBtnTextInput) {
+                    const text = settings.email_btn_text || settings.emailBtnText || "Ver Productos";
+                    emailBtnTextInput.value = text;
+                    if (previewEmailBtn) previewEmailBtn.textContent = text;
+                }
+                if (emailBtnLinkInput) {
+                    const link = settings.email_btn_link || settings.emailBtnLink || "https://tami.com/productos";
+                    emailBtnLinkInput.value = link;
+                    if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = link;
+                }
+                if (emailBtnBgColorInput) {
+                    const bgCol = settings.email_btn_bg_color || settings.emailBtnBgColor || "#0b1c3c";
+                    emailBtnBgColorInput.value = bgCol;
+                    if (previewEmailBtn) previewEmailBtn.style.backgroundColor = bgCol;
+                }
+                if (emailBtnTextColorInput) {
+                    const textCol = settings.email_btn_text_color || settings.emailBtnTextColor || "#ffffff";
+                    emailBtnTextColorInput.value = textCol;
+                    if (previewEmailBtn) previewEmailBtn.style.color = textCol;
+                }
                 if (popupInicioDelayInput)
                     popupInicioDelayInput.value = String(
                         settings.popup_start_delay_minutes ||
@@ -543,6 +606,28 @@ export function initPopupManager() {
             const savedDelay = localStorage.getItem("popupDelay");
             const savedProductDelay = localStorage.getItem("popupProductDelay");
 
+            const savedEmailBtnText = localStorage.getItem("emailBtnText");
+            const savedEmailBtnLink = localStorage.getItem("emailBtnLink");
+            const savedEmailBtnBgColor = localStorage.getItem("emailBtnBgColor");
+            const savedEmailBtnTextColor = localStorage.getItem("emailBtnTextColor");
+
+            if (savedEmailBtnText && emailBtnTextInput) {
+                emailBtnTextInput.value = savedEmailBtnText;
+                if (previewEmailBtn) previewEmailBtn.textContent = savedEmailBtnText;
+            }
+            if (savedEmailBtnLink && emailBtnLinkInput) {
+                emailBtnLinkInput.value = savedEmailBtnLink;
+                if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = savedEmailBtnLink;
+            }
+            if (savedEmailBtnBgColor && emailBtnBgColorInput) {
+                emailBtnBgColorInput.value = savedEmailBtnBgColor;
+                if (previewEmailBtn) previewEmailBtn.style.backgroundColor = savedEmailBtnBgColor;
+            }
+            if (savedEmailBtnTextColor && emailBtnTextColorInput) {
+                emailBtnTextColorInput.value = savedEmailBtnTextColor;
+                if (previewEmailBtn) previewEmailBtn.style.color = savedEmailBtnTextColor;
+            }
+
             restoreImg(savedImage1, "popup_image_url", "clearImage1");
             restoreImg(savedImage2, "popup_image2_url", "clearImage2");
             restoreImg(savedImageMobile, "popup_mobile_image_url", "clearImageMobile");
@@ -633,6 +718,11 @@ export function initPopupManager() {
                 formData.append("emailBody", emailBodyInput.value);
             }
             formData.append("email_enabled", "1");
+
+            if (emailBtnTextInput) formData.append("email_btn_text", emailBtnTextInput.value);
+            if (emailBtnLinkInput) formData.append("email_btn_link", emailBtnLinkInput.value);
+            if (emailBtnBgColorInput) formData.append("email_btn_bg_color", emailBtnBgColorInput.value);
+            if (emailBtnTextColorInput) formData.append("email_btn_text_color", emailBtnTextColorInput.value);
 
             const addFile = (id: string, name: string) => {
                 const input = document.getElementById(
