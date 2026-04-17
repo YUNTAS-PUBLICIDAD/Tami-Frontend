@@ -64,6 +64,62 @@ import EmailEditor from "./EmailEditor.tsx";
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de Correo</label>
                 <EmailEditor client:only="react" />
             </div>
+
+            <div class="space-y-4 pt-6 mt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <h4 class="font-bold text-gray-800 dark:text-gray-100">Configuración del Botón</h4>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="emailBtnText" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Texto del Botón</label>
+                        <input
+                            type="text"
+                            id="emailBtnText"
+                            class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                            placeholder="Ej: Ver Productos"
+                            value="Ver Productos"
+                        />
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="emailBtnLink" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace del Botón</label>
+                        <input
+                            type="url"
+                            id="emailBtnLink"
+                            class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                            placeholder="Ej: https://tami.com/productos"
+                            value="https://tami.com/productos"
+                        />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                        <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color de Fondo</span>
+                        <div class="flex items-center gap-3">
+                            <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
+                                <input type="color" id="emailBtnBgColor" value="#0b1c3c" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                                <span class="text-xs text-gray-400">fondo</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                        <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Texto</span>
+                        <div class="flex items-center gap-3">
+                            <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
+                                <input type="color" id="emailBtnTextColor" value="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                                <span class="text-xs text-gray-400">texto</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
