@@ -194,7 +194,7 @@ const PopupForm = ({
                     }}
                     className={`rounded-full w-fit uppercase font-black shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-3 text-[11px] tracking-[0.12em]" : "py-1.5 px-3.5 text-xs sm:py-2 sm:px-4 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
                   >
-                    {isSubmitting ? "Enviando..." : "CONOCER MÁS"}
+                    {isSubmitting ? "Enviando..." : (settings?.button_text || "CONOCER MAS")}
                   </button>
                 </div>
               </form>
