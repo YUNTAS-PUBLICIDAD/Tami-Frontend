@@ -12,6 +12,7 @@ export interface PopupSettings {
   popup_mobile_image2_url?: string;
   button_bg_color?: string;
   button_text_color?: string;
+  button_text?: string;
   popup_start_delay_minutes?: number;
 }
 
@@ -60,10 +61,10 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch(getApiUrl(config.endpoints.popups.getSettings));
+        const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`));
         if (response.ok) {
-          const data = await response.json();
-          let apiData = Array.isArray(data) ? data[0] : data;
+          const responseData = await response.json();
+          let apiData = responseData.data || responseData;
 
           // Mapear claves de API a claves internas del componente
           let finalSettings: PopupSettings = {
@@ -72,25 +73,9 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
             popup_image2_url: apiData.image2 || apiData.popup_image2_url,
             popup_mobile_image_url: apiData.imageMobile || apiData.popup_mobile_image_url,
             popup_mobile_image2_url: apiData.imageMobile2 || apiData.popup_mobile_image2_url,
+            button_text: apiData.button_text || apiData.btnText || "CONOCER MAS",
           };
 
-          if (typeof window !== "undefined") {
-            const savedImage1 = localStorage.getItem('popupImage');
-            const savedImage2 = localStorage.getItem('popupImage2');
-            const savedImageMobile = localStorage.getItem('popupImageMobile');
-            const savedImageMobile2 = localStorage.getItem('popupImageMobile2');
-            const savedBgColor = localStorage.getItem('popupBtnBgColor');
-            const savedTextColor = localStorage.getItem('popupBtnTextColor');
-            const savedDelay = localStorage.getItem('popupDelay');
-
-            if (savedImage1) finalSettings.popup_image_url = savedImage1;
-            if (savedImage2) finalSettings.popup_image2_url = savedImage2;
-            if (savedImageMobile) finalSettings.popup_mobile_image_url = savedImageMobile;
-            if (savedImageMobile2) finalSettings.popup_mobile_image2_url = savedImageMobile2;
-            if (savedBgColor) finalSettings.button_bg_color = savedBgColor;
-            if (savedTextColor) finalSettings.button_text_color = savedTextColor;
-            if (savedDelay) finalSettings.popup_start_delay_minutes = parseInt(savedDelay);
-          }
           setSettings(finalSettings);
         }
       } catch (err) {
@@ -130,8 +115,8 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     const isCatalogModalOpen = document.getElementById("catalog-modal");
 
     if (!loadingSettings && !hasShownRef.current && !isAnyModalOpen && !isCatalogModalOpen && !showModal) {
-      const delayMinutes = settings?.popup_start_delay_minutes ?? 1;
-      const delayMs = delayMinutes * 60 * 1000;
+      const delaySeconds = settings?.popup_start_delay_minutes ?? 60;
+      const delayMs = delaySeconds * 1000;
       let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
 
       if (remainingSeconds === 0) {
