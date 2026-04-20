@@ -256,7 +256,6 @@ export function initPopupManager() {
         const handleBtnTextChange = () => {
             const val = btnTextInput.value;
             updatePreview({ button_text: val });
-            localStorage.setItem("popupBtnText", val);
         };
         btnTextInput.addEventListener("input", handleBtnTextChange);
     }
@@ -265,7 +264,6 @@ export function initPopupManager() {
         const handleBgChange = () => {
             const val = btnBgColorInput.value;
             updatePreview({ button_bg_color: val });
-            localStorage.setItem("popupBtnBgColor", val);
         };
         btnBgColorInput.addEventListener("input", handleBgChange);
         btnBgColorInput.addEventListener("change", handleBgChange);
@@ -275,7 +273,6 @@ export function initPopupManager() {
         const handleTextChange = () => {
             const val = btnTextColorInput.value;
             updatePreview({ button_text_color: val });
-            localStorage.setItem("popupBtnTextColor", val);
         };
         btnTextColorInput.addEventListener("input", handleTextChange);
         btnTextColorInput.addEventListener("change", handleTextChange);
@@ -292,7 +289,6 @@ export function initPopupManager() {
         const handleEmailBtnTextChange = () => {
             const val = emailBtnTextInput.value;
             if (previewEmailBtn) previewEmailBtn.textContent = val || "Ver Productos";
-            localStorage.setItem("emailBtnText", val);
         };
         emailBtnTextInput.addEventListener("input", handleEmailBtnTextChange);
     }
@@ -300,7 +296,6 @@ export function initPopupManager() {
         const handleEmailBtnLinkChange = () => {
             const val = emailBtnLinkInput.value;
             if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = val || "#";
-            localStorage.setItem("emailBtnLink", val);
         };
         emailBtnLinkInput.addEventListener("input", handleEmailBtnLinkChange);
     }
@@ -308,7 +303,6 @@ export function initPopupManager() {
         const handleEmailBtnBgChange = () => {
             const val = emailBtnBgColorInput.value;
             if (previewEmailBtn) previewEmailBtn.style.backgroundColor = val;
-            localStorage.setItem("emailBtnBgColor", val);
         };
         emailBtnBgColorInput.addEventListener("input", handleEmailBtnBgChange);
         emailBtnBgColorInput.addEventListener("change", handleEmailBtnBgChange);
@@ -317,7 +311,6 @@ export function initPopupManager() {
         const handleEmailBtnTextColChange = () => {
             const val = emailBtnTextColorInput.value;
             if (previewEmailBtn) previewEmailBtn.style.color = val;
-            localStorage.setItem("emailBtnTextColor", val);
         };
         emailBtnTextColorInput.addEventListener("input", handleEmailBtnTextColChange);
         emailBtnTextColorInput.addEventListener("change", handleEmailBtnTextColChange);
@@ -332,7 +325,6 @@ export function initPopupManager() {
         updatePreview({
             popup_start_delay_minutes: parseInt(val),
         });
-        localStorage.setItem("popupDelay", val);
     });
 
     const popupProductosDelayInput = document.getElementById(
@@ -343,7 +335,6 @@ export function initPopupManager() {
         updatePreview({
             product_popup_delay_minutes: parseInt(val),
         });
-        localStorage.setItem("popupProductDelay", val);
     });
 
     // IMAGE UPLOADS
@@ -397,7 +388,6 @@ export function initPopupManager() {
             handleImageUpload(this, (url) => {
                 updatePreview({ [previewKey]: url as string });
                 clearBtn?.classList.remove("hidden");
-                localStorage.setItem(storageKey, url as string);
                 const del = document.getElementById(deleteId) as HTMLInputElement;
                 if (del) del.value = "0";
             });
@@ -407,7 +397,6 @@ export function initPopupManager() {
             if (input) input.value = "";
             updatePreview({ [previewKey]: null });
             clearBtn?.classList.add("hidden");
-            localStorage.removeItem(storageKey);
             const del = document.getElementById(deleteId) as HTMLInputElement;
             if (del) del.value = "1";
         });
@@ -638,78 +627,6 @@ export function initPopupManager() {
                     button_text: settings.button_text || "CONOCER MAS",
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
                     product_popup_delay_minutes: settings.product_popup_delay_minutes,
-                });
-            }
-
-            const restoreImg = (url: string | null, key: string, clearId: string) => {
-                if (url) {
-                    updatePreview({ [key]: url });
-                    document.getElementById(clearId)?.classList.remove("hidden");
-                }
-            };
-
-            const savedImage1 = localStorage.getItem("popupImage");
-            const savedImage2 = localStorage.getItem("popupImage2");
-            const savedImageMobile = localStorage.getItem("popupImageMobile");
-            const savedImageMobile2 = localStorage.getItem("popupImageMobile2");
-            const savedBgColor = localStorage.getItem("popupBtnBgColor");
-            const savedTextColor = localStorage.getItem("popupBtnTextColor");
-            const savedBtnText = localStorage.getItem("popupBtnText");
-            const savedDelay = localStorage.getItem("popupDelay");
-            const savedProductDelay = localStorage.getItem("popupProductDelay");
-
-            const savedEmailBtnText = localStorage.getItem("emailBtnText");
-            const savedEmailBtnLink = localStorage.getItem("emailBtnLink");
-            const savedEmailBtnBgColor = localStorage.getItem("emailBtnBgColor");
-            const savedEmailBtnTextColor = localStorage.getItem("emailBtnTextColor");
-
-            if (savedEmailBtnText && emailBtnTextInput) {
-                emailBtnTextInput.value = savedEmailBtnText;
-                if (previewEmailBtn) previewEmailBtn.textContent = savedEmailBtnText;
-            }
-            if (savedEmailBtnLink && emailBtnLinkInput) {
-                emailBtnLinkInput.value = savedEmailBtnLink;
-                if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = savedEmailBtnLink;
-            }
-            if (savedEmailBtnBgColor && emailBtnBgColorInput) {
-                emailBtnBgColorInput.value = savedEmailBtnBgColor;
-                if (previewEmailBtn) previewEmailBtn.style.backgroundColor = savedEmailBtnBgColor;
-            }
-            if (savedEmailBtnTextColor && emailBtnTextColorInput) {
-                emailBtnTextColorInput.value = savedEmailBtnTextColor;
-                if (previewEmailBtn) previewEmailBtn.style.color = savedEmailBtnTextColor;
-            }
-
-            restoreImg(savedImage1, "popup_image_url", "clearImage1");
-            restoreImg(savedImage2, "popup_image2_url", "clearImage2");
-            restoreImg(savedImageMobile, "popup_mobile_image_url", "clearImageMobile");
-            restoreImg(savedImageMobile2, "popup_mobile_image2_url", "clearImageMobile2");
-            if (savedBgColor && btnBgColorInput) {
-                btnBgColorInput.value = savedBgColor;
-                updatePreview({ button_bg_color: savedBgColor });
-            }
-            if (savedTextColor && btnTextColorInput) {
-                btnTextColorInput.value = savedTextColor;
-                updatePreview({ button_text_color: savedTextColor });
-            }
-            if (savedBtnText && btnTextInput) {
-                btnTextInput.value = savedBtnText;
-                updatePreview({ button_text: savedBtnText });
-            } else if (btnTextInput && !btnTextInput.value) {
-                btnTextInput.value = "CONOCER MAS";
-                updatePreview({ button_text: "CONOCER MAS" });
-            }
-            if (savedDelay && popupInicioDelayInput) {
-                popupInicioDelayInput.value = savedDelay;
-                updatePreview({
-                    popup_start_delay_minutes: parseInt(savedDelay),
-                });
-            }
-            if (savedProductDelay && popupProductosDelayInput) {
-                popupProductosDelayInput.value = savedProductDelay;
-                updatePreview({
-                    product_popup_delay_minutes:
-                        parseInt(savedProductDelay),
                 });
             }
 
