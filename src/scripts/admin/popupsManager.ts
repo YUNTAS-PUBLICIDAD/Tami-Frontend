@@ -239,12 +239,22 @@ export function initPopupManager() {
     });
 
     // Colores del Botón
+    const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
     const btnBgColorInput = document.getElementById(
         "btnBgColor",
     ) as HTMLInputElement;
     const btnTextColorInput = document.getElementById(
         "btnTextColor",
     ) as HTMLInputElement;
+
+    if (btnTextInput) {
+        const handleBtnTextChange = () => {
+            const val = btnTextInput.value;
+            updatePreview({ button_text: val });
+            localStorage.setItem("popupBtnText", val);
+        };
+        btnTextInput.addEventListener("input", handleBtnTextChange);
+    }
 
     if (btnBgColorInput) {
         const handleBgChange = () => {
@@ -313,7 +323,9 @@ export function initPopupManager() {
     ) as HTMLSelectElement;
     popupInicioDelayInput?.addEventListener("change", () => {
         const val = popupInicioDelayInput.value;
-        updatePreview({ popup_start_delay_minutes: parseInt(val) });
+        updatePreview({
+            popup_start_delay_minutes: parseInt(val),
+        });
         localStorage.setItem("popupDelay", val);
     });
 
@@ -322,7 +334,9 @@ export function initPopupManager() {
     ) as HTMLSelectElement;
     popupProductosDelayInput?.addEventListener("change", () => {
         const val = popupProductosDelayInput.value;
-        updatePreview({ product_popup_delay_minutes: parseInt(val) });
+        updatePreview({
+            product_popup_delay_minutes: parseInt(val),
+        });
         localStorage.setItem("popupProductDelay", val);
     });
 
@@ -372,8 +386,8 @@ export function initPopupManager() {
     ) {
         const input = document.getElementById(inputId) as HTMLInputElement;
         const clearBtn = document.getElementById(clearBtnId);
-        
-        input?.addEventListener("change", function(this: HTMLInputElement) {
+
+        input?.addEventListener("change", function (this: HTMLInputElement) {
             handleImageUpload(this, (url) => {
                 updatePreview({ [previewKey]: url as string });
                 clearBtn?.classList.remove("hidden");
@@ -382,7 +396,7 @@ export function initPopupManager() {
                 if (del) del.value = "0";
             });
         });
-        
+
         clearBtn?.addEventListener("click", () => {
             if (input) input.value = "";
             updatePreview({ [previewKey]: null });
@@ -488,7 +502,12 @@ export function initPopupManager() {
                         settings.button_text_color ||
                         settings.btnTextColor ||
                         "#ffffff";
-                
+
+                if (btnTextInput) {
+                    const bText = settings.button_text || settings.btnText || "CONOCER MAS";
+                    btnTextInput.value = bText;
+                }
+
                 if (emailBtnTextInput) {
                     const text = settings.email_btn_text || settings.emailBtnText || "Ver Productos";
                     emailBtnTextInput.value = text;
@@ -512,8 +531,8 @@ export function initPopupManager() {
                 if (popupInicioDelayInput)
                     popupInicioDelayInput.value = String(
                         settings.popup_start_delay_minutes ||
-                            settings.popupInicioDelay ||
-                            1,
+                        settings.popupInicioDelay ||
+                        60,
                     );
 
                 const popupProductosDelay = document.getElementById(
@@ -522,8 +541,8 @@ export function initPopupManager() {
                 if (popupProductosDelay)
                     popupProductosDelay.value = String(
                         settings.product_popup_delay_minutes ||
-                            settings.popupProductosDelay ||
-                            1,
+                        settings.popupProductosDelay ||
+                        60,
                     );
 
                 const whatsappMessage = document.getElementById(
@@ -533,7 +552,7 @@ export function initPopupManager() {
                     whatsappMessage.value = settings.whatsappMessage;
                     if (previewWhatsappText)
                         previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
-                    
+
                     window.dispatchEvent(
                         new CustomEvent("update-whatsapp-editor", {
                             detail: settings.whatsappMessage,
@@ -606,6 +625,7 @@ export function initPopupManager() {
                 updatePreview({
                     button_bg_color: settings.button_bg_color,
                     button_text_color: settings.button_text_color,
+                    button_text: settings.button_text || "CONOCER MAS",
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
                     product_popup_delay_minutes: settings.product_popup_delay_minutes,
                 });
@@ -624,6 +644,7 @@ export function initPopupManager() {
             const savedImageMobile2 = localStorage.getItem("popupImageMobile2");
             const savedBgColor = localStorage.getItem("popupBtnBgColor");
             const savedTextColor = localStorage.getItem("popupBtnTextColor");
+            const savedBtnText = localStorage.getItem("popupBtnText");
             const savedDelay = localStorage.getItem("popupDelay");
             const savedProductDelay = localStorage.getItem("popupProductDelay");
 
@@ -660,6 +681,13 @@ export function initPopupManager() {
             if (savedTextColor && btnTextColorInput) {
                 btnTextColorInput.value = savedTextColor;
                 updatePreview({ button_text_color: savedTextColor });
+            }
+            if (savedBtnText && btnTextInput) {
+                btnTextInput.value = savedBtnText;
+                updatePreview({ button_text: savedBtnText });
+            } else if (btnTextInput && !btnTextInput.value) {
+                btnTextInput.value = "CONOCER MAS";
+                updatePreview({ button_text: "CONOCER MAS" });
             }
             if (savedDelay && popupInicioDelayInput) {
                 popupInicioDelayInput.value = savedDelay;
@@ -698,9 +726,9 @@ export function initPopupManager() {
         try {
             const bgColor = btnBgColorInput?.value || "#14b8a6";
             const textColor = btnTextColorInput?.value || "#ffffff";
-            const delay = parseInt(popupInicioDelayInput?.value || "1");
+            const delay = parseInt(popupInicioDelayInput?.value || "60");
             const productDelay = parseInt(
-                popupProductosDelayInput?.value || "1",
+                popupProductosDelayInput?.value || "60",
             );
 
             if (!isHexColor(bgColor) || !isHexColor(textColor)) {
@@ -710,6 +738,9 @@ export function initPopupManager() {
             const formData = new FormData();
             formData.append("button_bg_color", bgColor);
             formData.append("button_text_color", textColor);
+            if (btnTextInput) {
+                formData.append("button_text", btnTextInput.value);
+            }
             formData.append("popup_start_delay_minutes", delay.toString());
 
             const popupProductosDelay = document.getElementById(
