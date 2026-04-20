@@ -25,6 +25,7 @@ export function initPopupManager() {
     const previewModesToggle =
         document.getElementById("previewModesToggle");
     const previewStage = document.getElementById("previewStage");
+    const previewWhatsappText = document.getElementById("previewWhatsappText");
     const statusElement = document.getElementById("popupStatus");
 
     const isMobileScreen = window.innerWidth < 1024;
@@ -189,34 +190,9 @@ export function initPopupManager() {
         }
     });
 
-    // SYNC INPUTS TO PREVIEW
-    const textareaWhatsapp = document.getElementById(
-        "whatsappMessage",
-    ) as HTMLTextAreaElement;
-    const previewWhatsappText = document.getElementById(
-        "previewWhatsappText",
-    );
-    function formatWhatsAppTextToHTML(text: string | null) {
-        if (!text) return "";
-        let html = text;
-        // Escape basic tags to prevent injection (simple approach)
-        html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        // format whatsapp markdown
-        html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
-        html = html.replace(/_(.*?)_/g, "<em>$1</em>");
-        html = html.replace(/~(.*?)~/g, "<del>$1</del>");
-        html = html.replace(/\n/g, "<br>");
-        return html;
-    }
-
-    textareaWhatsapp?.addEventListener("input", () => {
-        if (previewWhatsappText)
-            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(textareaWhatsapp.value);
-    });
-
     window.addEventListener("update-whatsapp-preview", (e: any) => {
         if (previewWhatsappText) {
-            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(e.detail);
+            previewWhatsappText.innerHTML = e.detail;
         }
     });
 
@@ -526,13 +502,16 @@ export function initPopupManager() {
                             1,
                     );
 
-                const whatsappMessage = document.getElementById(
-                    "whatsappMessage",
-                ) as HTMLTextAreaElement;
-                if (whatsappMessage && settings.whatsappMessage) {
-                    whatsappMessage.value = settings.whatsappMessage;
+                if (settings.whatsappMessage) {
+                    const whatsappMessageHidden = document.getElementById(
+                        "whatsappMessage",
+                    ) as HTMLInputElement;
+                    if (whatsappMessageHidden) {
+                        whatsappMessageHidden.value = settings.whatsappMessage;
+                    }
+                    
                     if (previewWhatsappText)
-                        previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
+                        previewWhatsappText.innerHTML = settings.whatsappMessage;
                     
                     window.dispatchEvent(
                         new CustomEvent("update-whatsapp-editor", {
@@ -723,7 +702,7 @@ export function initPopupManager() {
 
             const whatsappMessage = document.getElementById(
                 "whatsappMessage",
-            ) as HTMLTextAreaElement;
+            ) as HTMLInputElement;
             if (whatsappMessage)
                 formData.append("whatsappMessage", whatsappMessage.value);
             formData.append("whatsapp_enabled", "1");
