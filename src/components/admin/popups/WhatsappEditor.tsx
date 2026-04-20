@@ -38,7 +38,7 @@ const WhatsappEditor = ({
   const handleInput = () => {
     if (!editorRef.current) return;
     const content = editorRef.current.innerHTML;
-    
+
     // Dispatch event to update preview in popupsManager.ts
     window.dispatchEvent(new CustomEvent('update-whatsapp-preview', { detail: content }));
 
