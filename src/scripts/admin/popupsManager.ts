@@ -25,6 +25,7 @@ export function initPopupManager() {
     const previewModesToggle =
         document.getElementById("previewModesToggle");
     const previewStage = document.getElementById("previewStage");
+    const previewWhatsappText = document.getElementById("previewWhatsappText");
     const statusElement = document.getElementById("popupStatus");
 
     const isMobileScreen = window.innerWidth < 1024;
@@ -193,14 +194,18 @@ export function initPopupManager() {
     const textareaWhatsapp = document.getElementById(
         "whatsappMessage",
     ) as HTMLTextAreaElement;
-    const previewWhatsappText = document.getElementById(
-        "previewWhatsappText",
-    );
     function formatWhatsAppTextToHTML(text: string | null) {
         if (!text) return "";
         let html = text;
-        // Escape basic tags to prevent injection (simple approach)
-        html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        
+        // Si el texto ya tiene formato HTML (del nuevo editor), no escapamos los tags
+        const hasHTML = /<[a-z][\s\S]*>/i.test(html);
+        
+        if (!hasHTML) {
+            // Escape basic tags only if it's plain text to prevent injection
+            html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        
         // format whatsapp markdown
         html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
         html = html.replace(/_(.*?)_/g, "<em>$1</em>");
@@ -239,12 +244,22 @@ export function initPopupManager() {
     });
 
     // Colores del Botón
+    const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
     const btnBgColorInput = document.getElementById(
         "btnBgColor",
     ) as HTMLInputElement;
     const btnTextColorInput = document.getElementById(
         "btnTextColor",
     ) as HTMLInputElement;
+
+    if (btnTextInput) {
+        const handleBtnTextChange = () => {
+            const val = btnTextInput.value;
+            updatePreview({ button_text: val });
+            localStorage.setItem("popupBtnText", val);
+        };
+        btnTextInput.addEventListener("input", handleBtnTextChange);
+    }
 
     if (btnBgColorInput) {
         const handleBgChange = () => {
@@ -266,12 +281,57 @@ export function initPopupManager() {
         btnTextColorInput.addEventListener("change", handleTextChange);
     }
 
+    // Botón Correo
+    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
+    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
+    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
+
+    if (emailBtnTextInput) {
+        const handleEmailBtnTextChange = () => {
+            const val = emailBtnTextInput.value;
+            if (previewEmailBtn) previewEmailBtn.textContent = val || "Ver Productos";
+            localStorage.setItem("emailBtnText", val);
+        };
+        emailBtnTextInput.addEventListener("input", handleEmailBtnTextChange);
+    }
+    if (emailBtnLinkInput) {
+        const handleEmailBtnLinkChange = () => {
+            const val = emailBtnLinkInput.value;
+            if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = val || "#";
+            localStorage.setItem("emailBtnLink", val);
+        };
+        emailBtnLinkInput.addEventListener("input", handleEmailBtnLinkChange);
+    }
+    if (emailBtnBgColorInput) {
+        const handleEmailBtnBgChange = () => {
+            const val = emailBtnBgColorInput.value;
+            if (previewEmailBtn) previewEmailBtn.style.backgroundColor = val;
+            localStorage.setItem("emailBtnBgColor", val);
+        };
+        emailBtnBgColorInput.addEventListener("input", handleEmailBtnBgChange);
+        emailBtnBgColorInput.addEventListener("change", handleEmailBtnBgChange);
+    }
+    if (emailBtnTextColorInput) {
+        const handleEmailBtnTextColChange = () => {
+            const val = emailBtnTextColorInput.value;
+            if (previewEmailBtn) previewEmailBtn.style.color = val;
+            localStorage.setItem("emailBtnTextColor", val);
+        };
+        emailBtnTextColorInput.addEventListener("input", handleEmailBtnTextColChange);
+        emailBtnTextColorInput.addEventListener("change", handleEmailBtnTextColChange);
+    }
+
+
     const popupInicioDelayInput = document.getElementById(
         "popupInicioDelay",
     ) as HTMLSelectElement;
     popupInicioDelayInput?.addEventListener("change", () => {
         const val = popupInicioDelayInput.value;
-        updatePreview({ popup_start_delay_minutes: parseInt(val) });
+        updatePreview({
+            popup_start_delay_minutes: parseInt(val),
+        });
         localStorage.setItem("popupDelay", val);
     });
 
@@ -280,7 +340,9 @@ export function initPopupManager() {
     ) as HTMLSelectElement;
     popupProductosDelayInput?.addEventListener("change", () => {
         const val = popupProductosDelayInput.value;
-        updatePreview({ product_popup_delay_minutes: parseInt(val) });
+        updatePreview({
+            product_popup_delay_minutes: parseInt(val),
+        });
         localStorage.setItem("popupProductDelay", val);
     });
 
@@ -330,8 +392,8 @@ export function initPopupManager() {
     ) {
         const input = document.getElementById(inputId) as HTMLInputElement;
         const clearBtn = document.getElementById(clearBtnId);
-        
-        input?.addEventListener("change", function(this: HTMLInputElement) {
+
+        input?.addEventListener("change", function (this: HTMLInputElement) {
             handleImageUpload(this, (url) => {
                 updatePreview({ [previewKey]: url as string });
                 clearBtn?.classList.remove("hidden");
@@ -340,7 +402,7 @@ export function initPopupManager() {
                 if (del) del.value = "0";
             });
         });
-        
+
         clearBtn?.addEventListener("click", () => {
             if (input) input.value = "";
             updatePreview({ [previewKey]: null });
@@ -446,11 +508,37 @@ export function initPopupManager() {
                         settings.button_text_color ||
                         settings.btnTextColor ||
                         "#ffffff";
+
+                if (btnTextInput) {
+                    const bText = settings.button_text || settings.btnText || "CONOCER MAS";
+                    btnTextInput.value = bText;
+                }
+
+                if (emailBtnTextInput) {
+                    const text = settings.email_btn_text || settings.emailBtnText || "Ver Productos";
+                    emailBtnTextInput.value = text;
+                    if (previewEmailBtn) previewEmailBtn.textContent = text;
+                }
+                if (emailBtnLinkInput) {
+                    const link = settings.email_btn_link || settings.emailBtnLink || "https://tami.com/productos";
+                    emailBtnLinkInput.value = link;
+                    if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = link;
+                }
+                if (emailBtnBgColorInput) {
+                    const bgCol = settings.email_btn_bg_color || settings.emailBtnBgColor || "#0b1c3c";
+                    emailBtnBgColorInput.value = bgCol;
+                    if (previewEmailBtn) previewEmailBtn.style.backgroundColor = bgCol;
+                }
+                if (emailBtnTextColorInput) {
+                    const textCol = settings.email_btn_text_color || settings.emailBtnTextColor || "#ffffff";
+                    emailBtnTextColorInput.value = textCol;
+                    if (previewEmailBtn) previewEmailBtn.style.color = textCol;
+                }
                 if (popupInicioDelayInput)
                     popupInicioDelayInput.value = String(
                         settings.popup_start_delay_minutes ||
-                            settings.popupInicioDelay ||
-                            1,
+                        settings.popupInicioDelay ||
+                        60,
                     );
 
                 const popupProductosDelay = document.getElementById(
@@ -459,18 +547,22 @@ export function initPopupManager() {
                 if (popupProductosDelay)
                     popupProductosDelay.value = String(
                         settings.product_popup_delay_minutes ||
-                            settings.popupProductosDelay ||
-                            1,
+                        settings.popupProductosDelay ||
+                        60,
                     );
 
-                const whatsappMessage = document.getElementById(
-                    "whatsappMessage",
-                ) as HTMLTextAreaElement;
-                if (whatsappMessage && settings.whatsappMessage) {
-                    whatsappMessage.value = settings.whatsappMessage;
-                    if (previewWhatsappText)
+                if (settings.whatsappMessage) {
+                    const whatsappMessageHidden = document.getElementById(
+                        "whatsappMessage",
+                    ) as HTMLInputElement;
+                    if (whatsappMessageHidden) {
+                        whatsappMessageHidden.value = settings.whatsappMessage;
+                    }
+
+                    if (previewWhatsappText) {
                         previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
-                    
+                    }
+
                     window.dispatchEvent(
                         new CustomEvent("update-whatsapp-editor", {
                             detail: settings.whatsappMessage,
@@ -543,6 +635,7 @@ export function initPopupManager() {
                 updatePreview({
                     button_bg_color: settings.button_bg_color,
                     button_text_color: settings.button_text_color,
+                    button_text: settings.button_text || "CONOCER MAS",
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
                     product_popup_delay_minutes: settings.product_popup_delay_minutes,
                 });
@@ -561,8 +654,31 @@ export function initPopupManager() {
             const savedImageMobile2 = localStorage.getItem("popupImageMobile2");
             const savedBgColor = localStorage.getItem("popupBtnBgColor");
             const savedTextColor = localStorage.getItem("popupBtnTextColor");
+            const savedBtnText = localStorage.getItem("popupBtnText");
             const savedDelay = localStorage.getItem("popupDelay");
             const savedProductDelay = localStorage.getItem("popupProductDelay");
+
+            const savedEmailBtnText = localStorage.getItem("emailBtnText");
+            const savedEmailBtnLink = localStorage.getItem("emailBtnLink");
+            const savedEmailBtnBgColor = localStorage.getItem("emailBtnBgColor");
+            const savedEmailBtnTextColor = localStorage.getItem("emailBtnTextColor");
+
+            if (savedEmailBtnText && emailBtnTextInput) {
+                emailBtnTextInput.value = savedEmailBtnText;
+                if (previewEmailBtn) previewEmailBtn.textContent = savedEmailBtnText;
+            }
+            if (savedEmailBtnLink && emailBtnLinkInput) {
+                emailBtnLinkInput.value = savedEmailBtnLink;
+                if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = savedEmailBtnLink;
+            }
+            if (savedEmailBtnBgColor && emailBtnBgColorInput) {
+                emailBtnBgColorInput.value = savedEmailBtnBgColor;
+                if (previewEmailBtn) previewEmailBtn.style.backgroundColor = savedEmailBtnBgColor;
+            }
+            if (savedEmailBtnTextColor && emailBtnTextColorInput) {
+                emailBtnTextColorInput.value = savedEmailBtnTextColor;
+                if (previewEmailBtn) previewEmailBtn.style.color = savedEmailBtnTextColor;
+            }
 
             restoreImg(savedImage1, "popup_image_url", "clearImage1");
             restoreImg(savedImage2, "popup_image2_url", "clearImage2");
@@ -575,6 +691,13 @@ export function initPopupManager() {
             if (savedTextColor && btnTextColorInput) {
                 btnTextColorInput.value = savedTextColor;
                 updatePreview({ button_text_color: savedTextColor });
+            }
+            if (savedBtnText && btnTextInput) {
+                btnTextInput.value = savedBtnText;
+                updatePreview({ button_text: savedBtnText });
+            } else if (btnTextInput && !btnTextInput.value) {
+                btnTextInput.value = "CONOCER MAS";
+                updatePreview({ button_text: "CONOCER MAS" });
             }
             if (savedDelay && popupInicioDelayInput) {
                 popupInicioDelayInput.value = savedDelay;
@@ -613,9 +736,9 @@ export function initPopupManager() {
         try {
             const bgColor = btnBgColorInput?.value || "#14b8a6";
             const textColor = btnTextColorInput?.value || "#ffffff";
-            const delay = parseInt(popupInicioDelayInput?.value || "1");
+            const delay = parseInt(popupInicioDelayInput?.value || "60");
             const productDelay = parseInt(
-                popupProductosDelayInput?.value || "1",
+                popupProductosDelayInput?.value || "60",
             );
 
             if (!isHexColor(bgColor) || !isHexColor(textColor)) {
@@ -625,6 +748,9 @@ export function initPopupManager() {
             const formData = new FormData();
             formData.append("button_bg_color", bgColor);
             formData.append("button_text_color", textColor);
+            if (btnTextInput) {
+                formData.append("button_text", btnTextInput.value);
+            }
             formData.append("popup_start_delay_minutes", delay.toString());
 
             const popupProductosDelay = document.getElementById(
@@ -638,7 +764,7 @@ export function initPopupManager() {
 
             const whatsappMessage = document.getElementById(
                 "whatsappMessage",
-            ) as HTMLTextAreaElement;
+            ) as HTMLInputElement;
             if (whatsappMessage)
                 formData.append("whatsappMessage", whatsappMessage.value);
             formData.append("whatsapp_enabled", "1");
@@ -654,6 +780,11 @@ export function initPopupManager() {
                 formData.append("emailBody", emailBodyInput.value);
             }
             formData.append("email_enabled", "1");
+
+            if (emailBtnTextInput) formData.append("email_btn_text", emailBtnTextInput.value);
+            if (emailBtnLinkInput) formData.append("email_btn_link", emailBtnLinkInput.value);
+            if (emailBtnBgColorInput) formData.append("email_btn_bg_color", emailBtnBgColorInput.value);
+            if (emailBtnTextColorInput) formData.append("email_btn_text_color", emailBtnTextColorInput.value);
 
             const addFile = (id: string, name: string) => {
                 const input = document.getElementById(
