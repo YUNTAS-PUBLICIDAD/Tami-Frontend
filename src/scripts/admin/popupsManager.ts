@@ -194,14 +194,18 @@ export function initPopupManager() {
     const textareaWhatsapp = document.getElementById(
         "whatsappMessage",
     ) as HTMLTextAreaElement;
-    const previewWhatsappText = document.getElementById(
-        "previewWhatsappText",
-    );
     function formatWhatsAppTextToHTML(text: string | null) {
         if (!text) return "";
         let html = text;
-        // Escape basic tags to prevent injection (simple approach)
-        html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        
+        // Si el texto ya tiene formato HTML (del nuevo editor), no escapamos los tags
+        const hasHTML = /<[a-z][\s\S]*>/i.test(html);
+        
+        if (!hasHTML) {
+            // Escape basic tags only if it's plain text to prevent injection
+            html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        
         // format whatsapp markdown
         html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
         html = html.replace(/_(.*?)_/g, "<em>$1</em>");
@@ -319,47 +323,6 @@ export function initPopupManager() {
         emailBtnTextColorInput.addEventListener("change", handleEmailBtnTextColChange);
     }
 
-    // Botón Correo
-    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
-    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
-    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
-    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
-    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
-
-    if (emailBtnTextInput) {
-        const handleEmailBtnTextChange = () => {
-            const val = emailBtnTextInput.value;
-            if (previewEmailBtn) previewEmailBtn.textContent = val || "Ver Productos";
-            localStorage.setItem("emailBtnText", val);
-        };
-        emailBtnTextInput.addEventListener("input", handleEmailBtnTextChange);
-    }
-    if (emailBtnLinkInput) {
-        const handleEmailBtnLinkChange = () => {
-            const val = emailBtnLinkInput.value;
-            if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = val || "#";
-            localStorage.setItem("emailBtnLink", val);
-        };
-        emailBtnLinkInput.addEventListener("input", handleEmailBtnLinkChange);
-    }
-    if (emailBtnBgColorInput) {
-        const handleEmailBtnBgChange = () => {
-            const val = emailBtnBgColorInput.value;
-            if (previewEmailBtn) previewEmailBtn.style.backgroundColor = val;
-            localStorage.setItem("emailBtnBgColor", val);
-        };
-        emailBtnBgColorInput.addEventListener("input", handleEmailBtnBgChange);
-        emailBtnBgColorInput.addEventListener("change", handleEmailBtnBgChange);
-    }
-    if (emailBtnTextColorInput) {
-        const handleEmailBtnTextColChange = () => {
-            const val = emailBtnTextColorInput.value;
-            if (previewEmailBtn) previewEmailBtn.style.color = val;
-            localStorage.setItem("emailBtnTextColor", val);
-        };
-        emailBtnTextColorInput.addEventListener("input", handleEmailBtnTextColChange);
-        emailBtnTextColorInput.addEventListener("change", handleEmailBtnTextColChange);
-    }
 
     const popupInicioDelayInput = document.getElementById(
         "popupInicioDelay",
@@ -596,15 +559,9 @@ export function initPopupManager() {
                         whatsappMessageHidden.value = settings.whatsappMessage;
                     }
 
-                    if (previewWhatsappText)
-                        previewWhatsappText.innerHTML = settings.whatsappMessage;
-
-                    window.dispatchEvent(
-                        new CustomEvent("update-whatsapp-editor", {
-                            detail: settings.whatsappMessage,
-                        }),
-                    );
-                    previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
+                    if (previewWhatsappText) {
+                        previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
+                    }
 
                     window.dispatchEvent(
                         new CustomEvent("update-whatsapp-editor", {
