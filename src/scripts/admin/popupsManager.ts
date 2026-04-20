@@ -197,15 +197,15 @@ export function initPopupManager() {
     function formatWhatsAppTextToHTML(text: string | null) {
         if (!text) return "";
         let html = text;
-        
+
         // Si el texto ya tiene formato HTML (del nuevo editor), no escapamos los tags
         const hasHTML = /<[a-z][\s\S]*>/i.test(html);
-        
+
         if (!hasHTML) {
             // Escape basic tags only if it's plain text to prevent injection
             html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
-        
+
         // format whatsapp markdown
         html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
         html = html.replace(/_(.*?)_/g, "<em>$1</em>");
@@ -811,11 +811,20 @@ export function initPopupManager() {
 
             await updatePopupSettingsFormData(formData);
 
-            setStatus("¡Guardado exitosamente! Recargando...", "success");
+            setStatus("¡Guardado exitosamente!", "success");
+
+            // Limpiar almacenamiento local temporal después de guardar
+            const keysToRemove = [
+                "popupBtnText", "popupBtnBgColor", "popupBtnTextColor",
+                "emailBtnText", "emailBtnLink", "emailBtnBgColor", "emailBtnTextColor",
+                "popupDelay", "popupProductDelay",
+                "popupImage", "popupImage2", "popupImageMobile", "popupImageMobile2"
+            ];
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+
             setTimeout(() => {
-                setStatus("");
-                location.reload();
-            }, 2000);
+                setStatus("", "idle");
+            }, 3000);
         } catch (error: any) {
             console.error(error);
             const errMessage =
