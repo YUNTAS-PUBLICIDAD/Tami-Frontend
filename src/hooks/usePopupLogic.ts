@@ -61,10 +61,10 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch(getApiUrl(config.endpoints.popups.getSettings));
+        const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`));
         if (response.ok) {
-          const data = await response.json();
-          let apiData = Array.isArray(data) ? data[0] : data;
+          const responseData = await response.json();
+          let apiData = responseData.data || responseData;
 
           // Mapear claves de API a claves internas del componente
           let finalSettings: PopupSettings = {
@@ -76,25 +76,6 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
             button_text: apiData.button_text || apiData.btnText || "CONOCER MAS",
           };
 
-          if (typeof window !== "undefined") {
-            const savedImage1 = localStorage.getItem('popupImage');
-            const savedImage2 = localStorage.getItem('popupImage2');
-            const savedImageMobile = localStorage.getItem('popupImageMobile');
-            const savedImageMobile2 = localStorage.getItem('popupImageMobile2');
-            const savedBgColor = localStorage.getItem('popupBtnBgColor');
-            const savedTextColor = localStorage.getItem('popupBtnTextColor');
-            const savedBtnText = localStorage.getItem('popupBtnText');
-            const savedDelay = localStorage.getItem('popupDelay');
-
-            if (savedImage1) finalSettings.popup_image_url = savedImage1;
-            if (savedImage2) finalSettings.popup_image2_url = savedImage2;
-            if (savedImageMobile) finalSettings.popup_mobile_image_url = savedImageMobile;
-            if (savedImageMobile2) finalSettings.popup_mobile_image2_url = savedImageMobile2;
-            if (savedBgColor) finalSettings.button_bg_color = savedBgColor;
-            if (savedTextColor) finalSettings.button_text_color = savedTextColor;
-            if (savedBtnText) finalSettings.button_text = savedBtnText;
-            if (savedDelay) finalSettings.popup_start_delay_minutes = parseInt(savedDelay);
-          }
           setSettings(finalSettings);
         }
       } catch (err) {
