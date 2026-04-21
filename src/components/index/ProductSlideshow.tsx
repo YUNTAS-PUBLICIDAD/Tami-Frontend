@@ -230,6 +230,7 @@ const ProductSlideshow = () => {
                     title={String(item.titulo)}
                     className="w-full h-80 object-cover"
                     loading="lazy"
+                    decoding="async"
                   />
 
                   <div className="absolute inset-x-0 bottom-0 bg-[#00786F]/90 backdrop-blur-sm p-4 flex flex-col gap-2">
@@ -291,6 +292,7 @@ const ProductSlideshow = () => {
                   title={String(item.titulo)}
                   className="w-full h-80 object-cover"
                   loading="lazy"
+                  decoding="async"
                 />
 
                 <div className="absolute inset-x-0 bottom-0 bg-[#00786F]/90 backdrop-blur-sm p-4 flex flex-col gap-2">

@@ -49,7 +49,18 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       crossorigin
     />
 
-    <link rel="preconnect" href="https://apitami.tamimaquinarias.com" />
+    <link
+      rel="preconnect"
+      href="https://apitami.tamimaquinarias.com"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/hero/zonas-comercial-urbano.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
 
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
@@ -116,9 +127,9 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
      * it here avoids mounting it entirely).
      */}
     {!(Astro.url.pathname === "/productos") && (
-      <ScrollModal client:load />
+      <ScrollModal client:idle />
     )}
-    {/* Activado con el atributo `client:load`.*/}
+    {/* Activado con el atributo `client:idle`.*/}
     <script is:inline>
       function addOpenScrollListeners() {
         document.querySelectorAll("#open-scroll-btn").forEach((btn) => {
@@ -141,7 +152,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       observer.observe(document.body, { childList: true, subtree: true });
     </script>
     <SocialSidebar />
-    <ChatbotWidget client:load />
+    <ChatbotWidget client:idle />
     <Toast />
   </body>
 </html>

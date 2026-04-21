@@ -44,6 +44,9 @@ const Hero = () => {
               sizes="100vw"
               alt={heroArray[currentIndex].alt || ""}
               className="absolute inset-0 w-full h-full object-cover object-center"
+              loading={currentIndex === 0 ? "eager" : "lazy"}
+              fetchPriority={currentIndex === 0 ? "high" : "low"}
+              decoding={currentIndex === 0 ? "sync" : "async"}
             />
           </motion.div>
         </AnimatePresence>
@@ -59,7 +62,7 @@ const Hero = () => {
         <motion.h1
           custom={0.2}
           variants={textVariants}
-          initial="hidden"
+          initial={currentIndex === 0 ? "visible" : "hidden"}
           animate="visible"
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight sm:leading-snug drop-shadow-lg max-w-[90%] sm:max-w-3xl"
         >
@@ -69,7 +72,7 @@ const Hero = () => {
         <motion.p
           custom={0.4}
           variants={textVariants}
-          initial="hidden"
+          initial={currentIndex === 0 ? "visible" : "hidden"}
           animate="visible"
           className="text-sm sm:text-base md:text-lg lg:text-xl max-w-[90%] sm:max-w-3xl drop-shadow-md leading-relaxed"
         >

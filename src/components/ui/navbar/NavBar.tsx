@@ -63,8 +63,9 @@ function NavBar() {
 
     const handleScroll = () => {
       if (!ticking) {
-        requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 50);
+        window.requestAnimationFrame(() => {
+          const isAboveThreshold = window.scrollY > 50;
+          setIsScrolled(isAboveThreshold);
           ticking = false;
         });
         ticking = true;
@@ -126,6 +127,8 @@ function NavBar() {
                 // Se eliminó la línea en blanco que estaba en tu versión HEAD
                 className="h-16 w-auto object-contain"
                 fetchPriority="high"
+                loading="eager"
+                decoding="async"
               />
             </a>
           </div>

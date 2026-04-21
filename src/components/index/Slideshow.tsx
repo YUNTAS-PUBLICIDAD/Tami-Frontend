@@ -119,6 +119,10 @@ const Testimonials: React.FC = () => {
                     src={t.avatar}
                     alt={t.alt}
                     title={t.title}
+                    width="80"
+                    height="80"
+                    loading="lazy"
+                    decoding="async"
                     className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
                   />
                   <h3 className="text-xl font-bold text-teal-700 tracking-wide mb-1">
@@ -177,6 +181,10 @@ const Testimonials: React.FC = () => {
               src={t.avatar}
               alt={t.alt}
               title={t.title}
+              width="64"
+              height="64"
+              loading="lazy"
+              decoding="async"
               className="w-16 h-16 rounded-full object-cover"
             />
           </div>
