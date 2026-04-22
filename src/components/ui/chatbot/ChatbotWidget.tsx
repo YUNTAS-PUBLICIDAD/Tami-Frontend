@@ -298,8 +298,8 @@ const ChatbotWidget: React.FC = () => {
         <div className="flex items-end gap-4 mb-8 pointer-events-auto">
           {/* Burbuja de Diálogo Periódica */}
           {showBubble && (
-            <div className={`relative group max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
-              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+            <div className={`relative group max-w-[220px] sm:max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
+              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-3.5 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
                   setIsOpen(true);
                   setShowBubble(false);
@@ -308,15 +308,15 @@ const ChatbotWidget: React.FC = () => {
                 {/* Botón de cerrar burbuja */}
                 <button
                   onClick={handleCloseBubble}
-                  className="absolute -top-2.5 -right-2.5 w-7 h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
+                  className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
 
-                <p className="text-[14px] font-medium text-gray-800 leading-tight">
+                <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">
                   {bubbleMessages[bubbleIndex]}
                 </p>
-                <div className="mt-2.5 flex items-center gap-2">
+                <div className="mt-1.5 sm:mt-2.5 flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-[#015f86]">Tami Assistant</span>
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
                 </div>
