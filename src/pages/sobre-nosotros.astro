@@ -15,7 +15,8 @@ import { Image, getImage } from "astro:assets";
 
 import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
 
-const optimizedHero = await getImage({ src: aboutHero });
+const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 1200 });
+
 ---
 
 <!-- Cargar CSS de Swiper temprano -->
@@ -67,12 +68,16 @@ const optimizedHero = await getImage({ src: aboutHero });
         src={bg_card4_mobile}
         alt="Fondo Tami Mobile"
         class="block md:hidden w-full h-auto object-contain object-center"
+        loading="eager"
+        fetchpriority="high"
       />
       <!-- Fondo desktop -->
       <Image
         src={bg_card4}
         alt="Fondo Tami Desktop"
         class="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
+        loading="lazy"
+        decoding="async"
       />
 
       <!-- Oscurecido -->

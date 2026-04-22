@@ -49,18 +49,8 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       crossorigin
     />
 
-    <link
-      rel="preconnect"
-      href="https://apitami.tamimaquinarias.com"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="/images/hero/zonas-comercial-urbano.webp"
-      type="image/webp"
-      fetchpriority="high"
-    />
+
+
 
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
@@ -113,6 +103,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       name="google-site-verification"
       content="fMYl61WKoofkx6daixXAZuFbR-zw9NlYGrf22iA1r0w"
     />
+    <slot name="head" />
   </head>
 
   <body class="font-montserrat w-full">

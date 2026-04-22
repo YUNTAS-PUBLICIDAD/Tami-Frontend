@@ -21,6 +21,15 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
   description="Descubre maquinaria y decoración ideal para tu negocio. Compra selladoras, equipos de acabado y productos para emprendedores en Perú."
   canonicalUrl="https://tamimaquinarias.com/"
 >
+  <link
+    rel="preload"
+    as="image"
+    href="/images/hero/zonas-comercial-urbano.webp"
+    type="image/webp"
+    fetchpriority="high"
+    slot="head"
+  />
+
   {/* Hero principal con CTA */}
    <Hero client:load />
 
