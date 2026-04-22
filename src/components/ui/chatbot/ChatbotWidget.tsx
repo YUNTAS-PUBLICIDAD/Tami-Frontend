@@ -333,10 +333,10 @@ const ChatbotWidget: React.FC = () => {
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
             <img
-
-              //src="/robot.png"
               src="/robot.webp"
               alt="Chatbot Avatar"
+              width="40"
+              height="40"
               className="h-10 w-10 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
             />
 

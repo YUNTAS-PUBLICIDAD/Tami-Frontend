@@ -15,7 +15,8 @@ import { Image, getImage } from "astro:assets";
 
 import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
 
-const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 1200 });
+const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 800 });
+
 
 ---
 
@@ -23,7 +24,10 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 12
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+  media="print"
+  onload="this.media='all'"
 />
+
 
 <Layout
   title="¿Quiénes Somos? | Tami Maquinarias para Emprendedores"
@@ -70,6 +74,8 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 12
         class="block md:hidden w-full h-auto object-contain object-center"
         loading="eager"
         fetchpriority="high"
+        widths={[390, 780]}
+        sizes="(max-width: 768px) 390px, 100vw"
       />
       <!-- Fondo desktop -->
       <Image
