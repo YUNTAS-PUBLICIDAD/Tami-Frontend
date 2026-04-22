@@ -4,7 +4,7 @@
  */
 
 import { lazy, useEffect, useState } from "react";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2"; // Se usará importación dinámica
 import apiClient from "src/services/apiClient";
 import { config } from "config";
 import NavSocialMediaLink from "./NavSocialMediaLink";
@@ -82,6 +82,7 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
   }, [isOpen, onClose]);
 
   const handleLogout = async () => {
+    const { default: Swal } = await import("sweetalert2");
     const result = await Swal.fire({
       title: "¿Estás seguro?",
       text: "¿Deseas cerrar sesión?",

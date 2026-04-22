@@ -4,6 +4,7 @@ import logoTami from "@images/logos/logo-blanco-tami.webp";
 
 import socialMediaLinks from "@data/socialMedia.data";
 import CopyText from "./CopyText.astro";
+import { Image } from "astro:assets";
 ---
 
 <footer class="bg-teal-700 text-white py-12 sm:px-16">
@@ -16,13 +17,14 @@ import CopyText from "./CopyText.astro";
       
       <!-- LOGO -->
       <div class="w-full lg:w-auto flex items-center justify-center lg:justify-start lg:self-start lg:mt-1">
-        <img
-          src={logoTami.src}
+        <Image
+          src={logoTami}
           alt="Logo de Tami"
           title="Logo de Tami"
           loading="lazy"
-          width={120}
-          height={60}
+          widths={[96, 120]}
+          sizes="(max-width: 1024px) 96px, 120px"
+          quality={80}
           class="shrink-0 w-24 lg:w-[120px] h-auto" 
         />
       </div>

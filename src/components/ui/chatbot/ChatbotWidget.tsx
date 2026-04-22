@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import robotIcon from "../../../assets/images/chatbot/robot.webp";
 
 interface Message {
   role: 'bot' | 'user';
@@ -333,7 +334,7 @@ const ChatbotWidget: React.FC = () => {
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
             <img
-              src="/robot.webp"
+              src={robotIcon.src}
               alt="Chatbot Avatar"
               width="40"
               height="40"
