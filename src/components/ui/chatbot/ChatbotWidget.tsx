@@ -299,8 +299,8 @@ const ChatbotWidget: React.FC = () => {
         <div className="flex items-end gap-4 mb-8 pointer-events-auto">
           {/* Burbuja de Diálogo Periódica */}
           {showBubble && (
-            <div className={`relative group max-w-[220px] sm:max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
-              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-3.5 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+            <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
+              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
                   setIsOpen(true);
                   setShowBubble(false);
@@ -317,8 +317,8 @@ const ChatbotWidget: React.FC = () => {
                 <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">
                   {bubbleMessages[bubbleIndex]}
                 </p>
-                <div className="mt-1.5 sm:mt-2.5 flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#015f86]">Tami Assistant</span>
+                <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">Tami Assistant</span>
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
                 </div>
               </div>
