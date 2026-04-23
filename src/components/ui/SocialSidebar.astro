@@ -56,7 +56,13 @@ if (pathname.startsWith("/admin")) return null;
       class={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${link.bgColor} ${link.hoverColor} text-white shadow-md mb-[2px] last:mb-0 first:rounded-tr-md last:rounded-br-md`}
       aria-label={link.name}
     >
-      <img src={link.icon.src} alt={link.name} class="w-6 h-6 object-contain" />
+      <img
+        src={link.icon.src}
+        alt={link.name}
+        class="w-6 h-6 object-contain"
+        width="24"
+        height="24"
+      />
     </a>
   ))}
 </div>

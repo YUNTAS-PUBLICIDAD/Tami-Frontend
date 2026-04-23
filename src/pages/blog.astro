@@ -19,6 +19,9 @@ import { Image } from "astro:assets";
     alt="Fondo Blog Tami"
     class="absolute inset-0 w-full h-full object-cover object-center -z-20"
     loading="eager"
+    fetchpriority="high"
+    widths={[412, 800, 1200, 1920]}
+    sizes="100vw"
   />
   <div class="absolute inset-0 bg-gradient-to-b from-[#00786F]/75 to-black/75 -z-10"></div>
   <div
