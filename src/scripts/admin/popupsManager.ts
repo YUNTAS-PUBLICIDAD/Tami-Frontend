@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import {
     getPopupSettings,
     updatePopupSettingsFormData,
@@ -729,24 +730,25 @@ export function initPopupManager() {
             await updatePopupSettingsFormData(formData);
 
             setStatus("¡Guardado exitosamente!", "success");
-
-            // Limpiar almacenamiento local temporal después de guardar
-            const keysToRemove = [
-                "popupBtnText", "popupBtnBgColor", "popupBtnTextColor",
-                "emailBtnText", "emailBtnLink", "emailBtnBgColor", "emailBtnTextColor",
-                "popupDelay", "popupProductDelay",
-                "popupImage", "popupImage2", "popupImageMobile", "popupImageMobile2"
-            ];
-            keysToRemove.forEach(key => localStorage.removeItem(key));
-
+            await Swal.fire({
+                icon: "success",
+                title: "Configuración guardada",
+                showConfirmButton: false,
+                timer: 1500,
+            });
             setTimeout(() => {
-                setStatus("", "idle");
+                setStatus("");
             }, 3000);
         } catch (error: any) {
             console.error(error);
             const errMessage =
                 error instanceof Error ? error.message : String(error);
             setStatus("Error al guardar: " + errMessage, "error");
+            await Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: `❌ ${errMessage}`,
+            });
         } finally {
             btnGuardarPopups.innerText = originalText;
             btnGuardarPopups.disabled = false;
