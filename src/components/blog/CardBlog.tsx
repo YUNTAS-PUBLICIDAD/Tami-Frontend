@@ -35,6 +35,9 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
                 alt={altText}
                 title={altText}
                 loading="lazy"
+                decoding="async"
+                width={350}
+                height={280}
                 className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
             </figure>

@@ -338,6 +338,7 @@ const ChatbotWidget: React.FC = () => {
               alt="Chatbot Avatar"
               width="40"
               height="40"
+              decoding="async"
               className="h-10 w-10 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
             />
 
