@@ -139,7 +139,7 @@ const PopupForm = ({
               >
                 <div className="relative mb-2 sm:mb-3">
                   {errors.general_top && (
-                    <p className="absolute bottom-full left-0 right-0 text-sm font-bold text-[#FF0000] text-center mb-1 whitespace-nowrap">
+                    <p className="absolute bottom-full left-1/2 -translate-x-1/2 w-[250px] sm:w-full text-[10px] sm:text-sm font-bold text-[#FF0000] text-center mb-1 leading-tight">
                       {errors.general_top}
                     </p>
                   )}
