@@ -73,6 +73,7 @@ const SectionCardsContainer = () => {
                 title={item.imageTitle || item.alt}
                 className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                 loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               <h3 className="absolute bottom-6 left-0 right-0 text-center text-white text-2xl font-bold drop-shadow-md">
@@ -116,6 +117,7 @@ const SectionCardsContainer = () => {
                 title={item.imageTitle || item.alt}
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               <h3 className="absolute bottom-6 left-0 right-0 text-center text-white text-lg font-bold drop-shadow-md">

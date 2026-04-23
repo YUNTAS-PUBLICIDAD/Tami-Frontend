@@ -63,8 +63,9 @@ function NavBar() {
 
     const handleScroll = () => {
       if (!ticking) {
-        requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 50);
+        window.requestAnimationFrame(() => {
+          const isAboveThreshold = window.scrollY > 50;
+          setIsScrolled(isAboveThreshold);
           ticking = false;
         });
         ticking = true;
@@ -123,9 +124,12 @@ function NavBar() {
                 src={logoTami.src}
                 alt="Logo de Tami"
                 title="Logo de Tami"
-                // Se eliminó la línea en blanco que estaba en tu versión HEAD
+                width="64"
+                height="74"
                 className="h-16 w-auto object-contain"
                 fetchPriority="high"
+                loading="eager"
+                decoding="async"
               />
             </a>
           </div>
