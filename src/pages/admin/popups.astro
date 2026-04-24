@@ -107,7 +107,9 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 
                             <!-- Contenido Producto (Per-Product Popups) -->
                             <div id="sectionProducto" class="hidden space-y-8">
-                                <div class="bg-[#1e293b] p-4 rounded-xl shadow-lg border border-gray-700/50 max-w-lg">
+                                <TabProducto client:load />
+
+                                <div class="bg-[#1e293b] p-4 rounded-xl shadow-lg border border-gray-700/50 max-w-lg mt-10">
                                     <h2 class="text-lg font-bold text-white mb-4">Tiempo de Aparición (Producto)</h2>
                                     <div class="grid grid-cols-1 gap-3">
                                         <!-- Pop-ups de Productos -->
@@ -132,7 +134,6 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                                         </div>
                                     </div>
                                 </div>
-                                <TabProducto client:load />
                             </div>
                         </div>
 

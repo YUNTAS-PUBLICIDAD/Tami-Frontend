@@ -28,6 +28,8 @@ export function initPopupManager() {
     const previewStage = document.getElementById("previewStage");
     const previewWhatsappText = document.getElementById("previewWhatsappText");
     const statusElement = document.getElementById("popupStatus");
+    
+    let savedHomeSettings: any = null;
 
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
@@ -66,12 +68,25 @@ export function initPopupManager() {
         
         navProducto.classList.remove("bg-teal-600", "text-white", "shadow-md");
         navProducto.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        // Restore Home Preview
+        if (savedHomeSettings) {
+            updatePreview({
+                popup_image_url: savedHomeSettings.image1 || savedHomeSettings.popup_image_url,
+                popup_image2_url: savedHomeSettings.image2 || savedHomeSettings.popup_image2_url,
+                popup_mobile_image_url: savedHomeSettings.imageMobile || savedHomeSettings.popup_mobile_image_url,
+                popup_mobile_image2_url: savedHomeSettings.imageMobile2 || savedHomeSettings.popup_mobile_image2_url,
+                button_bg_color: savedHomeSettings.button_bg_color,
+                button_text_color: savedHomeSettings.button_text_color,
+                button_text: savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS",
+            }, currentMode);
+        }
     });
 
     navProducto.addEventListener("click", () => {
         sectionInicio.classList.add("hidden");
         sectionProducto.classList.remove("hidden");
-        sharedSaveFooter.classList.add("hidden");
+        sharedSaveFooter.classList.remove("hidden");
         
         navProducto.classList.add("bg-teal-600", "text-white", "shadow-md");
         navProducto.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
@@ -79,8 +94,19 @@ export function initPopupManager() {
         navInicio.classList.remove("bg-teal-600", "text-white", "shadow-md");
         navInicio.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
 
-        // Dispatch a reset event to PreviewSection to clear the preview or show a default product one
-        window.dispatchEvent(new CustomEvent('update-popup-preview', { detail: { settings: {} } }));
+        // Clear Preview (Wait for product selection)
+        updatePreview({
+            popup_image_url: null,
+            popup_image2_url: null,
+            popup_mobile_image_url: null,
+            popup_mobile_image2_url: null,
+            button_text: "¡REGISTRARME!",
+            button_bg_color: "#14b8a6",
+            button_text_color: "#ffffff"
+        }, currentMode);
+
+        // Reset Product Selection Tab
+        window.dispatchEvent(new CustomEvent("reset-product-selection"));
     });
 
     const tabs = [tabPopups, tabWhatsapp, tabCorreo];
@@ -196,12 +222,7 @@ export function initPopupManager() {
 
     tabPopups.onclick = () => {
         activarTab(tabPopups, containerPopups, "popups");
-        // Cuando volvemos a la pestaña de Pop-ups, el botón de guardado depende de qué sub-pestaña esté activa
-        if (!sectionProducto.classList.contains("hidden")) {
-            sharedSaveFooter.classList.add("hidden");
-        } else {
-            sharedSaveFooter.classList.remove("hidden");
-        }
+        sharedSaveFooter.classList.remove("hidden");
     };
     tabWhatsapp.onclick = () => {
         activarTab(tabWhatsapp, contentWhatsapp, "whatsapp");
@@ -539,6 +560,7 @@ export function initPopupManager() {
         try {
             const settings = (await getPopupSettings()) as any;
             if (settings) {
+                savedHomeSettings = settings;
                 if (btnBgColorInput)
                     btnBgColorInput.value =
                         settings.button_bg_color ||

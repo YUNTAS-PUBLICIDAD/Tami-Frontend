@@ -25,6 +25,15 @@ const TabProducto: React.FC = () => {
             }
         };
         fetchProducts();
+
+        const handleReset = () => {
+            setSelectedProductId("");
+            setFormData(null);
+            setPreviews({});
+        };
+
+        window.addEventListener("reset-product-selection", handleReset);
+        return () => window.removeEventListener("reset-product-selection", handleReset);
     }, []);
 
     const getFullImageUrl = (url: string) => {
