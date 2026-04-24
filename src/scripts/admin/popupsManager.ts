@@ -13,7 +13,7 @@ export function initPopupManager() {
     const btnDesktop = document.getElementById("btnDesktop");
     const btnMobile = document.getElementById("btnMobile");
 
-    const contentPopups = document.getElementById("contentPopups");
+    const containerPopups = document.getElementById("containerPopups");
     const contentWhatsapp = document.getElementById("contentWhatsapp");
     const contentCorreo = document.getElementById("contentCorreo");
 
@@ -32,19 +32,59 @@ export function initPopupManager() {
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
 
+    const navInicio = document.getElementById("navInicio");
+    const navProducto = document.getElementById("navProducto");
+    const sectionInicio = document.getElementById("sectionInicio");
+    const sectionProducto = document.getElementById("sectionProducto");
+    const sharedSaveFooter = document.getElementById("sharedSaveFooter");
+
     if (
         !tabPopups ||
         !tabWhatsapp ||
         !tabCorreo ||
         !btnDesktop ||
-        !btnMobile
+        !btnMobile ||
+        !navInicio ||
+        !navProducto ||
+        !sectionInicio ||
+        !sectionProducto ||
+        !containerPopups ||
+        !sharedSaveFooter
     ) {
         setTimeout(initPopupManager, 200);
         return;
     }
 
+    // Top Level Navigation (Sub-tabs of Pop-ups)
+    navInicio.addEventListener("click", () => {
+        sectionInicio.classList.remove("hidden");
+        sectionProducto.classList.add("hidden");
+        sharedSaveFooter.classList.remove("hidden");
+        
+        navInicio.classList.add("bg-teal-600", "text-white", "shadow-md");
+        navInicio.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+        
+        navProducto.classList.remove("bg-teal-600", "text-white", "shadow-md");
+        navProducto.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+    });
+
+    navProducto.addEventListener("click", () => {
+        sectionInicio.classList.add("hidden");
+        sectionProducto.classList.remove("hidden");
+        sharedSaveFooter.classList.add("hidden");
+        
+        navProducto.classList.add("bg-teal-600", "text-white", "shadow-md");
+        navProducto.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+        
+        navInicio.classList.remove("bg-teal-600", "text-white", "shadow-md");
+        navInicio.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        // Dispatch a reset event to PreviewSection to clear the preview or show a default product one
+        window.dispatchEvent(new CustomEvent('update-popup-preview', { detail: { settings: {} } }));
+    });
+
     const tabs = [tabPopups, tabWhatsapp, tabCorreo];
-    const contents = [contentPopups, contentWhatsapp, contentCorreo];
+    const contents = [containerPopups, contentWhatsapp, contentCorreo];
 
     const activeModeClasses = [
         "bg-white",
@@ -154,14 +194,25 @@ export function initPopupManager() {
         }
     }
 
-    tabPopups.onclick = () =>
-        activarTab(tabPopups, contentPopups, "popups");
-    tabWhatsapp.onclick = () =>
+    tabPopups.onclick = () => {
+        activarTab(tabPopups, containerPopups, "popups");
+        // Cuando volvemos a la pestaña de Pop-ups, el botón de guardado depende de qué sub-pestaña esté activa
+        if (!sectionProducto.classList.contains("hidden")) {
+            sharedSaveFooter.classList.add("hidden");
+        } else {
+            sharedSaveFooter.classList.remove("hidden");
+        }
+    };
+    tabWhatsapp.onclick = () => {
         activarTab(tabWhatsapp, contentWhatsapp, "whatsapp");
-    tabCorreo.onclick = () =>
+        sharedSaveFooter.classList.remove("hidden");
+    };
+    tabCorreo.onclick = () => {
         activarTab(tabCorreo, contentCorreo, "correo");
+        sharedSaveFooter.classList.remove("hidden");
+    };
 
-    activarTab(tabPopups, contentPopups, "popups");
+    activarTab(tabPopups, containerPopups, "popups");
 
     btnDesktop.onclick = () => {
         currentMode = "desktop";

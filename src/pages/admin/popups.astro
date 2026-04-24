@@ -3,6 +3,7 @@ import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
 import TabPopups from "../../components/admin/popups/TabPopups.astro";
 import TabWhatsapp from "../../components/admin/popups/TabWhatsapp.astro";
 import TabEmail from "../../components/admin/popups/TabEmail.astro";
+import TabProducto from "../../components/admin/popups/TabProducto.tsx";
 import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 ---
 
@@ -55,6 +56,7 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                 <div
                     class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8"
                 >
+                    <!-- Navegación de Pestañas Principales -->
                     <div class="flex gap-2 mb-6 border-b pb-2">
                         <button
                             id="tabPopups"
@@ -78,12 +80,70 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                         </button>
                     </div>
 
+                    <!-- Contenido de las Pestañas -->
                     <div class="space-y-6">
-                        <TabPopups />
+                        <!-- Sección Pop-ups (con sub-navegación) -->
+                        <div id="containerPopups" class="space-y-6">
+                            <!-- Sub-navegación: Inicio / Producto -->
+                            <div class="flex gap-4 mb-4 border-b pb-2">
+                                <button
+                                    id="navInicio"
+                                    class="px-6 py-2 rounded-full bg-teal-600 text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                                >
+                                    Inicio
+                                </button>
+                                <button
+                                    id="navProducto"
+                                    class="px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95"
+                                >
+                                    Producto
+                                </button>
+                            </div>
+
+                            <!-- Contenido Inicio (Global Popups) -->
+                            <div id="sectionInicio" class="space-y-6">
+                                <TabPopups />
+                            </div>
+
+                            <!-- Contenido Producto (Per-Product Popups) -->
+                            <div id="sectionProducto" class="hidden space-y-8">
+                                <div class="bg-[#1e293b] p-4 rounded-xl shadow-lg border border-gray-700/50 max-w-lg">
+                                    <h2 class="text-lg font-bold text-white mb-4">Tiempo de Aparición (Producto)</h2>
+                                    <div class="grid grid-cols-1 gap-3">
+                                        <!-- Pop-ups de Productos -->
+                                        <div class="p-3 rounded-lg bg-gray-800/50 border border-gray-700/50 flex flex-col items-center sm:items-start max-w-[240px]">
+                                            <label for="popupProductosDelay" class="block text-[10px] font-bold text-gray-400 mb-2 w-full text-center sm:text-left uppercase tracking-widest">Aparecer en:</label>
+                                            <select
+                                                id="popupProductosDelay"
+                                                class="w-full bg-[#1e293b] border border-gray-600 rounded-lg p-2 text-white text-xs font-bold focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer shadow-inner appearance-none"
+                                            >
+                                                <option value="30">30 segundos</option>
+                                                <option value="35">35 segundos</option>
+                                                <option value="40">40 segundos</option>
+                                                <option value="45">45 segundos</option>
+                                                <option value="50">50 segundos</option>
+                                                <option value="55">55 segundos</option>
+                                                <option value="60">1 minuto</option>
+                                                <option value="120">2 minutos</option>
+                                                <option value="180">3 minutos</option>
+                                                <option value="240">4 minutos</option>
+                                                <option value="300">5 minutos</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <TabProducto client:load />
+                            </div>
+                        </div>
+
+                        <!-- Sección WhatsApp -->
                         <TabWhatsapp />
+
+                        <!-- Sección Correo -->
                         <TabEmail />
 
-                        <div class="mt-8 flex flex-col gap-2">
+                        <!-- Botón de Guardar (Compartido por Pop-ups Inicio, WhatsApp y Correo) -->
+                        <div id="sharedSaveFooter" class="mt-8 flex flex-col gap-2">
                             <p
                                 id="popupStatus"
                                 class="text-sm text-gray-600 dark:text-gray-300"
