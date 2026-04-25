@@ -12,9 +12,11 @@ const apiClient = axios.create({
 // Request Interceptor: Attach token to every request
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
         return config;
     },
@@ -62,12 +64,14 @@ apiClient.interceptors.response.use(
                 const refreshUrl = getApiUrl(config.endpoints.auth.refresh);
                 const response = await axios.post(refreshUrl, {}, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                        Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
                     }
                 });
 
                 const newToken = response.data.data.token;
-                localStorage.setItem('token', newToken);
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('token', newToken);
+                }
 
                 apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
                 originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
@@ -77,9 +81,11 @@ apiClient.interceptors.response.use(
             } catch (refreshError) {
                 processQueue(refreshError, null);
                 // If refresh fails, logout user
-                localStorage.removeItem('token');
-                localStorage.removeItem('userInfo');
-                window.location.href = '/auth/sign-in';
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userInfo');
+                    window.location.href = '/auth/sign-in';
+                }
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
