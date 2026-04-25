@@ -73,18 +73,13 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     }
 
     const fetchSettings = async () => {
-      console.log("🌐 fetchSettings started for:", pathname);
       try {
         // 1. Fetch Global Settings
-        console.log("📡 Fetching global settings...");
         const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`));
         let globalData: any = {};
         if (response.ok) {
           const responseData = await response.json();
           globalData = responseData.data || responseData;
-          console.log("✅ Global settings loaded:", globalData);
-        } else {
-          console.error("❌ Global settings fetch failed:", response.status);
         }
 
         let finalSettings: PopupSettings = {
@@ -101,14 +96,12 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
         if (isProductDetail) {
           const parts = pathname.split("/").filter(Boolean);
           const productLink = parts[parts.length - 1];
-          console.log("📦 Product detail page detected. Link:", productLink);
           
           finalSettings.popup_start_delay_minutes = globalData.product_popup_delay_minutes || globalData.popupProductosDelay || 60;
 
           if (productLink) {
-            console.log("📡 Fetching product specific data...");
             try {
-              const prodRes = await fetch(getApiUrl(`/api/v1/productos/link/${productLink}`));
+              const prodRes = await fetch(getApiUrl(`/api/v1/productos/link/${productLink}?t=${Date.now()}`));
               if (prodRes.ok) {
                 const prodJson = await prodRes.json();
                 const product = prodJson.data || prodJson;
@@ -124,6 +117,8 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
                   ...finalSettings,
                   popup_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_image_url,
                   popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
+                  popup_mobile_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url,
+                  popup_mobile_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url,
                   button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
                   button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
                   button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
@@ -137,20 +132,15 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
           }
         }
 
-        console.log("🎯 Final settings applied:", finalSettings);
         setSettings(finalSettings);
       } catch (err) {
         console.error("❌ fetchSettings error:", err);
       } finally {
-        console.log("🏁 fetchSettings finished. Setting loadingSettings to false.");
         setLoadingSettings(false);
       }
     };
-    console.log("🛠️ Attempting to call fetchSettings. pathname:", pathname);
     if (pathname) {
       fetchSettings();
-    } else {
-      console.warn("⚠️ fetchSettings skipped because pathname is empty");
     }
   }, [isPreview, pathname, isProductDetail]);
 
@@ -176,17 +166,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
   useEffect(() => {
     if (isPreview) return;
     
-    // Debug log to check entry conditions
-    console.log("🔍 Popup Effect Check:", {
-      pathname,
-      isProductDetail,
-      loadingSettings,
-      hasShown: hasShownRef.current,
-      showModal
-    });
-
     if (!pathname || (!allowedRoutes.includes(pathname) && !isProductDetail)) {
-      console.log("🚫 Popup not allowed on this route:", pathname);
       return;
     }
 
@@ -197,12 +177,10 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     if (!loadingSettings && !hasShownRef.current && !isAnyModalOpen && !isCatalogModalOpen && !showModal) {
       const delaySeconds = settings?.popup_start_delay_minutes ?? 60;
-      console.log("🚀 Starting Popup Timer for:", pathname, "Delay:", delaySeconds, "s");
       const delayMs = delaySeconds * 1000;
       let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
 
       if (remainingSeconds === 0) {
-        console.log("⚡ Delay is 0, showing immediately");
         setShowModal(true);
         hasShownRef.current = true;
         setIsDelayFinished(true);
@@ -211,10 +189,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
       intervalId = setInterval(() => {
         remainingSeconds -= 1;
-        const minutes = Math.floor(remainingSeconds / 60);
-        const seconds = remainingSeconds % 60;
-        console.log(`⏳ Popup timer [${pathname}]: ${minutes}m ${seconds}s remaining (Delay: ${settings?.popup_start_delay_minutes}s)`);
-
+        
         if (remainingSeconds <= 0) {
           setShowModal(true);
           hasShownRef.current = true;

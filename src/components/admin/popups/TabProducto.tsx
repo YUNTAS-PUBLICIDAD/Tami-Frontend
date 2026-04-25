@@ -42,46 +42,67 @@ const TabProducto: React.FC = () => {
         return `${config.apiUrl}${url}`;
     };
 
-    const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleProductSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const id = e.target.value;
         setSelectedProductId(id);
-        const product = products.find(p => p.id.toString() === id);
         
-        if (product) {
-            const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
-            const imagenPopup2 = product.producto_imagenes?.find((img) => {
+        if (!id) {
+            setFormData(null);
+            return;
+        }
+
+        try {
+            // Fetch FULL product details
+            const response = await apiClient.get(config.endpoints.productos.detail(id));
+            const product = response.data.data || response.data;
+            
+            const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
+            const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
                 const tipo = (img.tipo || "").toLowerCase();
                 return tipo === "popup2" || tipo === "popup_2";
             });
 
             const initialData = {
+                ...product, // Store ALL product fields
                 imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
                 imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
                 texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
                 etiqueta: {
+                    ...product.etiqueta,
                     popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
                     popup_text_color: product.etiqueta?.popup_text_color || "#000000",
                     popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
                 }
             };
             setFormData(initialData);
-            
-            // Initial Preview Sync
             syncPreview(initialData);
-        } else {
-            setFormData(null);
+        } catch (error) {
+            console.error("Error fetching product details:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudieron obtener los detalles del producto."
+            });
         }
     };
 
-    const syncPreview = (data: any) => {
+    const syncPreview = (data: any, overrides: any = {}) => {
         const previewSettings = {
-            popup_image_url: data.imagen_popup,
-            popup_image2_url: data.imagen_popup2,
+            popup_image_url: overrides.imagen_popup || previews.imagen_popup || data.imagen_popup,
+            popup_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2,
             button_bg_color: data.etiqueta.popup_button_color,
             button_text_color: data.etiqueta.popup_text_color,
-            button_text: data.etiqueta.popup_button_text
+            button_text: data.etiqueta.popup_button_text,
+            popup_mobile_image_url: overrides.imagen_popup || previews.imagen_popup || data.imagen_popup,
+            popup_mobile_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2
         };
+        
+        // Final check: if any of these are still File objects, we don't send them
+        if (previewSettings.popup_image_url instanceof File) previewSettings.popup_image_url = null;
+        if (previewSettings.popup_image2_url instanceof File) previewSettings.popup_image2_url = null;
+        if (previewSettings.popup_mobile_image_url instanceof File) previewSettings.popup_mobile_image_url = null;
+        if (previewSettings.popup_mobile_image2_url instanceof File) previewSettings.popup_mobile_image2_url = null;
         
         window.dispatchEvent(
             new CustomEvent("update-popup-preview", {
@@ -98,7 +119,11 @@ const TabProducto: React.FC = () => {
             } else {
                 newData[field] = value;
             }
-            syncPreview(newData);
+            
+            // Only sync preview if it's not a File object (to avoid broken images in preview)
+            if (!(value instanceof File)) {
+                syncPreview(newData);
+            }
             return newData;
         });
     };
@@ -110,82 +135,149 @@ const TabProducto: React.FC = () => {
             reader.onloadend = () => {
                 const url = reader.result as string;
                 setPreviews(prev => ({ ...prev, [field]: url }));
-                handleFieldChange(field, file);
                 
-                // Update preview with base64 for immediate feedback
-                const updatedData = { ...formData, [field]: url };
-                syncPreview(updatedData);
+                setFormData((prev: any) => {
+                    const newData = { ...prev, [field]: file };
+                    // We pass the base64 URL as an override to ensure the preview uses it instead of the File
+                    syncPreview(newData, { [field]: url });
+                    return newData;
+                });
             };
             reader.readAsDataURL(file);
         }
     };
 
     const handleSave = async () => {
-        if (!selectedProductId || !formData) return;
+  if (!selectedProductId || !formData) return;
 
-        setIsSaving(true);
-        try {
-            const product = products.find(p => p.id.toString() === selectedProductId);
-            if (!product) throw new Error("Producto no encontrado");
+  setIsSaving(true);
+  try {
+    const formDataToSend = new FormData();
 
-            const formDataToSend = new FormData();
-            
-            // Required fields for update might be needed depending on backend
-            // For now sending what's changed and basic info
-            formDataToSend.append("nombre", product.nombre);
-            formDataToSend.append("titulo", product.titulo);
-            formDataToSend.append("subtitulo", product.subtitulo);
-            formDataToSend.append("descripcion", product.descripcion);
-            formDataToSend.append("seccion", product.seccion);
-            
-            // Popup Specific
-            formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color);
-            formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color);
-            formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text);
-            
-            if (formData.imagen_popup instanceof File) {
-                formDataToSend.append("imagen_popup", formData.imagen_popup);
-            }
-            formDataToSend.append("texto_alt_popup", formData.texto_alt_popup);
+        // Baseline product fields (unchanged) to satisfy strict backend update handlers.
+        formDataToSend.append("nombre", formData.nombre || "");
+        formDataToSend.append("titulo", formData.titulo || "");
+        formDataToSend.append("subtitulo", formData.subtitulo || "");
+        formDataToSend.append("descripcion", formData.descripcion || "");
+        formDataToSend.append("seccion", formData.seccion || "");
+        formDataToSend.append("link", formData.link || "");
+        formDataToSend.append("stock", String(formData.stock ?? 0));
+        formDataToSend.append("precio", String(formData.precio ?? 0));
 
-            if (formData.imagen_popup2 instanceof File) {
-                formDataToSend.append("imagen_popup2", formData.imagen_popup2);
-                formDataToSend.append("imagen_popup_2", formData.imagen_popup2); // Compatibility
-            }
-            formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2);
+        // Keep current gallery references to avoid backend rules that require gallery context.
+        if (Array.isArray(formData.producto_imagenes)) {
+            formData.producto_imagenes
+                .filter((img: any) => img?.tipo === "galeria" || !img?.tipo)
+                .forEach((img: any, idx: number) => {
+                    let urlLimpia = img.url_imagen || "";
+                    if (typeof urlLimpia === "string" && urlLimpia.includes(config.apiUrl)) {
+                        urlLimpia = urlLimpia.replace(config.apiUrl, "");
+                    }
+                    if (typeof urlLimpia === "string") {
+                        urlLimpia = urlLimpia.split("?")[0];
+                    }
 
-            formDataToSend.append("_method", "PUT");
-
-            const response = await apiClient.post(
-                config.endpoints.productos.update(selectedProductId),
-                formDataToSend,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
-            );
-
-            if (response.status === 200 || response.status === 201) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Configuración guardada",
-                    text: "El pop-up del producto ha sido actualizado.",
-                    timer: 2000,
-                    showConfirmButton: false
+                    formDataToSend.append(`imagenes_existentes[${idx}][url]`, urlLimpia || "");
+                    if (img.id != null) {
+                        formDataToSend.append(`imagenes_existentes[${idx}][id]`, String(img.id));
+                    }
+                    formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.texto_alt_SEO || "");
                 });
-            } else {
-                throw new Error("Error al guardar");
-            }
-        } catch (error) {
-            console.error("Error saving product popup:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudo guardar la configuración."
-            });
-        } finally {
-            setIsSaving(false);
         }
-    };
+
+        // Popup Images
+    if (formData.imagen_popup instanceof File) {
+      formDataToSend.append("imagen_popup", formData.imagen_popup);
+      formDataToSend.append("popup_image", formData.imagen_popup); // Alias
+    }
+    formDataToSend.append("texto_alt_popup", formData.texto_alt_popup || "");
+
+    if (formData.imagen_popup2 instanceof File) {
+      formDataToSend.append("imagen_popup2", formData.imagen_popup2);
+      formDataToSend.append("imagen_popup_2", formData.imagen_popup2);
+      formDataToSend.append("popup_image2", formData.imagen_popup2); // Alias
+    }
+    formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2 || "");
+        formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || "");
+
+    // Button text and colors
+    formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta?.meta_titulo || "");
+    formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta?.meta_descripcion || "");
+    formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta?.popup_estilo || "estilo1");
+    formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta?.popup_button_text || "¡COTIZA AHORA!");
+    formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
+    formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
+
+        // Include safe fallbacks used by some backend update handlers.
+        if (formData.dimensiones) {
+            formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto || "0");
+            formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo || "0");
+            formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho || "0");
+        }
+
+        if (formData.especificaciones) {
+            let specsToSend = formData.especificaciones;
+            if (Array.isArray(specsToSend)) {
+                const specsObj: Record<string, string> = {};
+                specsToSend.forEach((s: any) => {
+                    if (s?.nombre && s?.valor) {
+                        specsObj[s.nombre] = s.valor;
+                    }
+                });
+                specsToSend = specsObj;
+            }
+            formDataToSend.append("especificaciones", JSON.stringify(specsToSend));
+        }
+
+        if (formData.etiqueta?.keywords) {
+            const keywords = formData.etiqueta.keywords;
+            const kwArray = Array.isArray(keywords)
+                ? keywords
+                : String(keywords)
+                        .split(",")
+                        .map((k: string) => k.trim())
+                        .filter(Boolean);
+            formDataToSend.append("keywords", JSON.stringify(kwArray));
+        }
+
+    // Required flags for partial update
+    formDataToSend.append("_method", "PUT");
+    formDataToSend.append("only_popup", "1");
+
+    console.log("📤 Sending popup update (PATCH). Data:");
+    for (let [key, value] of (formDataToSend as any).entries()) {
+      console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
+    }
+
+    const response = await apiClient.post(
+      config.endpoints.productos.update(selectedProductId),
+      formDataToSend,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      Swal.fire({
+        icon: "success",
+        title: "Configuración guardada",
+        text: "El pop-up del producto ha sido actualizado.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } else {
+      throw new Error(`Error al guardar: ${response.status}`);
+    }
+  } catch (error: any) {
+    console.error("❌ Error saving product popup:", error);
+    const errorMsg = error.response?.data?.message || error.message || "No se pudo guardar la configuración.";
+    Swal.fire({
+      icon: "error",
+      title: "Error de Validación",
+      text: errorMsg,
+    });
+  } finally {
+    setIsSaving(false);
+  }
+};
 
     if (loadingProducts) {
         return <div className="p-8 text-center text-gray-500">Cargando productos...</div>;
