@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import {
     getPopupSettings,
     updatePopupSettingsFormData,
@@ -197,15 +198,15 @@ export function initPopupManager() {
     function formatWhatsAppTextToHTML(text: string | null) {
         if (!text) return "";
         let html = text;
-        
+
         // Si el texto ya tiene formato HTML (del nuevo editor), no escapamos los tags
         const hasHTML = /<[a-z][\s\S]*>/i.test(html);
-        
+
         if (!hasHTML) {
             // Escape basic tags only if it's plain text to prevent injection
             html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
-        
+
         // format whatsapp markdown
         html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
         html = html.replace(/_(.*?)_/g, "<em>$1</em>");
@@ -728,16 +729,26 @@ export function initPopupManager() {
 
             await updatePopupSettingsFormData(formData);
 
-            setStatus("¡Guardado exitosamente! Recargando...", "success");
+            setStatus("¡Guardado exitosamente!", "success");
+            await Swal.fire({
+                icon: "success",
+                title: "Configuración guardada",
+                showConfirmButton: false,
+                timer: 1500,
+            });
             setTimeout(() => {
                 setStatus("");
-                location.reload();
-            }, 2000);
+            }, 3000);
         } catch (error: any) {
             console.error(error);
             const errMessage =
                 error instanceof Error ? error.message : String(error);
             setStatus("Error al guardar: " + errMessage, "error");
+            await Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: `❌ ${errMessage}`,
+            });
         } finally {
             btnGuardarPopups.innerText = originalText;
             btnGuardarPopups.disabled = false;

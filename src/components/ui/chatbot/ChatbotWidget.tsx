@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import robotIcon from "../../../assets/images/chatbot/robot.webp";
 
 interface Message {
   role: 'bot' | 'user';
@@ -218,6 +219,7 @@ const ChatbotWidget: React.FC = () => {
                                 src={prod.imagen.startsWith('http') ? prod.imagen : `${import.meta.env.PUBLIC_API_URL}${prod.imagen}`}
                                 alt={prod.nombre}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                loading="lazy"
                                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -297,8 +299,8 @@ const ChatbotWidget: React.FC = () => {
         <div className="flex items-end gap-4 mb-8 pointer-events-auto">
           {/* Burbuja de Diálogo Periódica */}
           {showBubble && (
-            <div className={`relative group max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
-              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+            <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
+              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
                   setIsOpen(true);
                   setShowBubble(false);
@@ -307,16 +309,16 @@ const ChatbotWidget: React.FC = () => {
                 {/* Botón de cerrar burbuja */}
                 <button
                   onClick={handleCloseBubble}
-                  className="absolute -top-2.5 -right-2.5 w-7 h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
+                  className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
 
-                <p className="text-[14px] font-medium text-gray-800 leading-tight">
+                <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">
                   {bubbleMessages[bubbleIndex]}
                 </p>
-                <div className="mt-2.5 flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#015f86]">Tami Assistant</span>
+                <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">Tami Assistant</span>
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
                 </div>
               </div>
@@ -332,8 +334,11 @@ const ChatbotWidget: React.FC = () => {
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
             <img
-              src="/robot.png"
+              src={robotIcon.src}
               alt="Chatbot Avatar"
+              width="40"
+              height="40"
+              decoding="async"
               className="h-10 w-10 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
             />
 

@@ -1,6 +1,8 @@
 ---
+import { Image } from "astro:assets";
+
 interface Props {
-  image: string;
+  image: ImageMetadata;
   title: string;
   paragraph: string;
   imageTitle: string;
@@ -16,16 +18,17 @@ const { image, title, paragraph, imageTitle } = Astro.props;
          transition-shadow duration-300"
 >
   <!-- Imagen -->
-  <img
+  <Image
     src={image}
     alt={`Card del Valor de ${title}`}
     title={imageTitle}
     class="absolute z-0 w-full h-full object-cover object-center"
-    width="300"
-    height="400"
+    widths={[200, 300, 400]}
+    sizes="(max-width: 768px) 200px, 400px"
     loading="lazy"
     decoding="async"
   />
+
 
   <!-- Capa oscura para legibilidad -->
   <div class="absolute inset-0 bg-black/45 z-[1]"></div>

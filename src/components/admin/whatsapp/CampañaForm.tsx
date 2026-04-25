@@ -61,6 +61,16 @@ export default function CampañaForm() {
         setMensaje(null);
 
         try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                setMensaje({
+                    tipo: 'error',
+                    texto: '❌ No se encontró el token de sesión. Inicia sesión nuevamente.',
+                });
+                return;
+            }
+
             const formData = new FormData();
             formData.append('nombre', `Campaña producto ${form.producto_id}`);
             formData.append('producto_id', form.producto_id);
@@ -73,6 +83,10 @@ export default function CampañaForm() {
                 `${import.meta.env.PUBLIC_API_URL}/api/v1/whatsapp/campañas/activar`,
                 {
                     method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
                     body: formData,
                 }
             );
@@ -88,6 +102,14 @@ export default function CampañaForm() {
                 setForm({ producto_id: '', contenido_personalizado: '', imagen: null });
                 setPreview(null);
             } else {
+                if (response.status === 401) {
+                    throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+                }
+
+                if (response.status === 403) {
+                    throw new Error('No tienes permisos para activar la campaña.');
+                }
+
                 throw new Error(data.message || 'Error al activar la campaña');
             }
         } catch (error: any) {

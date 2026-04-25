@@ -44,7 +44,7 @@ const PopupForm = ({
   return (
     <div
       id="catalog-modal"
-      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-50"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-[9999]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
         className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[600px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
@@ -135,11 +135,11 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-0 max-w-[210px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-0 sm:mb-4 sm:mt-48 max-w-[225px] sm:max-w-[320px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[175px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-2 sm:mb-4 sm:mt-48 max-w-[185px] sm:max-w-[320px]"} w-full mx-auto`}
               >
-                <div className="relative mb-3">
+                <div className="relative mb-2 sm:mb-3">
                   {errors.general_top && (
-                    <p className="absolute bottom-full left-0 right-0 text-sm font-bold text-[#FF0000] text-center mb-1 whitespace-nowrap">
+                    <p className="absolute bottom-full left-1/2 -translate-x-1/2 w-[250px] sm:w-full text-[10px] sm:text-sm font-bold text-[#FF0000] text-center mb-1 leading-tight">
                       {errors.general_top}
                     </p>
                   )}
@@ -149,11 +149,11 @@ const PopupForm = ({
                     placeholder="Nombre"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                    className={`w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[30px] px-4 text-xs" : "h-[30px] sm:h-10 px-4 sm:px-6 text-xs sm:text-sm"}`}
                   />
                 </div>
 
-                <div className="relative mb-3">
+                <div className="relative mb-2 sm:mb-3">
                   <input
                     type="tel"
                     name="telefono"
@@ -164,18 +164,18 @@ const PopupForm = ({
                       const val = e.target.value.replace(/\D/g, "");
                       setTelefono(val);
                     }}
-                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                    className={`w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[30px] px-4 text-xs" : "h-[30px] sm:h-10 px-4 sm:px-6 text-xs sm:text-sm"}`}
                   />
                 </div>
 
-                <div className="relative mb-3">
+                <div className="relative mb-2 sm:mb-3">
                   <input
                     type="email"
                     name="correo"
                     placeholder="Correo"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
-                    className="h-10 w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] px-6 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner"
+                    className={`w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[30px] px-4 text-xs" : "h-[30px] sm:h-10 px-4 sm:px-6 text-xs sm:text-sm"}`}
                   />
                   {errors.general && !errors.general_top && (
                     <p className={`absolute left-0 right-0 top-10 text-[10px] text-center mb-0 mt-0.5 leading-none ${errors.general.includes("success") || errors.general.includes("éxito") ? "text-green-100" : "text-red-500"}`}>
