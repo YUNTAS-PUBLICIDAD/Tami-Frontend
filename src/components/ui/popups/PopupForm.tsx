@@ -184,7 +184,7 @@ const PopupForm = ({
                   )}
                 </div>
 
-                <div className="mt-2 flex justify-center">
+                <div className="mt-2 flex justify-center w-full">
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -192,7 +192,8 @@ const PopupForm = ({
                       backgroundColor: settings?.button_bg_color || "#4FB9AF",
                       color: settings?.button_text_color || "#ffffff",
                     }}
-                    className={`rounded-full w-fit uppercase font-black shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-3 text-[11px] tracking-[0.12em]" : "py-1.5 px-3.5 text-xs sm:py-2 sm:px-4 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
+                    className={`rounded-full w-full max-w-full uppercase font-black text-center whitespace-nowrap overflow-hidden text-ellipsis shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-3 text-[11px] tracking-[0.12em]" : "py-1.5 px-3.5 text-xs sm:py-2 sm:px-4 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
+                    title={settings?.button_text || "CONOCER MAS"}
                   >
                     {isSubmitting ? "Enviando..." : (settings?.button_text || "CONOCER MAS")}
                   </button>

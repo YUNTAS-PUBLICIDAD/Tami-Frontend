@@ -22,7 +22,9 @@ export interface UsePopupLogicProps {
 }
 
 export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLogicProps) => {
-  const [pathname, setPathname] = useState<string>("");
+  const [pathname, setPathname] = useState<string>(() => 
+    typeof window !== "undefined" ? window.location.pathname : ""
+  );
   const [showModal, setShowModal] = useState(isPreview);
   const [settings, setSettings] = useState<PopupSettings>(initialSettings || {});
   const [loadingSettings, setLoadingSettings] = useState(!isPreview);
@@ -49,11 +51,22 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     "/blog",
   ];
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setPathname(window.location.pathname);
-    }
+  const isProductDetail = pathname.startsWith("/productos/") && pathname !== "/productos";
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    setPathname(window.location.pathname);
+    
+    const handleLocationChange = () => {
+      setPathname(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handleLocationChange);
+    return () => window.removeEventListener("popstate", handleLocationChange);
+  }, []);
+
+  useEffect(() => {
     if (isPreview) {
       setLoadingSettings(false);
       return;
@@ -61,31 +74,75 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     const fetchSettings = async () => {
       try {
+        // 1. Fetch Global Settings
         const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`));
+        let globalData: any = {};
         if (response.ok) {
           const responseData = await response.json();
-          let apiData = responseData.data || responseData;
-
-          // Mapear claves de API a claves internas del componente
-          let finalSettings: PopupSettings = {
-            ...apiData,
-            popup_image_url: apiData.image1 || apiData.popup_image_url,
-            popup_image2_url: apiData.image2 || apiData.popup_image2_url,
-            popup_mobile_image_url: apiData.imageMobile || apiData.popup_mobile_image_url,
-            popup_mobile_image2_url: apiData.imageMobile2 || apiData.popup_mobile_image2_url,
-            button_text: apiData.button_text || apiData.btnText || "CONOCER MAS",
-          };
-
-          setSettings(finalSettings);
+          globalData = responseData.data || responseData;
         }
+
+        let finalSettings: PopupSettings = {
+          ...globalData,
+          popup_image_url: globalData.image1 || globalData.popup_image_url,
+          popup_image2_url: globalData.image2 || globalData.popup_image2_url,
+          popup_mobile_image_url: globalData.imageMobile || globalData.popup_mobile_image_url,
+          popup_mobile_image2_url: globalData.imageMobile2 || globalData.popup_mobile_image2_url,
+          button_text: globalData.button_text || globalData.btnText || "CONOCER MAS",
+          popup_start_delay_minutes: globalData.popup_start_delay_minutes || globalData.popupInicioDelay || 60,
+        };
+
+        // 2. If it's a product detail page, override with product-specific settings
+        if (isProductDetail) {
+          const parts = pathname.split("/").filter(Boolean);
+          const productLink = parts[parts.length - 1];
+          
+          finalSettings.popup_start_delay_minutes = globalData.product_popup_delay_minutes || globalData.popupProductosDelay || 60;
+
+          if (productLink) {
+            try {
+              const prodRes = await fetch(getApiUrl(`/api/v1/productos/link/${productLink}?t=${Date.now()}`));
+              if (prodRes.ok) {
+                const prodJson = await prodRes.json();
+                const product = prodJson.data || prodJson;
+                console.log("✅ Product data loaded:", product);
+
+                const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
+                const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
+                  const tipo = (img.tipo || "").toLowerCase();
+                  return tipo === "popup2" || tipo === "popup_2";
+                });
+
+                finalSettings = {
+                  ...finalSettings,
+                  popup_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_image_url,
+                  popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
+                  popup_mobile_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url,
+                  popup_mobile_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url,
+                  button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
+                  button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
+                  button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
+                };
+              } else {
+                console.warn("⚠️ Product fetch failed with status:", prodRes.status);
+              }
+            } catch (e) {
+              console.error("❌ Error fetching product-specific data:", e);
+            }
+          }
+        }
+
+        setSettings(finalSettings);
       } catch (err) {
-        console.error("Error fetching popup settings:", err);
+        console.error("❌ fetchSettings error:", err);
       } finally {
         setLoadingSettings(false);
       }
     };
-    fetchSettings();
-  }, [isPreview]);
+    if (pathname) {
+      fetchSettings();
+    }
+  }, [isPreview, pathname, isProductDetail]);
 
   // Preview event listener
   useEffect(() => {
@@ -108,7 +165,11 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
   // Auto-time modal
   useEffect(() => {
     if (isPreview) return;
-    if (!pathname || !allowedRoutes.includes(pathname)) return;
+    
+    if (!pathname || (!allowedRoutes.includes(pathname) && !isProductDetail)) {
+      return;
+    }
+
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const isAnyModalOpen = document.querySelector(".modal-overlay");
@@ -128,6 +189,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
       intervalId = setInterval(() => {
         remainingSeconds -= 1;
+        
         if (remainingSeconds <= 0) {
           setShowModal(true);
           hasShownRef.current = true;
@@ -317,6 +379,6 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     setCorreo,
     closeModal,
     handleSubmit,
-    isAllowed: isPreview || allowedRoutes.includes(pathname),
+    isAllowed: isPreview || allowedRoutes.includes(pathname) || isProductDetail,
   };
 };

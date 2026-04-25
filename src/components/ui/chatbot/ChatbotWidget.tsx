@@ -300,7 +300,7 @@ const ChatbotWidget: React.FC = () => {
           {/* Burbuja de Diálogo Periódica */}
           {showBubble && (
             <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
-              <div className="bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+              <div className="w-fit bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
                   setIsOpen(true);
                   setShowBubble(false);
