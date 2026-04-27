@@ -135,7 +135,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[175px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-2 sm:mb-4 sm:mt-48 max-w-[185px] sm:max-w-[320px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[175px]" : "mt-48 mb-4 max-w-[280px]") : "mt-auto mb-2 sm:mb-4 sm:mt-48 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
               >
                 <div className="relative mb-2 sm:mb-3">
                   {errors.general_top && (
