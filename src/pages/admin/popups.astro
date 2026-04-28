@@ -109,29 +109,30 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                             <div id="sectionProducto" class="hidden space-y-8">
                                 <TabProducto client:load />
 
-                                <div class="bg-gray-50 dark:bg-[#1e293b] p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50 max-w-lg mt-10">
-                                    <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Tiempo de Aparición (Producto)</h2>
-                                    <div class="grid grid-cols-1 gap-3">
-                                        <!-- Pop-ups de Productos -->
-                                        <div class="p-3 rounded-lg bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 flex flex-col items-center sm:items-start max-w-[240px]">
-                                            <label for="popupProductosDelay" class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-2 w-full text-center sm:text-left uppercase tracking-widest">Aparecer en:</label>
-                                            <select
-                                                id="popupProductosDelay"
-                                                class="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-gray-800 dark:text-white text-xs font-bold focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer shadow-inner appearance-none"
-                                            >
-                                                <option value="30">30 segundos</option>
-                                                <option value="35">35 segundos</option>
-                                                <option value="40">40 segundos</option>
-                                                <option value="45">45 segundos</option>
-                                                <option value="50">50 segundos</option>
-                                                <option value="55">55 segundos</option>
-                                                <option value="60">1 minuto</option>
-                                                <option value="120">2 minutos</option>
-                                                <option value="180">3 minutos</option>
-                                                <option value="240">4 minutos</option>
-                                                <option value="300">5 minutos</option>
-                                            </select>
-                                        </div>
+                                <h2 class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-8 mb-4">
+                                    Tiempo de Aparición
+                                </h2>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Pop-ups de Productos -->
+                                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                                        <label for="popupProductosDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2 w-full text-center sm:text-left">Pop-up de Producto</label>
+                                        <select
+                                            id="popupProductosDelay"
+                                            class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner"
+                                        >
+                                            <option value="30">30 segundos</option>
+                                            <option value="35">35 segundos</option>
+                                            <option value="40">40 segundos</option>
+                                            <option value="45">45 segundos</option>
+                                            <option value="50">50 segundos</option>
+                                            <option value="55">55 segundos</option>
+                                            <option value="60">1 minuto</option>
+                                            <option value="120">2 minutos</option>
+                                            <option value="180">3 minutos</option>
+                                            <option value="240">4 minutos</option>
+                                            <option value="300">5 minutos</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
