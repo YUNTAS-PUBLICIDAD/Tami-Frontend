@@ -135,7 +135,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[175px]" : "mt-48 mb-4 max-w-[320px]") : "mt-auto mb-2 sm:mb-4 sm:mt-48 max-w-[185px] sm:max-w-[320px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[175px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-2 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
               >
                 <div className="relative mb-2 sm:mb-3">
                   {errors.general_top && (
@@ -192,7 +192,7 @@ const PopupForm = ({
                       backgroundColor: settings?.button_bg_color || "#4FB9AF",
                       color: settings?.button_text_color || "#ffffff",
                     }}
-                    className={`rounded-full w-full max-w-full uppercase font-black text-center whitespace-nowrap overflow-hidden text-ellipsis shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-3 text-[11px] tracking-[0.12em]" : "py-1.5 px-3.5 text-xs sm:py-2 sm:px-4 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
+                    className={`rounded-full w-fit max-w-full uppercase font-black text-center whitespace-nowrap overflow-hidden text-ellipsis shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-6 text-[11px] tracking-[0.12em]" : "py-1.5 px-8 text-xs sm:py-2 sm:px-10 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
                     title={settings?.button_text || "CONOCER MAS"}
                   >
                     {isSubmitting ? "Enviando..." : (settings?.button_text || "CONOCER MAS")}
