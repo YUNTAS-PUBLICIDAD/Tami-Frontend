@@ -489,7 +489,7 @@ export function initPopupManager() {
                 "previewEmailAttachementContainer",
             );
             if (previewImg && container) {
-                previewImg.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+                previewImg.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
                 container.classList.remove("hidden");
             }
             clearEmailImage?.classList.remove("hidden");
@@ -664,7 +664,7 @@ export function initPopupManager() {
                         "previewEmailAttachementContainer",
                     );
                     if (previewImg && container) {
-                        previewImg.innerHTML = `<img src="${settings.emailImage}" class="w-full h-full object-cover">`;
+                        previewImg.innerHTML = `<img src="${settings.emailImage}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
                         container.classList.remove("hidden");
                     }
                     if (clearEmailImage) clearEmailImage.classList.remove("hidden");
