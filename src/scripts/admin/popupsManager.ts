@@ -13,7 +13,7 @@ export function initPopupManager() {
     const btnDesktop = document.getElementById("btnDesktop");
     const btnMobile = document.getElementById("btnMobile");
 
-    const contentPopups = document.getElementById("contentPopups");
+    const containerPopups = document.getElementById("containerPopups");
     const contentWhatsapp = document.getElementById("contentWhatsapp");
     const contentCorreo = document.getElementById("contentCorreo");
 
@@ -28,23 +28,89 @@ export function initPopupManager() {
     const previewStage = document.getElementById("previewStage");
     const previewWhatsappText = document.getElementById("previewWhatsappText");
     const statusElement = document.getElementById("popupStatus");
+    
+    let savedHomeSettings: any = null;
 
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
+
+    const navInicio = document.getElementById("navInicio");
+    const navProducto = document.getElementById("navProducto");
+    const sectionInicio = document.getElementById("sectionInicio");
+    const sectionProducto = document.getElementById("sectionProducto");
+    const sharedSaveFooter = document.getElementById("sharedSaveFooter");
 
     if (
         !tabPopups ||
         !tabWhatsapp ||
         !tabCorreo ||
         !btnDesktop ||
-        !btnMobile
+        !btnMobile ||
+        !navInicio ||
+        !navProducto ||
+        !sectionInicio ||
+        !sectionProducto ||
+        !containerPopups ||
+        !sharedSaveFooter
     ) {
         setTimeout(initPopupManager, 200);
         return;
     }
 
+    // Top Level Navigation (Sub-tabs of Pop-ups)
+    navInicio.addEventListener("click", () => {
+        sectionInicio.classList.remove("hidden");
+        sectionProducto.classList.add("hidden");
+        sharedSaveFooter.classList.remove("hidden");
+        
+        navInicio.classList.add("bg-teal-600", "text-white", "shadow-md");
+        navInicio.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+        
+        navProducto.classList.remove("bg-teal-600", "text-white", "shadow-md");
+        navProducto.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        // Restore Home Preview
+        if (savedHomeSettings) {
+            updatePreview({
+                popup_image_url: savedHomeSettings.image1 || savedHomeSettings.popup_image_url,
+                popup_image2_url: savedHomeSettings.image2 || savedHomeSettings.popup_image2_url,
+                popup_mobile_image_url: savedHomeSettings.imageMobile || savedHomeSettings.popup_mobile_image_url,
+                popup_mobile_image2_url: savedHomeSettings.imageMobile2 || savedHomeSettings.popup_mobile_image2_url,
+                button_bg_color: savedHomeSettings.button_bg_color,
+                button_text_color: savedHomeSettings.button_text_color,
+                button_text: savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS",
+            }, currentMode);
+        }
+    });
+
+    navProducto.addEventListener("click", () => {
+        sectionInicio.classList.add("hidden");
+        sectionProducto.classList.remove("hidden");
+        sharedSaveFooter.classList.remove("hidden");
+        
+        navProducto.classList.add("bg-teal-600", "text-white", "shadow-md");
+        navProducto.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+        
+        navInicio.classList.remove("bg-teal-600", "text-white", "shadow-md");
+        navInicio.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        // Clear Preview (Wait for product selection)
+        updatePreview({
+            popup_image_url: null,
+            popup_image2_url: null,
+            popup_mobile_image_url: null,
+            popup_mobile_image2_url: null,
+            button_text: "¡REGISTRARME!",
+            button_bg_color: "#14b8a6",
+            button_text_color: "#ffffff"
+        }, currentMode);
+
+        // Reset Product Selection Tab
+        window.dispatchEvent(new CustomEvent("reset-product-selection"));
+    });
+
     const tabs = [tabPopups, tabWhatsapp, tabCorreo];
-    const contents = [contentPopups, contentWhatsapp, contentCorreo];
+    const contents = [containerPopups, contentWhatsapp, contentCorreo];
 
     const activeModeClasses = [
         "bg-white",
@@ -154,14 +220,20 @@ export function initPopupManager() {
         }
     }
 
-    tabPopups.onclick = () =>
-        activarTab(tabPopups, contentPopups, "popups");
-    tabWhatsapp.onclick = () =>
+    tabPopups.onclick = () => {
+        activarTab(tabPopups, containerPopups, "popups");
+        sharedSaveFooter.classList.remove("hidden");
+    };
+    tabWhatsapp.onclick = () => {
         activarTab(tabWhatsapp, contentWhatsapp, "whatsapp");
-    tabCorreo.onclick = () =>
+        sharedSaveFooter.classList.remove("hidden");
+    };
+    tabCorreo.onclick = () => {
         activarTab(tabCorreo, contentCorreo, "correo");
+        sharedSaveFooter.classList.remove("hidden");
+    };
 
-    activarTab(tabPopups, contentPopups, "popups");
+    activarTab(tabPopups, containerPopups, "popups");
 
     btnDesktop.onclick = () => {
         currentMode = "desktop";
@@ -488,6 +560,7 @@ export function initPopupManager() {
         try {
             const settings = (await getPopupSettings()) as any;
             if (settings) {
+                savedHomeSettings = settings;
                 if (btnBgColorInput)
                     btnBgColorInput.value =
                         settings.button_bg_color ||
