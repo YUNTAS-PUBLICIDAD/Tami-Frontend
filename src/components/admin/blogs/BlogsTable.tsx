@@ -24,6 +24,7 @@ interface Blog {
   video_titulo?: string;
   created_at?: string | null;
   parrafos: { parrafo: string }[];
+  nombre_producto?: string;
 }
 
 interface BlogPreviewProps {
@@ -232,57 +233,158 @@ const BlogsTable = () => {
   const BlogPreview: React.FC<BlogPreviewProps> = ({ blog, onClose }) => {
     if (!blog) return null;
 
+    // Helper para formatear la fecha
+    const formatDate = (dateString?: string | null) => {
+      if (!dateString) return "FECHA / HORA DE PUBLICACIÓN";
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${day}-${month}-${year} / ${hours}:${minutes}`;
+    };
+
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="relative">
-            <img
-              src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
-              alt={blog.titulo}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-80 object-cover mx-auto"
-            />
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-8">
+        <div className="relative w-full max-w-6xl max-h-[95vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-b from-[#041019] to-[#003E56]">
+          {/* Header/Close button area */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-700/50 bg-black/30">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              <FaEye className="text-teal-400" />
+              Vista Previa Web
+            </h3>
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg cursor-pointer"
+              className="text-white hover:text-red-400 transition-colors bg-gray-800 hover:bg-gray-700 rounded-full p-2"
+              title="Cerrar vista previa"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
 
-          <div className="p-6">
-            <h2 className="text-3xl font-bold text-teal-700 mb-2">{blog.titulo}</h2>
-            <p className="text-gray-500 mb-4">
-              {blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'Fecha no disponible'}
-            </p>
-
-            <div className="prose max-w-none">
-              <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.subtitulo1}</h3>
-
-              <div className="my-6">
-                <h4 className="text-lg font-medium text-teal-600 mb-2">Acerca de este blog</h4>
-                <p className="text-gray-700">{blog.subtitulo2}</p>
-              </div>
-
-              {blog.parrafos?.map((p, i) => (
-                <p key={i} className="text-gray-700 mb-4">{p.parrafo}</p>
-              ))}
-
-              {blog.video_id?.trim() && (
-                <div className="my-6">
-                  <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.video_titulo || 'Video relacionado'}</h4>
-                  <div className="aspect-w-16 aspect-h-9">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
-                      className="w-full h-64 rounded-lg"
-                      allowFullScreen
-                    ></iframe>
+          {/* Scrollable content simulating the website */}
+          <div className="overflow-y-auto flex-1 p-4 md:p-10 custom-scrollbar space-y-10">
+            
+            {/* --- Vista Previa de la Tarjeta (Catálogo) --- */}
+            <div>
+              <h4 className="text-white text-lg mb-4 font-semibold flex items-center gap-2">
+                Vista en la lista de blogs:
+              </h4>
+              <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-sm max-w-5xl mx-auto block group">
+                <div className="flex flex-col md:flex-row">
+                  <div className="md:w-1/3 w-full p-4 md:p-6 flex items-center justify-center">
+                    <figure className="w-full h-48 md:h-56 bg-gray-200 rounded-lg overflow-hidden">
+                      {blog.imagenes?.[0]?.ruta_imagen ? (
+                        <img 
+                          src={`${getApiUrl("")}${blog.imagenes[0].ruta_imagen}`} 
+                          alt={blog.titulo}
+                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+                          Sin imagen
+                        </div>
+                      )}
+                    </figure>
+                  </div>
+                  <div className="md:w-2/3 w-full p-6 md:p-8 flex flex-col justify-center min-w-0">
+                    {blog.nombre_producto && (
+                      <div className="mb-4">
+                        <span className="inline-block bg-teal-700 text-white text-sm font-medium px-4 py-1.5 rounded-md break-all">
+                          {blog.nombre_producto}
+                        </span>
+                      </div>
+                    )}
+                    <h2 className="text-teal-700 text-xl md:text-2xl font-bold mb-3 leading-tight break-all">
+                      {blog.subtitulo1}
+                    </h2>
+                    <p className="text-gray-700 text-base leading-relaxed mb-4 break-all">
+                      {blog.subtitulo2 || blog.parrafos?.[0]?.parrafo || ""}
+                    </p>
+                    <div className="text-gray-500 text-sm flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {blog.created_at ? new Date(blog.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" }) : 'Fecha no disponible'}
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
+            </div>
+
+            {/* --- Vista Previa del Artículo Completo --- */}
+            <div>
+              <h4 className="text-white text-lg mb-4 font-semibold">Vista dentro del artículo:</h4>
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-6 md:p-12 relative mx-auto max-w-5xl">
+              
+              {/* Title & Subtitle */}
+              <div className="mb-6 md:mb-10 text-center md:text-left">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-[#00B6FF] mb-3 break-words font-garet">
+                  {blog.titulo.toUpperCase()}
+                </h2>
+                {blog.subtitulo1 && (
+                  <h3 className="text-lg md:text-xl font-bold text-black mb-3 break-words">
+                    {blog.subtitulo1.toUpperCase()}
+                  </h3>
+                )}
+                {blog.subtitulo2 && (
+                   <p className="text-base md:text-lg font-semibold text-black break-words">
+                     {blog.subtitulo2}
+                   </p>
+                )}
+              </div>
+
+              {/* Date */}
+              <div className="flex justify-center md:justify-start mb-8 md:mb-12">
+                <div className="inline-block px-4 md:px-6 py-2 bg-[#00B6FF] text-white text-sm md:text-base font-semibold rounded-full shadow-md">
+                  {formatDate(blog.created_at)}
+                </div>
+              </div>
+
+              {/* Content Sections */}
+              <div className="space-y-8 md:space-y-16">
+                {blog.parrafos?.map((p, i) => (
+                  <section key={i} className="mb-8 md:mb-12">
+                    <div className={`flex flex-col md:flex-row ${i % 2 === 1 ? "md:flex-row-reverse" : ""} gap-4 md:gap-8 items-center`}>
+                      <div className="w-full md:w-1/2 flex flex-col justify-center">
+                        <article className="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
+                          <p className="text-sm md:text-base whitespace-pre-line break-words">{p.parrafo}</p>
+                        </article>
+                      </div>
+                      
+                      {blog.imagenes?.[i]?.ruta_imagen && (
+                        <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
+                          <img 
+                            src={`${getApiUrl("")}${blog.imagenes[i].ruta_imagen}`} 
+                            alt={blog.titulo}
+                            loading="lazy"
+                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                ))}
+
+                {blog.video_id?.trim() && (
+                  <section className="rounded-lg md:rounded-xl shadow-md py-4 md:py-8 px-4 md:px-12 bg-gray-50 mt-12 border border-gray-100">
+                    <h1 className="text-lg md:text-xl lg:text-2xl text-[#00B6FF] font-bold mb-4 md:mb-6 text-center md:text-left break-words">
+                      {blog.video_titulo || 'Video relacionado'}
+                    </h1>
+                    <div className="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
+                        className="w-full h-full"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </section>
+                )}
+              </div>
+            </div>
             </div>
           </div>
         </div>
