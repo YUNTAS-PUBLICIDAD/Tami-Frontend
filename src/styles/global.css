@@ -175,6 +175,20 @@ div {
   }
 }
 
+@keyframes slideOutSlow {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    filter: blur(4px);
+  }
+}
+
 .modal-overlay {
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -189,6 +203,16 @@ div {
   }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 .animate-slideIn {
   animation: slideIn 0.3s ease-in-out;
 }
@@ -197,7 +221,49 @@ div {
   animation: slideOut 0.3s ease-in-out;
 }
 
+.animate-slideOutSlow {
+  animation: slideOutSlow 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 1s ease-in-out forwards;
+}
+
+@keyframes balloon-vanish {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes line-burst {
+  0% { transform: scale(0.2) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: scale(1.1) rotate(10deg); opacity: 0; }
+}
+
+.animate-balloon-pop {
+  position: relative !important;
+  animation: balloon-vanish 0.15s ease-in-out forwards !important;
+  transform-origin: center !important;
+}
+
+.animate-balloon-pop::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70px;
+  height: 70px;
+  transform: translate(-50%, -50%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cline x1='50' y1='10' x2='50' y2='30' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='50' y1='70' x2='50' y2='90' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='10' y1='50' x2='30' y2='50' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='70' y1='50' x2='90' y2='50' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='21.7' y1='21.7' x2='35.9' y2='35.9' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='64.1' y1='64.1' x2='78.3' y2='78.3' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='78.3' y1='21.7' x2='64.1' y2='35.9' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='35.9' y1='64.1' x2='21.7' y2='78.3' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 100;
+  animation: line-burst 0.25s ease-out 0.15s forwards;
+}
+
 .form-input>input[type="text"],
+.form-input>input[type="email"],
 .form-input>input[type="number"],
 .form-input>input[type="file"],
 .form-input>select,
@@ -215,6 +281,25 @@ div {
 
 .form-input>select>option {
   @apply text-gray-500 dark:text-gray-300;
+}
+
+.form-input>input:-webkit-autofill,
+.form-input>input:-webkit-autofill:hover,
+.form-input>input:-webkit-autofill:focus,
+.form-input>input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgb(17 24 39) !important;
+  caret-color: rgb(17 24 39) !important;
+  box-shadow: 0 0 0 1000px rgb(249 250 251) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.dark .form-input>input:-webkit-autofill,
+.dark .form-input>input:-webkit-autofill:hover,
+.dark .form-input>input:-webkit-autofill:focus,
+.dark .form-input>input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgb(243 244 246) !important;
+  caret-color: rgb(243 244 246) !important;
+  box-shadow: 0 0 0 1000px rgb(31 41 55) inset !important;
 }
 
 .group-form {

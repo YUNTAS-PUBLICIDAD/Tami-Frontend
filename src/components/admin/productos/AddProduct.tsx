@@ -19,6 +19,12 @@ const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 const AddProduct = ({ onProductAdded }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const getFullImageUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+    return `${config.apiUrl}${url}`;
+  };
   const [formPage, setFormPage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
   const [productos, setProductos] = useState<Product[]>([]);
@@ -208,16 +214,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
         newErrors[`seo_${index}`] = `El texto SEO es obligatorio para la imagen ${index + 1}.`;
       }
     });
-
-    // Imagen de Pop-up obligatoria
-    if (!formData.imagen_popup) {
-      newErrors.imagen_popup = "La imagen para el Pop-up es obligatoria.";
-    }
-
-    // Texto ALT de Pop-up obligatorio
-    if (!formData.texto_alt_popup?.trim()) {
-      newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatorio.";
-    }
 
     // Imagen de Email obligatoria
     if (!formData.imagen_email) {
@@ -462,12 +458,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formData.relacionados.forEach((item, index) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
-
-      // Agregar imagen popup y texto alt popup al FormData
-      if (formData.imagen_popup) {
-        formDataToSend.append('imagen_popup', formData.imagen_popup);
-        formDataToSend.append('texto_alt_popup', formData.texto_alt_popup || '');
-      }
 
       // Agregar imagen email y texto alt email al FormData
       if (formData.imagen_email) {
@@ -924,7 +914,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <ul className="list-disc list-outside pl-4 space-y-1 mt-1">
                       <li className="break-words">Debes subir <strong>al menos 4 imágenes</strong> para la galería.</li>
                       <li className="break-words">Cada imagen subida <strong>debe tener su texto SEO</strong>.</li>
-                      <li className="break-words">La <strong>imagen de Pop-up</strong> y su <strong>texto alternativo</strong> son obligatorios.</li>
                       <li className="break-words">La <strong>imagen de Email</strong> y su <strong>asunto</strong> son obligatorios.</li>
                       <li className="break-words">La <strong>imagen de WhatsApp</strong> y su <strong>mensaje</strong> son obligatorios.</li>
                       <li className="break-words">Peso máximo: <strong>2MB</strong> | Formato: <strong>WEBP</strong>.</li>
@@ -960,148 +949,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   </div>
                 </div>
 
-                {/* Imagen para Pop Up */}
-                <div className="card mt-6">
-                  <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Pop-up</h5>
-                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                    <p className="font-medium">ℹ️ Esta imagen se usará únicamente en el pop-up del producto.</p>
-                  </div>
-                  <div className="form-input">
-                    <label>Imagen Pop-up:</label>
-                    <div ref={el => { fieldRefs.current.imagen_popup = el; }} className="border border-dashed border-gray-300 rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        name="imagen_popup"
-                        onChange={e => {
-                          if (e.target.files?.[0]) {
-                            setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
-                          }
-                          if (errors.imagen_popup) setErrors(prev => { const n = { ...prev }; delete n.imagen_popup; return n; });
-                        }}
-                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                      />
-                    </div>
-                    {errors.imagen_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup}</p>}
-                  </div>
-                  <div className="form-input">
-                    <label>Texto ALT Imagen Pop-up (opcional):</label>
-                    <input
-                      ref={el => { fieldRefs.current.texto_alt_popup = el; }}
-                      type="text"
-                      name="texto_alt_popup"
-                      value={formData.texto_alt_popup || ''}
-                      onChange={e => {
-                        setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }));
-                        if (errors.texto_alt_popup) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_popup; return n; });
-                      }}
-                      placeholder="Texto alternativo para SEO..."
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
-                    />
-                    {errors.texto_alt_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup}</p>}
-                  </div>
-                  {/** estilos de popup*/}
-                  <div className="form-input">
-                    <label>Estilo de Popup:</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
-                        <label key={"radio" + estilo} className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors">
-                          <img src={imagenEstilos[index]} alt={`Estilo ${index + 1}`} className="w-full h-auto rounded" />
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="radio"
-                              name="popup_estilo"
-                              value={estilo}
-                              checked={formData.etiqueta.popup_estilo === estilo}
-                              onChange={(e) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  etiqueta: {
-                                    ...prev.etiqueta,
-                                    popup_estilo: e.target.value,
-                                  },
-                                }))
-                              }
-                              className="w-4 h-4 text-teal-600 focus:ring-teal-500"
-                            />
-                            <span className="font-medium">Estilo {index + 1}</span>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="form-input">
-                    <label>Color del Botón del Popup:</label>
-                    <div className="flex items-center gap-4">
-                      <input
-                        type="color"
-                        value={formData.etiqueta.popup_button_color || "#008B8B"}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            etiqueta: {
-                              ...prev.etiqueta,
-                              popup_button_color: e.target.value,
-                            },
-                          }))
-                        }
-                        className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
-                      />
-                      <div className="flex flex-col gap-2">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
-                        <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
-                          {formData.etiqueta.popup_button_color || "#008B8B"}
-                        </code>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-input">
-                    <label>Color del Texto del Popup:</label>
-                    <div className="flex items-center gap-4">
-                      <input
-                        type="color"
-                        value={formData.etiqueta.popup_text_color || "#000000"}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            etiqueta: {
-                              ...prev.etiqueta,
-                              popup_text_color: e.target.value,
-                            },
-                          }))
-                        }
-                        className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
-                      />
-                      <div className="flex flex-col gap-2">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
-                        <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
-                          {formData.etiqueta.popup_text_color || "#000000"}
-                        </code>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-input">
-                    <label>Texto del Botón del Popup:</label>
-                    <input
-                      type="text"
-                      value={formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          etiqueta: {
-                            ...prev.etiqueta,
-                            popup_button_text: e.target.value,
-                          },
-                        }))
-                      }
-                      placeholder="Ej: ¡COTIZA AHORA!"
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
-                    />
-                  </div>
-                </div>
 
                 {/* Imagen para Email */}
                 <div className="card mt-6">
@@ -1259,7 +1106,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             <div className="relative flex items-center justify-center">
                               {item.imagenes?.[0]?.url_imagen ? (
                                 <img
-                                  src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                  src={getFullImageUrl(item.imagenes[0].url_imagen)}
                                   alt={item.nombre}
                                   className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${formData.relacionados.includes(item.id)
                                     ? 'border-teal-600'

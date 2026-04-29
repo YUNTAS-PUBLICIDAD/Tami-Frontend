@@ -4,6 +4,7 @@ import mapaPeru from "@images/shipping-policies/mapa.webp";
 import camion from "@images/shipping-policies/camion.webp";
 import caja from "@images/shipping-policies/caja.webp";
 import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
 
 const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
 ---
@@ -15,15 +16,23 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
 >
   <!-- Hero -->
   <section
-    class="relative flex items-center justify-center text-white bg-cover bg-center h-[30vh] sm:h-screen min-h-[32vh] px-4"
-    style={{
-      backgroundImage: `linear-gradient(to bottom, rgba(0,120,111,.75), rgba(0,0,0,.75)), url(${shippingPoliciesHero.src})`,
-    }}
+    class="relative flex items-center justify-center text-white h-[30vh] sm:h-screen min-h-[32vh] px-4 overflow-hidden"
   >
+    <Image
+      src={shippingPoliciesHero}
+      alt="Fondo de Políticas de Envío"
+      class="absolute inset-0 w-full h-full object-cover object-center -z-20"
+      loading="eager"
+      fetchpriority="high"
+      quality={80}
+      widths={[468, 800, 1200]}
+      sizes="(max-width: 640px) 468px, (max-width: 1024px) 800px, 1200px"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-[#00786F]/75 to-black/75 -z-10"></div>
+
     <div class="w-full text-center px-4">
       <h2
-        class="font-extrabold leading-tight text-2xl sm:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[96px]"
-        style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
+        class="font-extrabold leading-tight text-2xl sm:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[96px] drop-shadow-2xl"
       >
         POLÍTICA DE ENVÍOS
       </h2>
@@ -42,11 +51,17 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
   >
     <!-- Mapa -->
     <div class="flex justify-center items-center">
-      <img
-        src={mapaPeru.src}
+      <Image
+        src={mapaPeru}
         alt="Mapa apuntando Lima"
         title="Mapa apuntando Lima"
-        class="w-3/4 md:w-full lg:w-full"
+        width={459}
+        height={634}
+        quality={80}
+        class="w-3/4 md:w-full lg:w-full h-auto"
+        style="aspect-ratio: 459 / 634; min-height: 273px;"
+        widths={[273, 459]}
+        sizes="(max-width: 640px) 273px, 459px"
       />
     </div>
 
@@ -59,10 +74,13 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
         <div
           class="flex items-center justify-center sm:justify-start gap-3 bg-teal-700 hover:bg-teal-900 transition text-white rounded-2xl px-6 py-5 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md w-full"
         >
-          <img
-            src={camion.src}
+          <Image
+            src={camion}
             alt="Icono de Camión"
+            width={45}
+            height={64}
             class="h-16 w-auto sm:h-20 lg:h-24 2xl:h-28 object-contain mr-4 lg:mr-8 drop-shadow-md"
+            style="aspect-ratio: 45 / 64; min-height: 64px;"
           />
           <p
             class="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold leading-snug text-center sm:text-left"
@@ -121,10 +139,13 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
       <div
         class="flex items-center justify-center sm:justify-start gap-3 bg-teal-700 hover:bg-teal-900 transition text-white rounded-2xl px-6 py-5 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md w-full"
       >
-        <img
-          src={caja.src}
+        <Image
+          src={caja}
           alt="Icono de Caja"
+          width={45}
+          height={64}
           class="h-16 w-auto sm:h-20 lg:h-24 2xl:h-28 object-contain mr-4 lg:mr-8"
+          style="aspect-ratio: 45 / 64; min-height: 64px;"
         />
         <p
           class="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold leading-snug"
@@ -140,9 +161,11 @@ const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
       <div
         class="flex items-center justify-center sm:justify-start gap-3 bg-teal-700 hover:bg-teal-900 transition text-white rounded-2xl px-6 py-5 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md w-full"
       >
-        <img
-          src={caja.src}
+        <Image
+          src={caja}
           alt="Icono de Caja"
+          width={45}
+          height={64}
           class="h-16 w-auto sm:h-20 lg:h-24 2xl:h-28 object-contain mr-4 lg:mr-8"
         />
         <p

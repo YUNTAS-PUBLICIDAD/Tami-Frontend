@@ -41,12 +41,8 @@ if (!producto) {
 >
   <ProductPage producto={producto} client:idle />
 
-  <!-- Modal estilo 1 (el actual) -->
-  <ModalDetalles link={producto.link} seccion={producto.seccion} />
-
-  <!-- Modal estilo 2 (nuevo diseño) -->
-  <ModalDetalles2 link={producto.link} seccion={producto.seccion} />
-
-  <!-- Modal estilo 3 (nuevo diseño) -->
-  <ModalDetalles3 link={producto.link} seccion={producto.seccion} />
+  {/* Los modales antiguos han sido desactivados en favor del nuevo ScrollModal unificado */}
+  {/* <ModalDetalles link={producto.link} seccion={producto.seccion} /> */}
+  {/* <ModalDetalles2 link={producto.link} seccion={producto.seccion} /> */}
+  {/* <ModalDetalles3 link={producto.link} seccion={producto.seccion} /> */}
 </Layout>

@@ -1,11 +1,9 @@
 ---
 import Layout from "src/layouts/Layout.astro";
 import bgBlog from "@images/blog/bg_blog.webp";
-// import paleta from "@images/blog/paleta.webp";
 import BlogPage from "../components/blog/BlogPage.tsx";
+import { Image } from "astro:assets";
 ---
-
-<link rel="preload" as="image" href={bgBlog.src} />
 
 <Layout
   title="Blog de Maquinaria Industrial | Tips para Emprendedores"
@@ -13,11 +11,19 @@ import BlogPage from "../components/blog/BlogPage.tsx";
   canonicalUrl="https://tamimaquinarias.com/blog/"
 >
     <section
-  class="relative bg-cover bg-center
-         h-[42vh] sm:h-screen min-h-[42vh]
-         pt-16 lg:pt-20 text-white"
-  style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
+  class="relative h-[42vh] sm:h-screen min-h-[42vh]
+         pt-16 lg:pt-20 text-white overflow-hidden"
 >
+  <Image
+    src={bgBlog}
+    alt="Fondo Blog Tami"
+    class="absolute inset-0 w-full h-full object-cover object-center -z-20"
+    loading="eager"
+    fetchpriority="high"
+    widths={[412, 800, 1200, 1920]}
+    sizes="100vw"
+  />
+  <div class="absolute inset-0 bg-gradient-to-b from-[#00786F]/75 to-black/75 -z-10"></div>
   <div
   class="absolute inset-0 z-20 flex flex-col
          items-center justify-center
@@ -48,8 +54,7 @@ import BlogPage from "../components/blog/BlogPage.tsx";
     <a
       href="/productos"
       title="Ver productos"
-      style="background-color: #00786F;"
-      class="hover:bg-teal-700 text-white font-semibold
+      class="bg-[#00786F] hover:bg-teal-700 text-white font-semibold
              text-sm sm:text-xl
              px-6 sm:px-10 py-2 sm:py-4
              rounded-sm transition-all duration-300

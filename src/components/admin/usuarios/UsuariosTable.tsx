@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers } from "react-icons/fa";
+import { useState, useMemo, useCallback } from "react";
+import { FaTrash, FaEdit, FaPlus, FaSyncAlt, FaUsers } from "react-icons/fa";
 import AddDataModal from "./AddUpdateModalUsuario.tsx";
 import DeleteUsuarioModal from "./DeleteModalUsuario.tsx";
 import useUsuarios from "../../../hooks/admin/usuarios/useUsuarios.ts";
-import Paginator from "../ui/Paginator.tsx";
 import Swal from "sweetalert2";
 import type Usuario from "../../../models/Users.ts";
 import LoadingComponent from "src/components/admin/ui/LoadingComponent.tsx";
@@ -21,31 +20,36 @@ const UsuariosTable = () => {
   const [usuarioIdToDelete, setUsuarioIdToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredUsuarios = usuarios.filter(usuario =>
-    usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    usuario.celular?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    usuario.id.toString().includes(searchTerm)
-  );
+  const filteredUsuarios = useMemo(() => {
+    if (!searchTerm) return usuarios;
+    const lowerTerm = searchTerm.toLowerCase();
+    
+    return usuarios.filter(usuario =>
+      usuario.name.toLowerCase().includes(lowerTerm) ||
+      usuario.email.toLowerCase().includes(lowerTerm) ||
+      usuario.celular?.toLowerCase().includes(lowerTerm) ||
+      usuario.id.toString().includes(searchTerm)
+    );
+  }, [usuarios, searchTerm]);
 
-  const handleRefetch = () => setRefetchTrigger((prev) => !prev);
+  const handleRefetch = useCallback(() => setRefetchTrigger((prev) => !prev), []);
 
-  const openModalForEdit = (usuario: Usuario) => {
+  const openModalForEdit = useCallback((usuario: Usuario) => {
     setSelectedUsuario(usuario);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const openModalForCreate = () => {
+  const openModalForCreate = useCallback(() => {
     setSelectedUsuario(null);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const openDeleteModal = (id: number) => {
+  const openDeleteModal = useCallback((id: number) => {
     setUsuarioIdToDelete(id);
     setIsDeleteModalOpen(true);
-  };
+  }, []);
 
-  const handleUsuarioFormSuccess = () => {
+  const handleUsuarioFormSuccess = useCallback(() => {
     setRefetchTrigger((prev) => !prev);
     setIsModalOpen(false);
     Swal.fire({
@@ -54,7 +58,7 @@ const UsuariosTable = () => {
       text: "El usuario se ha guardado correctamente",
       confirmButtonColor: "#14b8a6",
     });
-  };
+  }, []);
 
   if (loading) return <LoadingComponent message="Cargando usuarios..." />
 

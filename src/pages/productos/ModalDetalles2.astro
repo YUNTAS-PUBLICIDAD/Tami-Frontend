@@ -16,7 +16,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
+    class="relative flex flex-col sm:flex-row w-[92%] max-w-md sm:max-w-4xl h-[650px] sm:h-auto max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
   >
     <button
       id="close-modal-detalles-2"
@@ -27,7 +27,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
     <!-- IMAGEN -->
     <div
-      class="w-full sm:w-1/2 relative z-20 h-[220px] sm:h-auto sm:min-h-[420px]"
+      class="w-full h-1/2 sm:w-1/2 relative z-20 sm:h-auto sm:min-h-[420px]"
     >
       <img
         id="modal2-product-img"
@@ -39,36 +39,57 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
     <!-- FORM -->
     <div id="modal2-form-container"
-      class="w-full sm:w-1/2 pt-4 pb-4 px-6 sm:p-12 text-white flex flex-col justify-start sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
+      class="w-full h-1/2 sm:w-1/2 py-4 px-6 sm:p-12 text-white flex flex-col justify-center sm:justify-center relative z-30 modal-blue-panel overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={seccion}
       data-whatsapp={numeroWhatsApp}
     >
+      <img
+        id="modal2-product-img-2"
+        src={DEFAULT_IMAGE}
+        alt="Imagen de fondo"
+        class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+      />
+
       <!-- TÍTULO DINÁMICO -->
-      <h2 id="modal2-title" class="text-3xl sm:text-4xl font-light text-center leading-snug mb-4">
+      <h2 id="modal2-title" class="relative z-20 text-3xl sm:text-4xl font-light text-center leading-snug mb-4 hidden sm:block sm:invisible break-words">
         Tu guía de decoración exclusiva,<br>
         <span class="font-extrabold">Gratis</span>
       </h2>
 
-      <form id="form-cotizacion-producto-2" class="flex flex-col gap-4">
+      <form id="form-cotizacion-producto-2" class="relative z-20 flex flex-col gap-3" novalidate>
+        <p
+          data-validation-message
+          class="hidden text-base font-bold text-[#FF0000] text-center mb-1 break-words"
+        ></p>
+
         <input
           type="text"
           name="nombre"
-          placeholder="Nombre y Apellidos"
+          placeholder="Nombre"
           required
           class="input-style"
         />
         <input
           type="email"
           name="correo"
-          placeholder="Correo@gmail.com"
+          placeholder="Correo"
+          inputmode="email"
+          autocomplete="email"
+          oninput="this.setCustomValidity(this.validity.typeMismatch ? 'Ingresa un correo valido' : '')"
           required
           class="input-style"
         />
         <input
           type="tel"
           name="telefono"
-          placeholder="Teléfono: 905 876 524"
+          placeholder="Telefono"
+          inputmode="numeric"
+          autocomplete="tel"
+          maxlength="9"
+          pattern="[0-9]{9}"
+          title="Ingresa un telefono de 9 digitos"
+          oninput="this.value=this.value.replace(/\D/g,'').slice(0,9)"
           required
           class="input-style"
         />
@@ -81,12 +102,22 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         </button>
       </form>
 
-      <p id="modal2-cotizacion-mensaje" class="text-center mt-4"></p>
+      <p id="modal2-cotizacion-mensaje" class="relative z-20 text-center mt-4 break-words"></p>
     </div>
   </div>
 </div>
 
 <style>
+  :global(html),
+  :global(body) {
+    overflow-x: clip;
+  }
+
+  #modal-detalles-2,
+  #modal-detalles-2 > div {
+    overflow-x: hidden;
+  }
+
   .modal-blue-panel {
     background: linear-gradient(180deg, #002ade 0%, #003a9f 40%, #004c5d 100%);
   }
@@ -94,7 +125,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 .input-style {
   background: white;
   color: #111;
-  padding: 14px;
+  padding: 10px 14px;
+  font-size: 14px;
   border-radius: 14px;
   border: 2px solid #7aa2ff;
   box-shadow: 0 0 0 3px rgba(122,162,255,.15);
@@ -115,8 +147,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     font-weight: bold;
     line-height: 1.2;
     transition: 0.3s;
-    padding: 0.7rem 2.2rem;
-    font-size: 1rem;
+    padding: 0.5rem 1.8rem;
+    font-size: 0.9rem;
   }
 
   .btn-white-pill:hover {
@@ -134,7 +166,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
   /* ================= OBTENER PRODUCTO ================= */
   async function obtenerProductoActual() {
-    const container = document.querySelector("#modal2-form-container");
+    const container = document.querySelector("#modal2-form-container") as HTMLElement | null;
     const productLink = container?.dataset.productLink;
 
     if (!productLink) return null;
@@ -187,12 +219,15 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   /* ================= IMAGEN DINÁMICA ================= */
   async function actualizarImagenModal2() {
     const container = document.querySelector("#modal2-form-container");
-    const modalImg = document.querySelector("#modal2-product-img");
+    const modalImg = document.querySelector("#modal2-product-img") as HTMLImageElement | null;
+    const modalImg2 = document.querySelector("#modal2-product-img-2") as HTMLImageElement | null;
     if (!container || !modalImg) return;
 
-    const productLink = container.dataset.productLink || "";
+    const productLink = (container as HTMLElement).dataset.productLink || "";
     let imagen = "/images/popup/default.webp";
     let imagenAlt = "Imagen del producto";
+    let imagen2 = "/images/popup/default.webp";
+    let imagenAlt2 = "Imagen de fondo";
 
     if (!window.__detalleProducto && productLink) {
       try {
@@ -209,7 +244,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
       const imagenPopup = producto.producto_imagenes?.find(
-        (img) => img.tipo === "popup",
+        (img: any) => img.tipo === "popup",
       );
 
       if (imagenPopup?.url_imagen) {
@@ -218,6 +253,19 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       } else if (producto.imagenes?.length > 0) {
         imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
         imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
+      }
+
+      const imagenPopup2 = producto.producto_imagenes?.find((img: any) => {
+        const tipo = (img?.tipo || "").toLowerCase();
+        return tipo === "popup2" || tipo === "popup_2";
+      });
+
+      if (imagenPopup2?.url_imagen) {
+        imagen2 = `${config.apiUrl}${imagenPopup2.url_imagen}`;
+        imagenAlt2 = imagenPopup2.texto_alt_SEO || producto.nombre;
+      } else {
+        imagen2 = imagen;
+        imagenAlt2 = imagenAlt;
       }
 
       // Estilos del boton
@@ -242,6 +290,17 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
     modalImg.src = imagen;
     modalImg.alt = imagenAlt;
+
+    if (modalImg2) {
+      modalImg2.src = imagen2;
+      modalImg2.alt = imagenAlt2;
+    }
+
+    const titleEl = document.getElementById("modal2-title");
+    if (titleEl && window.__detalleProducto) {
+       titleEl.innerHTML = (window.__detalleProducto.etiqueta?.titulo_popup_2 || "Tu guía de decoración exclusiva,<br><span class='font-extrabold'>Gratis</span>")
+        .replace("Gratis", "<span class='font-extrabold'>Gratis</span>");
+    }
   }
 
   /* ================= CERRAR ================= */
@@ -257,7 +316,6 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     const observer = new MutationObserver(async () => {
       if (!modal2.classList.contains("hidden")) {
         await actualizarImagenModal2();
-        await actualizarTituloModal2();
       }
     });
 
@@ -267,11 +325,76 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
   }
 
   /* ================= ENVÍO WHATSAPP + EMAIL ================= */
-  const form2 = document.getElementById("form-cotizacion-producto-2");
-  const container2 = document.getElementById("modal2-form-container");
+  const form2 = document.getElementById(
+    "form-cotizacion-producto-2",
+  ) as HTMLFormElement | null;
+  const container2 = document.getElementById(
+    "modal2-form-container",
+  ) as HTMLElement | null;
   const mensaje2 = document.getElementById("modal2-cotizacion-mensaje");
 
+  const normalizeLeadFormValues = (formElement: HTMLFormElement) => {
+    const data = new FormData(formElement);
+    return {
+      nombre: (data.get("nombre")?.toString() || "").trim(),
+      telefono: (data.get("telefono")?.toString() || "")
+        .replace(/\D/g, "")
+        .trim(),
+      correo: (data.get("correo")?.toString() || "").trim(),
+    };
+  };
+
+  const getLeadValidationMessage = ({
+    nombre,
+    telefono,
+    correo,
+  }: {
+    nombre: string;
+    telefono: string;
+    correo: string;
+  }) => {
+    if (!nombre || nombre.length < 3 || nombre.length > 75) {
+      return "Ingresa un nombre valido (3 a 75 caracteres)";
+    }
+
+    if (!/^\d{9}$/.test(telefono)) {
+      return "Ingresa un telefono valido de 9 digitos";
+    }
+
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      return "Ingresa un correo valido";
+    }
+
+    return "";
+  };
+
+  const setInlineValidationMessage = (
+    formElement: HTMLFormElement,
+    message: string,
+  ) => {
+    const messageEl = formElement.querySelector(
+      "[data-validation-message]",
+    ) as HTMLElement | null;
+
+    if (!messageEl) return;
+
+    if (message) {
+      messageEl.textContent = message;
+      messageEl.classList.remove("hidden");
+      return;
+    }
+
+    messageEl.textContent = "";
+    messageEl.classList.add("hidden");
+  };
+
   if (form2 && container2) {
+    form2
+      .querySelectorAll('input[name="nombre"], input[name="telefono"], input[name="correo"]')
+      .forEach((input) => {
+        input.addEventListener("input", () => setInlineValidationMessage(form2, ""));
+      });
+
     form2.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -280,10 +403,21 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
       ) as HTMLButtonElement | null;
       const originalBtnText = submitBtn ? submitBtn.textContent : "";
 
-      const data = new FormData(form2);
-      const nombre = data.get("nombre");
-      const telefono = "+51 " + data.get("telefono");
-      const correo = data.get("correo");
+      const { nombre, telefono, correo } = normalizeLeadFormValues(form2);
+      const validationMessage = getLeadValidationMessage({
+        nombre,
+        telefono,
+        correo,
+      });
+
+      if (validationMessage) {
+        setInlineValidationMessage(form2, validationMessage);
+        return;
+      }
+
+      setInlineValidationMessage(form2, "");
+
+      const telefonoConCodigo = `+51${telefono}`;
       const productLink = container2.dataset.productLink;
 
       // 1. Estado de carga
@@ -311,7 +445,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
         const formData = new FormData();
         formData.append("name", nombre);
         formData.append("email", correo);
-        formData.append("celular", telefono.replace(" ", ""));
+        formData.append("celular", telefonoConCodigo);
         formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
         formData.append("producto_id", window.__detalleProducto?.id || "");
 
@@ -326,7 +460,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               link: productLink,
-              phone: telefono,
+              phone: telefonoConCodigo,
               email: correo ?? null,
             }),
           }).catch(() => {});
@@ -338,7 +472,7 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 name: nombre,
-                celular: telefono,
+                celular: telefonoConCodigo,
                 email: correo,
                 link: productLink,
               }),

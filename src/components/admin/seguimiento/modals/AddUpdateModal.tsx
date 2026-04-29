@@ -7,6 +7,7 @@
 import useClienteForm from "../../../../hooks/admin/seguimiento/useClienteForm.ts";
 import type Cliente from "../../../../models/Clients.ts";
 import React from "react";
+import { IoMdCloseCircle } from "react-icons/io";
 
 {
   /* Interfaz de modals, Typescript */
@@ -29,7 +30,8 @@ const AddUpdateDataModal = ({
       () => {
         onRefetch();
         setIsOpen(false);
-      }
+            },
+            isOpen
   );
 
     const handleClose = () => {
@@ -39,99 +41,89 @@ const AddUpdateDataModal = ({
   if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl px-6 sm:px-8 py-8 sm:py-10 animate-scaleIn">
-                <h2 className="text-2xl font-bold text-teal-600 mb-6 text-center">
-                    {cliente ? "Editar Cliente" : "Añadir Cliente"}
-                </h2>
+        <div className="dialog-overlay">
+            <div className="dialog w-full max-w-md md:max-w-xl !pt-0">
+                <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !mt-0">
+                    <h4 className="dialog-title flex-1 text-center">
+                        {cliente ? "Editar Cliente" : "Añadir Cliente"}
+                    </h4>
+                    <button
+                        className="text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl ml-2"
+                        onClick={handleClose}
+                        aria-label="Cerrar"
+                        type="button"
+                    >
+                        <IoMdCloseCircle />
+                    </button>
+                </div>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-                >
-                    <div className="flex flex-col">
-                        <label htmlFor="name" className="text-sm font-medium text-teal-700 mb-1">
-                            Nombres
-                        </label>
-                        <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className={`p-3 rounded-lg focus:outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                                errors.name
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : "border-gray-300 focus:ring-teal-500"
-                            }`}
-                            placeholder="Ej. Juan Pérez"
-                        />
-                        <p className="text-red-600 text-sm mt-1 min-h-[1.25rem]">
-                            {errors.name || "\u00A0"}
-                        </p>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                            <div className="form-input">
+                                <label htmlFor="name">Nombres:</label>
+                                <input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    className={`dark:!bg-gray-800 ${errors.name ? "border-red-500 focus:ring-red-400" : ""}`}
+                                    placeholder="Ej. Juan Pérez"
+                                />
+                                <p className="text-red-500 text-xs mt-1 min-h-[1rem]">
+                                    {errors.name || "\u00A0"}
+                                </p>
+                            </div>
+
+                            <div className="form-input">
+                                <label htmlFor="celular">Teléfono:</label>
+                                <input
+                                    id="celular"
+                                    name="celular"
+                                    type="text"
+                                    value={formData.celular}
+                                    onChange={handleChange}
+                                    required
+                                    className={`dark:!bg-gray-800 ${errors.celular ? "border-red-500 focus:ring-red-400" : ""}`}
+                                    placeholder="Ej. 987654321"
+                                />
+                                <p className="text-red-500 text-xs mt-1 min-h-[1rem]">
+                                    {errors.celular || "\u00A0"}
+                                </p>
+                            </div>
+
+                            <div className="form-input md:col-span-2">
+                                <label htmlFor="email">Gmail:</label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    className={`dark:!bg-gray-800 ${errors.email ? "border-red-500 focus:ring-red-400" : ""}`}
+                                    placeholder="Ej. cliente@gmail.com"
+                                />
+                                <p className="text-red-500 text-xs mt-1 min-h-[1rem]">
+                                    {errors.email || "\u00A0"}
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col">
-                        <label htmlFor="celular" className="text-sm font-medium text-teal-700 mb-1">
-                            Teléfono
-                        </label>
-                        <input
-                            id="celular"
-                            name="celular"
-                            type="text"
-                            value={formData.celular}
-                            onChange={handleChange}
-                            required
-                            className={`p-3 rounded-lg focus:outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                                errors.celular
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : "border-gray-300 focus:ring-teal-500"
-                            }`}
-                            placeholder="Ej. 987654321"
-                        />
-                        <p className="text-red-600 text-sm mt-1 min-h-[1.25rem]">
-                            {errors.celular || "\u00A0"}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col sm:col-span-2">
-                        <label htmlFor="email" className="text-sm font-medium text-teal-700 mb-1">
-                            Gmail
-                        </label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className={`p-3 rounded-lg focus:outline-none focus:ring-2 text-gray-900 placeholder:text-gray-400 ${
-                                errors.email
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : "border-gray-300 focus:ring-teal-500"
-                            }`}
-                            placeholder="Ej. cliente@gmail.com"
-                        />
-                        <p className="text-red-600 text-sm mt-1 min-h-[1.25rem]">
-                            {errors.email || "\u00A0"}
-                        </p>
-                    </div>
-
-                    <div className="sm:col-span-2 flex flex-col sm:flex-row justify-end items-center gap-3 mt-4">
+                    <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <button
                             type="submit"
-                            className="w-full sm:w-auto bg-teal-600 text-white px-5 py-2 rounded-lg hover:bg-teal-700 transition shadow"
+                            className="admin-act-btn w-full sm:w-auto !text-base !px-6 !py-2"
                         >
                             {cliente ? "Guardar Cambios" : "Añadir Cliente"}
                         </button>
                         <button
                             type="button"
-                            onClick={() => {
-                                setIsOpen(false);
-                                resetForm();
-                            }}
-                            className="w-full sm:w-auto bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition"
+                            onClick={handleClose}
+                            className="neutral-btn w-full sm:w-auto !text-base !px-6 !py-2 !bg-amber-100 !text-amber-900 !border-amber-300 hover:!bg-amber-200 hover:!text-amber-950 dark:!bg-gray-700 dark:!text-gray-100 dark:!border-gray-500 dark:hover:!bg-gray-600"
                         >
                             Cancelar
                         </button>

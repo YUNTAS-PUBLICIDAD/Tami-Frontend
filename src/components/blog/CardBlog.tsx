@@ -11,7 +11,9 @@ interface CardBlogProps {
 const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
 
   const imageUrl = blog.miniatura
-    ? `${config.apiUrl}${blog.miniatura}`
+    ? blog.miniatura.startsWith("http")
+      ? blog.miniatura
+      : `${config.apiUrl}${blog.miniatura}`
     : "/images/default-blog.webp";
 
   const altText = blog.titulo || "Imagen del blog";
@@ -33,6 +35,9 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
                 alt={altText}
                 title={altText}
                 loading="lazy"
+                decoding="async"
+                width={350}
+                height={280}
                 className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
             </figure>

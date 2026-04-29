@@ -1,7 +1,6 @@
 import { useState } from "react";
 import fondoSlider from "@images/products/fondo_productos_slider.webp";
 import heroProductsArray from "@data/heroProducts.data";
-// import FlechaButton from "./FlechaButton";
 
 const HeroProducts = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -33,13 +32,12 @@ const HeroProducts = () => {
         }}
       >
 
-        <div className="absolute inset-0 backdrop-blur-xs"></div>
+        <div className="absolute inset-0 backdrop-blur-sm"></div>
         <div className="w-full h-11/12 pt-20 grid grid-rows-1 grid-cols-2 lg:grid-cols-12 items-center z-10">
           <button
             onClick={handlePrev}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit cursor-pointer"
           >
-            {/* <FlechaButton direccion="left" /> */}
           </button>
 
           <div
@@ -80,19 +78,8 @@ const HeroProducts = () => {
             onClick={handleNext}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit justify-self-end"
           >
-            {/* <FlechaButton direccion="right" /> */}
           </button>
         </div>
-        {/* <div className="flex gap-5 h-1/12 items-center justify-center">
-          {heroProductsArray.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className="w-2 h-2 lg:w-3 lg:h-3 2xl:w-4 2xl:h-4 rounded-full transition-transform duration-300 disabled:bg-white disabled:scale-150 lg:disabled:scale-125 bg-gray-400 hover:bg-gray-300"
-              disabled={index === currentSlide}
-            />
-          ))}
-        </div> */}
       </section>
     </>
   );

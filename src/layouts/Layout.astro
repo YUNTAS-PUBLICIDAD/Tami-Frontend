@@ -1,10 +1,12 @@
 ---
 import "../styles/global.css";
+import GoogleAnalytics from "../components/GoogleAnalytics.astro";
 import Footer from "../components/ui/footer/Footer.astro";
 import NavBar from "../components/ui/navbar/NavBar";
 import ScrollModal from "../components/ui/ScrollModal.tsx";
-import WhatsApp from "../components/ui/whatsapp.astro";
+import SocialSidebar from "../components/ui/SocialSidebar.astro";
 import Toast from "../components/ui/Toast.astro";
+import ChatbotWidget from "../components/ui/chatbot/ChatbotWidget.tsx";
 
 interface Props {
   title: string;
@@ -48,7 +50,12 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       crossorigin
     />
 
+
+
+    <link rel="preconnect" href="https://i.imgur.com" />
     <link rel="preconnect" href="https://apitami.tamimaquinarias.com" />
+
+  <GoogleAnalytics />
 
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
@@ -101,6 +108,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       name="google-site-verification"
       content="fMYl61WKoofkx6daixXAZuFbR-zw9NlYGrf22iA1r0w"
     />
+    <slot name="head" />
   </head>
 
   <body class="font-montserrat w-full">
@@ -115,9 +123,9 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
      * it here avoids mounting it entirely).
      */}
     {!(Astro.url.pathname === "/productos") && (
-      <ScrollModal client:load />
+      <ScrollModal client:idle />
     )}
-    {/* Activado con el atributo `client:load`.*/}
+    {/* Activado con el atributo `client:idle`.*/}
     <script is:inline>
       function addOpenScrollListeners() {
         document.querySelectorAll("#open-scroll-btn").forEach((btn) => {
@@ -139,7 +147,8 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       });
       observer.observe(document.body, { childList: true, subtree: true });
     </script>
-    <WhatsApp />
+    <SocialSidebar />
+    <ChatbotWidget client:idle />
     <Toast />
   </body>
 </html>

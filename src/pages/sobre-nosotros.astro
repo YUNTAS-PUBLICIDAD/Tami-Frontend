@@ -1,19 +1,33 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import aboutHero from "@images/about/nosotros_hero.png";
+
+//import aboutHero from "@images/about/nosotros_hero.png";
+import aboutHero from "@images/about/nosotros_hero2.webp";
+
 import valoresArray from "@data/valores.data";
 import Card from "../components/about/Card.astro";
 import bg_card4 from "@images/about/nosotrostami.webp";
-import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
+
+//import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
+import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.webp";
+
+import { Image, getImage } from "astro:assets";
 
 import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
+
+const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 800 });
+
+
 ---
 
 <!-- Cargar CSS de Swiper temprano -->
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+  media="print"
+  onload="this.media='all'"
 />
+
 
 <Layout
   title="¿Quiénes Somos? | Tami Maquinarias para Emprendedores"
@@ -24,7 +38,7 @@ import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
   <section
     class="relative h-[30vh] sm:h-screen min-h-[32vh] pt-16 lg:pt-20 text-white overflow-hidden"
   >
-    <AboutHeroBackground client:load imageSrc={aboutHero.src} />
+    <AboutHeroBackground client:load imageSrc={optimizedHero.src} />
 
     <div
       class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
@@ -47,21 +61,6 @@ import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
     </div>
   </section>
 
-  <style>
-    @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .animate-fadeInUp {
-      animation: fadeInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-  </style>
 
   {/* 🔹 Sección Identidad y CTA */}
   <section class="w-full px-0">
@@ -69,17 +68,23 @@ import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
       class="relative overflow-hidden flex items-end md:items-center justify-center md:justify-start md:h-[1000px]"
     >
       <!-- Fondo mobile -->
-      <img
-        src={bg_card4_mobile.src}
-        alt="Fondo Tami"
+      <Image
+        src={bg_card4_mobile}
+        alt="Fondo Tami Mobile"
         class="block md:hidden w-full h-auto object-contain object-center"
+        loading="eager"
+        fetchpriority="high"
+        widths={[390, 780]}
+        sizes="(max-width: 768px) 390px, 100vw"
       />
       <!-- Fondo desktop -->
-      <div
-        class="hidden md:block absolute inset-0 bg-no-repeat bg-cover bg-center"
-        style={`background-image: url('${bg_card4.src}');`}
-      >
-      </div>
+      <Image
+        src={bg_card4}
+        alt="Fondo Tami Desktop"
+        class="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
+        loading="lazy"
+        decoding="async"
+      />
 
       <!-- Oscurecido -->
       <div class="absolute inset-0 bg-black/45 z-0"></div>
@@ -164,7 +169,7 @@ import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
 
     {/* Grid desktop */}
     <div
-      class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-8xl mx-auto"
+      class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-screen-2xl mx-auto"
     >
       {
         valoresArray.map((valor: any) => (

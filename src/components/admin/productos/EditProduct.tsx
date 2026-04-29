@@ -264,16 +264,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             }
         });
 
-        // Imagen de Pop-up obligatoria
-        if (!formData.imagen_popup) {
-            newErrors.imagen_popup = "La imagen para el Pop-up es obligatoria.";
-        }
-
-        // Texto ALT de Pop-up obligatorio
-        if (!formData.texto_alt_popup?.trim()) {
-            newErrors.texto_alt_popup = "El texto alternativo para el Pop-up es obligatorio.";
-        }
-
         // Imagen de Email obligatoria
         if (!formData.imagen_email) {
             newErrors.imagen_email = "La imagen para el Email es obligatoria.";
@@ -624,7 +614,26 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     formDataToSend.append(altKey, altText);
                 }
             };
-            appendSingleImage('imagen_popup', formData.imagen_popup, 'texto_alt_popup', formData.texto_alt_popup);
+
+            const appendPopup2ImageWithAliases = (
+                fileOrUrl: string | File | null | undefined,
+                altText?: string,
+            ) => {
+                if (!fileOrUrl) return;
+
+                if (fileOrUrl instanceof File) {
+                    // Some backend versions parse popup image 2 with different field names.
+                    formDataToSend.append('imagen_popup2', fileOrUrl);
+                    formDataToSend.append('imagen_popup_2', fileOrUrl);
+                    formDataToSend.append('popup_image2', fileOrUrl);
+                }
+
+                if (altText !== undefined) {
+                    formDataToSend.append('texto_alt_popup2', altText);
+                    formDataToSend.append('texto_alt_popup_2', altText);
+                }
+            };
+
             appendSingleImage('imagen_email', formData.imagen_email);
             formDataToSend.append('asunto', formData.asunto || '');
             appendSingleImage('imagen_whatsapp', formData.imagen_whatsapp, 'texto_alt_whatsapp', formData.texto_alt_whatsapp);
@@ -690,6 +699,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         }
     }, [showModal]);
 
+    const getFullImageUrl = (url: string) => {
+        if (!url) return "";
+        if (url.startsWith("http")) return url;
+        return `${config.apiUrl}${url}`;
+    };
+
     useEffect(() => {
         if (showModal && product) {
             const refreshCache = Date.now();
@@ -697,7 +712,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             console.log("Imágenes originales:", product.imagenes);
             let imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
                 id: img.id,
-                url_imagen: `${config.apiUrl}${img.url_imagen}?v=${refreshCache}`,
+                url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
                 texto_alt_SEO: img.texto_alt_SEO || "",
                 original_path: img.url_imagen
             })) || [];
@@ -713,6 +728,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             const keywordsArray = product.etiqueta?.keywords.split(",").map(kw => kw.trim());
 
             const imagenPopup = product.producto_imagenes?.find((img) => img.tipo === "popup");
+            const imagenPopup2 = product.producto_imagenes?.find((img) => {
+                const tipo = (img.tipo || "").toLowerCase();
+                return tipo === "popup2" || tipo === "popup_2";
+            });
             const imagenEmail = product.producto_imagenes?.find((img) => img.tipo === "email");
             const imagenWhatsapp = product.producto_imagenes?.find((img) => img.tipo === "whatsapp");
 
@@ -751,11 +770,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     ancho: product.dimensiones?.ancho || "",
                 },
                 video_url: product.video_url || "",
-                imagen_popup: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : null,
+                imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-                imagen_email: imagenEmail ? `${config.apiUrl}${imagenEmail.url_imagen}` : null,
+                imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
+                texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
+                imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
                 asunto: imagenEmail?.asunto || "",
-                imagen_whatsapp: imagenWhatsapp ? `${config.apiUrl}${imagenWhatsapp.url_imagen}` : null,
+                imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
                 texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "" // Asegúrate que tu back mande esto
             });
         }
@@ -1232,214 +1253,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
                                 </div>
 
-                                {/* Imagen para Pop Up */}
-                                <div className="card mt-6">
-                                    <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Pop-up</h5>
-                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
-                                        <p className="font-medium break-words">ℹ️ Esta imagen se usará únicamente en el pop-up del producto.</p>
-                                    </div>
-                                    <div className="form-input">
-                                        <label>Imagen Pop-up:</label>
-                                        <div
-                                            ref={el => { fieldRefs.current.imagen_popup = el; }}
-                                            className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_popup ? "border-red-500" : "border-gray-300"}`}
-                                        >
-                                            {formData.imagen_popup ? (
-                                                <div className="flex items-center gap-4">
-                                                    <img
-                                                        src={
-                                                            typeof formData.imagen_popup === "string"
-                                                                ? formData.imagen_popup
-                                                                : URL.createObjectURL(formData.imagen_popup)
-                                                        }
-                                                        alt={formData.texto_alt_popup || "Imagen pop-up"}
-                                                        className="w-16 h-16 object-cover rounded border"
-                                                    />
-                                                    <label className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
-                                                        Reemplazar
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            name="imagen_popup"
-                                                            onChange={e => {
-                                                                if (e.target.files?.[0]) {
-                                                                    setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
-                                                                }
-                                                            }}
-                                                            className="hidden"
-                                                        />
-                                                    </label>
-                                                </div>
-                                            ) : (
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    name="imagen_popup"
-                                                    onChange={e => {
-                                                        if (e.target.files?.[0]) {
-                                                            setFormData(prev => ({ ...prev, imagen_popup: e.target.files![0] }));
-                                                        }
-                                                    }}
-                                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                                                />
-                                            )}
-                                        </div>
-                                        {errors.imagen_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_popup}</p>}
-                                    </div>
-                                    <div className="form-input">
-                                        <label>Texto ALT Imagen Pop-up:</label>
-                                        <input
-                                            ref={el => { fieldRefs.current.texto_alt_popup = el; }}
-                                            type="text"
-                                            name="texto_alt_popup"
-                                            value={formData.texto_alt_popup || ''}
-                                            onChange={e => setFormData(prev => ({ ...prev, texto_alt_popup: e.target.value }))}
-                                            placeholder="Texto alternativo para SEO..."
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.texto_alt_popup ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
-                                        />
-                                        {errors.texto_alt_popup && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_popup}</p>}
-                                    </div>
 
-                                    <div className="form-input">
-                                        <label>Estilo de Popup:</label>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {["estilo1", "estilo2", "estilo3"].map((estilo, index) => (
-                                                <label
-                                                    key={"radio" + estilo}
-                                                    className="flex flex-col items-center gap-2 cursor-pointer p-2 border-2 border-gray-200 rounded-lg hover:border-teal-500 transition-colors"
-                                                >
-                                                    <img
-                                                        src={imagenEstilos[index]}
-                                                        alt={`Estilo ${index + 1}`}
-                                                        className="w-full h-auto rounded"
-                                                    />
-
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="popup_estilo"
-                                                            value={estilo}
-                                                            checked={formData.etiqueta.popup_estilo === estilo}
-                                                            onChange={(e) =>
-                                                                setFormData((prev) => ({
-                                                                    ...prev,
-                                                                    etiqueta: {
-                                                                        ...prev.etiqueta,
-                                                                        popup_estilo: e.target.value,
-                                                                    },
-                                                                }))
-                                                            }
-                                                            className="w-4 h-4 text-teal-600 focus:ring-teal-500"
-                                                        />
-                                                        <span className="font-medium">Estilo {index + 1}</span>
-                                                    </div>
-
-                                                    <p className="text-sm text-gray-600 text-center px-2">
-                                                        {descripcionesPopup[index]}
-                                                    </p>
-                                                    {/* El título del popup fue removido a petición */}
-
-
-                                                    {estilo === "estilo3" && formData.etiqueta.popup_estilo === "estilo3" && (
-                                                        <div className="flex items-center gap-2 mt-2 bg-gray-50 px-3 py-2 rounded-lg border">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={formData.etiqueta.popup3_sin_fondo || false}
-                                                                onChange={(e) =>
-                                                                    setFormData((prev) => ({
-                                                                        ...prev,
-                                                                        etiqueta: {
-                                                                            ...prev.etiqueta,
-                                                                            popup3_sin_fondo: e.target.checked,
-                                                                        },
-                                                                    }))
-                                                                }
-                                                                className="w-4 h-4 text-teal-600"
-                                                            />
-                                                            <span className="text-sm font-medium text-gray-700">
-                                                                Imagen sin fondo (no cubrir todo)
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="form-input">
-                                        <label>Color del Botón del Popup:</label>
-                                        <div className="flex items-center gap-4">
-                                            <input
-                                                type="color"
-                                                value={formData.etiqueta.popup_button_color || "#008B8B"}
-                                                onChange={(e) =>
-                                                    setFormData((prev) => ({
-                                                        ...prev,
-                                                        etiqueta: {
-                                                            ...prev.etiqueta,
-                                                            popup_button_color: e.target.value,
-                                                        },
-                                                    }))
-                                                }
-                                                className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
-                                            />
-                                            <div className="flex flex-col gap-2">
-                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
-                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
-                                                    {formData.etiqueta.popup_button_color || "#008B8B"}
-                                                </code>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-input">
-                                        <label>Color del Texto del Popup:</label>
-                                        <div className="flex items-center gap-4">
-                                            <input
-                                                type="color"
-                                                value={formData.etiqueta.popup_text_color || "#000000"}
-                                                onChange={(e) =>
-                                                    setFormData((prev) => ({
-                                                        ...prev,
-                                                        etiqueta: {
-                                                            ...prev.etiqueta,
-                                                            popup_text_color: e.target.value,
-                                                        },
-                                                    }))
-                                                }
-                                                className="w-20 h-12 cursor-pointer rounded-lg border border-gray-300"
-                                            />
-                                            <div className="flex flex-col gap-2">
-                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Color seleccionado:</span>
-                                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border border-gray-300 dark:border-gray-600 dark:text-gray-300">
-                                                    {formData.etiqueta.popup_text_color || "#000000"}
-                                                </code>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-input">
-                                        <label>Texto del Botón del Popup:</label>
-                                        <input
-                                            type="text"
-                                            value={formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    etiqueta: {
-                                                        ...prev.etiqueta,
-                                                        popup_button_text: e.target.value,
-                                                    },
-                                                }))
-                                            }
-                                            placeholder="Ej: ¡COTIZA AHORA!"
-                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-teal-500"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="card mt-6">
+                                 <div className="card mt-6">
                                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Correo Electrónico</h5>
                                     <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
                                         <p className="font-medium break-words">ℹ️ Esta imagen se usará para el envío de correos.</p>
@@ -1649,7 +1464,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         <div className="relative flex items-center justify-center">
                                                             {item.imagenes?.[0]?.url_imagen ? (
                                                                 <img
-                                                                    src={`https://apitami.tamimaquinarias.com${item.imagenes[0].url_imagen}`}
+                                                                    src={getFullImageUrl(item.imagenes[0].url_imagen)}
                                                                     alt={item.nombre}
                                                                     className={`w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border-2 transition-all duration-300 ${formData.relacionados.includes(item.id)
                                                                         ? 'border-teal-600'
