@@ -19,6 +19,7 @@ interface BlogPOST {
   video_titulo: string; // 40
   video_url: string; // 255
   producto_id: number | string;
+  created_at: string;
   miniatura: File | null;
   imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
   etiqueta: {
@@ -89,6 +90,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     video_url: "",
     video_titulo: "",
     producto_id: "",
+    created_at: new Date().toISOString().split('T')[0],
     miniatura: null,
     imagenes: [
       { imagen: null, parrafo: "", text_alt: "" },
@@ -139,6 +141,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_url: blogToEdit.video_url || "",
         video_titulo: blogToEdit.video_titulo || "",
         producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
+        created_at: blogToEdit.created_at ? new Date(blogToEdit.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         miniatura: blogToEdit.miniatura || null,
         imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
           const raw = img.ruta_imagen || "";
@@ -170,6 +173,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_url: "",
         video_titulo: "",
         producto_id: "",
+        created_at: new Date().toISOString().split('T')[0],
         miniatura: null,
         imagenes: [
           { imagen: null, parrafo: "", text_alt: "" },
@@ -203,6 +207,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
     if (name === "producto_id") {
       setFormData((prev) => ({ ...prev, producto_id: value }));
+      return;
+    }
+
+    if (name === "created_at") {
+      setFormData((prev) => ({ ...prev, created_at: value }));
       return;
     }
 
@@ -417,6 +426,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       video_url: "",
       video_titulo: "",
       producto_id: "",
+      created_at: new Date().toISOString().split('T')[0],
       miniatura: null,
       imagenes: [
         { imagen: null, parrafo: "", text_alt: "" },
@@ -537,6 +547,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
       formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
       formDataToSend.append("producto_id", formData.producto_id.toString());
+      if (formData.created_at) {
+        formDataToSend.append("created_at", formData.created_at);
+      }
 
       if (formData.miniatura instanceof File) {
         formDataToSend.append("miniatura", formData.miniatura);
@@ -698,174 +711,219 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
             <form
               encType="multipart/form-data"
               onSubmit={handleSubmit}
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3"
+              className="flex flex-col gap-6"
             >
-              <div className="form-input">
-                <label className="font-medium">Título para web*</label>
-                <input
-                  type="text"
-                  name="titulo"
-                  value={formData.titulo}
-                  onChange={handleChange}
-                  maxLength={LENGTHS.titulo}
-                  required
-                />
+              {/* --- INFORMACIÓN GENERAL --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Información General
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Título para web*</label>
+                    <input
+                      type="text"
+                      name="titulo"
+                      value={formData.titulo}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.titulo}
+                      required
+                    />
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Link Permanente*</label>
+                    <input
+                      type="text"
+                      name="link"
+                      value={formData.link}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.titulo}
+                      required
+                    />
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Fecha de Creación*</label>
+                    <input
+                      type="date"
+                      name="created_at"
+                      value={formData.created_at}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Relacionar con producto*</label>
+                    <select
+                      name="producto_id"
+                      value={formData.producto_id}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Selecciona un producto</option>
+                      {productos.map((producto: any) => (
+                        <option key={producto.id} value={producto.id}>
+                          {producto.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              <div className="form-input">
-                <label className="font-medium">Link*</label>
-                <input
-                  type="text"
-                  name="link"
-                  value={formData.link}
-                  onChange={handleChange}
-                  maxLength={LENGTHS.titulo}
-                  required
-                />
+              {/* --- TEXTOS PRINCIPALES --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
+                  Textos Introductorios
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Párrafo corto (100 palabras)*</label>
+                    <textarea
+                      name="subtitulo1"
+                      value={formData.subtitulo1}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.parrafo}
+                      required
+                      rows={3}
+                    />
+                    <small className="text-gray-500 text-end block mt-1">
+                      {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
+                    </small>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Descripción (255 palabras)*</label>
+                    <textarea
+                      name="subtitulo2"
+                      value={formData.subtitulo2}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.descripcion}
+                      required
+                      rows={4}
+                    />
+                    <small className="text-gray-500 text-end block mt-1">
+                      {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
+                    </small>
+                  </div>
+                </div>
               </div>
 
-              <div className="form-input">
-                <label className="font-medium">Meta título</label>
-                <input
-                  type="text"
-                  name="meta_titulo"
-                  value={formData.etiqueta.meta_titulo}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      etiqueta: {
-                        ...formData.etiqueta,
-                        meta_titulo: e.target.value.slice(
-                          0,
-                          LENGTHS.metaTitulo
-                        ),
-                      },
-                    })
-                  }
-                  maxLength={LENGTHS.metaTitulo}
-                />
-                <small className="text-gray-500">
-                  Sugerido {LENGTHS.metaTitulo} caracteres
-                </small>
+              {/* --- MULTIMEDIA --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Multimedia
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input md:col-span-2">
+                    <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">Miniatura del Blog*</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="miniatura-upload"
+                    />
+                    <label
+                      htmlFor="miniatura-upload"
+                      className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {formData.miniatura ? (
+                        <span className="text-teal-600 font-medium text-lg">
+                          {(formData.miniatura as any).name || "Imagen cargada"}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-teal-500 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          <span className="font-medium">Click aquí para subir miniatura principal</span>
+                          <span className="text-xs text-gray-400">JPG, PNG o WEBP (Max. 2MB)</span>
+                        </span>
+                      )}
+                    </label>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Título del video para YouTube*</label>
+                    <input
+                      type="text"
+                      name="video_titulo"
+                      value={formData.video_titulo}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.videoTitulo}
+                      required
+                    />
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">URL del video*</label>
+                    <input
+                      type="text"
+                      name="video_url"
+                      value={formData.video_url}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.videoUrl}
+                      required
+                      placeholder="https://youtube.com/..."
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="form-input">
-                <label className="font-medium">Meta descripción</label>
-                <input
-                  type="text"
-                  name="meta_descripcion"
-                  value={formData.etiqueta.meta_descripcion}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      etiqueta: {
-                        ...formData.etiqueta,
-                        meta_descripcion: e.target.value.slice(
-                          0,
-                          LENGTHS.metaDescripcion
-                        ),
-                      },
-                    })
-                  }
-                  maxLength={LENGTHS.metaDescripcion}
-                />
-                <small className="text-gray-500">
-                  Sugerido {LENGTHS.metaDescripcion} caracteres
-                </small>
-              </div>
-
-              <div className="form-input">
-                <label className="font-medium">Párrafo corto (100 palabras)*</label>
-                <textarea
-                  name="subtitulo1"
-                  value={formData.subtitulo1}
-                  onChange={handleChange}
-                  maxLength={LENGTHS.parrafo}
-                  required
-                  rows={3}
-                />
-                <small className="text-gray-500 text-end block">
-                  {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
-                </small>
-              </div>
-
-              <div className="form-input">
-                <label className="font-medium">Descripción (255 palabras)*</label>
-                <textarea
-                  name="subtitulo2"
-                  value={formData.subtitulo2}
-                  onChange={handleChange}
-                  maxLength={LENGTHS.descripcion}
-                  required
-                  rows={3}
-                />
-                <small className="text-gray-500 text-end block">
-                  {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
-                </small>
-              </div>
-
-              <div className="form-input">
-                <label className="font-medium">Título del video para YouTube*</label>
-                <input
-                  type="text"
-                  name="video_titulo"
-                  value={formData.video_titulo}
-                  onChange={handleChange}
-                  maxLength={LENGTHS.videoTitulo}
-                  required
-                />
-              </div>
-
-              <div className="form-input">
-                <label className="font-medium">URL del video*</label>
-                <input
-                  type="text"
-                  name="video_url"
-                  value={formData.video_url}
-                  onChange={handleChange}
-                  maxLength={LENGTHS.videoUrl}
-                  required
-                />
-              </div>
-
-              <div className="form-input">
-                <label className="font-medium">Relacionar con producto*</label>
-                <select
-                  name="producto_id"
-                  value={formData.producto_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Selecciona un producto</option>
-                  {productos.map((producto: any) => (
-                    <option key={producto.id} value={producto.id}>
-                      {producto.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-input">
-                <label className="font-medium block mb-2">Miniatura del Blog*</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="miniatura-upload"
-                />
-                <label
-                  htmlFor="miniatura-upload"
-                  className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 p-4 rounded-lg block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  {formData.miniatura ? (
-                    <span className="text-teal-600 font-medium">
-                      {(formData.miniatura as any).name || "Imagen cargada"}
-                    </span>
-                  ) : (
-                    <span className="text-gray-400 dark:text-gray-300">Click para subir miniatura</span>
-                  )}
-                </label>
+              {/* --- SEO --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  Optimización SEO
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Meta título</label>
+                    <input
+                      type="text"
+                      name="meta_titulo"
+                      value={formData.etiqueta.meta_titulo}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            meta_titulo: e.target.value.slice(
+                              0,
+                              LENGTHS.metaTitulo
+                            ),
+                          },
+                        })
+                      }
+                      maxLength={LENGTHS.metaTitulo}
+                    />
+                    <small className="text-gray-500 mt-1 block">
+                      Sugerido {LENGTHS.metaTitulo} caracteres
+                    </small>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Meta descripción</label>
+                    <input
+                      type="text"
+                      name="meta_descripcion"
+                      value={formData.etiqueta.meta_descripcion}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            meta_descripcion: e.target.value.slice(
+                              0,
+                              LENGTHS.metaDescripcion
+                            ),
+                          },
+                        })
+                      }
+                      maxLength={LENGTHS.metaDescripcion}
+                    />
+                    <small className="text-gray-500 mt-1 block">
+                      Sugerido {LENGTHS.metaDescripcion} caracteres
+                    </small>
+                  </div>
+                </div>
               </div>
 
               <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
