@@ -62,11 +62,17 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                {new Date(blog.created_at).toLocaleDateString("es-ES", {
-                  day: "2-digit",
-                  month: "long",
-                  year: "numeric",
-                })}
+                {(() => {
+                  const parts = blog.created_at.split(/[- :T]/);
+                  const year = parseInt(parts[0]);
+                  const month = parseInt(parts[1]) - 1;
+                  const day = parseInt(parts[2]);
+                  return new Date(year, month, day).toLocaleDateString("es-ES", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  });
+                })()}
               </p>
             )}
           </div>
