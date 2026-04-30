@@ -38,6 +38,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
   const [correo, setCorreo] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [productId, setProductId] = useState<number | null>(null);
 
   const lastScrollRef = useRef(0);
   const hasReachedBottomRef = useRef(false);
@@ -106,6 +107,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
                 const prodJson = await prodRes.json();
                 const product = prodJson.data || prodJson;
                 console.log("✅ Product data loaded:", product);
+                setProductId(product.id || null);
 
                 const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
                 const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
@@ -329,7 +331,20 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
       formData.append("name", submittedNombre);
       formData.append("email", submittedCorreo);
       formData.append("celular", `+51${submittedTelefono}`);
-      formData.append("source_id", origenCliente.INICIO);
+      
+      // Enviar origen y datos de producto si existen
+      if (isProductDetail) {
+        formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
+        
+        // Obtener link del pathname si no tenemos el ID
+        const parts = pathname.split("/").filter(Boolean);
+        const productLink = parts[parts.length - 1];
+        
+        if (productId) formData.append("producto_id", productId.toString());
+        if (productLink) formData.append("link", productLink);
+      } else {
+        formData.append("source_id", origenCliente.INICIO);
+      }
 
       const response = await fetch(getApiUrl(config.endpoints.popups.submit), {
         method: "POST",
