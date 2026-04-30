@@ -141,7 +141,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_url: blogToEdit.video_url || "",
         video_titulo: blogToEdit.video_titulo || "",
         producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
-        created_at: blogToEdit.created_at ? new Date(blogToEdit.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        created_at: blogToEdit.created_at ? blogToEdit.created_at.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
         miniatura: blogToEdit.miniatura || null,
         imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
           const raw = img.ruta_imagen || "";
