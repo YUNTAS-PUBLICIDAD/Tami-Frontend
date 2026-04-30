@@ -236,12 +236,13 @@ const BlogsTable = () => {
     // Helper para formatear la fecha
     const formatDate = (dateString?: string | null) => {
       if (!dateString) return "FECHA / HORA DE PUBLICACIÓN";
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
+      // Parse manual para evitar desfases por zona horaria
+      const parts = dateString.split(/[- :T]/);
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+      const hours = parts[3] || "00";
+      const minutes = parts[4] || "00";
       return `${day}-${month}-${year} / ${hours}:${minutes}`;
     };
 
