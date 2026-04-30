@@ -20,7 +20,6 @@ interface BlogPOST {
   video_url: string; // 255
   producto_id: number | string;
   created_at: string;
-  created_at: string;
   miniatura: File | null;
   imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
   etiqueta: {
@@ -92,7 +91,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     video_titulo: "",
     producto_id: "",
     created_at: new Date().toISOString().split('T')[0],
-    created_at: new Date().toISOString().split('T')[0],
     miniatura: null,
     imagenes: [
       { imagen: null, parrafo: "", text_alt: "" },
@@ -144,7 +142,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_titulo: blogToEdit.video_titulo || "",
         producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
         created_at: blogToEdit.created_at ? new Date(blogToEdit.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        created_at: blogToEdit.created_at ? new Date(blogToEdit.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         miniatura: blogToEdit.miniatura || null,
         imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
           const raw = img.ruta_imagen || "";
@@ -176,7 +173,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_url: "",
         video_titulo: "",
         producto_id: "",
-        created_at: new Date().toISOString().split('T')[0],
         created_at: new Date().toISOString().split('T')[0],
         miniatura: null,
         imagenes: [
@@ -211,16 +207,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
     if (name === "producto_id") {
       setFormData((prev) => ({ ...prev, producto_id: value }));
-      return;
-    }
-
-    if (name === "created_at") {
-      setFormData((prev) => ({ ...prev, created_at: value }));
-      return;
-    }
-
-    if (name === "created_at") {
-      setFormData((prev) => ({ ...prev, created_at: value }));
       return;
     }
 
@@ -441,7 +427,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       video_titulo: "",
       producto_id: "",
       created_at: new Date().toISOString().split('T')[0],
-      created_at: new Date().toISOString().split('T')[0],
       miniatura: null,
       imagenes: [
         { imagen: null, parrafo: "", text_alt: "" },
@@ -562,9 +547,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
       formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
       formDataToSend.append("producto_id", formData.producto_id.toString());
-      if (formData.created_at) {
-        formDataToSend.append("created_at", formData.created_at);
-      }
       if (formData.created_at) {
         formDataToSend.append("created_at", formData.created_at);
       }
@@ -787,140 +769,45 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     </select>
                   </div>
                 </div>
-                className="flex flex-col gap-6"
-            >
-                {/* --- INFORMACIÓN GENERAL --- */}
-                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    Información General
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">Título para web*</label>
-                      <input
-                        type="text"
-                        name="titulo"
-                        value={formData.titulo}
-                        onChange={handleChange}
-                        maxLength={LENGTHS.titulo}
-                        required
-                      />
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">Link Permanente*</label>
-                      <input
-                        type="text"
-                        name="link"
-                        value={formData.link}
-                        onChange={handleChange}
-                        maxLength={LENGTHS.titulo}
-                        required
-                      />
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">Fecha de Creación*</label>
-                      <input
-                        type="date"
-                        name="created_at"
-                        value={formData.created_at}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">Relacionar con producto*</label>
-                      <select
-                        name="producto_id"
-                        value={formData.producto_id}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Selecciona un producto</option>
-                        {productos.map((producto: any) => (
-                          <option key={producto.id} value={producto.id}>
-                            {producto.nombre}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+              </div>
+
+              {/* --- TEXTOS PRINCIPALES --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
+                  Textos Introductorios
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Párrafo corto (100 palabras)*</label>
+                    <textarea
+                      name="subtitulo1"
+                      value={formData.subtitulo1}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.parrafo}
+                      required
+                      rows={3}
+                    />
+                    <small className="text-gray-500 text-end block mt-1">
+                      {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
+                    </small>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Descripción (255 palabras)*</label>
+                    <textarea
+                      name="subtitulo2"
+                      value={formData.subtitulo2}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.descripcion}
+                      required
+                      rows={4}
+                    />
+                    <small className="text-gray-500 text-end block mt-1">
+                      {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
+                    </small>
                   </div>
                 </div>
-
-
-                {/* --- TEXTOS PRINCIPALES --- */}
-                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
-                    Textos Introductorios
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">Párrafo corto (100 palabras)*</label>
-                      <textarea
-                        name="subtitulo1"
-                        value={formData.subtitulo1}
-                        onChange={handleChange}
-                        maxLength={LENGTHS.parrafo}
-                        required
-                        rows={3}
-                      />
-                      <small className="text-gray-500 text-end block mt-1">
-                        {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
-                      </small>
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">Descripción (255 palabras)*</label>
-                      <textarea
-                        name="subtitulo2"
-                        value={formData.subtitulo2}
-                        onChange={handleChange}
-                        maxLength={LENGTHS.descripcion}
-                        required
-                        rows={4}
-                      />
-                      <small className="text-gray-500 text-end block mt-1">
-                        {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
-                      </small>
-                    </div>
-                  </div>
-                  {/* --- TEXTOS PRINCIPALES --- */}
-                  <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                    <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
-                      Textos Introductorios
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="form-input">
-                        <label className="font-medium text-gray-700 dark:text-gray-300">Párrafo corto (100 palabras)*</label>
-                        <textarea
-                          name="subtitulo1"
-                          value={formData.subtitulo1}
-                          onChange={handleChange}
-                          maxLength={LENGTHS.parrafo}
-                          required
-                          rows={3}
-                        />
-                        <small className="text-gray-500 text-end block mt-1">
-                          {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
-                        </small>
-                      </div>
-                      <div className="form-input">
-                        <label className="font-medium text-gray-700 dark:text-gray-300">Descripción (255 palabras)*</label>
-                        <textarea
-                          name="subtitulo2"
-                          value={formData.subtitulo2}
-                          onChange={handleChange}
-                          maxLength={LENGTHS.descripcion}
-                          required
-                          rows={4}
-                        />
-                        <small className="text-gray-500 text-end block mt-1">
-                          {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
-                        </small>
-                      </div>
-                    </div>
-                  </div>
+              </div>
 
                   {/* --- MULTIMEDIA --- */}
                   <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
