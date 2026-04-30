@@ -308,24 +308,16 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                         <!-- El contenido se inyecta desde Quill -->
                     </div>
 
-                    <!-- Archivos adjuntos -->
+                    <!-- Archivos adjuntos (ahora como imagen completa en el correo) -->
                     <div
                         id="previewEmailAttachementContainer"
-                        class="hidden pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3"
+                        class="hidden pt-4 text-center"
                     >
-                        <span
-                            class="text-[10px] font-bold text-gray-400 uppercase tracking-wider"
-                            >1 ARCHIVO ADJUNTO</span
-                        >
                         <div
-                            class="w-48 h-32 rounded-xl border border-gray-200 dark:border-gray-700 p-2 bg-gray-50 dark:bg-gray-800 group cursor-pointer overflow-hidden"
+                            id="previewEmailImageThumb"
+                            class="w-full flex justify-center"
                         >
-                            <div
-                                id="previewEmailImageThumb"
-                                class="w-full h-full rounded-lg overflow-hidden relative"
-                            >
-                                <!-- Imagen adjunta -->
-                            </div>
+                            <!-- Imagen adjunta -->
                         </div>
                     </div>
 

@@ -10,6 +10,7 @@ import { slugify } from "../../../utils/slugify";
 import imagenEstilo1 from "@images/popup/estilo1.webp";
 import imagenEstilo2 from "@images/popup/estilo2.webp";
 import imagenEstilo3 from "@images/popup/estilo3.webp";
+import EmailEditor from "../popups/EmailEditor";
 
 type Props = {
   onProductAdded?: () => void;
@@ -223,6 +224,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
     // Asunto del Email obligatorio
     if (!formData.asunto?.trim()) {
       newErrors.asunto = "El asunto del email es obligatorio.";
+    }
+
+    // Mensaje de Email obligatorio
+    if (!formData.mensaje_email?.trim()) {
+      newErrors.mensaje_email = "El mensaje del email es obligatorio.";
     }
 
     // Imagen de WhatsApp obligatoria
@@ -466,6 +472,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
 
       formDataToSend.append('asunto', formData.asunto || '');
+      formDataToSend.append('mensaje_email', formData.mensaje_email || '');
 
       // Agregar imagen Whatsapp y texto alt Whatsapp al FormData
       if (formData.imagen_whatsapp) {
@@ -953,8 +960,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
                 {/* Imagen para Email */}
                 <div className="card mt-6">
                   <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Correo Electrónico</h5>
-                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                    <p className="font-medium">ℹ️ Esta imagen se usará únicamente para el envío de correos electrónicos del producto.</p>
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
+                    <p className="font-medium mb-1">ℹ️ Recomendaciones para la imagen del correo:</p>
+                    <ul className="list-disc list-outside pl-4 space-y-1">
+                      <li className="break-words">Esta imagen será la principal en los correos automáticos enviados a los clientes interesados en este producto.</li>
+                      <li className="break-words">Resolución ideal: <strong>600×400 px</strong> a <strong>800×800 px</strong> (formato horizontal o cuadrado).</li>
+                      <li className="break-words">Peso máximo: <strong>2MB</strong> para garantizar la carga rápida en los correos.</li>
+                      <li className="break-words">Formatos admitidos: <strong>WEBP, JPG, PNG</strong>.</li>
+                    </ul>
                   </div>
                   <div className="form-input">
                     <label>Imagen Email:</label>
@@ -994,7 +1007,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     />
                     {errors.asunto && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.asunto}</p>}
                   </div>
-                  <div className="form-input">
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mensaje de Correo
+                    </label>
+                    <div ref={el => { fieldRefs.current.mensaje_email = el; }}>
+                      <EmailEditor
+                        defaultValue={formData.mensaje_email || ""}
+                        onChangeHtml={(html) => {
+                          setFormData(prev => ({ ...prev, mensaje_email: html }));
+                          if (errors.mensaje_email) setErrors(prev => { const n = { ...prev }; delete n.mensaje_email; return n; });
+                        }}
+                      />
+                      {errors.mensaje_email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.mensaje_email}</p>}
+                    </div>
+                  </div>
+                  <div className="form-input mt-4">
                     <label>URL del Video (opcional):</label>
                     <input
                       type="url"
@@ -1009,8 +1037,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
                 {/* Imagen para Whatsaap */}
                 <div className="card mt-6">
                   <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Whatsapp</h5>
-                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
-                    <p className="font-medium">ℹ️ Esta imagen se usará únicamente en el Whatsapp del producto.</p>
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
+                    <p className="font-medium mb-1">ℹ️ Recomendaciones para la imagen de WhatsApp:</p>
+                    <ul className="list-disc list-outside pl-4 space-y-1">
+                      <li className="break-words">Esta imagen será la que se mostrará en miniatura al enviar la información o cotización por WhatsApp.</li>
+                      <li className="break-words">Resolución ideal: <strong>800×800 px</strong> (formato cuadrado recomendado).</li>
+                      <li className="break-words">Peso máximo: <strong>2MB</strong>.</li>
+                      <li className="break-words">Formatos admitidos: <strong>WEBP, JPG, PNG</strong>.</li>
+                    </ul>
                   </div>
                   <div className="form-input">
                     <label>Imagen Whatsapp:</label>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaTrash, FaEdit, FaPlus, FaEye, FaBookOpen, FaSyncAlt, FaDownload, FaChevronDown, FaFilePdf, FaFileExcel, FaFileCsv } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import AddBlogModal from "./AddBlogModel.tsx";
+import AddBlogModal from "./AddBlogModel";
 import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
 
@@ -24,6 +24,7 @@ interface Blog {
   video_titulo?: string;
   created_at?: string | null;
   parrafos: { parrafo: string }[];
+  nombre_producto?: string;
 }
 
 interface BlogPreviewProps {
@@ -232,57 +233,111 @@ const BlogsTable = () => {
   const BlogPreview: React.FC<BlogPreviewProps> = ({ blog, onClose }) => {
     if (!blog) return null;
 
+    // Helper para formatear la fecha
+    const formatDate = (dateString?: string | null) => {
+      if (!dateString) return "FECHA / HORA DE PUBLICACIÓN";
+      // Parse manual para evitar desfases por zona horaria
+      const parts = dateString.split(/[- :T]/);
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+      const hours = parts[3] || "00";
+      const minutes = parts[4] || "00";
+      return `${day}-${month}-${year} / ${hours}:${minutes}`;
+    };
+
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="relative">
-            <img
-              src={`${getApiUrl("")}${blog.imagenes[0]?.ruta_imagen}`}
-              alt={blog.titulo}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-80 object-cover mx-auto"
-            />
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-8">
+        <div className="relative w-full max-w-6xl max-h-[95vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-b from-[#041019] to-[#003E56]">
+          {/* Header/Close button area */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-700/50 bg-black/30">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              <FaEye className="text-teal-400" />
+              Vista Previa Web
+            </h3>
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg cursor-pointer"
+              className="text-white hover:text-red-400 transition-colors bg-gray-800 hover:bg-gray-700 rounded-full p-2"
+              title="Cerrar vista previa"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
 
-          <div className="p-6">
-            <h2 className="text-3xl font-bold text-teal-700 mb-2">{blog.titulo}</h2>
-            <p className="text-gray-500 mb-4">
-              {blog.created_at ? new Date(blog.created_at).toLocaleDateString() : 'Fecha no disponible'}
-            </p>
+          {/* Scrollable content simulating the website */}
+          <div className="overflow-y-auto flex-1 p-4 md:p-10 custom-scrollbar space-y-10">
 
-            <div className="prose max-w-none">
-              <h3 className="text-xl font-semibold text-teal-600 mb-2">{blog.subtitulo1}</h3>
+            {/* --- Vista Previa del Artículo Completo --- */}
+            <div>
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-6 md:p-12 relative mx-auto max-w-5xl">
 
-              <div className="my-6">
-                <h4 className="text-lg font-medium text-teal-600 mb-2">Acerca de este blog</h4>
-                <p className="text-gray-700">{blog.subtitulo2}</p>
-              </div>
+                {/* Title & Subtitle */}
+                <div className="mb-6 md:mb-10 text-center md:text-left">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-[#00B6FF] mb-3 break-words font-garet">
+                    {blog.titulo.toUpperCase()}
+                  </h2>
+                  {blog.subtitulo1 && (
+                    <h3 className="text-lg md:text-xl font-bold text-black mb-3 break-words">
+                      {blog.subtitulo1.toUpperCase()}
+                    </h3>
+                  )}
+                  {blog.subtitulo2 && (
+                    <p className="text-base md:text-lg font-semibold text-black break-words">
+                      {blog.subtitulo2}
+                    </p>
+                  )}
+                </div>
 
-              {blog.parrafos?.map((p, i) => (
-                <p key={i} className="text-gray-700 mb-4">{p.parrafo}</p>
-              ))}
-
-              {blog.video_id?.trim() && (
-                <div className="my-6">
-                  <h4 className="text-lg font-medium text-teal-600 mb-2">{blog.video_titulo || 'Video relacionado'}</h4>
-                  <div className="aspect-w-16 aspect-h-9">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
-                      className="w-full h-64 rounded-lg"
-                      allowFullScreen
-                    ></iframe>
+                {/* Date */}
+                <div className="flex justify-center md:justify-start mb-8 md:mb-12">
+                  <div className="inline-block px-4 md:px-6 py-2 bg-[#00B6FF] text-white text-sm md:text-base font-semibold rounded-full shadow-md">
+                    {formatDate(blog.created_at)}
                   </div>
                 </div>
-              )}
+
+                {/* Content Sections */}
+                <div className="space-y-8 md:space-y-16">
+                  {blog.parrafos?.map((p, i) => (
+                    <section key={i} className="mb-8 md:mb-12">
+                      <div className={`flex flex-col md:flex-row ${i % 2 === 1 ? "md:flex-row-reverse" : ""} gap-4 md:gap-8 items-center`}>
+                        <div className="w-full md:w-1/2 flex flex-col justify-center">
+                          <article className="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
+                            <p className="text-sm md:text-base whitespace-pre-line break-words">{p.parrafo}</p>
+                          </article>
+                        </div>
+
+                        {blog.imagenes?.[i]?.ruta_imagen && (
+                          <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
+                            <img
+                              src={`${getApiUrl("")}${blog.imagenes[i].ruta_imagen}`}
+                              alt={blog.titulo}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  ))}
+
+                  {blog.video_id?.trim() && (
+                    <section className="rounded-lg md:rounded-xl shadow-md py-4 md:py-8 px-4 md:px-12 bg-gray-50 mt-12 border border-gray-100">
+                      <h1 className="text-lg md:text-xl lg:text-2xl text-[#00B6FF] font-bold mb-4 md:mb-6 text-center md:text-left break-words">
+                        {blog.video_titulo || 'Video relacionado'}
+                      </h1>
+                      <div className="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
+                          className="w-full h-full"
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                    </section>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -313,7 +368,7 @@ const BlogsTable = () => {
                 <button
                   type="button"
                   onClick={() => setIsExportOpen(!isExportOpen)}
-                  className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 cursor-pointer"
+                  className="flex items-center gap-2 bg-teal-50 dark:bg-white text-teal-700 dark:text-teal-600 hover:bg-teal-100 dark:hover:bg-teal-50 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 dark:border-white cursor-pointer"
                 >
                   <FaDownload className="h-4 w-4" />
                   <span>Exportar</span>
@@ -321,25 +376,25 @@ const BlogsTable = () => {
                 </button>
 
                 {isExportOpen && (
-                  <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
+                  <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
                     <div className="py-1">
                       <button
                         onClick={exportToPDF}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFilePdf className="mr-3 h-5 w-5 text-red-500" />
                         PDF
                       </button>
                       <button
                         onClick={exportToExcel}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFileExcel className="mr-3 h-5 w-5 text-green-600" />
                         Excel
                       </button>
                       <button
                         onClick={exportToCSV}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFileCsv className="mr-3 h-5 w-5 text-blue-500" />
                         CSV
@@ -373,7 +428,7 @@ const BlogsTable = () => {
               <button
                 onClick={fetchData}
                 disabled={isLoading}
-                className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm cursor-pointer"
+                className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm cursor-pointer"
               >
                 <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                 {isLoading ? "Cargando..." : "Actualizar Catálogo"}
@@ -381,8 +436,8 @@ const BlogsTable = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-            <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+          <div className="flex items-center justify-between bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                 {filteredData.length}
               </span>

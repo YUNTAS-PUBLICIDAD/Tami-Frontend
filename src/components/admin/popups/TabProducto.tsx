@@ -32,9 +32,17 @@ const TabProducto: React.FC = () => {
             setPreviews({});
         };
 
+        const handleExternalSave = () => {
+            handleSave();
+        };
+
         window.addEventListener("reset-product-selection", handleReset);
-        return () => window.removeEventListener("reset-product-selection", handleReset);
-    }, []);
+        window.addEventListener("request-save-product-popup", handleExternalSave);
+        return () => {
+            window.removeEventListener("reset-product-selection", handleReset);
+            window.removeEventListener("request-save-product-popup", handleExternalSave);
+        };
+    }, [selectedProductId, formData, isSaving]); // Added dependencies to ensure handleSave has latest state
 
     const getFullImageUrl = (url: string) => {
         if (!url) return "";
@@ -312,8 +320,8 @@ const TabProducto: React.FC = () => {
                 <div className="space-y-6 animate-fadeIn">
                     {/* Imagen 1 */}
                     <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Imagen Principal del Pop-up</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Imagen Principal del Pop-up</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                             Sube una imagen promocional. Recomendado: <strong>448x550px</strong>, maximo <strong>2MB</strong>, formato <strong>WebP</strong>.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
@@ -359,9 +367,9 @@ const TabProducto: React.FC = () => {
                     </div>
 
                     {/* Imagen 2 */}
-                    <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Imagen Secundaria / Fondo</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Imagen Secundaria / Fondo</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                             Imagen de fondo del popup. Recomendado: <strong>448x550px</strong>, maximo <strong>2MB</strong>, formato <strong>WebP</strong>.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
@@ -407,25 +415,25 @@ const TabProducto: React.FC = () => {
                     </div>
 
                     {/* Mensaje del Botón */}
-                    <div className="bg-gray-50 dark:bg-[#1e293b] p-6 rounded-2xl shadow-xl space-y-3 border border-gray-200 dark:border-gray-700/50">
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight">Mensaje del Botón</h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">Escribe el texto que aparecerá en el botón del popup.</p>
+                    <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Mensaje del Botón</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Escribe el texto que aparecerá en el botón del popup.</p>
                         <input 
                             type="text"
                             value={formData.etiqueta.popup_button_text}
                             onChange={(e) => handleFieldChange("popup_button_text", e.target.value, true)}
-                            className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800/50 text-gray-800 dark:text-white font-bold text-base focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-inner"
+                            className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
                             placeholder="!REGISTRARME!"
                         />
                     </div>
 
                     {/* Colores */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                         {/* Color del Botón */}
-                        <div className="p-5 rounded-2xl bg-gray-50 dark:bg-[#1e293b] shadow-xl flex flex-col items-center sm:items-start border border-gray-200 dark:border-gray-700/50">
-                            <span className="block text-sm font-bold text-gray-700 dark:text-white mb-4 uppercase tracking-widest opacity-90 dark:opacity-80">Color del Botón</span>
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                            <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Botón</span>
                             <div className="flex items-center gap-3">
-                                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 dark:border-white/20 shadow-2xl cursor-pointer hover:scale-105 transition-transform shrink-0">
+                                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
                                     <input 
                                         type="color" 
                                         value={formData.etiqueta.popup_button_color}
@@ -434,17 +442,17 @@ const TabProducto: React.FC = () => {
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Seleccionar</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-500">fondo</span>
+                                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                                    <span className="text-xs text-gray-400">fondo</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Color del Texto */}
-                        <div className="p-5 rounded-2xl bg-gray-50 dark:bg-[#1e293b] shadow-xl flex flex-col items-center sm:items-start border border-gray-200 dark:border-gray-700/50">
-                            <span className="block text-sm font-bold text-gray-700 dark:text-white mb-4 uppercase tracking-widest opacity-90 dark:opacity-80">Color del Texto</span>
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                            <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Texto</span>
                             <div className="flex items-center gap-3">
-                                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 dark:border-white/20 shadow-2xl cursor-pointer hover:scale-105 transition-transform shrink-0">
+                                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
                                     <input 
                                         type="color" 
                                         value={formData.etiqueta.popup_text_color}
@@ -453,27 +461,11 @@ const TabProducto: React.FC = () => {
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Seleccionar</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-500">texto</span>
+                                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
+                                    <span className="text-xs text-gray-400">texto</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Botón Guardar */}
-                    <div className="flex justify-end pt-4">
-                        <button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50"
-                        >
-                            {isSaving ? "Guardando..." : "Guardar Configuración"}
-                            {!isSaving && (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                            )}
-                        </button>
                     </div>
                 </div>
             )}
@@ -487,7 +479,7 @@ const TabProducto: React.FC = () => {
                 </div>
             )}
         </div>
-    );
+    );  
 };
 
 export default TabProducto;
