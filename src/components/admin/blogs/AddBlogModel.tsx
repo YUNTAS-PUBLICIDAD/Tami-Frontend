@@ -830,14 +830,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       {formData.miniatura ? (
-                        <span className="text-teal-600 font-medium text-lg">
-                          {(formData.miniatura as any).name || "Imagen cargada"}
+                        <span className="text-teal-600 font-medium text-lg flex flex-col items-center justify-center gap-1">
+                          <span>{(formData.miniatura as any).name || "Imagen cargada"}</span>
+                          <span className="text-sm font-normal text-teal-600/80 mt-2">
+                            Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).
+                          </span>
                         </span>
                       ) : (
                         <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-teal-500 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                           <span className="font-medium">Click aquí para subir miniatura principal</span>
-                          <span className="text-xs text-gray-400">JPG, PNG o WEBP (Max. 2MB)</span>
+                          <span className="text-xs text-gray-400">Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).</span>
                         </span>
                       )}
                     </label>

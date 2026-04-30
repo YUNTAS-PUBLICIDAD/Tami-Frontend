@@ -268,56 +268,8 @@ const BlogsTable = () => {
           {/* Scrollable content simulating the website */}
           <div className="overflow-y-auto flex-1 p-4 md:p-10 custom-scrollbar space-y-10">
             
-            {/* --- Vista Previa de la Tarjeta (Catálogo) --- */}
-            <div>
-              <h4 className="text-white text-lg mb-4 font-semibold flex items-center gap-2">
-                Vista en la lista de blogs:
-              </h4>
-              <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-sm max-w-5xl mx-auto block group">
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-1/3 w-full p-4 md:p-6 flex items-center justify-center">
-                    <figure className="w-full h-48 md:h-56 bg-gray-200 rounded-lg overflow-hidden">
-                      {blog.imagenes?.[0]?.ruta_imagen ? (
-                        <img 
-                          src={`${getApiUrl("")}${blog.imagenes[0].ruta_imagen}`} 
-                          alt={blog.titulo}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                          Sin imagen
-                        </div>
-                      )}
-                    </figure>
-                  </div>
-                  <div className="md:w-2/3 w-full p-6 md:p-8 flex flex-col justify-center min-w-0">
-                    {blog.nombre_producto && (
-                      <div className="mb-4">
-                        <span className="inline-block bg-teal-700 text-white text-sm font-medium px-4 py-1.5 rounded-md break-all">
-                          {blog.nombre_producto}
-                        </span>
-                      </div>
-                    )}
-                    <h2 className="text-teal-700 text-xl md:text-2xl font-bold mb-3 leading-tight break-all">
-                      {blog.subtitulo1}
-                    </h2>
-                    <p className="text-gray-700 text-base leading-relaxed mb-4 break-all">
-                      {blog.subtitulo2 || blog.parrafos?.[0]?.parrafo || ""}
-                    </p>
-                    <div className="text-gray-500 text-sm flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {blog.created_at ? new Date(blog.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" }) : 'Fecha no disponible'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* --- Vista Previa del Artículo Completo --- */}
             <div>
-              <h4 className="text-white text-lg mb-4 font-semibold">Vista dentro del artículo:</h4>
               <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-6 md:p-12 relative mx-auto max-w-5xl">
               
               {/* Title & Subtitle */}
@@ -415,7 +367,7 @@ const BlogsTable = () => {
                 <button
                   type="button"
                   onClick={() => setIsExportOpen(!isExportOpen)}
-                  className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 cursor-pointer"
+                  className="flex items-center gap-2 bg-teal-50 dark:bg-white text-teal-700 dark:text-teal-600 hover:bg-teal-100 dark:hover:bg-teal-50 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 dark:border-white cursor-pointer"
                 >
                   <FaDownload className="h-4 w-4" />
                   <span>Exportar</span>
@@ -423,25 +375,25 @@ const BlogsTable = () => {
                 </button>
 
                 {isExportOpen && (
-                  <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
+                  <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
                     <div className="py-1">
                       <button
                         onClick={exportToPDF}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFilePdf className="mr-3 h-5 w-5 text-red-500" />
                         PDF
                       </button>
                       <button
                         onClick={exportToExcel}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFileExcel className="mr-3 h-5 w-5 text-green-600" />
                         Excel
                       </button>
                       <button
                         onClick={exportToCSV}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFileCsv className="mr-3 h-5 w-5 text-blue-500" />
                         CSV
@@ -475,7 +427,7 @@ const BlogsTable = () => {
               <button
                 onClick={fetchData}
                 disabled={isLoading}
-                className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm cursor-pointer"
+                className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm cursor-pointer"
               >
                 <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                 {isLoading ? "Cargando..." : "Actualizar Catálogo"}
@@ -483,8 +435,8 @@ const BlogsTable = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-            <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+          <div className="flex items-center justify-between bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                 {filteredData.length}
               </span>
