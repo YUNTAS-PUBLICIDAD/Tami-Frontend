@@ -41,6 +41,7 @@ export interface ProductFormularioPOST {
   texto_alt_popup2?: string;
   imagen_email?: File | string | null;
   asunto: string; 
+  mensaje_email: string;
   imagen_whatsapp?: File |string| null;
   texto_alt_whatsapp?: string;
   video_url?: string;
@@ -68,6 +69,7 @@ export interface ImagenBack {
   asunto?: string; 
   tipo?: string; // 'galeria', 'popup', 'email'
   whatsapp_mensaje?: string;
+  email_mensaje?: string;
 }
 
 // Usado para el formulario de creación/edición
@@ -175,6 +177,7 @@ export const defaultValuesProduct: ProductFormularioPOST = {
   texto_alt_popup2: "",
   imagen_email: null,
   asunto: "",
+  mensaje_email: "",
   imagen_whatsapp: null,
   texto_alt_whatsapp: "",
   video_url: ""
