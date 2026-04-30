@@ -32,9 +32,17 @@ const TabProducto: React.FC = () => {
             setPreviews({});
         };
 
+        const handleExternalSave = () => {
+            handleSave();
+        };
+
         window.addEventListener("reset-product-selection", handleReset);
-        return () => window.removeEventListener("reset-product-selection", handleReset);
-    }, []);
+        window.addEventListener("request-save-product-popup", handleExternalSave);
+        return () => {
+            window.removeEventListener("reset-product-selection", handleReset);
+            window.removeEventListener("request-save-product-popup", handleExternalSave);
+        };
+    }, [selectedProductId, formData, isSaving]); // Added dependencies to ensure handleSave has latest state
 
     const getFullImageUrl = (url: string) => {
         if (!url) return "";
@@ -459,22 +467,6 @@ const TabProducto: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Botón Guardar */}
-                    <div className="flex justify-end pt-4">
-                        <button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50"
-                        >
-                            {isSaving ? "Guardando..." : "Guardar Configuración"}
-                            {!isSaving && (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
                 </div>
             )}
 
@@ -487,7 +479,7 @@ const TabProducto: React.FC = () => {
                 </div>
             )}
         </div>
-    );
+    );  
 };
 
 export default TabProducto;

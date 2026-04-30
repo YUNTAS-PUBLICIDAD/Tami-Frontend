@@ -725,6 +725,11 @@ export function initPopupManager() {
         setStatus("Guardando cambios...", "loading");
 
         try {
+            // If we are on the Product tab, trigger the product-specific save logic
+            if (sectionProducto && !sectionProducto.classList.contains("hidden")) {
+                window.dispatchEvent(new CustomEvent("request-save-product-popup"));
+            }
+
             const bgColor = btnBgColorInput?.value || "#14b8a6";
             const textColor = btnTextColorInput?.value || "#ffffff";
             const delay = parseInt(popupInicioDelayInput?.value || "60");
