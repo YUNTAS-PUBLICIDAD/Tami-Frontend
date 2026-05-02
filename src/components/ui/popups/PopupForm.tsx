@@ -80,31 +80,19 @@ const PopupForm = ({
             className={`${isPreview ? (previewMode === "mobile" ? "flex" : "hidden") : "flex sm:hidden"} absolute inset-0 flex-col bg-white overflow-hidden`}
           >
             <div className="h-1/2 w-full relative overflow-hidden">
-              {settings?.popup_mobile_image_url ? (
-                <img
-                  src={settings.popup_mobile_image_url}
-                  alt="Imagen Móvil 1"
-                  className="w-full h-full object-cover select-none"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-black/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
-                  [IMAGEN MÓVIL 1]
-                </div>
-              )}
+              <img
+                src={settings?.popup_mobile_image_url || asesoriaImg.src}
+                alt="Imagen Móvil 1"
+                className="w-full h-full object-cover select-none"
+              />
             </div>
 
             <div className="flex-1 w-full relative overflow-hidden -mt-1">
-              {settings?.popup_mobile_image2_url ? (
-                <img
-                  src={settings.popup_mobile_image2_url}
-                  alt="Imagen Móvil 2"
-                  className="w-full h-full object-cover select-none"
-                />
-              ) : (
-                <div className="w-full h-full flex items-start justify-center pt-10 text-black/20 text-2xl font-black uppercase tracking-widest rotate-[-15deg] select-none text-center px-4">
-                  [IMAGEN MÓVIL 2]
-                </div>
-              )}
+              <img
+                src={settings?.popup_mobile_image2_url || asesoriaImg.src}
+                alt="Imagen Móvil 2"
+                className="w-full h-full object-cover select-none"
+              />
             </div>
           </div>
 

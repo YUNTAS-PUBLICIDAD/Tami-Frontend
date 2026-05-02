@@ -353,10 +353,9 @@ const { link = "" } = Astro.props as ModalProps;
     }
   }
 
-  /**
-   * Actualiza la imagen del modal popup desde la BD.
-   * Prioridad: imagen popup > primera imagen galería > default
-   */
+  // Imagen por defecto (industrial/fábrica)
+  const DEFAULT_IMAGE = "/images/popup/default.webp";
+
   async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
     const modalImg = document.getElementById(
@@ -384,64 +383,71 @@ const { link = "" } = Astro.props as ModalProps;
           const result = await response.json();
           window.__detalleProducto = result.data || result;
         }
-      } catch (error) {
-        // Usar imagen default
-      }
+      } catch (error) {}
     }
 
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
+      // Detección más inclusiva (celulares y tablets)
+      const isMobileDevice = window.innerWidth < 1024 || window.matchMedia("(max-width: 1023px)").matches;
 
-      // Buscar imagen con tipo 'popup'
-      const imagenPopup = producto.producto_imagenes?.find(
-        (img: any) => img.tipo === "popup",
-      );
-      const imagenPopup2 = producto.producto_imagenes?.find((img: any) => {
-        const tipo = (img?.tipo || "").toLowerCase();
-        return tipo === "popup2" || tipo === "popup_2";
-      });
+      // Buscar tipos de imágenes en la colección completa
+      const allImages = producto.producto_imagenes || producto.imagenes || [];
+      const imgPopup = allImages.find((img: any) => img.tipo === "popup");
+      const imgPopup2 = allImages.find((img: any) => img.tipo === "popup2" || img.tipo === "popup_2");
+      const imgMobile = allImages.find((img: any) => img.tipo === "popup_mobile");
+      const imgMobile2 = allImages.find((img: any) => img.tipo === "popup_mobile2");
 
-      if (imagenPopup?.url_imagen) {
-        imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
-        imagenAlt =
-          imagenPopup.texto_alt_SEO || producto.nombre || "Imagen del producto";
-      } else if (producto.imagenes && producto.imagenes.length > 0) {
-        // Fallback: primera imagen de galería
-        imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
-        imagenAlt =
-          producto.imagenes[0].texto_alt_SEO ||
-          producto.nombre ||
-          "Imagen del producto";
-      }
+      // Imagen de respaldo profesional para productos
+      const FALLBACK = "/images/hero/impulso-negocios-tecnologia.webp";
 
-      if (imagenPopup2?.url_imagen) {
-        imagen2 = `${config.apiUrl}${imagenPopup2.url_imagen}`;
-        imagenAlt2 =
-          imagenPopup2.texto_alt_SEO ||
-          producto.nombre ||
-          "Imagen de fondo del formulario";
+      if (isMobileDevice) {
+        // MODO MÓVIL: Prioridad absoluta a imágenes móviles o fallback
+        if (imgMobile?.url_imagen) {
+          imagen = `${config.apiUrl}${imgMobile.url_imagen}`;
+          imagenAlt = imgMobile.texto_alt_SEO || producto.nombre;
+        } else {
+          imagen = FALLBACK;
+          imagenAlt = "Diseño industrial Tami";
+        }
+
+        if (imgMobile2?.url_imagen) {
+          imagen2 = `${config.apiUrl}${imgMobile2.url_imagen}`;
+          imagenAlt2 = imgMobile2.texto_alt_SEO || producto.nombre;
+        } else {
+          imagen2 = FALLBACK;
+          imagenAlt2 = "Diseño industrial Tami";
+        }
       } else {
-        imagen2 = imagen;
-        imagenAlt2 = imagenAlt;
+        // MODO ESCRITORIO
+        if (imgPopup?.url_imagen) {
+          imagen = `${config.apiUrl}${imgPopup.url_imagen}`;
+          imagenAlt = imgPopup.texto_alt_SEO || producto.nombre;
+        } else if (producto.imagenes?.length > 0) {
+          imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
+          imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
+        }
+
+        if (imgPopup2?.url_imagen) {
+          imagen2 = `${config.apiUrl}${imgPopup2.url_imagen}`;
+          imagenAlt2 = imgPopup2.texto_alt_SEO || producto.nombre;
+        } else {
+          imagen2 = imagen;
+          imagenAlt2 = imagenAlt;
+        }
       }
     }
 
     if (modalImg) {
       modalImg.src = imagen;
       modalImg.alt = imagenAlt;
-      modalImg.onerror = function () {
-        modalImg.src = DEFAULT_IMAGE;
-        modalImg.alt = "Imagen por defecto";
-      };
+      modalImg.onerror = () => { modalImg.src = DEFAULT_IMAGE; };
     }
 
     if (modalImg2) {
       modalImg2.src = imagen2;
       modalImg2.alt = imagenAlt2;
-      modalImg2.onerror = function () {
-        modalImg2.src = DEFAULT_IMAGE;
-        modalImg2.alt = "Imagen por defecto";
-      };
+      modalImg2.onerror = () => { modalImg2.src = DEFAULT_IMAGE; };
     }
   }
 

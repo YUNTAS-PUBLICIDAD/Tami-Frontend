@@ -70,12 +70,23 @@ const TabProducto: React.FC = () => {
                 return tipo === "popup2" || tipo === "popup_2";
             });
 
+            const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
+            const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
+
             const initialData = {
                 ...product, // Store ALL product fields
                 imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
                 texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
                 imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
                 texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
+                imagen_popup_mobile: imagenPopupMobile ? getFullImageUrl(imagenPopupMobile.url_imagen) : null,
+                texto_alt_popup_mobile: imagenPopupMobile?.texto_alt_SEO || "",
+                imagen_popup_mobile2: imagenPopupMobile2 ? getFullImageUrl(imagenPopupMobile2.url_imagen) : null,
+                texto_alt_popup_mobile2: imagenPopupMobile2?.texto_alt_SEO || "",
+                delete_imagen_popup: 0,
+                delete_imagen_popup2: 0,
+                delete_imagen_popup_mobile: 0,
+                delete_imagen_popup_mobile2: 0,
                 etiqueta: {
                     ...product.etiqueta,
                     popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
@@ -102,8 +113,8 @@ const TabProducto: React.FC = () => {
             button_bg_color: data.etiqueta.popup_button_color,
             button_text_color: data.etiqueta.popup_text_color,
             button_text: data.etiqueta.popup_button_text,
-            popup_mobile_image_url: overrides.imagen_popup || previews.imagen_popup || data.imagen_popup,
-            popup_mobile_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2
+            popup_mobile_image_url: overrides.imagen_popup_mobile !== undefined ? overrides.imagen_popup_mobile : (previews.imagen_popup_mobile || data.imagen_popup_mobile),
+            popup_mobile_image2_url: overrides.imagen_popup_mobile2 !== undefined ? overrides.imagen_popup_mobile2 : (previews.imagen_popup_mobile2 || data.imagen_popup_mobile2)
         };
         
         // Final check: if any of these are still File objects, we don't send them
@@ -136,6 +147,24 @@ const TabProducto: React.FC = () => {
         });
     };
 
+    const handleClearImage = (field: string) => {
+        setPreviews(prev => {
+            const newPreviews = { ...prev };
+            delete newPreviews[field];
+            return newPreviews;
+        });
+        
+        setFormData((prev: any) => {
+            const newData = { 
+                ...prev, 
+                [field]: null,
+                [`delete_${field}`]: 1 
+            };
+            syncPreview(newData, { [field]: null });
+            return newData;
+        });
+    };
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -145,7 +174,11 @@ const TabProducto: React.FC = () => {
                 setPreviews(prev => ({ ...prev, [field]: url }));
                 
                 setFormData((prev: any) => {
-                    const newData = { ...prev, [field]: file };
+                    const newData = { 
+                        ...prev, 
+                        [field]: file,
+                        [`delete_${field}`]: 0 
+                    };
                     // We pass the base64 URL as an override to ensure the preview uses it instead of the File
                     syncPreview(newData, { [field]: url });
                     return newData;
@@ -206,7 +239,31 @@ const TabProducto: React.FC = () => {
       formDataToSend.append("popup_image2", formData.imagen_popup2); // Alias
     }
     formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2 || "");
-        formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || "");
+    formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || "");
+
+    // Mobile Images
+    if (formData.imagen_popup_mobile instanceof File) {
+      formDataToSend.append("imagen_popup_mobile", formData.imagen_popup_mobile);
+    } else if (formData.delete_imagen_popup_mobile === 1) {
+      formDataToSend.append("delete_imagen_popup_mobile", "1");
+    }
+    formDataToSend.append("texto_alt_popup_mobile", formData.texto_alt_popup_mobile || "");
+
+    if (formData.imagen_popup_mobile2 instanceof File) {
+      formDataToSend.append("imagen_popup_mobile2", formData.imagen_popup_mobile2);
+    } else if (formData.delete_imagen_popup_mobile2 === 1) {
+      formDataToSend.append("delete_imagen_popup_mobile2", "1");
+    }
+    formDataToSend.append("texto_alt_popup_mobile2", formData.texto_alt_popup_mobile2 || "");
+
+    // Deletion flags for Desktop images as well
+    if (!(formData.imagen_popup instanceof File) && formData.delete_imagen_popup === 1) {
+        formDataToSend.append("delete_imagen_popup", "1");
+    }
+    if (!(formData.imagen_popup2 instanceof File) && formData.delete_imagen_popup2 === 1) {
+        formDataToSend.append("delete_imagen_popup2", "1");
+        formDataToSend.append("delete_imagen_popup_2", "1");
+    }
 
     // Button text and colors
     formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta?.meta_titulo || "");
@@ -320,9 +377,9 @@ const TabProducto: React.FC = () => {
                 <div className="space-y-6 animate-fadeIn">
                     {/* Imagen 1 */}
                     <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Imagen Principal del Pop-up</h3>
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                            Sube una imagen promocional. Recomendado: <strong>448x550px</strong>, maximo <strong>2MB</strong>, formato <strong>WebP</strong>.
+                            Sube una imagen promocional para tu popup. Resolución recomendada: <strong>448x550px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
                             <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -341,16 +398,30 @@ const TabProducto: React.FC = () => {
                                         onChange={(e) => handleFileChange(e, "imagen_popup")}
                                         className="hidden"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => document.getElementById('input_imagen_popup')?.click()}
-                                        className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
-                                    >
-                                        Seleccionar Imagen
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                        </svg>
-                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('input_imagen_popup')?.click()}
+                                            className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
+                                        >
+                                            Seleccionar Imagen 1
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                        </button>
+                                        {(previews.imagen_popup || formData.imagen_popup) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleClearImage("imagen_popup")}
+                                                className="text-red-500 hover:text-red-600 transition-colors p-2"
+                                                title="Borrar Imagen 1"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
@@ -368,9 +439,9 @@ const TabProducto: React.FC = () => {
 
                     {/* Imagen 2 */}
                     <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Imagen Secundaria / Fondo</h3>
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                            Imagen de fondo del popup. Recomendado: <strong>448x550px</strong>, maximo <strong>2MB</strong>, formato <strong>WebP</strong>.
+                            Segunda imagen para el popup (mitad derecha). Resolución recomendada: <strong>448x550px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
                             <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -389,16 +460,30 @@ const TabProducto: React.FC = () => {
                                         onChange={(e) => handleFileChange(e, "imagen_popup2")}
                                         className="hidden"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => document.getElementById('input_imagen_popup2')?.click()}
-                                        className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
-                                    >
-                                        Seleccionar Imagen
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                        </svg>
-                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('input_imagen_popup2')?.click()}
+                                            className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
+                                        >
+                                            Seleccionar Imagen 2
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                        </button>
+                                        {(previews.imagen_popup2 || formData.imagen_popup2) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleClearImage("imagen_popup2")}
+                                                className="text-red-500 hover:text-red-600 transition-colors p-2"
+                                                title="Borrar Imagen 2"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
@@ -408,6 +493,130 @@ const TabProducto: React.FC = () => {
                                         onChange={(e) => handleFieldChange("texto_alt_popup2", e.target.value)}
                                         className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
                                         placeholder="Ej: Fondo decorativo azul..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Primera Imagen Móvil */}
+                    <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-6 items-start">
+                            <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
+                                {previews.imagen_popup_mobile || formData.imagen_popup_mobile ? (
+                                    <img src={previews.imagen_popup_mobile || formData.imagen_popup_mobile} className="w-full h-full object-contain" />
+                                ) : (
+                                    <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-4 w-full">
+                                <div className="flex flex-col gap-2">
+                                    <input 
+                                        type="file" 
+                                        id="input_imagen_popup_mobile"
+                                        accept="image/*" 
+                                        onChange={(e) => handleFileChange(e, "imagen_popup_mobile")}
+                                        className="hidden"
+                                    />
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('input_imagen_popup_mobile')?.click()}
+                                            className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
+                                        >
+                                            Seleccionar Imagen Móvil 1
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                        </button>
+                                        {(previews.imagen_popup_mobile || formData.imagen_popup_mobile) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleClearImage("imagen_popup_mobile")}
+                                                className="text-red-500 hover:text-red-600 transition-colors p-2"
+                                                title="Borrar Imagen Móvil 1"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
+                                    <input 
+                                        type="text"
+                                        value={formData.texto_alt_popup_mobile}
+                                        onChange={(e) => handleFieldChange("texto_alt_popup_mobile", e.target.value)}
+                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
+                                        placeholder="Ej: Imagen móvil principal..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Segunda Imagen Móvil */}
+                    <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-6 items-start">
+                            <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
+                                {previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2 ? (
+                                    <img src={previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2} className="w-full h-full object-contain" />
+                                ) : (
+                                    <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-4 w-full">
+                                <div className="flex flex-col gap-2">
+                                    <input 
+                                        type="file" 
+                                        id="input_imagen_popup_mobile2"
+                                        accept="image/*" 
+                                        onChange={(e) => handleFileChange(e, "imagen_popup_mobile2")}
+                                        className="hidden"
+                                    />
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('input_imagen_popup_mobile2')?.click()}
+                                            className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
+                                        >
+                                            Seleccionar Imagen Móvil 2
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                        </button>
+                                        {(previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleClearImage("imagen_popup_mobile2")}
+                                                className="text-red-500 hover:text-red-600 transition-colors p-2"
+                                                title="Borrar Imagen Móvil 2"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
+                                    <input 
+                                        type="text"
+                                        value={formData.texto_alt_popup_mobile2}
+                                        onChange={(e) => handleFieldChange("texto_alt_popup_mobile2", e.target.value)}
+                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
+                                        placeholder="Ej: Imagen móvil secundaria..."
                                     />
                                 </div>
                             </div>
