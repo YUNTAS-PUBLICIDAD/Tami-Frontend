@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaTrash, FaEdit, FaPlus, FaEye, FaBookOpen, FaSyncAlt, FaDownload, FaChevronDown, FaFilePdf, FaFileExcel, FaFileCsv } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import AddBlogModal from "./AddBlogModel.tsx";
+import AddBlogModal from "./AddBlogModel";
 import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
 
@@ -236,12 +236,13 @@ const BlogsTable = () => {
     // Helper para formatear la fecha
     const formatDate = (dateString?: string | null) => {
       if (!dateString) return "FECHA / HORA DE PUBLICACIÓN";
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
+      // Parse manual para evitar desfases por zona horaria
+      const parts = dateString.split(/[- :T]/);
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+      const hours = parts[3] || "00";
+      const minutes = parts[4] || "00";
       return `${day}-${month}-${year} / ${hours}:${minutes}`;
     };
 
@@ -267,124 +268,76 @@ const BlogsTable = () => {
 
           {/* Scrollable content simulating the website */}
           <div className="overflow-y-auto flex-1 p-4 md:p-10 custom-scrollbar space-y-10">
-            
-            {/* --- Vista Previa de la Tarjeta (Catálogo) --- */}
-            <div>
-              <h4 className="text-white text-lg mb-4 font-semibold flex items-center gap-2">
-                Vista en la lista de blogs:
-              </h4>
-              <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-sm max-w-5xl mx-auto block group">
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-1/3 w-full p-4 md:p-6 flex items-center justify-center">
-                    <figure className="w-full h-48 md:h-56 bg-gray-200 rounded-lg overflow-hidden">
-                      {blog.imagenes?.[0]?.ruta_imagen ? (
-                        <img 
-                          src={`${getApiUrl("")}${blog.imagenes[0].ruta_imagen}`} 
-                          alt={blog.titulo}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                          Sin imagen
-                        </div>
-                      )}
-                    </figure>
-                  </div>
-                  <div className="md:w-2/3 w-full p-6 md:p-8 flex flex-col justify-center min-w-0">
-                    {blog.nombre_producto && (
-                      <div className="mb-4">
-                        <span className="inline-block bg-teal-700 text-white text-sm font-medium px-4 py-1.5 rounded-md break-all">
-                          {blog.nombre_producto}
-                        </span>
-                      </div>
-                    )}
-                    <h2 className="text-teal-700 text-xl md:text-2xl font-bold mb-3 leading-tight break-all">
-                      {blog.subtitulo1}
-                    </h2>
-                    <p className="text-gray-700 text-base leading-relaxed mb-4 break-all">
-                      {blog.subtitulo2 || blog.parrafos?.[0]?.parrafo || ""}
-                    </p>
-                    <div className="text-gray-500 text-sm flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {blog.created_at ? new Date(blog.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" }) : 'Fecha no disponible'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             {/* --- Vista Previa del Artículo Completo --- */}
             <div>
-              <h4 className="text-white text-lg mb-4 font-semibold">Vista dentro del artículo:</h4>
               <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-6 md:p-12 relative mx-auto max-w-5xl">
-              
-              {/* Title & Subtitle */}
-              <div className="mb-6 md:mb-10 text-center md:text-left">
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-[#00B6FF] mb-3 break-words font-garet">
-                  {blog.titulo.toUpperCase()}
-                </h2>
-                {blog.subtitulo1 && (
-                  <h3 className="text-lg md:text-xl font-bold text-black mb-3 break-words">
-                    {blog.subtitulo1.toUpperCase()}
-                  </h3>
-                )}
-                {blog.subtitulo2 && (
-                   <p className="text-base md:text-lg font-semibold text-black break-words">
-                     {blog.subtitulo2}
-                   </p>
-                )}
-              </div>
 
-              {/* Date */}
-              <div className="flex justify-center md:justify-start mb-8 md:mb-12">
-                <div className="inline-block px-4 md:px-6 py-2 bg-[#00B6FF] text-white text-sm md:text-base font-semibold rounded-full shadow-md">
-                  {formatDate(blog.created_at)}
+                {/* Title & Subtitle */}
+                <div className="mb-6 md:mb-10 text-center md:text-left">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-[#00B6FF] mb-3 break-words font-garet">
+                    {blog.titulo.toUpperCase()}
+                  </h2>
+                  {blog.subtitulo1 && (
+                    <h3 className="text-lg md:text-xl font-bold text-black mb-3 break-words">
+                      {blog.subtitulo1.toUpperCase()}
+                    </h3>
+                  )}
+                  {blog.subtitulo2 && (
+                    <p className="text-base md:text-lg font-semibold text-black break-words">
+                      {blog.subtitulo2}
+                    </p>
+                  )}
+                </div>
+
+                {/* Date */}
+                <div className="flex justify-center md:justify-start mb-8 md:mb-12">
+                  <div className="inline-block px-4 md:px-6 py-2 bg-[#00B6FF] text-white text-sm md:text-base font-semibold rounded-full shadow-md">
+                    {formatDate(blog.created_at)}
+                  </div>
+                </div>
+
+                {/* Content Sections */}
+                <div className="space-y-8 md:space-y-16">
+                  {blog.parrafos?.map((p, i) => (
+                    <section key={i} className="mb-8 md:mb-12">
+                      <div className={`flex flex-col md:flex-row ${i % 2 === 1 ? "md:flex-row-reverse" : ""} gap-4 md:gap-8 items-center`}>
+                        <div className="w-full md:w-1/2 flex flex-col justify-center">
+                          <article className="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
+                            <p className="text-sm md:text-base whitespace-pre-line break-words">{p.parrafo}</p>
+                          </article>
+                        </div>
+
+                        {blog.imagenes?.[i]?.ruta_imagen && (
+                          <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
+                            <img
+                              src={`${getApiUrl("")}${blog.imagenes[i].ruta_imagen}`}
+                              alt={blog.titulo}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  ))}
+
+                  {blog.video_id?.trim() && (
+                    <section className="rounded-lg md:rounded-xl shadow-md py-4 md:py-8 px-4 md:px-12 bg-gray-50 mt-12 border border-gray-100">
+                      <h1 className="text-lg md:text-xl lg:text-2xl text-[#00B6FF] font-bold mb-4 md:mb-6 text-center md:text-left break-words">
+                        {blog.video_titulo || 'Video relacionado'}
+                      </h1>
+                      <div className="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
+                          className="w-full h-full"
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                    </section>
+                  )}
                 </div>
               </div>
-
-              {/* Content Sections */}
-              <div className="space-y-8 md:space-y-16">
-                {blog.parrafos?.map((p, i) => (
-                  <section key={i} className="mb-8 md:mb-12">
-                    <div className={`flex flex-col md:flex-row ${i % 2 === 1 ? "md:flex-row-reverse" : ""} gap-4 md:gap-8 items-center`}>
-                      <div className="w-full md:w-1/2 flex flex-col justify-center">
-                        <article className="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
-                          <p className="text-sm md:text-base whitespace-pre-line break-words">{p.parrafo}</p>
-                        </article>
-                      </div>
-                      
-                      {blog.imagenes?.[i]?.ruta_imagen && (
-                        <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
-                          <img 
-                            src={`${getApiUrl("")}${blog.imagenes[i].ruta_imagen}`} 
-                            alt={blog.titulo}
-                            loading="lazy"
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </section>
-                ))}
-
-                {blog.video_id?.trim() && (
-                  <section className="rounded-lg md:rounded-xl shadow-md py-4 md:py-8 px-4 md:px-12 bg-gray-50 mt-12 border border-gray-100">
-                    <h1 className="text-lg md:text-xl lg:text-2xl text-[#00B6FF] font-bold mb-4 md:mb-6 text-center md:text-left break-words">
-                      {blog.video_titulo || 'Video relacionado'}
-                    </h1>
-                    <div className="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${blog.video_id.trim()}`}
-                        className="w-full h-full"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                  </section>
-                )}
-              </div>
-            </div>
             </div>
           </div>
         </div>
@@ -415,7 +368,7 @@ const BlogsTable = () => {
                 <button
                   type="button"
                   onClick={() => setIsExportOpen(!isExportOpen)}
-                  className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 cursor-pointer"
+                  className="flex items-center gap-2 bg-teal-50 dark:bg-white text-teal-700 dark:text-teal-600 hover:bg-teal-100 dark:hover:bg-teal-50 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 dark:border-white cursor-pointer"
                 >
                   <FaDownload className="h-4 w-4" />
                   <span>Exportar</span>
@@ -423,25 +376,25 @@ const BlogsTable = () => {
                 </button>
 
                 {isExportOpen && (
-                  <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
+                  <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
                     <div className="py-1">
                       <button
                         onClick={exportToPDF}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFilePdf className="mr-3 h-5 w-5 text-red-500" />
                         PDF
                       </button>
                       <button
                         onClick={exportToExcel}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFileExcel className="mr-3 h-5 w-5 text-green-600" />
                         Excel
                       </button>
                       <button
                         onClick={exportToCSV}
-                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+                        className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                       >
                         <FaFileCsv className="mr-3 h-5 w-5 text-blue-500" />
                         CSV
@@ -475,7 +428,7 @@ const BlogsTable = () => {
               <button
                 onClick={fetchData}
                 disabled={isLoading}
-                className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm cursor-pointer"
+                className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm cursor-pointer"
               >
                 <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                 {isLoading ? "Cargando..." : "Actualizar Catálogo"}
@@ -483,8 +436,8 @@ const BlogsTable = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-            <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+          <div className="flex items-center justify-between bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                 {filteredData.length}
               </span>
