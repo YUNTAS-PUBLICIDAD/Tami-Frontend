@@ -1,6 +1,8 @@
 import React from "react";
 import asesoriaImg from "../../../assets/images/Diseno.webp";
 import type { PopupSettings } from "../../../hooks/usePopupLogic";
+import { User, Mail } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface PopupFormProps {
   isPreview: boolean;
@@ -135,7 +137,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[175px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-2 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-8 max-w-[175px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-8 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
               >
                 <div className="relative mb-2 sm:mb-3">
                   {errors.general_top && (
@@ -143,39 +145,48 @@ const PopupForm = ({
                       {errors.general_top}
                     </p>
                   )}
+                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center ${isPreview && previewMode === "mobile" ? "scale-75" : ""}`}>
+                    <User size={20} />
+                  </div>
                   <input
                     type="text"
                     name="nombre"
-                    placeholder="Nombre"
+                    placeholder="Tu nombre"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    className={`w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[30px] px-4 text-xs" : "h-[30px] sm:h-10 px-4 sm:px-6 text-xs sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[32px] pl-9 pr-4 text-xs" : "h-[32px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-xs sm:text-sm"}`}
                   />
                 </div>
 
                 <div className="relative mb-2 sm:mb-3">
+                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center ${isPreview && previewMode === "mobile" ? "scale-75" : ""}`}>
+                    <FaWhatsapp size={20} />
+                  </div>
                   <input
                     type="tel"
                     name="telefono"
-                    placeholder="Teléfono"
+                    placeholder="Tu WhatsApp"
                     maxLength={9}
                     value={telefono}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, "");
                       setTelefono(val);
                     }}
-                    className={`w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[30px] px-4 text-xs" : "h-[30px] sm:h-10 px-4 sm:px-6 text-xs sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[32px] pl-9 pr-4 text-xs" : "h-[32px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-xs sm:text-sm"}`}
                   />
                 </div>
 
                 <div className="relative mb-2 sm:mb-3">
+                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center ${isPreview && previewMode === "mobile" ? "scale-75" : ""}`}>
+                    <Mail size={20} />
+                  </div>
                   <input
                     type="email"
                     name="correo"
-                    placeholder="Correo"
+                    placeholder="Tu correo"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
-                    className={`w-full rounded-full bg-[#EAEAEA] border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-inner text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[30px] px-4 text-xs" : "h-[30px] sm:h-10 px-4 sm:px-6 text-xs sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[32px] pl-9 pr-4 text-xs" : "h-[32px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-xs sm:text-sm"}`}
                   />
                   {errors.general && !errors.general_top && (
                     <p className={`absolute left-0 right-0 top-10 text-[10px] text-center mb-0 mt-0.5 leading-none ${errors.general.includes("success") || errors.general.includes("éxito") ? "text-green-100" : "text-red-500"}`}>
