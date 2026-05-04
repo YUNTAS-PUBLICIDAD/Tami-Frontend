@@ -208,28 +208,53 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
     if (window.__detalleProducto) {
       const producto = window.__detalleProducto;
-      const imagenPopup = producto.producto_imagenes?.find(
-        (img: any) => img.tipo === "popup",
-      );
-      const imagenPopup2 = producto.producto_imagenes?.find((img: any) => {
-        const tipo = (img?.tipo || "").toLowerCase();
-        return tipo === "popup2" || tipo === "popup_2";
-      });
+      // Detección más inclusiva (celulares y tablets)
+      const isMobileDevice = window.innerWidth < 1024 || window.matchMedia("(max-width: 1023px)").matches;
 
-      if (imagenPopup?.url_imagen) {
-        imagen = `${config.apiUrl}${imagenPopup.url_imagen}`;
-        imagenAlt = imagenPopup.texto_alt_SEO || producto.nombre;
-      } else if (producto.imagenes?.length > 0) {
-        imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
-        imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
-      }
+      // Buscar tipos de imágenes en la colección completa
+      const allImages = producto.producto_imagenes || producto.imagenes || [];
+      const imgPopup = allImages.find((img: any) => img.tipo === "popup");
+      const imgPopup2 = allImages.find((img: any) => img.tipo === "popup2" || img.tipo === "popup_2");
+      const imgMobile = allImages.find((img: any) => img.tipo === "popup_mobile");
+      const imgMobile2 = allImages.find((img: any) => img.tipo === "popup_mobile2");
 
-      if (imagenPopup2?.url_imagen) {
-        imagen2 = `${config.apiUrl}${imagenPopup2.url_imagen}`;
-        imagenAlt2 = imagenPopup2.texto_alt_SEO || producto.nombre;
+      // Imagen de respaldo profesional para productos
+      const FALLBACK = "/images/hero/impulso-negocios-tecnologia.webp";
+
+      if (isMobileDevice) {
+        // MODO MÓVIL: Prioridad absoluta a imágenes móviles o fallback
+        if (imgMobile?.url_imagen) {
+          imagen = `${config.apiUrl}${imgMobile.url_imagen}`;
+          imagenAlt = imgMobile.texto_alt_SEO || producto.nombre;
+        } else {
+          imagen = FALLBACK;
+          imagenAlt = "Diseño industrial Tami";
+        }
+
+        if (imgMobile2?.url_imagen) {
+          imagen2 = `${config.apiUrl}${imgMobile2.url_imagen}`;
+          imagenAlt2 = imgMobile2.texto_alt_SEO || producto.nombre;
+        } else {
+          imagen2 = FALLBACK;
+          imagenAlt2 = "Diseño industrial Tami";
+        }
       } else {
-        imagen2 = imagen;
-        imagenAlt2 = imagenAlt;
+        // MODO ESCRITORIO
+        if (imgPopup?.url_imagen) {
+          imagen = `${config.apiUrl}${imgPopup.url_imagen}`;
+          imagenAlt = imgPopup.texto_alt_SEO || producto.nombre;
+        } else if (producto.imagenes?.length > 0) {
+          imagen = `${config.apiUrl}${producto.imagenes[0].url_imagen}`;
+          imagenAlt = producto.imagenes[0].texto_alt_SEO || producto.nombre;
+        }
+
+        if (imgPopup2?.url_imagen) {
+          imagen2 = `${config.apiUrl}${imgPopup2.url_imagen}`;
+          imagenAlt2 = imgPopup2.texto_alt_SEO || producto.nombre;
+        } else {
+          imagen2 = imagen;
+          imagenAlt2 = imagenAlt;
+        }
       }
 
       // ⭐ CONTROL DESDE CHECKBOX LARAVEL
@@ -253,10 +278,12 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
 
     (modalImg as HTMLImageElement).src = imagen;
     (modalImg as HTMLImageElement).alt = imagenAlt;
+    (modalImg as HTMLImageElement).onerror = () => { (modalImg as HTMLImageElement).src = "/images/popup/default.webp"; };
 
     if (modalImg2) {
       modalImg2.src = imagen2;
       modalImg2.alt = imagenAlt2;
+      modalImg2.onerror = () => { modalImg2.src = "/images/popup/default.webp"; };
     }
 
     modalImg.classList.remove(
