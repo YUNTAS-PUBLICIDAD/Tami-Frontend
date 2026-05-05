@@ -643,6 +643,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             appendSingleImage('imagen_email', formData.imagen_email);
             formDataToSend.append('asunto', formData.asunto || '');
             formDataToSend.append('mensaje_email', formData.mensaje_email || '');
+            formDataToSend.append('email_btn_text', formData.email_btn_text || '');
+            formDataToSend.append('email_btn_link', formData.email_btn_link || '');
+            formDataToSend.append('email_btn_bg_color', formData.email_btn_bg_color || '');
+            formDataToSend.append('email_btn_text_color', formData.email_btn_text_color || '');
             appendSingleImage('imagen_whatsapp', formData.imagen_whatsapp, 'texto_alt_whatsapp', formData.texto_alt_whatsapp);
 
             if (formData.video_url) formDataToSend.append('video_url', formData.video_url);
@@ -784,6 +788,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
                 asunto: imagenEmail?.asunto || "",
                 mensaje_email: imagenEmail?.email_mensaje || "",
+                email_btn_text: imagenEmail?.email_btn_text || "COTIZAR AHORA",
+                email_btn_link: imagenEmail?.email_btn_link || "",
+                email_btn_bg_color: imagenEmail?.email_btn_bg_color || "#000000",
+                email_btn_text_color: imagenEmail?.email_btn_text_color || "#FFFFFF",
                 imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
                 texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "" // Asegúrate que tu back mande esto
             });
@@ -1353,6 +1361,74 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 }}
                                             />
                                             {errors.mensaje_email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.mensaje_email}</p>}
+                                        </div>
+                                    </div>
+
+                                    {/* Configuración del Botón de Email */}
+                                    <div className="mt-6 border-t pt-4">
+                                        <h6 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                                            </svg>
+                                            Configuración del Botón en el Correo
+                                        </h6>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="form-input">
+                                                <label className="text-xs font-medium text-gray-600 mb-1">Texto del Botón:</label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.email_btn_text}
+                                                    onChange={e => setFormData(prev => ({ ...prev, email_btn_text: e.target.value }))}
+                                                    placeholder="Ej: COTIZAR AHORA"
+                                                    className=""
+                                                />
+                                            </div>
+                                            <div className="form-input">
+                                                <label className="text-xs font-medium text-gray-600 mb-1">Enlace del Botón (Opcional):</label>
+                                                <input
+                                                    type="url"
+                                                    value={formData.email_btn_link}
+                                                    onChange={e => setFormData(prev => ({ ...prev, email_btn_link: e.target.value }))}
+                                                    placeholder="https://..."
+                                                    className=""
+                                                />
+                                            </div>
+                                            <div className="form-input">
+                                                <label className="text-xs font-medium text-gray-600 mb-1">Color de Fondo:</label>
+                                                <div className="flex gap-2 items-center">
+                                                    <input
+                                                        type="color"
+                                                        value={formData.email_btn_bg_color}
+                                                        onChange={e => setFormData(prev => ({ ...prev, email_btn_bg_color: e.target.value }))}
+                                                        className="w-10 h-10 p-0 border-none bg-transparent cursor-pointer"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={formData.email_btn_bg_color}
+                                                        onChange={e => setFormData(prev => ({ ...prev, email_btn_bg_color: e.target.value }))}
+                                                        className="flex-1 text-sm uppercase"
+                                                        maxLength={7}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="form-input">
+                                                <label className="text-xs font-medium text-gray-600 mb-1">Color del Texto:</label>
+                                                <div className="flex gap-2 items-center">
+                                                    <input
+                                                        type="color"
+                                                        value={formData.email_btn_text_color}
+                                                        onChange={e => setFormData(prev => ({ ...prev, email_btn_text_color: e.target.value }))}
+                                                        className="w-10 h-10 p-0 border-none bg-transparent cursor-pointer"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={formData.email_btn_text_color}
+                                                        onChange={e => setFormData(prev => ({ ...prev, email_btn_text_color: e.target.value }))}
+                                                        className="flex-1 text-sm uppercase"
+                                                        maxLength={7}
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="form-input mt-4">
