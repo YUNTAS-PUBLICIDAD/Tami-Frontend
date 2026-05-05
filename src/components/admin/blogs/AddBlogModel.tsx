@@ -54,6 +54,11 @@ const ACCEPT_IMAGE_TYPES = [
   "image/webp",
 ];
 
+const ACCEPT_MINIATURA_TYPES = [
+  ...ACCEPT_IMAGE_TYPES,
+  "image/gif",
+];
+
 /* ===== utilidades ===== */
 const isValidUrl = (value: string) => {
   try {
@@ -242,8 +247,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!ACCEPT_IMAGE_TYPES.includes(f.type)) {
-      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG o WEBP.", "warning");
+    if (!ACCEPT_MINIATURA_TYPES.includes(f.type)) {
+      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG, WEBP o GIF.", "warning");
       return;
     }
     if (bytesToMB(f.size) > MAX_IMAGE_MB) {
