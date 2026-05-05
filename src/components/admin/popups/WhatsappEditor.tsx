@@ -83,8 +83,7 @@ const WhatsappEditor = ({
   };
 
   const insertEmoji = (emoji: string) => {
-    const html = `<span class="inserted-emoji" contenteditable="false">${emoji}</span>&#8203;`;
-    document.execCommand('insertHTML', false, html);
+    document.execCommand('insertText', false, emoji);
     setShowEmojis(false);
     editorRef.current?.focus();
     handleInput();
