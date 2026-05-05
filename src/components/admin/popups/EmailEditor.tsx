@@ -4,6 +4,8 @@ import { Bold, Italic, Strikethrough, Smile, List, ListOrdered, Underline } from
 interface EmailEditorProps {
   defaultValue?: string;
   onChangeHtml?: (html: string) => void;
+  inputId?: string;
+  updateEventName?: string;
 }
 
 const COMMON_EMOJIS = [
@@ -14,6 +16,8 @@ const COMMON_EMOJIS = [
 const EmailEditor = ({
   defaultValue = "¡Hola! Me interesa la oferta mostrada en su página web y me gustaría recibir más detalles.",
   onChangeHtml,
+  inputId = "emailBody",
+  updateEventName = "update-email-editor"
 }: EmailEditorProps) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [activeStyles, setActiveStyles] = useState({
@@ -46,7 +50,7 @@ const EmailEditor = ({
     window.dispatchEvent(new CustomEvent('update-email-preview', { detail: content }));
 
     // Sync hidden input
-    const hidden = document.getElementById("emailBody") as HTMLInputElement | null;
+    const hidden = document.getElementById(inputId) as HTMLInputElement | null;
     if (hidden) {
       hidden.value = content;
     }
@@ -64,15 +68,15 @@ const EmailEditor = ({
       if (editorRef.current && editorRef.current.innerHTML !== content) {
         editorRef.current.innerHTML = content;
       }
-      const hidden = document.getElementById("emailBody") as HTMLInputElement | null;
+      const hidden = document.getElementById(inputId) as HTMLInputElement | null;
       if (hidden) {
         hidden.value = content;
       }
     };
 
-    window.addEventListener("update-email-editor", handleUpdate as EventListener);
-    return () => window.removeEventListener("update-email-editor", handleUpdate as EventListener);
-  }, []);
+    window.addEventListener(updateEventName, handleUpdate as EventListener);
+    return () => window.removeEventListener(updateEventName, handleUpdate as EventListener);
+  }, [inputId, updateEventName]);
 
   const execCommand = (command: keyof typeof activeStyles) => {
     document.execCommand(command, false, undefined);
@@ -233,7 +237,7 @@ const EmailEditor = ({
         className="email-editor-content block w-full p-4 min-h-[180px] max-h-[400px] overflow-y-auto bg-transparent focus:outline-none text-gray-800 dark:text-gray-200 rounded-b-md"
       />
 
-      <input type="hidden" id="emailBody" />
+      <input type="hidden" id={inputId} />
 
       <p className="m-2 mt-0 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-md px-3 py-2">
         Usa{" "}

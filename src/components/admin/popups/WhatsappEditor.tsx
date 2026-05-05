@@ -3,6 +3,8 @@ import { Bold, Italic, Strikethrough, Smile, List, ListOrdered, Underline } from
 
 interface WhatsappEditorProps {
   defaultValue?: string;
+  inputId?: string;
+  updateEventName?: string;
 }
 
 const COMMON_EMOJIS = [
@@ -12,6 +14,8 @@ const COMMON_EMOJIS = [
 
 const WhatsappEditor = ({
   defaultValue = "¡Hola! Me gustaría obtener más información sobre la promoción.",
+  inputId = "whatsappMessage",
+  updateEventName = "update-whatsapp-editor"
 }: WhatsappEditorProps) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [activeStyles, setActiveStyles] = useState({
@@ -43,7 +47,7 @@ const WhatsappEditor = ({
     window.dispatchEvent(new CustomEvent('update-whatsapp-preview', { detail: content }));
 
     // Sync hidden input
-    const hidden = document.getElementById("whatsappMessage") as HTMLInputElement | null;
+    const hidden = document.getElementById(inputId) as HTMLInputElement | null;
     if (hidden) {
       hidden.value = content;
     }
@@ -61,15 +65,15 @@ const WhatsappEditor = ({
       if (editorRef.current && editorRef.current.innerHTML !== content) {
         editorRef.current.innerHTML = content;
       }
-      const hidden = document.getElementById("whatsappMessage") as HTMLInputElement | null;
+      const hidden = document.getElementById(inputId) as HTMLInputElement | null;
       if (hidden) {
         hidden.value = content;
       }
     };
 
-    window.addEventListener("update-whatsapp-editor", handleUpdate as EventListener);
-    return () => window.removeEventListener("update-whatsapp-editor", handleUpdate as EventListener);
-  }, []);
+    window.addEventListener(updateEventName, handleUpdate as EventListener);
+    return () => window.removeEventListener(updateEventName, handleUpdate as EventListener);
+  }, [inputId, updateEventName]);
 
   const execCommand = (command: keyof typeof activeStyles) => {
     document.execCommand(command, false, undefined);
@@ -234,7 +238,7 @@ const WhatsappEditor = ({
         className="whatsapp-editor-content block w-full p-4 min-h-[160px] max-h-[400px] overflow-y-auto bg-transparent focus:outline-none text-gray-800 dark:text-gray-100 rounded-b-xl"
       />
 
-      <input type="hidden" id="whatsappMessage" name="whatsappMessage" />
+      <input type="hidden" id={inputId} name={inputId} />
 
       <div className="px-4 pb-4">
         <p className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-100/50 dark:border-emerald-800/30 rounded-xl px-4 py-2.5 flex items-center gap-2">
