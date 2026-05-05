@@ -45,6 +45,10 @@ export interface ProductFormularioPOST {
   imagen_whatsapp?: File |string| null;
   texto_alt_whatsapp?: string;
   video_url?: string;
+  email_btn_text?: string;
+  email_btn_link?: string;
+  email_btn_bg_color?: string;
+  email_btn_text_color?: string;
   etiqueta: {
     keywords: string[];
     meta_titulo: string;
@@ -70,6 +74,10 @@ export interface ImagenBack {
   tipo?: string; // 'galeria', 'popup', 'email'
   whatsapp_mensaje?: string;
   email_mensaje?: string;
+  email_btn_text?: string;
+  email_btn_link?: string;
+  email_btn_bg_color?: string;
+  email_btn_text_color?: string;
 }
 
 // Usado para el formulario de creación/edición
@@ -116,6 +124,10 @@ export default interface Producto {
     alto: string;
     ancho: string;
   }
+  email_btn_text?: string;
+  email_btn_link?: string;
+  email_btn_bg_color?: string;
+  email_btn_text_color?: string;
 }
 
 // valores por defecto para guardar o editar
@@ -179,6 +191,10 @@ export const defaultValuesProduct: ProductFormularioPOST = {
   asunto: "",
   mensaje_email: "",
   imagen_whatsapp: null,
-  texto_alt_whatsapp: "",
-  video_url: ""
+  texto_alt_whatsapp: "",
+  video_url: "",
+  email_btn_text: "COTIZAR AHORA",
+  email_btn_link: "",
+  email_btn_bg_color: "#000000",
+  email_btn_text_color: "#FFFFFF",
 };
