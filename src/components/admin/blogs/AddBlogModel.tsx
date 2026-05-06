@@ -813,9 +813,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                 </div>
               </div>
-          </div>
-      )}
-
               {/* --- MULTIMEDIA --- */}
               <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
                 <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
@@ -1043,8 +1040,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
               <button onClick={handleAddLink} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
             </div>
-          )}
-
+          </div>
+        </div>
+      )}
         </>
       );
 };
