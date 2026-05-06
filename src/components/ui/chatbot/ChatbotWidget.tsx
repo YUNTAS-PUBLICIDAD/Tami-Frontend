@@ -40,18 +40,18 @@ interface Message {
 }
 
 const MESSAGES_KEY = 'tami_chat_messages';
-const CONTEXT_KEY  = 'tami_chat_context';
-const OPEN_KEY     = 'tami_chat_open';
+const CONTEXT_KEY = 'tami_chat_context';
+const OPEN_KEY = 'tami_chat_open';
 
 const mensajeInicial: Message = {
   role: 'bot',
   tipo: 'opciones',
   respuesta: '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio.\n\n¿Qué te gustaría hacer?',
   opciones: [
-    { label: '🚀 Negocio',           valor: 'negocio'    },
-    { label: '⚙️ Maquinaria',         valor: 'maquinaria' },
-    { label: '✨ Decoración',          valor: 'decoracion' },
-    { label: '👨‍💼 Hablar con asesor', valor: 'asesor'     },
+    { label: '🚀 Negocio', valor: 'negocio' },
+    { label: '⚙️ Maquinaria', valor: 'maquinaria' },
+    { label: '✨ Decoración', valor: 'decoracion' },
+    { label: '👨‍💼 Hablar con asesor', valor: 'asesor' },
   ]
 };
 
@@ -78,13 +78,13 @@ const ChatbotWidget: React.FC = () => {
     } catch { return false; }
   });
 
-  const [showBubble, setShowBubble]   = useState(false);
-  const [isPopping, setIsPopping]     = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+  const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
-  const [input, setInput]             = useState('');
-  const [isLoading, setIsLoading]     = useState(false);
-  const messagesEndRef                = useRef<HTMLDivElement>(null);
-  const isFirstBubble                 = useRef(true);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstBubble = useRef(true);
 
   const bubbleMessages = [
     "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
@@ -97,17 +97,17 @@ const ChatbotWidget: React.FC = () => {
   // Persistir en localStorage cuando cambian 
   useEffect(() => {
     try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
-    catch {}
+    catch { }
   }, [messages]);
 
   useEffect(() => {
     try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
-    catch {}
+    catch { }
   }, [context]);
 
   useEffect(() => {
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
-    catch {}
+    catch { }
   }, [isOpen]);
 
 
@@ -152,7 +152,7 @@ const ChatbotWidget: React.FC = () => {
     try {
       localStorage.removeItem(MESSAGES_KEY);
       localStorage.removeItem(CONTEXT_KEY);
-    } catch {}
+    } catch { }
   };
 
 
@@ -160,11 +160,6 @@ const ChatbotWidget: React.FC = () => {
     if (e) e.stopPropagation();
     setIsPopping(true);
     setTimeout(() => { setShowBubble(false); setIsPopping(false); }, 400);
-  };
-
-  const handleOpcionClick = async (opcion: Opcion) => {
-    if (isLoading) return;
-    await enviarMensaje(opcion.label, opcion.valor);
   };
 
   // ── enviar cuando el usuario toca un botón de opción
@@ -280,11 +275,10 @@ const ChatbotWidget: React.FC = () => {
           <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-5 scrollbar-thin scrollbar-thumb-gray-200">
             {messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
-                <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${
-                  msg.role === 'user'
+                <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
                     ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
                     : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
-                }`}>
+                  }`}>
                   <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.respuesta}</p>
 
                   {/* Botones de opciones */}
