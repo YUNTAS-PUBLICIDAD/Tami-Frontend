@@ -13,6 +13,7 @@ import type { ImagenForm } from "../../../models/Product";
 import imagenEstilo1 from "@images/popup/estilo1.webp";
 import imagenEstilo2 from "@images/popup/estilo2.webp";
 import imagenEstilo3 from "@images/popup/estilo3.webp";
+import EmailEditor from "../popups/EmailEditor";
 
 interface EditProductProps {
     product: Product;

@@ -813,7 +813,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                 </div>
               </div>
-
               {/* --- MULTIMEDIA --- */}
               <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
                 <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
@@ -1044,33 +1043,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           </div>
         </div>
       )}
-
-      {/* Modal para insertar enlace de producto */}
-      {isProductLinkModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-          <div className="bg-white p-6 rounded-xl w-96">
-            <h3 className="text-xl font-bold mb-4">Enlace a Producto</h3>
-            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
-            <select
-              value={formData.producto_id}
-              onChange={(e) => setFormData({ ...formData, producto_id: e.target.value })}
-              className="w-full border p-2 rounded mb-4"
-            >
-              <option value="">Selecciona un producto</option>
-              {productos.map((producto: any) => (
-                <option key={producto.id} value={producto.id}>{producto.nombre}</option>
-              ))}
-            </select>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setIsProductLinkModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-              <button onClick={handleAddProduct} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </>
-  );
+        </>
+      );
 };
 
-export default AddBlogModal;
+      export default AddBlogModal;

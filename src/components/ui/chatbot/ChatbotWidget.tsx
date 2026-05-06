@@ -167,6 +167,7 @@ const ChatbotWidget: React.FC = () => {
     await enviarMensaje(opcion.label, opcion.valor);
   };
 
+  // ── Envío por formulario 
   const sendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!input.trim() || isLoading) return;

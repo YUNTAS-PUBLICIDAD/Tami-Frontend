@@ -372,6 +372,7 @@ const TabProducto: React.FC = () => {
     formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
     formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
+
     // Required flags for partial update
     formDataToSend.append("_method", "PUT");
     formDataToSend.append("only_popup", "1");
