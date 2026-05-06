@@ -4,8 +4,9 @@ interface ModalProps {
   link?: string;
 }
 
+import { DEFAULT_IMAGE } from "../../constants";
+
 const numeroWhatsApp = "51978883199";
-const DEFAULT_IMAGE = "/images/popup/default.webp";
 
 const { link = "" } = Astro.props as ModalProps;
 ---
@@ -157,6 +158,7 @@ const { link = "" } = Astro.props as ModalProps;
   import { config } from "config";
   import { origenCliente } from "@data/origenCliente";
   import { getPublicPopupSettings } from "../../lib/api/popupSettings";
+  import { DEFAULT_IMAGE } from "../../constants";
 
   declare global {
     interface Window {
@@ -188,7 +190,7 @@ const { link = "" } = Astro.props as ModalProps;
   };
 
   // Imagen por defecto (solo fallback)
-  const DEFAULT_IMAGE = "/images/popup/default.webp";
+
 
   const container = document.getElementById("modal-form-container");
   const numeroWhatsApp = container?.dataset.whatsapp ?? "51978883199";
@@ -366,7 +368,7 @@ const { link = "" } = Astro.props as ModalProps;
   }
 
   // Imagen por defecto (industrial/fábrica)
-  const DEFAULT_IMAGE = "/images/popup/default.webp";
+
 
   async function actualizarImagenDesdeLink() {
     const container = document.getElementById("modal-form-container");
