@@ -856,48 +856,58 @@ const TabProducto: React.FC = () => {
                     {activeTab === 'correo' && (
                         <div className="space-y-6">
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-blue-600">Correo Electrónico</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Configura la imagen y mensaje de correo para este producto.</p>
-                                
-                                <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_email || formData.imagen_email ? (
-                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
+                                <div className="flex items-start gap-4 mb-6">
+                                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
                                     </div>
-                                    <div className="flex-1 w-full">
-                                        <input 
-                                            type="file" 
-                                            id="input_imagen_email"
-                                            accept="image/*" 
-                                            onChange={(e) => handleFileChange(e, "imagen_email")}
-                                            className="hidden"
-                                        />
-                                        <div className="flex items-center gap-3">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Correo Electrónico</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Configura el título, mensaje, Boton e imagen para los emails.</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="mb-6">
+                                    <input 
+                                        type="file" 
+                                        id="input_imagen_email"
+                                        accept="image/*" 
+                                        onChange={(e) => handleFileChange(e, "imagen_email")}
+                                        className="hidden"
+                                    />
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById('input_imagen_email')?.click()}
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
+                                        >
+                                            Añadir Imagen Adjunta
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                            </svg>
+                                        </button>
+                                        {(previews.imagen_email || formData.imagen_email) && (
                                             <button
                                                 type="button"
-                                                onClick={() => document.getElementById('input_imagen_email')?.click()}
-                                                className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
+                                                onClick={() => handleClearImage("imagen_email")}
+                                                className="text-red-500 hover:text-red-600 p-2 transition-colors"
                                             >
-                                                Subir Imagen Correo
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
                                             </button>
-                                            {(previews.imagen_email || formData.imagen_email) && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleClearImage("imagen_email")}
-                                                    className="text-red-500 hover:text-red-600 p-2"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                            )}
+                                        )}
+                                    </div>
+
+                                    {(previews.imagen_email || formData.imagen_email) && (
+                                        <div className="mb-4 w-full sm:w-48 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shadow-inner">
+                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
                                         </div>
-                                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-xl">
-                                            <span className="font-medium">Recomendación para la imagen:</span> Usa formato <span className="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">800x600px</span> o similar para un mejor diseño.
-                                        </div>
+                                    )}
+
+                                    <div className="p-4 bg-blue-50 dark:bg-[#1e2d4a] text-blue-600 dark:text-[#8cb8ff] text-[14px] rounded-xl leading-relaxed font-medium">
+                                        Recomendación para la imagen: Usa formato <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">800x600px</span> o similar para un mejor diseño.
                                     </div>
                                 </div>
 
