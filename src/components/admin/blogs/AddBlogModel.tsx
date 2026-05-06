@@ -54,6 +54,11 @@ const ACCEPT_IMAGE_TYPES = [
   "image/webp",
 ];
 
+const ACCEPT_MINIATURA_TYPES = [
+  ...ACCEPT_IMAGE_TYPES,
+  "image/gif",
+];
+
 /* ===== utilidades ===== */
 const isValidUrl = (value: string) => {
   try {
@@ -242,8 +247,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!ACCEPT_IMAGE_TYPES.includes(f.type)) {
-      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG o WEBP.", "warning");
+    if (!ACCEPT_MINIATURA_TYPES.includes(f.type)) {
+      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG, WEBP o GIF.", "warning");
       return;
     }
     if (bytesToMB(f.size) > MAX_IMAGE_MB) {
@@ -808,259 +813,235 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                 </div>
               </div>
-
-                  {/* --- MULTIMEDIA --- */}
-                  <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                    <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      Multimedia
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="form-input md:col-span-2">
-                        <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">Miniatura del Blog*</label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
-                          className="hidden"
-                          id="miniatura-upload"
-                        />
-                        <label
-                          htmlFor="miniatura-upload"
-                          className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          {formData.miniatura ? (
-                            <span className="text-teal-600 font-medium text-lg flex flex-col items-center justify-center gap-1">
-                              <span>{(formData.miniatura as any).name || "Imagen cargada"}</span>
-                              <span className="text-sm font-normal text-teal-600/80 mt-2">
-                                Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).
-                              </span>
-                            </span>
-                          ) : (
-                            <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-teal-500 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                              <span className="font-medium">Click aquí para subir miniatura principal</span>
-                              <span className="text-xs text-gray-400">Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).</span>
-                            </span>
-                          )}
-                        </label>
-                      </div>
-                      <div className="form-input">
-                        <label className="font-medium text-gray-700 dark:text-gray-300">Título del video para YouTube*</label>
-                        <input
-                          type="text"
-                          name="video_titulo"
-                          value={formData.video_titulo}
-                          onChange={handleChange}
-                          maxLength={LENGTHS.videoTitulo}
-                          required
-                        />
-                      </div>
-                      <div className="form-input">
-                        <label className="font-medium text-gray-700 dark:text-gray-300">URL del video*</label>
-                        <input
-                          type="text"
-                          name="video_url"
-                          value={formData.video_url}
-                          onChange={handleChange}
-                          maxLength={LENGTHS.videoUrl}
-                          required
-                          placeholder="https://youtube.com/..."
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* --- SEO --- */}
-                  <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                    <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                      Optimización SEO
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="form-input">
-                        <label className="font-medium text-gray-700 dark:text-gray-300">Meta título</label>
-                        <input
-                          type="text"
-                          name="meta_titulo"
-                          value={formData.etiqueta.meta_titulo}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              etiqueta: {
-                                ...formData.etiqueta,
-                                meta_titulo: e.target.value.slice(
-                                  0,
-                                  LENGTHS.metaTitulo
-                                ),
-                              },
-                            })
-                          }
-                          maxLength={LENGTHS.metaTitulo}
-                        />
-                        <small className="text-gray-500 mt-1 block">
-                          Sugerido {LENGTHS.metaTitulo} caracteres
-                        </small>
-                      </div>
-                      <div className="form-input">
-                        <label className="font-medium text-gray-700 dark:text-gray-300">Meta descripción</label>
-                        <input
-                          type="text"
-                          name="meta_descripcion"
-                          value={formData.etiqueta.meta_descripcion}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              etiqueta: {
-                                ...formData.etiqueta,
-                                meta_descripcion: e.target.value.slice(
-                                  0,
-                                  LENGTHS.metaDescripcion
-                                ),
-                              },
-                            })
-                          }
-                          maxLength={LENGTHS.metaDescripcion}
-                        />
-                        <small className="text-gray-500 mt-1 block">
-                          Sugerido {LENGTHS.metaDescripcion} caracteres
-                        </small>
-                      </div>
-                    </div>
-
-
-                    <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
-                      <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4">Contenido del Blog</h3>
-                      {formData.imagenes.map((imagen, index) => (
-                        <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/60 dark:border-gray-700">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="font-bold text-teal-700 dark:text-teal-300">Sección {numeroAPalabras(index + 1)}</span>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagen*</label>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleFileChangeAdicional(e, index)}
-                                className="w-full text-sm text-gray-700 dark:text-gray-300"
-                              />
-                              <div className="mt-2">
-                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Texto Alternativo (SEO)*</label>
-                                <input
-                                  type="text"
-                                  value={imagen.text_alt}
-                                  onChange={(e) => handleAltTextChange(e, index)}
-                                  placeholder="Descripción de la imagen"
-                                  className="w-full border rounded p-1 text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                                  required
-                                />
-                              </div>
-                              {imagen.url && (
-                                <div className="mt-2">
-                                  <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <div className="flex justify-between items-center mb-1">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Párrafo de la sección*</label>
-                                <div className="space-x-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleInsertLinkClick(index)}
-                                    className="text-xs text-teal-600 hover:text-teal-800 underline"
-                                  >
-                                    Insertar Link
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleProductLinkClick(index)}
-                                    className="text-xs text-teal-600 hover:text-teal-800 underline"
-                                  >
-                                    Link Producto
-                                  </button>
-                                </div>
-                              </div>
-                              <textarea
-                                id={`crear_descripcion_antes_${index}`}
-                                value={imagen.parrafo}
-                                onChange={(e) => handleParrafoChange(e, index)}
-                                className="w-full border rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                                rows={4}
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      type="button"
-                      onClick={onClose ? onClose : closeModal}
-                      className="neutral-btn w-full sm:w-auto !text-base !px-6 !py-2 !bg-amber-100 !text-amber-900 !border-amber-300 hover:!bg-amber-200 hover:!text-amber-950 dark:!bg-gray-700 dark:!text-gray-100 dark:!border-gray-500 dark:hover:!bg-gray-600"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSaving || isSubmitting}
-                      className="admin-act-btn w-full sm:w-auto !text-base !px-6 !py-2 disabled:opacity-60 disabled:hover:cursor-not-allowed"
-                    >
-                      {isSaving || isSubmitting ? "Guardando..." : "Guardar Blog"}
-                    </button>
-                  </div>
-                </form>
-              </div>
           </div>
       )}
 
-          {/* Modal para insertar enlace manual */}
-          {isModalOpen && (
-            <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-              <div className="bg-white p-6 rounded-xl w-96">
-                <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
-                <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
-                <input
-                  type="text"
-                  placeholder="https://..."
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
-                />
-                <div className="flex justify-end gap-2">
-                  <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-                  <button onClick={handleAddLink} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
+              {/* --- MULTIMEDIA --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Multimedia
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input md:col-span-2">
+                    <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">Miniatura del Blog*</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="miniatura-upload"
+                    />
+                    <label
+                      htmlFor="miniatura-upload"
+                      className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {formData.miniatura ? (
+                        <span className="text-teal-600 font-medium text-lg flex flex-col items-center justify-center gap-1">
+                          <span>{(formData.miniatura as any).name || "Imagen cargada"}</span>
+                          <span className="text-sm font-normal text-teal-600/80 mt-2">
+                            Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-teal-500 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          <span className="font-medium">Click aquí para subir miniatura principal</span>
+                          <span className="text-xs text-gray-400">Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).</span>
+                        </span>
+                      )}
+                    </label>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Título del video para YouTube*</label>
+                    <input
+                      type="text"
+                      name="video_titulo"
+                      value={formData.video_titulo}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.videoTitulo}
+                      required
+                    />
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">URL del video*</label>
+                    <input
+                      type="text"
+                      name="video_url"
+                      value={formData.video_url}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.videoUrl}
+                      required
+                      placeholder="https://youtube.com/..."
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Modal para insertar enlace de producto */}
-          {isProductLinkModalOpen && (
-            <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-              <div className="bg-white p-6 rounded-xl w-96">
-                <h3 className="text-xl font-bold mb-4">Enlace a Producto</h3>
-                <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
-                <select
-                  value={formData.producto_id}
-                  onChange={(e) => setFormData({ ...formData, producto_id: e.target.value })}
-                  className="w-full border p-2 rounded mb-4"
-                >
-                  <option value="">Selecciona un producto</option>
-                  {productos.map((producto: any) => (
-                    <option key={producto.id} value={producto.id}>{producto.nombre}</option>
+              {/* --- SEO --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  Optimización SEO
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Meta título</label>
+                    <input
+                      type="text"
+                      name="meta_titulo"
+                      value={formData.etiqueta.meta_titulo}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            meta_titulo: e.target.value.slice(
+                              0,
+                              LENGTHS.metaTitulo
+                            ),
+                          },
+                        })
+                      }
+                      maxLength={LENGTHS.metaTitulo}
+                    />
+                    <small className="text-gray-500 mt-1 block">
+                      Sugerido {LENGTHS.metaTitulo} caracteres
+                    </small>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">Meta descripción</label>
+                    <input
+                      type="text"
+                      name="meta_descripcion"
+                      value={formData.etiqueta.meta_descripcion}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            meta_descripcion: e.target.value.slice(
+                              0,
+                              LENGTHS.metaDescripcion
+                            ),
+                          },
+                        })
+                      }
+                      maxLength={LENGTHS.metaDescripcion}
+                    />
+                    <small className="text-gray-500 mt-1 block">
+                      Sugerido {LENGTHS.metaDescripcion} caracteres
+                    </small>
+                  </div>
+                </div>
+
+
+                <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
+                  <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4">Contenido del Blog</h3>
+                  {formData.imagenes.map((imagen, index) => (
+                    <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/60 dark:border-gray-700">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-bold text-teal-700 dark:text-teal-300">Sección {numeroAPalabras(index + 1)}</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagen*</label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChangeAdicional(e, index)}
+                            className="w-full text-sm text-gray-700 dark:text-gray-300"
+                          />
+                          <div className="mt-2">
+                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Texto Alternativo (SEO)*</label>
+                            <input
+                              type="text"
+                              value={imagen.text_alt}
+                              onChange={(e) => handleAltTextChange(e, index)}
+                              placeholder="Descripción de la imagen"
+                              className="w-full border rounded p-1 text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+                              required
+                            />
+                          </div>
+                          {imagen.url && (
+                            <div className="mt-2">
+                              <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Párrafo de la sección*</label>
+                            <div className="space-x-2">
+                              <button
+                                type="button"
+                                onClick={() => handleInsertLinkClick(index)}
+                                className="text-xs text-teal-600 hover:text-teal-800 underline"
+                              >
+                                Insertar Link
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleProductLinkClick(index)}
+                                className="text-xs text-teal-600 hover:text-teal-800 underline"
+                              >
+                                Link Producto
+                              </button>
+                            </div>
+                          </div>
+                          <textarea
+                            id={`crear_descripcion_antes_${index}`}
+                            value={imagen.parrafo}
+                            onChange={(e) => handleParrafoChange(e, index)}
+                            className="w-full border rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+                            rows={4}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </select>
-                <div className="flex justify-end gap-2">
-                  <button onClick={() => setIsProductLinkModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-                  <button onClick={handleAddProduct} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
                 </div>
               </div>
+
+              <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  type="button"
+                  onClick={onClose ? onClose : closeModal}
+                  className="neutral-btn w-full sm:w-auto !text-base !px-6 !py-2 !bg-amber-100 !text-amber-900 !border-amber-300 hover:!bg-amber-200 hover:!text-amber-950 dark:!bg-gray-700 dark:!text-gray-100 dark:!border-gray-500 dark:hover:!bg-gray-600"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving || isSubmitting}
+                  className="admin-act-btn w-full sm:w-auto !text-base !px-6 !py-2 disabled:opacity-60 disabled:hover:cursor-not-allowed"
+                >
+                  {isSaving || isSubmitting ? "Guardando..." : "Guardar Blog"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para insertar enlace manual */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
+            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
+            <input
+              type="text"
+              placeholder="https://..."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
+              <button onClick={handleAddLink} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
             </div>
           )}
 

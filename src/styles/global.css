@@ -264,6 +264,7 @@ div {
 
 .form-input>input[type="text"],
 .form-input>input[type="email"],
+.form-input>input[type="url"],
 .form-input>input[type="number"],
 .form-input>input[type="file"],
 .form-input>select,

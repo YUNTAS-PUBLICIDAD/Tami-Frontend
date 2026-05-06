@@ -6,16 +6,21 @@ import {
 } from "../../lib/api/popupSettings";
 
 export function initPopupManager() {
+    const navInicio = document.getElementById("navInicio");
+    const navProducto = document.getElementById("navProducto");
+    const sectionInicio = document.getElementById("sectionInicio");
+    const sectionProducto = document.getElementById("sectionProducto");
+
     const tabPopups = document.getElementById("tabPopups");
     const tabWhatsapp = document.getElementById("tabWhatsapp");
     const tabCorreo = document.getElementById("tabCorreo");
 
-    const btnDesktop = document.getElementById("btnDesktop");
-    const btnMobile = document.getElementById("btnMobile");
-
-    const containerPopups = document.getElementById("containerPopups");
+    const contentPopups = document.getElementById("contentPopups");
     const contentWhatsapp = document.getElementById("contentWhatsapp");
     const contentCorreo = document.getElementById("contentCorreo");
+
+    const btnDesktop = document.getElementById("btnDesktop");
+    const btnMobile = document.getElementById("btnMobile");
 
     const previewScrollModalContainer = document.getElementById(
         "previewScrollModalContainer",
@@ -28,16 +33,20 @@ export function initPopupManager() {
     const previewStage = document.getElementById("previewStage");
     const previewWhatsappText = document.getElementById("previewWhatsappText");
     const statusElement = document.getElementById("popupStatus");
-    
+
     let savedHomeSettings: any = null;
+    let currentInicioImages: any = {
+        popup_image_url: null,
+        popup_image2_url: null,
+        popup_mobile_image_url: null,
+        popup_mobile_image2_url: null,
+        whatsappImage: null,
+        emailImage: null
+    };
 
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
 
-    const navInicio = document.getElementById("navInicio");
-    const navProducto = document.getElementById("navProducto");
-    const sectionInicio = document.getElementById("sectionInicio");
-    const sectionProducto = document.getElementById("sectionProducto");
     const sharedSaveFooter = document.getElementById("sharedSaveFooter");
 
     if (
@@ -50,100 +59,16 @@ export function initPopupManager() {
         !navProducto ||
         !sectionInicio ||
         !sectionProducto ||
-        !containerPopups ||
         !sharedSaveFooter
     ) {
         setTimeout(initPopupManager, 200);
         return;
     }
 
-    // Top Level Navigation (Sub-tabs of Pop-ups)
-    navInicio.addEventListener("click", () => {
-        sectionInicio.classList.remove("hidden");
-        sectionProducto.classList.add("hidden");
-        sharedSaveFooter.classList.remove("hidden");
-        
-        navInicio.classList.add("bg-teal-600", "text-white", "shadow-md");
-        navInicio.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
-        
-        navProducto.classList.remove("bg-teal-600", "text-white", "shadow-md");
-        navProducto.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
-
-        // Restore Home Preview
-        if (savedHomeSettings) {
-            updatePreview({
-                popup_image_url: savedHomeSettings.image1 || savedHomeSettings.popup_image_url,
-                popup_image2_url: savedHomeSettings.image2 || savedHomeSettings.popup_image2_url,
-                popup_mobile_image_url: savedHomeSettings.imageMobile || savedHomeSettings.popup_mobile_image_url,
-                popup_mobile_image2_url: savedHomeSettings.imageMobile2 || savedHomeSettings.popup_mobile_image2_url,
-                button_bg_color: savedHomeSettings.button_bg_color,
-                button_text_color: savedHomeSettings.button_text_color,
-                button_text: savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS",
-            }, currentMode);
-        }
-    });
-
-    navProducto.addEventListener("click", () => {
-        sectionInicio.classList.add("hidden");
-        sectionProducto.classList.remove("hidden");
-        sharedSaveFooter.classList.remove("hidden");
-        
-        navProducto.classList.add("bg-teal-600", "text-white", "shadow-md");
-        navProducto.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
-        
-        navInicio.classList.remove("bg-teal-600", "text-white", "shadow-md");
-        navInicio.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
-
-        // Clear Preview (Wait for product selection)
-        updatePreview({
-            popup_image_url: null,
-            popup_image2_url: null,
-            popup_mobile_image_url: null,
-            popup_mobile_image2_url: null,
-            button_text: "¡REGISTRARME!",
-            button_bg_color: "#14b8a6",
-            button_text_color: "#ffffff"
-        }, currentMode);
-
-        // Reset Product Selection Tab
-        window.dispatchEvent(new CustomEvent("reset-product-selection"));
-    });
-
     const tabs = [tabPopups, tabWhatsapp, tabCorreo];
-    const contents = [containerPopups, contentWhatsapp, contentCorreo];
+    const contents = [contentPopups, contentWhatsapp, contentCorreo];
 
-    const activeModeClasses = [
-        "bg-white",
-        "dark:bg-gray-700",
-        "text-teal-600",
-        "dark:text-teal-400",
-        "shadow-sm",
-    ];
-    const inactiveModeClasses = [
-        "text-gray-500",
-        "dark:text-gray-400",
-        "hover:text-gray-700",
-        "dark:hover:text-gray-200",
-    ];
-
-    // Apply initial classes based on mobile screen size
-    if (isMobileScreen) {
-        btnMobile.classList.remove(...inactiveModeClasses);
-        btnMobile.classList.add(...activeModeClasses);
-        btnDesktop.classList.remove(...activeModeClasses);
-        btnDesktop.classList.add(...inactiveModeClasses);
-    } else {
-        btnDesktop.classList.remove(...inactiveModeClasses);
-        btnDesktop.classList.add(...activeModeClasses);
-        btnMobile.classList.remove(...activeModeClasses);
-        btnMobile.classList.add(...inactiveModeClasses);
-    }
-
-    function updatePreview(settings = {}, mode: string | null = null) {
-        console.log("[popupsManager.ts] Dispatching updatePreview:", {
-            settings,
-            mode,
-        });
+    function updatePreview(settings: any = {}, mode: string | null = null) {
         window.dispatchEvent(
             new CustomEvent("update-popup-preview", {
                 detail: { settings, mode },
@@ -151,27 +76,21 @@ export function initPopupManager() {
         );
     }
 
-    function setStatus(
-        message: string,
-        type: "success" | "error" | "loading" | "idle" = "idle",
-    ) {
+    const setStatus = (msg: string, type: string = "idle") => {
         if (!statusElement) return;
-        statusElement.textContent = message;
-        statusElement.className = "text-sm mt-2";
-        if (type === "success")
-            statusElement.classList.add("text-teal-600");
-        else if (type === "error")
-            statusElement.classList.add("text-red-500");
-        else if (type === "loading")
-            statusElement.classList.add("text-amber-500");
-        else
-            statusElement.classList.add(
-                "text-gray-600",
-                "dark:text-gray-300",
-            );
-    }
+        statusElement.innerText = msg;
+        statusElement.className = `text-sm transition-colors duration-300 ${
+            type === "error"
+                ? "text-red-500 font-medium"
+                : type === "success"
+                ? "text-teal-600 font-medium"
+                : type === "loading"
+                ? "text-blue-500 animate-pulse"
+                : "text-gray-500 dark:text-gray-400"
+        }`;
+    };
 
-    function activarTab(tab: HTMLElement, content: HTMLElement | null, type: string) {
+    function activarSubTab(tab: HTMLElement, content: HTMLElement | null, type: string) {
         const activeClasses = [
             "bg-teal-600",
             "dark:bg-teal-500",
@@ -192,6 +111,7 @@ export function initPopupManager() {
             t.classList.add(...inactiveClasses);
         });
         contents.forEach((c) => c?.classList.add("hidden"));
+
         if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
         if (previewCorreo) previewCorreo.classList.add("hidden");
 
@@ -220,20 +140,167 @@ export function initPopupManager() {
         }
     }
 
-    tabPopups.onclick = () => {
-        activarTab(tabPopups, containerPopups, "popups");
-        sharedSaveFooter.classList.remove("hidden");
-    };
-    tabWhatsapp.onclick = () => {
-        activarTab(tabWhatsapp, contentWhatsapp, "whatsapp");
-        sharedSaveFooter.classList.remove("hidden");
-    };
-    tabCorreo.onclick = () => {
-        activarTab(tabCorreo, contentCorreo, "correo");
-        sharedSaveFooter.classList.remove("hidden");
-    };
+    function restoreInicioPreview() {
+        if (!savedHomeSettings) return;
 
-    activarTab(tabPopups, containerPopups, "popups");
+        const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
+        const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement;
+        const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement;
+
+        updatePreview({
+            popup_image_url: currentInicioImages.popup_image_url,
+            popup_image2_url: currentInicioImages.popup_image2_url,
+            popup_mobile_image_url: currentInicioImages.popup_mobile_image_url,
+            popup_mobile_image2_url: currentInicioImages.popup_mobile_image2_url,
+            button_bg_color: btnBgColorInput ? btnBgColorInput.value : (savedHomeSettings.button_bg_color || "#14b8a6"),
+            button_text_color: btnTextColorInput ? btnTextColorInput.value : (savedHomeSettings.button_text_color || "#ffffff"),
+            button_text: btnTextInput ? btnTextInput.value : (savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS"),
+        }, currentMode);
+
+        const waMsgHidden = document.getElementById("whatsappMessage") as HTMLInputElement;
+        window.dispatchEvent(new CustomEvent("update-whatsapp-preview", {
+            detail: {
+                text: waMsgHidden ? waMsgHidden.value : (savedHomeSettings.whatsappMessage || ""),
+                image: currentInicioImages.whatsappImage
+            }
+        }));
+
+        const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
+        const emailBodyHidden = document.getElementById("emailBody") as HTMLInputElement;
+        const emailBtnText = document.getElementById("emailBtnText") as HTMLInputElement;
+        const emailBtnLink = document.getElementById("emailBtnLink") as HTMLInputElement;
+        const emailBtnBg = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+        const emailBtnTextCol = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+
+        window.dispatchEvent(new CustomEvent("update-email-preview", {
+            detail: {
+                title: emailTitleInput ? emailTitleInput.value : (savedHomeSettings.emailTitle || ""),
+                body: emailBodyHidden ? emailBodyHidden.value : (savedHomeSettings.emailBody || ""),
+                image: currentInicioImages.emailImage,
+                btnText: emailBtnText ? emailBtnText.value : (savedHomeSettings.email_btn_text || savedHomeSettings.emailBtnText || "Ver Productos"),
+                btnLink: emailBtnLink ? emailBtnLink.value : (savedHomeSettings.email_btn_link || savedHomeSettings.emailBtnLink || "https://tami.com/productos"),
+                btnBgColor: emailBtnBg ? emailBtnBg.value : (savedHomeSettings.email_btn_bg_color || savedHomeSettings.emailBtnBgColor || "#0b1c3c"),
+                btnTextColor: emailBtnTextCol ? emailBtnTextCol.value : (savedHomeSettings.email_btn_text_color || savedHomeSettings.emailBtnTextColor || "#ffffff")
+            }
+        }));
+    }
+
+    // Top Level Navigation: Inicio / Producto
+    navInicio.addEventListener("click", () => {
+        sectionInicio.classList.remove("hidden");
+        sectionProducto.classList.add("hidden");
+
+        navInicio.classList.add("bg-teal-600", "text-white", "shadow-md");
+        navInicio.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        navProducto.classList.remove("bg-teal-600", "text-white", "shadow-md");
+        navProducto.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        // Por defecto activar la primera sub-tab de Inicio (Pop-ups)
+        activarSubTab(tabPopups, contentPopups, "popups");
+
+        restoreInicioPreview();
+    });
+
+    navProducto.addEventListener("click", () => {
+        sectionInicio.classList.add("hidden");
+        sectionProducto.classList.remove("hidden");
+
+        navProducto.classList.add("bg-teal-600", "text-white", "shadow-md");
+        navProducto.classList.remove("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        navInicio.classList.remove("bg-teal-600", "text-white", "shadow-md");
+        navInicio.classList.add("bg-gray-100", "dark:bg-gray-700", "text-gray-600", "dark:text-gray-300");
+
+        // Hide previews that are specific to Inicio tabs
+        if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
+        if (previewCorreo) previewCorreo.classList.add("hidden");
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.remove("hidden");
+        if (previewModesToggle) previewModesToggle.classList.remove("hidden");
+        if (previewStage) previewStage.classList.remove("is-gmail");
+
+        // Clear Preview (Wait for product selection)
+        updatePreview({
+            popup_image_url: null,
+            popup_image2_url: null,
+            popup_mobile_image_url: null,
+            popup_mobile_image2_url: null,
+            button_text: "¡REGISTRARME!",
+            button_bg_color: "#14b8a6",
+            button_text_color: "#ffffff"
+        }, currentMode);
+
+        // Reset Product Selection Tab
+        window.dispatchEvent(new CustomEvent("reset-product-selection"));
+    });
+
+    tabPopups.onclick = () => activarSubTab(tabPopups, contentPopups, "popups");
+    tabWhatsapp.onclick = () => activarSubTab(tabWhatsapp, contentWhatsapp, "whatsapp");
+    tabCorreo.onclick = () => activarSubTab(tabCorreo, contentCorreo, "correo");
+
+    // Listen for preview type changes from TabProducto.tsx
+    window.addEventListener("switch-preview-type", (e: any) => {
+        const type = e.detail;
+        
+        if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
+        if (previewCorreo) previewCorreo.classList.add("hidden");
+        if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
+        if (previewOverlay) previewOverlay.classList.add("hidden");
+
+        if (type === "popups") {
+            if (previewScrollModalContainer) previewScrollModalContainer.classList.remove("hidden");
+            if (previewModesToggle) previewModesToggle.classList.remove("hidden");
+            if (previewStage) {
+                previewStage.classList.remove("is-gmail");
+                if (currentMode === "mobile") previewStage.classList.add("is-mobile-view");
+                else previewStage.classList.remove("is-mobile-view");
+            }
+        } else if (type === "whatsapp") {
+            if (previewWhatsapp) previewWhatsapp.classList.remove("hidden");
+            if (previewModesToggle) previewModesToggle.classList.add("hidden");
+            if (previewStage) {
+                previewStage.classList.remove("is-gmail");
+                previewStage.classList.remove("is-mobile-view");
+            }
+        } else if (type === "correo") {
+            if (previewCorreo) previewCorreo.classList.remove("hidden");
+            if (previewModesToggle) previewModesToggle.classList.add("hidden");
+            if (previewStage) {
+                previewStage.classList.add("is-gmail");
+                previewStage.classList.remove("is-mobile-view");
+            }
+        }
+    });
+
+    // Inicialización: Empezar en Inicio > Pop-ups
+    const activeModeClasses = [
+        "bg-white",
+        "dark:bg-gray-700",
+        "text-teal-600",
+        "dark:text-teal-400",
+        "shadow-sm",
+    ];
+    const inactiveModeClasses = [
+        "text-gray-500",
+        "dark:text-gray-400",
+        "hover:text-gray-700",
+        "dark:hover:text-gray-200",
+    ];
+
+    // Apply initial classes based on mobile screen size
+    if (isMobileScreen) {
+        btnMobile.classList.remove(...inactiveModeClasses);
+        btnMobile.classList.add(...activeModeClasses);
+        btnDesktop.classList.remove(...activeModeClasses);
+        btnDesktop.classList.add(...inactiveModeClasses);
+    } else {
+        btnDesktop.classList.remove(...inactiveModeClasses);
+        btnDesktop.classList.add(...activeModeClasses);
+        btnMobile.classList.remove(...activeModeClasses);
+        btnMobile.classList.add(...inactiveModeClasses);
+    }
+
+    activarSubTab(tabPopups, contentPopups, "popups");
 
     btnDesktop.onclick = () => {
         currentMode = "desktop";
@@ -293,8 +360,22 @@ export function initPopupManager() {
     });
 
     window.addEventListener("update-whatsapp-preview", (e: any) => {
+        const data = typeof e.detail === "string" ? { text: e.detail } : e.detail;
         if (previewWhatsappText) {
-            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(e.detail);
+            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(data.text || "");
+        }
+        
+        const previewWAImg = document.getElementById("previewWhatsappImageContainer");
+        if (data.image) {
+            if (previewWAImg) {
+                previewWAImg.innerHTML = `<img src="${data.image}" class="w-full h-auto object-contain">`;
+                previewWAImg.classList.remove("hidden");
+            }
+        } else if (data.image === null) {
+            if (previewWAImg) {
+                previewWAImg.innerHTML = "";
+                previewWAImg.classList.add("hidden");
+            }
         }
     });
 
@@ -460,6 +541,7 @@ export function initPopupManager() {
         input?.addEventListener("change", function (this: HTMLInputElement) {
             handleImageUpload(this, (url) => {
                 updatePreview({ [previewKey]: url as string });
+                currentInicioImages[previewKey] = url as string;
                 clearBtn?.classList.remove("hidden");
                 const del = document.getElementById(deleteId) as HTMLInputElement;
                 if (del) del.value = "0";
@@ -469,6 +551,7 @@ export function initPopupManager() {
         clearBtn?.addEventListener("click", () => {
             if (input) input.value = "";
             updatePreview({ [previewKey]: null });
+            currentInicioImages[previewKey] = null;
             clearBtn?.classList.add("hidden");
             const del = document.getElementById(deleteId) as HTMLInputElement;
             if (del) del.value = "1";
@@ -482,6 +565,7 @@ export function initPopupManager() {
 
     emailImage?.addEventListener("change", function () {
         handleImageUpload(this, (url) => {
+            currentInicioImages.emailImage = url as string;
             const previewImg = document.getElementById(
                 "previewEmailImageThumb",
             );
@@ -497,6 +581,7 @@ export function initPopupManager() {
     });
     clearEmailImage?.addEventListener("click", () => {
         if (emailImage) emailImage.value = "";
+        currentInicioImages.emailImage = null;
         const previewImg = document.getElementById(
             "previewEmailImageThumb",
         );
@@ -516,15 +601,44 @@ export function initPopupManager() {
 
     // Event for Email Preview update from EmailEditor.tsx (Rich Text)
     window.addEventListener("update-email-preview", (e: any) => {
-        const previewCorreoBody =
-            document.getElementById("previewCorreoBody");
+        const data = typeof e.detail === "string" ? { body: e.detail } : e.detail;
+        const previewCorreoBody = document.getElementById("previewCorreoBody");
         if (previewCorreoBody) {
-            previewCorreoBody.innerHTML = e.detail;
+            previewCorreoBody.innerHTML = data.body || "";
+        }
+
+        if (data.title !== undefined) {
+            const previewCorreoTitle = document.getElementById("previewCorreoTitle");
+            if (previewCorreoTitle) previewCorreoTitle.textContent = data.title;
+        }
+
+        const previewImg = document.getElementById("previewEmailImageThumb");
+        const container = document.getElementById("previewEmailAttachementContainer");
+        
+        if (data.image) {
+            if (previewImg && container) {
+                previewImg.innerHTML = `<img src="${data.image}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
+                container.classList.remove("hidden");
+            }
+        } else if (data.image === null) {
+            if (previewImg && container) {
+                previewImg.innerHTML = "";
+                container.classList.add("hidden");
+            }
+        }
+
+        const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
+        if (previewEmailBtn) {
+            if (data.btnText !== undefined) previewEmailBtn.textContent = data.btnText || "Ver Productos";
+            if (data.btnLink !== undefined && 'href' in previewEmailBtn) previewEmailBtn.href = data.btnLink || "#";
+            if (data.btnBgColor !== undefined) previewEmailBtn.style.backgroundColor = data.btnBgColor || "#0b1c3c";
+            if (data.btnTextColor !== undefined) previewEmailBtn.style.color = data.btnTextColor || "#ffffff";
         }
     });
 
     whatsappImage?.addEventListener("change", function () {
         handleImageUpload(this, (url) => {
+            currentInicioImages.whatsappImage = url as string;
             const previewWAImg = document.getElementById(
                 "previewWhatsappImageContainer",
             );
@@ -542,6 +656,7 @@ export function initPopupManager() {
         .getElementById("clearWhatsappImage")
         ?.addEventListener("click", () => {
             if (whatsappImage) whatsappImage.value = "";
+            currentInicioImages.whatsappImage = null;
             const previewWAImg = document.getElementById(
                 "previewWhatsappImageContainer",
             );
@@ -561,6 +676,13 @@ export function initPopupManager() {
             const settings = (await getPopupSettings()) as any;
             if (settings) {
                 savedHomeSettings = settings;
+                currentInicioImages.popup_image_url = settings.image1 || settings.popup_image_url || null;
+                currentInicioImages.popup_image2_url = settings.image2 || settings.popup_image2_url || null;
+                currentInicioImages.popup_mobile_image_url = settings.imageMobile || settings.popup_mobile_image_url || null;
+                currentInicioImages.popup_mobile_image2_url = settings.imageMobile2 || settings.popup_mobile_image2_url || null;
+                currentInicioImages.whatsappImage = settings.whatsappImage || null;
+                currentInicioImages.emailImage = settings.emailImage || null;
+
                 if (btnBgColorInput)
                     btnBgColorInput.value =
                         settings.button_bg_color ||

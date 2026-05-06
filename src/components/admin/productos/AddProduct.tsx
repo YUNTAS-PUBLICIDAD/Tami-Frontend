@@ -216,31 +216,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
     });
 
-    // Imagen de Email obligatoria
-    if (!formData.imagen_email) {
-      newErrors.imagen_email = "La imagen para el Email es obligatoria.";
-    }
-
-    // Asunto del Email obligatorio
-    if (!formData.asunto?.trim()) {
-      newErrors.asunto = "El asunto del email es obligatorio.";
-    }
-
-    // Mensaje de Email obligatorio
-    if (!formData.mensaje_email?.trim()) {
-      newErrors.mensaje_email = "El mensaje del email es obligatorio.";
-    }
-
-    // Imagen de WhatsApp obligatoria
-    if (!formData.imagen_whatsapp) {
-      newErrors.imagen_whatsapp = "La imagen para WhatsApp es obligatoria.";
-    }
-
-    // Mensaje de WhatsApp obligatorio
-    if (!formData.texto_alt_whatsapp?.trim()) {
-      newErrors.texto_alt_whatsapp = "El mensaje de WhatsApp es obligatorio.";
-    }
-
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -465,24 +440,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
 
-      // Agregar imagen email y texto alt email al FormData
-      if (formData.imagen_email) {
-        formDataToSend.append('imagen_email', formData.imagen_email);
-
-      }
-
-      formDataToSend.append('asunto', formData.asunto || '');
-      formDataToSend.append('mensaje_email', formData.mensaje_email || '');
-
-      // Agregar imagen Whatsapp y texto alt Whatsapp al FormData
-      if (formData.imagen_whatsapp) {
-        formDataToSend.append('imagen_Whatsapp', formData.imagen_whatsapp);
-      }
-      formDataToSend.append('texto_alt_Whatsapp', formData.texto_alt_whatsapp || '');
-      // Agregar URL del video si existe
-      if (formData.video_url) {
-        formDataToSend.append('video_url', formData.video_url);
-      }
 
       const response = await apiClient.post(
         config.endpoints.productos.create,
@@ -921,8 +878,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <ul className="list-disc list-outside pl-4 space-y-1 mt-1">
                       <li className="break-words">Debes subir <strong>al menos 4 imágenes</strong> para la galería.</li>
                       <li className="break-words">Cada imagen subida <strong>debe tener su texto SEO</strong>.</li>
-                      <li className="break-words">La <strong>imagen de Email</strong> y su <strong>asunto</strong> son obligatorios.</li>
-                      <li className="break-words">La <strong>imagen de WhatsApp</strong> y su <strong>mensaje</strong> son obligatorios.</li>
                       <li className="break-words">Peso máximo: <strong>2MB</strong> | Formato: <strong>WEBP</strong>.</li>
                     </ul>
                   </div>
@@ -957,133 +912,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
                 </div>
 
 
-                {/* Imagen para Email */}
-                <div className="card mt-6">
-                  <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Correo Electrónico</h5>
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
-                    <p className="font-medium mb-1">ℹ️ Recomendaciones para la imagen del correo:</p>
-                    <ul className="list-disc list-outside pl-4 space-y-1">
-                      <li className="break-words">Esta imagen será la principal en los correos automáticos enviados a los clientes interesados en este producto.</li>
-                      <li className="break-words">Resolución ideal: <strong>600×400 px</strong> a <strong>800×800 px</strong> (formato horizontal o cuadrado).</li>
-                      <li className="break-words">Peso máximo: <strong>2MB</strong> para garantizar la carga rápida en los correos.</li>
-                      <li className="break-words">Formatos admitidos: <strong>WEBP, JPG, PNG</strong>.</li>
-                    </ul>
-                  </div>
-                  <div className="form-input">
-                    <label>Imagen Email:</label>
-                    <div
-                      ref={el => { fieldRefs.current.imagen_email = el; }}
-                      className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_email ? "border-red-500" : "border-gray-300"}`}
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        name="imagen_email"
-                        onChange={e => {
-                          if (e.target.files?.[0]) {
-                            setFormData(prev => ({ ...prev, imagen_email: e.target.files![0] }));
-                          }
-                          if (errors.imagen_email) setErrors(prev => { const n = { ...prev }; delete n.imagen_email; return n; });
-                        }}
-                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                      />
-                    </div>
-                    {errors.imagen_email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_email}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Asunto del Email
-                    </label>
-                    <input
-                      ref={el => { fieldRefs.current.asunto = el; }}
-                      type="text"
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none transition ${errors.asunto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"}`}
-                      value={formData.asunto}
-                      onChange={(e) => {
-                        setFormData(prev => ({ ...prev, asunto: e.target.value }));
-                        if (errors.asunto) setErrors(prev => { const n = { ...prev }; delete n.asunto; return n; });
-                      }}
-                      placeholder="Ej: Empecemos a crear juntos ✨"
-                    />
-                    {errors.asunto && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.asunto}</p>}
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mensaje de Correo
-                    </label>
-                    <div ref={el => { fieldRefs.current.mensaje_email = el; }}>
-                      <EmailEditor
-                        defaultValue={formData.mensaje_email || ""}
-                        onChangeHtml={(html) => {
-                          setFormData(prev => ({ ...prev, mensaje_email: html }));
-                          if (errors.mensaje_email) setErrors(prev => { const n = { ...prev }; delete n.mensaje_email; return n; });
-                        }}
-                      />
-                      {errors.mensaje_email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.mensaje_email}</p>}
-                    </div>
-                  </div>
-                  <div className="form-input mt-4">
-                    <label>URL del Video (opcional):</label>
-                    <input
-                      type="url"
-                      name="video_url"
-                      value={formData.video_url || ''}
-                      onChange={e => setFormData(prev => ({ ...prev, video_url: e.target.value }))}
-                      placeholder="https://www.youtube.com/watch?v=..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                    />
-                  </div>
-                </div>
-                {/* Imagen para Whatsaap */}
-                <div className="card mt-6">
-                  <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-4">Imagen para Whatsapp</h5>
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs sm:text-sm text-blue-800">
-                    <p className="font-medium mb-1">ℹ️ Recomendaciones para la imagen de WhatsApp:</p>
-                    <ul className="list-disc list-outside pl-4 space-y-1">
-                      <li className="break-words">Esta imagen será la que se mostrará en miniatura al enviar la información o cotización por WhatsApp.</li>
-                      <li className="break-words">Resolución ideal: <strong>800×800 px</strong> (formato cuadrado recomendado).</li>
-                      <li className="break-words">Peso máximo: <strong>2MB</strong>.</li>
-                      <li className="break-words">Formatos admitidos: <strong>WEBP, JPG, PNG</strong>.</li>
-                    </ul>
-                  </div>
-                  <div className="form-input">
-                    <label>Imagen Whatsapp:</label>
-                    <div
-                      ref={el => { fieldRefs.current.imagen_whatsapp = el; }}
-                      className={`border border-dashed rounded-lg p-4 bg-white dark:bg-gray-900/70 dark:border-gray-700 ${errors.imagen_whatsapp ? "border-red-500" : "border-gray-300"}`}
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        name="imagen_whatsapp"
-                        onChange={e => {
-                          if (e.target.files?.[0]) {
-                            setFormData(prev => ({ ...prev, imagen_whatsapp: e.target.files![0] }));
-                          }
-                          if (errors.imagen_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.imagen_whatsapp; return n; });
-                        }}
-                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
-                      />
-                    </div>
-                    {errors.imagen_whatsapp && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.imagen_whatsapp}</p>}
-                  </div>
-                  <div className="form-input">
-                    <label>Texto personalizado para cotizar (Whatsapp):</label>
-                    <textarea
-                      ref={el => { fieldRefs.current.texto_alt_whatsapp = el; }}
-                      name="texto_alt_whatsapp"
-                      value={formData.texto_alt_whatsapp || ''}
-                      onChange={e => {
-                        setFormData(prev => ({ ...prev, texto_alt_whatsapp: e.target.value }));
-                        if (errors.texto_alt_whatsapp) setErrors(prev => { const n = { ...prev }; delete n.texto_alt_whatsapp; return n; });
-                      }}
-                      placeholder="Texto para el mensaje de WhatsApp..."
-                      rows={4}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition min-h-[100px] resize-y ${errors.texto_alt_whatsapp ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
-                    />
-                    {errors.texto_alt_whatsapp && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.texto_alt_whatsapp}</p>}
-                  </div>
-                </div>
                 <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6">
                   <button
                     onClick={goBackForm}

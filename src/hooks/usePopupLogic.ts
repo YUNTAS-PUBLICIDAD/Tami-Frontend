@@ -114,13 +114,15 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
                   const tipo = (img.tipo || "").toLowerCase();
                   return tipo === "popup2" || tipo === "popup_2";
                 });
+                const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
+                const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
 
                 finalSettings = {
                   ...finalSettings,
                   popup_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_image_url,
                   popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
-                  popup_mobile_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url,
-                  popup_mobile_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url,
+                  popup_mobile_image_url: imagenPopupMobile ? `${config.apiUrl}${imagenPopupMobile.url_imagen}` : (imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url),
+                  popup_mobile_image2_url: imagenPopupMobile2 ? `${config.apiUrl}${imagenPopupMobile2.url_imagen}` : (imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url),
                   button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
                   button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
                   button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
