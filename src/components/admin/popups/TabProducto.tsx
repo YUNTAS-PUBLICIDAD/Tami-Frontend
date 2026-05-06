@@ -309,14 +309,11 @@ const TabProducto: React.FC = () => {
         // Popup Images
     if (formData.imagen_popup instanceof File) {
       formDataToSend.append("imagen_popup", formData.imagen_popup);
-      formDataToSend.append("popup_image", formData.imagen_popup); // Alias
     }
     formDataToSend.append("texto_alt_popup", formData.texto_alt_popup || "");
 
     if (formData.imagen_popup2 instanceof File) {
       formDataToSend.append("imagen_popup2", formData.imagen_popup2);
-      formDataToSend.append("imagen_popup_2", formData.imagen_popup2);
-      formDataToSend.append("popup_image2", formData.imagen_popup2); // Alias
     }
     formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2 || "");
     formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || "");
@@ -373,47 +370,39 @@ const TabProducto: React.FC = () => {
     formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
     formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
-    // Required flags for partial update
-    formDataToSend.append("_method", "PUT");
-    formDataToSend.append("only_popup", "1");
-
-    // Include safe fallbacks used by some backend update handlers.
-        if (formData.dimensiones) {
-            formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto || "0");
-            formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo || "0");
-            formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho || "0");
-        }
-
-        if (formData.especificaciones) {
-            let specsToSend = formData.especificaciones;
-            if (Array.isArray(specsToSend)) {
-                const specsObj: Record<string, string> = {};
-                specsToSend.forEach((s: any) => {
-                    if (s?.nombre && s?.valor) {
-                        specsObj[s.nombre] = s.valor;
-                    }
-                });
-                specsToSend = specsObj;
-            }
-            formDataToSend.append("especificaciones", JSON.stringify(specsToSend));
-        }
-
-        if (formData.etiqueta?.keywords) {
-            const keywords = formData.etiqueta.keywords;
-            const kwArray = Array.isArray(keywords)
-                ? keywords
-                : String(keywords)
-                        .split(",")
-                        .map((k: string) => k.trim())
-                        .filter(Boolean);
-            formDataToSend.append("keywords", JSON.stringify(kwArray));
-        }
 
     // Required flags for partial update
     formDataToSend.append("_method", "PUT");
     formDataToSend.append("only_popup", "1");
 
-    console.log("📤 Sending popup update (PATCH). Data:");
+    // Include safe fallbacks if they exist in formData
+    if (formData.dimensiones) {
+      formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
+      formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
+      formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
+    }
+
+    if (formData.especificaciones) {
+      let specsToSend = formData.especificaciones;
+      if (Array.isArray(specsToSend)) {
+        const specsObj: Record<string, string> = {};
+        specsToSend.forEach((s: any) => {
+          if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
+        });
+        specsToSend = specsObj;
+      }
+      formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
+    }
+
+    if (formData.etiqueta?.keywords) {
+      const keywords = formData.etiqueta.keywords;
+      const kwArray = Array.isArray(keywords)
+        ? keywords
+        : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
+      formDataToSend.append("keywords", JSON.stringify(kwArray));
+    }
+
+    console.log("📤 Sending popup update (PUT spoofed). Data:");
     for (let [key, value] of (formDataToSend as any).entries()) {
       console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
     }
@@ -440,7 +429,7 @@ const TabProducto: React.FC = () => {
     const errorMsg = error.response?.data?.message || error.message || "No se pudo guardar la configuración.";
     Swal.fire({
       icon: "error",
-      title: "Error de Validación",
+      title: "Error de Guardado",
       text: errorMsg,
     });
   } finally {
