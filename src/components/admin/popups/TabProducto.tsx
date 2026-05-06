@@ -55,7 +55,9 @@ const TabProducto: React.FC = () => {
             }
         };
         fetchProducts();
+    }, []);
 
+    useEffect(() => {
         const handleReset = () => {
             setSelectedProductId("");
             setFormData(null);
