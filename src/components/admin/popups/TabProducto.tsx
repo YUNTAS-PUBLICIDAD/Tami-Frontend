@@ -895,6 +895,9 @@ const TabProducto: React.FC = () => {
                                                 </button>
                                             )}
                                         </div>
+                                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-xl">
+                                            <span className="font-medium">Recomendación para la imagen:</span> Usa formato <span className="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">800x600px</span> o similar para un mejor diseño.
+                                        </div>
                                     </div>
                                 </div>
 
