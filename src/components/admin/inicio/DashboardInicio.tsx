@@ -13,12 +13,12 @@ const data = [
   { name: 'Contacto', visitas: 300 },
 ];
 
-const clientesRecientes = [
-  { id: 1, name: 'Dayana Karim', email: 'dayandao2203@gmail.com', color: 'bg-blue-500' },
-  { id: 2, name: 'hylari', email: 'hilarydamian3@gmail.com', color: 'bg-green-500' },
-  { id: 3, name: 'Joaquin', email: 'joaquinpm178@gmail.com', color: 'bg-purple-500' },
-  { id: 4, name: 'Alisson Torres', email: 'alissontorres1606@gmail.com', color: 'bg-yellow-500' },
-  { id: 5, name: 'jukalii', email: 'ventasneonhouse@gmail.com', color: 'bg-pink-500' },
+const AVATAR_COLORS = [
+  'bg-blue-500',
+  'bg-green-500',
+  'bg-purple-500',
+  'bg-yellow-500',
+  'bg-pink-500',
 ];
 
 const DashboardInicio: React.FC = () => {
@@ -26,9 +26,19 @@ const DashboardInicio: React.FC = () => {
   const [totalBlogs, setTotalBlogs] = useState<number>(0);
   const [loadingProductos, setLoadingProductos] = useState(true);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
-
-
   const { clientes, loading: loadingClientes } = useClientes(false);
+
+
+  const recentClientes = [...clientes]
+    .sort((a, b) =>
+      new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
+    )
+    .slice(0, 5);
+
+
+  const handleVerTodos = () => {
+    window.location.href = '/admin/seguimiento';
+  };
 
   useEffect(() => {
     getProducts()
@@ -49,11 +59,8 @@ const DashboardInicio: React.FC = () => {
       .finally(() => setLoadingBlogs(false));
   }, []);
 
-  const isLoading = loadingProductos || loadingBlogs || loadingClientes;
-
   return (
     <div className="w-full">
-  
       <div className="mb-6">
         <p className="text-gray-500 text-sm mb-1 font-medium">
           Administración <span className="mx-1 font-normal">&gt;</span>{' '}
@@ -62,7 +69,6 @@ const DashboardInicio: React.FC = () => {
         <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white">General</h1>
       </div>
 
-      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Card clientes */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-5">
@@ -70,33 +76,31 @@ const DashboardInicio: React.FC = () => {
             <Users size={28} />
           </div>
           <div>
-            <p className="text-gray-400 dark:text-gray-400 text-sm font-medium mb-1">Total de clientes</p>
+            <p className="text-gray-400 text-sm font-medium mb-1">Total de clientes</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
               {loadingClientes ? '...' : clientes.length}
             </p>
           </div>
         </div>
-
         {/* Card productos */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-5">
           <div className="bg-[#e5fcf5] text-[#20bf6b] dark:bg-green-900/30 dark:text-green-400 p-4 rounded-2xl flex-shrink-0">
             <Package size={28} />
           </div>
           <div>
-            <p className="text-gray-400 dark:text-gray-400 text-sm font-medium mb-1">Total de productos</p>
+            <p className="text-gray-400 text-sm font-medium mb-1">Total de productos</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
               {loadingProductos ? '...' : totalProductos}
             </p>
           </div>
         </div>
-
         {/* Card blogs */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-5">
           <div className="bg-[#f3e8ff] text-[#a55eea] dark:bg-purple-900/30 dark:text-purple-400 p-4 rounded-2xl flex-shrink-0">
             <FileText size={28} />
           </div>
           <div>
-            <p className="text-gray-400 dark:text-gray-400 text-sm font-medium mb-1">Total de blogs</p>
+            <p className="text-gray-400 text-sm font-medium mb-1">Total de blogs</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
               {loadingBlogs ? '...' : totalBlogs}
             </p>
@@ -122,7 +126,11 @@ const DashboardInicio: React.FC = () => {
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                   cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
                 />
-                <Line type="monotone" dataKey="visitas" stroke="#a855f7" strokeWidth={3}
+                <Line
+                  type="monotone"
+                  dataKey="visitas"
+                  stroke="#a855f7"
+                  strokeWidth={3}
                   dot={{ r: 4, fill: '#a855f7', strokeWidth: 2, stroke: '#fff' }}
                   activeDot={{ r: 6, strokeWidth: 0, fill: '#a855f7' }}
                 />
@@ -131,28 +139,53 @@ const DashboardInicio: React.FC = () => {
           </div>
         </div>
 
+        {/* Clientes recientes */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-gray-500" />
               <h2 className="text-[17px] font-semibold text-[#1e293b] dark:text-white">Clientes recientes</h2>
             </div>
-            <button className="bg-[#1e293b] hover:bg-slate-800 text-white text-[13px] font-medium py-1.5 px-4 rounded-lg transition-colors">
+            
+            <button
+              onClick={handleVerTodos}
+              className="bg-teal-600 hover:bg-teal-700 text-white text-[13px] font-medium py-1.5 px-4 rounded-lg transition-colors"
+            >
               Ver todos
             </button>
           </div>
+
           <div className="flex flex-col gap-5">
-            {clientesRecientes.map((cliente) => (
-              <div key={cliente.id} className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${cliente.color}`}>
-                  {cliente.name.substring(0, 2).toUpperCase()}
+            {loadingClientes ? (
+
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3 animate-pulse">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                  </div>
                 </div>
-                <div className="overflow-hidden">
-                  <p className="text-[14px] font-semibold text-[#1e293b] dark:text-white truncate">{cliente.name}</p>
-                  <p className="text-[13px] text-gray-400 dark:text-gray-400 truncate">{cliente.email}</p>
+              ))
+            ) : recentClientes.length === 0 ? (
+              <p className="text-gray-400 text-sm text-center py-4">No hay clientes aún</p>
+            ) : (
+              recentClientes.map((cliente, index) => (
+                <div key={cliente.id} className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`}
+                  >
+                    {cliente.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="text-[14px] font-semibold text-[#1e293b] dark:text-white truncate">
+                      {cliente.name}
+                    </p>
+                    <p className="text-[13px] text-gray-400 truncate">{cliente.email}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
