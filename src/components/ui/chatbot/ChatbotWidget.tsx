@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import robotIcon from "../../../assets/images/chatbot/robot.webp";
+import robotIcon from "../../../assets/icons/Tami_ChatBot.png";
 
 interface Opcion {
   label: string;
@@ -396,7 +396,7 @@ const ChatbotWidget: React.FC = () => {
           )}
           <button onClick={toggleChat} className="relative group w-16 h-16 rounded-[24px] bg-gradient-to-tr from-[#015f86] to-[#0d9488] text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 active:shadow-inner" aria-label="Abrir Chatbot">
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-            <img src={robotIcon.src} alt="Chatbot Avatar" width="40" height="40" decoding="async" className="h-10 w-10 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500" />
+            <img src={robotIcon.src} alt="Chatbot Avatar" width="56" height="56" decoding="async" className="h-14 w-14 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500" />
             <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">1</span>
