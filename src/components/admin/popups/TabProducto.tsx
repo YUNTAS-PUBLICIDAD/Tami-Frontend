@@ -910,7 +910,7 @@ const TabProducto: React.FC = () => {
                                     )}
 
                                     <div className="p-4 bg-blue-50 dark:bg-[#1e2d4a] text-blue-600 dark:text-[#8cb8ff] text-[14px] rounded-xl leading-relaxed font-medium">
-                                        Recomendación para la imagen: Usa formato <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">800x600px</span> o similar para un mejor diseño.
+                                        Recomendación para la imagen: Usa formato <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">600x400px</span> o similar para un mejor diseño.
                                     </div>
                                 </div>
 
