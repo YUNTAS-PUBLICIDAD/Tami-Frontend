@@ -28,6 +28,21 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     const [producto, setProducto] = useState<Producto>(initialProducto);
     const [productViewer, setProductViewer] = useState<string>(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
+    const productTitleParts = (producto.titulo || '').trim().split(/\s+/).filter(Boolean);
+    const productTitleFirstWord = productTitleParts[0] || '';
+    const productTitleRest = productTitleParts.slice(1).join(' ');
+
+    const detailTitleColor = producto.detalle_titulo_color || producto.etiqueta?.titulo_detalle_producto_color || '#2DCCFF';
+    const detailTitleSize = Number(producto.detalle_titulo_tamano || producto.etiqueta?.titulo_detalle_producto_size || 24);
+    const detailTitleStyle = producto.detalle_titulo_estilo || producto.etiqueta?.titulo_detalle_producto_style || 'bold';
+
+    const detalleProductoTituloStyle: React.CSSProperties = {
+        fontSize: `${detailTitleSize}px`,
+        fontWeight: detailTitleStyle === 'bold-italic' || detailTitleStyle === 'bold' ? 800 : 600,
+        fontStyle: detailTitleStyle === 'italic' || detailTitleStyle === 'bold-italic' ? 'italic' : 'normal',
+        textDecoration: detailTitleStyle === 'underline' ? 'underline' : 'none',
+    };
+
     // Cargar datos frescos del producto
     useEffect(() => {
         const fetchFreshProductData = async () => {
@@ -102,8 +117,15 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                     <div className="flex flex-col justify-center text-left">
                         <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words">
-                            {producto.titulo?.split(' ')[0]}
-                            <span className="block text-[#2DCCFF]">{producto.titulo?.split(' ').slice(1).join(' ')}</span>
+                            <span className="block text-white">{productTitleFirstWord}</span>
+                            {productTitleRest && (
+                                <span
+                                    className="block"
+                                    style={{ color: detailTitleColor }}
+                                >
+                                    {productTitleRest}
+                                </span>
+                            )}
                         </h1>
 
                         <p className="text-lg md:text-2xl opacity-90 mb-10 max-full uppercase tracking-wider font-light break-words">
@@ -191,7 +213,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             </div>
 
                             <div className="bg-gray-100  rounded-xl p-6 mb-8 border border-gray-200">
-                                <h3 className="font-bold text-xl text-gray-900 mb-4">Detalles del producto</h3>
+                                <h3 className="mb-4" style={detalleProductoTituloStyle}>Detalles del producto</h3>
 
                                 <h4 className="font-semibold text-lg text-gray-800 mb-2">Especificaciones técnicas:</h4>
                                 <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
