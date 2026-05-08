@@ -373,17 +373,10 @@ const TabProducto: React.FC = () => {
             formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
 
-    // Title Customization Fields (Detailed View)
-    formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
-    formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
-    formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
-
-    // Include safe fallbacks if they exist in formData
-    if (formData.dimensiones) {
-      formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
-      formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
-      formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
-    }
+            // Title Customization Fields (Detailed View)
+            formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
+            formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
+            formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
 
             // Include safe fallbacks if they exist in formData
             if (formData.dimensiones) {
@@ -412,48 +405,48 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
 
-            console.log("📤 Sending popup update (PUT spoofed). Data:");
-            for (let [key, value] of (formDataToSend as any).entries()) {
-                console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
+            formDataToSend.append("_method", "PUT");
+            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Configuración guardada",
+                    text: "El pop-up del producto ha sido actualizado.",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } else {
+                throw new Error(`Error al guardar: ${response.status}`);
+            }
+        } catch (error: any) {
+            console.error("❌ Error saving product popup:", error);
+
+            let errorMessage = "No se pudo guardar la configuración.";
+
+            if (error.response?.data?.errors) {
+                // Format Laravel validation errors
+                const errors = error.response.data.errors;
+                errorMessage = Object.keys(errors)
+                    .map(key => `${key}: ${errors[key].join(', ')}`)
+                    .join('\n');
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else {
+                errorMessage = error.message || "Error desconocido.";
             }
 
-    if (response.status === 200 || response.status === 201) {
-      Swal.fire({
-        icon: "success",
-        title: "Configuración guardada",
-        text: "El pop-up del producto ha sido actualizado.",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    } else {
-      throw new Error(`Error al guardar: ${response.status}`);
-    }
-  } catch (error: any) {
-    console.error("❌ Error saving product popup:", error);
-    
-    let errorMessage = "No se pudo guardar la configuración.";
-    
-    if (error.response?.data?.errors) {
-      // Format Laravel validation errors
-      const errors = error.response.data.errors;
-      errorMessage = Object.keys(errors)
-        .map(key => `${key}: ${errors[key].join(', ')}`)
-        .join('\n');
-    } else if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else {
-      errorMessage = error.message || "Error desconocido.";
-    }
-
-    Swal.fire({
-      icon: "error",
-      title: "Error de Guardado",
-      text: `❌ ${errorMessage}`,
-    });
-  } finally {
-    setIsSaving(false);
-  }
-};
+            Swal.fire({
+                icon: "error",
+                title: "Error de Guardado",
+                text: `❌ ${errorMessage}`,
+            });
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     if (loadingProducts) {
         return <div className="p-8 text-center text-gray-500">Cargando productos...</div>;
@@ -499,8 +492,8 @@ const TabProducto: React.FC = () => {
                                     setActiveTab(tab.id as any);
                                 }}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === tab.id
-                                        ? "bg-teal-600 dark:bg-teal-500 text-white shadow-sm"
-                                        : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200"
+                                    ? "bg-teal-600 dark:bg-teal-500 text-white shadow-sm"
+                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200"
                                     }`}
                             >
                                 {tab.label}
