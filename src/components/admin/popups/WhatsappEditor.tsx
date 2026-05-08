@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bold, Italic, Strikethrough, Smile, List, ListOrdered, Underline } from "lucide-react";
+import { Bold, Italic, Strikethrough, Smile, List, ListOrdered } from "lucide-react";
 
 interface WhatsappEditorProps {
   defaultValue?: string;
@@ -21,7 +21,6 @@ const WhatsappEditor = ({
   const [activeStyles, setActiveStyles] = useState({
     bold: false,
     italic: false,
-    underline: false,
     strikeThrough: false,
     insertOrderedList: false,
     insertUnorderedList: false,
@@ -32,7 +31,6 @@ const WhatsappEditor = ({
     setActiveStyles({
       bold: document.queryCommandState('bold'),
       italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline'),
       strikeThrough: document.queryCommandState('strikeThrough'),
       insertOrderedList: document.queryCommandState('insertOrderedList'),
       insertUnorderedList: document.queryCommandState('insertUnorderedList'),
@@ -149,15 +147,6 @@ const WhatsappEditor = ({
           title="Cursiva"
         >
           <Italic size={18} />
-        </button>
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCommand('underline')}
-          className={getBtnClass('underline')}
-          title="Subrayado"
-        >
-          <Underline size={18} />
         </button>
         <button
           type="button"
