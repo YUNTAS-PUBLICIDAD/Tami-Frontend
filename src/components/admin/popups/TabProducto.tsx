@@ -394,6 +394,17 @@ const TabProducto: React.FC = () => {
                 }
                 formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
             }
+            if (formData.especificaciones) {
+                let specsToSend = formData.especificaciones;
+                if (Array.isArray(specsToSend)) {
+                    const specsObj: Record<string, string> = {};
+                    specsToSend.forEach((s: any) => {
+                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
+                    });
+                    specsToSend = specsObj;
+                }
+                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
+            }
 
             if (formData.etiqueta?.keywords) {
                 const keywords = formData.etiqueta.keywords;
@@ -402,17 +413,18 @@ const TabProducto: React.FC = () => {
                     : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
-
-            console.log("📤 Sending popup update (PUT spoofed). Data:");
-            for (let [key, value] of (formDataToSend as any).entries()) {
-                console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
+            if (formData.etiqueta?.keywords) {
+                const keywords = formData.etiqueta.keywords;
+                const kwArray = Array.isArray(keywords)
+                    ? keywords
+                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
+                formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
 
-            const response = await apiClient.post(
-                config.endpoints.productos.update(selectedProductId),
-                formDataToSend,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
+            formDataToSend.append("_method", "PUT");
+            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
             if (response.status === 200 || response.status === 201) {
                 Swal.fire({
