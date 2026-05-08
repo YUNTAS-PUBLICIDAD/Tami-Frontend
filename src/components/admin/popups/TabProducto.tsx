@@ -373,17 +373,14 @@ const TabProducto: React.FC = () => {
             formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
 
+    // Required flags for partial update
+    formDataToSend.append("_method", "PUT");
+    formDataToSend.append("only_popup", "1");
+
     // Title Customization Fields (Detailed View)
     formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
     formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
     formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
-
-    // Include safe fallbacks if they exist in formData
-    if (formData.dimensiones) {
-      formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
-      formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
-      formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
-    }
 
             // Include safe fallbacks if they exist in formData
             if (formData.dimensiones) {
@@ -391,7 +388,24 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
                 formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
             }
+            // Include safe fallbacks if they exist in formData
+            if (formData.dimensiones) {
+                formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
+                formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
+                formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
+            }
 
+            if (formData.especificaciones) {
+                let specsToSend = formData.especificaciones;
+                if (Array.isArray(specsToSend)) {
+                    const specsObj: Record<string, string> = {};
+                    specsToSend.forEach((s: any) => {
+                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
+                    });
+                    specsToSend = specsObj;
+                }
+                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
+            }
             if (formData.especificaciones) {
                 let specsToSend = formData.especificaciones;
                 if (Array.isArray(specsToSend)) {
@@ -411,11 +425,28 @@ const TabProducto: React.FC = () => {
                     : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
+            if (formData.etiqueta?.keywords) {
+                const keywords = formData.etiqueta.keywords;
+                const kwArray = Array.isArray(keywords)
+                    ? keywords
+                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
+                formDataToSend.append("keywords", JSON.stringify(kwArray));
+            }
 
             console.log("📤 Sending popup update (PUT spoofed). Data:");
             for (let [key, value] of (formDataToSend as any).entries()) {
                 console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
             }
+            console.log("📤 Sending popup update (PUT spoofed). Data:");
+            for (let [key, value] of (formDataToSend as any).entries()) {
+                console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
+            }
+
+            const response = await apiClient.post(
+                config.endpoints.productos.update(selectedProductId),
+                formDataToSend,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
 
     if (response.status === 200 || response.status === 201) {
       Swal.fire({
