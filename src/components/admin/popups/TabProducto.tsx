@@ -55,9 +55,7 @@ const TabProducto: React.FC = () => {
             }
         };
         fetchProducts();
-    }, []);
 
-    useEffect(() => {
         const handleReset = () => {
             setSelectedProductId("");
             setFormData(null);
@@ -372,11 +370,9 @@ const TabProducto: React.FC = () => {
             formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
             formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
-
-            // Title Customization Fields (Detailed View)
-            formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
-            formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
-            formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
+            // Required flags for partial update
+            formDataToSend.append("_method", "PUT");
+            formDataToSend.append("only_popup", "1");
 
             // Include safe fallbacks if they exist in formData
             if (formData.dimensiones) {
@@ -405,10 +401,16 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
 
-            formDataToSend.append("_method", "PUT");
-            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            console.log("📤 Sending popup update (PUT spoofed). Data:");
+            for (let [key, value] of (formDataToSend as any).entries()) {
+                console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
+            }
+
+            const response = await apiClient.post(
+                config.endpoints.productos.update(selectedProductId),
+                formDataToSend,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
 
             if (response.status === 200 || response.status === 201) {
                 Swal.fire({
@@ -423,25 +425,11 @@ const TabProducto: React.FC = () => {
             }
         } catch (error: any) {
             console.error("❌ Error saving product popup:", error);
-
-            let errorMessage = "No se pudo guardar la configuración.";
-
-            if (error.response?.data?.errors) {
-                // Format Laravel validation errors
-                const errors = error.response.data.errors;
-                errorMessage = Object.keys(errors)
-                    .map(key => `${key}: ${errors[key].join(', ')}`)
-                    .join('\n');
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else {
-                errorMessage = error.message || "Error desconocido.";
-            }
-
+            const errorMsg = error.response?.data?.message || error.message || "No se pudo guardar la configuración.";
             Swal.fire({
                 icon: "error",
                 title: "Error de Guardado",
-                text: `❌ ${errorMessage}`,
+                text: errorMsg,
             });
         } finally {
             setIsSaving(false);
@@ -492,8 +480,8 @@ const TabProducto: React.FC = () => {
                                     setActiveTab(tab.id as any);
                                 }}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === tab.id
-                                    ? "bg-teal-600 dark:bg-teal-500 text-white shadow-sm"
-                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200"
+                                        ? "bg-teal-600 dark:bg-teal-500 text-white shadow-sm"
+                                        : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200"
                                     }`}
                             >
                                 {tab.label}
@@ -867,58 +855,45 @@ const TabProducto: React.FC = () => {
                     {activeTab === 'correo' && (
                         <div className="space-y-6">
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                                <div className="flex items-start gap-4 mb-6">
-                                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Correo Electrónico</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Configura el título, mensaje, Boton e imagen para los emails.</p>
-                                    </div>
-                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-blue-600">Correo Electrónico</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Configura la imagen y mensaje de correo para este producto.</p>
 
-                                <div className="mb-6">
-                                    <input
-                                        type="file"
-                                        id="input_imagen_email"
-                                        accept="image/*"
-                                        onChange={(e) => handleFileChange(e, "imagen_email")}
-                                        className="hidden"
-                                    />
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => document.getElementById('input_imagen_email')?.click()}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
-                                        >
-                                            Añadir Imagen Adjunta
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                            </svg>
-                                        </button>
-                                        {(previews.imagen_email || formData.imagen_email) && (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearImage("imagen_email")}
-                                                className="text-red-500 hover:text-red-600 p-2 transition-colors"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
+                                <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
+                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
+                                        {previews.imagen_email || formData.imagen_email ? (
+                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
+                                        ) : (
+                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
                                     </div>
-
-                                    {(previews.imagen_email || formData.imagen_email) && (
-                                        <div className="mb-4 w-full sm:w-48 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shadow-inner">
-                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
+                                    <div className="flex-1 w-full">
+                                        <input
+                                            type="file"
+                                            id="input_imagen_email"
+                                            accept="image/*"
+                                            onChange={(e) => handleFileChange(e, "imagen_email")}
+                                            className="hidden"
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => document.getElementById('input_imagen_email')?.click()}
+                                                className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
+                                            >
+                                                Subir Imagen Correo
+                                            </button>
+                                            {(previews.imagen_email || formData.imagen_email) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleClearImage("imagen_email")}
+                                                    className="text-red-500 hover:text-red-600 p-2"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                         </div>
-                                    )}
-
-                                    <div className="p-4 bg-blue-50 dark:bg-[#1e2d4a] text-blue-600 dark:text-[#8cb8ff] text-[14px] rounded-xl leading-relaxed font-medium">
-                                        Recomendación para la imagen: Usa formato <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">600x400px</span> o similar para un mejor diseño.
                                     </div>
                                 </div>
 
