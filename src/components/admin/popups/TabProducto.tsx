@@ -396,7 +396,25 @@ const TabProducto: React.FC = () => {
                 }
                 formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
             }
+            if (formData.especificaciones) {
+                let specsToSend = formData.especificaciones;
+                if (Array.isArray(specsToSend)) {
+                    const specsObj: Record<string, string> = {};
+                    specsToSend.forEach((s: any) => {
+                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
+                    });
+                    specsToSend = specsObj;
+                }
+                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
+            }
 
+            if (formData.etiqueta?.keywords) {
+                const keywords = formData.etiqueta.keywords;
+                const kwArray = Array.isArray(keywords)
+                    ? keywords
+                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
+                formDataToSend.append("keywords", JSON.stringify(kwArray));
+            }
             if (formData.etiqueta?.keywords) {
                 const keywords = formData.etiqueta.keywords;
                 const kwArray = Array.isArray(keywords)
