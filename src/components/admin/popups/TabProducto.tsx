@@ -445,7 +445,7 @@ const TabProducto: React.FC = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error de Guardado",
-                text: errorMsg,
+                text: `❌ ${errorMessage}`,
             });
         } finally {
             setIsSaving(false);
