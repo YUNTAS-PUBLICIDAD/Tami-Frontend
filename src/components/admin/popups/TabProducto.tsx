@@ -377,6 +377,11 @@ const TabProducto: React.FC = () => {
     formDataToSend.append("_method", "PUT");
     formDataToSend.append("only_popup", "1");
 
+    // Title Customization Fields (Detailed View)
+    formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
+    formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
+    formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
+
     // Include safe fallbacks if they exist in formData
     if (formData.dimensiones) {
       formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
@@ -428,11 +433,25 @@ const TabProducto: React.FC = () => {
     }
   } catch (error: any) {
     console.error("❌ Error saving product popup:", error);
-    const errorMsg = error.response?.data?.message || error.message || "No se pudo guardar la configuración.";
+    
+    let errorMessage = "No se pudo guardar la configuración.";
+    
+    if (error.response?.data?.errors) {
+      // Format Laravel validation errors
+      const errors = error.response.data.errors;
+      errorMessage = Object.keys(errors)
+        .map(key => `${key}: ${errors[key].join(', ')}`)
+        .join('\n');
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else {
+      errorMessage = error.message || "Error desconocido.";
+    }
+
     Swal.fire({
       icon: "error",
       title: "Error de Guardado",
-      text: errorMsg,
+      text: `❌ ${errorMessage}`,
     });
   } finally {
     setIsSaving(false);

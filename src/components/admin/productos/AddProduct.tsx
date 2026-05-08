@@ -415,6 +415,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
+      formDataToSend.append("detalle_titulo_tamano", formData.etiqueta.titulo_detalle_producto_size || "24");
+      formDataToSend.append("detalle_titulo_color", formData.etiqueta.titulo_detalle_producto_color || "#015f86");
+      formDataToSend.append("detalle_titulo_estilo", formData.etiqueta.titulo_detalle_producto_style || "negrita");
       formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo);
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
       formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
@@ -699,6 +702,110 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       className={errors.titulo ? "border-red-500 focus:ring-red-400" : ""}
                     />
                     {errors.titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.titulo}</p>}
+                  </div>
+                  <div className="form-input">
+                    <div className="rounded-2xl border border-slate-700/40 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-4 shadow-xl">
+                      <div className="flex flex-col gap-1 mb-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-800">Estilo del título "Detalle Producto"</label>
+                          <p className="text-xs text-gray-500">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm mb-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-300">Vista previa</span>
+                          <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium text-cyan-200 border border-white/10">
+                            Se actualiza en tiempo real
+                          </span>
+                        </div>
+                        <span
+                          className="block leading-tight break-words uppercase"
+                          style={{
+                            fontSize: `${Number(formData.etiqueta.titulo_detalle_producto_size || 24)}px`,
+                            fontWeight: formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita" ? 800 : 600,
+                            fontStyle: formData.etiqueta.titulo_detalle_producto_style === "cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" ? "italic" : "normal",
+                            textDecoration: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "underline" : "none",
+                          }}
+                        >
+                          {(() => {
+                            const titleParts = (formData.titulo || "Detalles del producto").trim().split(/\s+/).filter(Boolean);
+                            const firstWord = titleParts[0] || "Detalles";
+                            const restWords = titleParts.slice(1).join(" ");
+
+                            return (
+                              <>
+                                <span className="block text-white">{firstWord}</span>
+                                {restWords && (
+                                  <span className="block" style={{ color: formData.etiqueta.titulo_detalle_producto_color || "#2DCCFF" }}>
+                                    {restWords}
+                                  </span>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.3fr] gap-4 items-start">
+                        <div className="opacity-50 cursor-not-allowed">
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Tamaño (px) <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
+                          <input
+                            type="number"
+                            min="12"
+                            max="48"
+                            value={formData.etiqueta.titulo_detalle_producto_size}
+                            disabled
+                            className="w-full cursor-not-allowed"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Color</label>
+                          <input
+                            type="color"
+                            value={formData.etiqueta.titulo_detalle_producto_color}
+                            onChange={(e) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                etiqueta: {
+                                  ...prev.etiqueta,
+                                  titulo_detalle_producto_color: e.target.value,
+                                },
+                              }));
+                            }}
+                            className="h-12 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-sm"
+                          />
+                        </div>
+                        <div className="opacity-50 cursor-not-allowed">
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Estilo <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {[
+                              { value: "normal", label: "Normal" },
+                              { value: "negrita", label: "Negrita" },
+                              { value: "cursiva", label: "Cursiva" },
+                              { value: "negrita_cursiva", label: "Negrita + cursiva" },
+                              { value: "subrayado", label: "Subrayado" },
+                            ].map((option) => {
+                              const isActive = formData.etiqueta.titulo_detalle_producto_style === option.value;
+                              return (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  disabled
+                                  className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-not-allowed ${
+                                    isActive
+                                      ? "border-teal-600 bg-teal-600 text-white shadow-md"
+                                      : "border-gray-200 bg-white text-gray-700"
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="form-input">
                     <label>Subtitulo:</label>
