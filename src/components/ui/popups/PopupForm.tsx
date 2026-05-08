@@ -49,7 +49,7 @@ const PopupForm = ({
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-[9999]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[600px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[95%] h-[600px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[280px] max-w-none h-[560px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[560px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -133,7 +133,7 @@ const PopupForm = ({
                       {errors.general_top}
                     </p>
                   )}
-                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center ${isPreview && previewMode === "mobile" ? "scale-75" : ""}`}>
+                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center scale-75 sm:scale-100`}>
                     <User size={20} />
                   </div>
                   <input
@@ -142,12 +142,12 @@ const PopupForm = ({
                     placeholder="Tu nombre"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[32px] pl-9 pr-4 text-xs" : "h-[32px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-xs sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-9 pr-4 text-[10px]" : "h-[28px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
                   />
                 </div>
 
                 <div className="relative mb-2 sm:mb-3">
-                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center ${isPreview && previewMode === "mobile" ? "scale-75" : ""}`}>
+                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center scale-75 sm:scale-100`}>
                     <FaWhatsapp size={20} />
                   </div>
                   <input
@@ -160,12 +160,12 @@ const PopupForm = ({
                       const val = e.target.value.replace(/\D/g, "");
                       setTelefono(val);
                     }}
-                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[32px] pl-9 pr-4 text-xs" : "h-[32px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-xs sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-9 pr-4 text-[10px]" : "h-[28px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
                   />
                 </div>
 
                 <div className="relative mb-2 sm:mb-3">
-                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center ${isPreview && previewMode === "mobile" ? "scale-75" : ""}`}>
+                  <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center scale-75 sm:scale-100`}>
                     <Mail size={20} />
                   </div>
                   <input
@@ -174,7 +174,7 @@ const PopupForm = ({
                     placeholder="Tu correo"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
-                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[32px] pl-9 pr-4 text-xs" : "h-[32px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-xs sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-9 pr-4 text-[10px]" : "h-[28px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
                   />
                   {errors.general && !errors.general_top && (
                     <p className={`absolute left-0 right-0 top-10 text-[10px] text-center mb-0 mt-0.5 leading-none ${errors.general.includes("success") || errors.general.includes("éxito") ? "text-green-100" : "text-red-500"}`}>
