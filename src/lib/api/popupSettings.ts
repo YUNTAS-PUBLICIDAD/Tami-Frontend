@@ -1,6 +1,7 @@
 import apiClient from "../../services/apiClient";
 
 const POPUP_SETTINGS_ENDPOINT = "/api/v1/admin/popup-settings";
+const SAVE_POPUP_SETTINGS_ENDPOINT = "/api/v1/home-popup";
 const PUBLIC_POPUP_SETTINGS_ENDPOINT = "/api/v1/popup-settings/public";
 
 export interface PopupSettings {
@@ -15,6 +16,17 @@ export interface PopupSettings {
   email_btn_link?: string;
   email_btn_bg_color?: string;
   email_btn_text_color?: string;
+
+  // WhatsApp sequential messages
+  whatsappMessage?: string;
+  whatsappMessage2?: string;
+  whatsappMessage3?: string;
+  whatsappTime1?: number;
+  whatsappTime2?: number;
+  whatsappTime3?: number;
+  whatsappImage?: string;
+  whatsappImage2?: string;
+  whatsappImage3?: string;
 }
 
 export interface PopupSettingsResponse {
@@ -47,7 +59,7 @@ export async function updatePopupSettings(
   payload: UpdatePopupSettingsPayload,
 ): Promise<PopupSettings> {
   const response = await apiClient.patch<PopupSettingsResponse>(
-    POPUP_SETTINGS_ENDPOINT,
+    SAVE_POPUP_SETTINGS_ENDPOINT,
     {
       button_bg_color: payload.button_bg_color,
       button_text_color: payload.button_text_color,
@@ -63,7 +75,7 @@ export async function updatePopupSettingsFormData(
   formData: FormData,
 ): Promise<PopupSettings> {
   const response = await apiClient.post<PopupSettingsResponse>(
-    POPUP_SETTINGS_ENDPOINT,
+    SAVE_POPUP_SETTINGS_ENDPOINT,
     formData,
     {
       headers: {
