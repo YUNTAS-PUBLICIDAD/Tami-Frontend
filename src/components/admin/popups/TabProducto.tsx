@@ -955,23 +955,29 @@ const TabProducto: React.FC = () => {
                                                         </button>
                                                     )}
                                                 </div>
-                                            </div>
                                         </div>
 
                                         <div className="space-y-4">
                                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
                                             <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                <input
-                                                    type="number"
+                                                <select
                                                     value={formData.whatsapp_time_1}
                                                     onChange={(e) => handleFieldChange("whatsapp_time_1", parseInt(e.target.value) || 0)}
-                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm"
-                                                    min="0"
-                                                />
-                                                <p className="text-[10px] text-gray-500 italic mt-2">Envío inmediato si es 0.</p>
+                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                >
+                                                    <option value={0}>Inmediato</option>
+                                                    <option value={1}>1 minuto</option>
+                                                    <option value={5}>5 minutos</option>
+                                                    <option value={10}>10 minutos</option>
+                                                    <option value={30}>30 minutos</option>
+                                                    <option value={45}>45 minutos</option>
+                                                    <option value={60}>1 hora</option>
+                                                </select>
+                                                <p className="text-[10px] text-gray-500 italic mt-2">Envío inmediato al suscribirse.</p>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
                                     <div className="space-y-2">
                                         <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
@@ -1039,13 +1045,19 @@ const TabProducto: React.FC = () => {
                                         <div className="space-y-4">
                                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
                                             <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                <input
-                                                    type="number"
+                                                <select
                                                     value={formData.whatsapp_time_2}
                                                     onChange={(e) => handleFieldChange("whatsapp_time_2", parseInt(e.target.value) || 0)}
-                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm"
-                                                    min="0"
-                                                />
+                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                >
+                                                    <option value={0}>Inmediato</option>
+                                                    <option value={1}>1 minuto</option>
+                                                    <option value={5}>5 minutos</option>
+                                                    <option value={10}>10 minutos</option>
+                                                    <option value={30}>30 minutos</option>
+                                                    <option value={45}>45 minutos</option>
+                                                    <option value={60}>1 hora</option>
+                                                </select>
                                                 <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 1.</p>
                                             </div>
                                         </div>
@@ -1111,25 +1123,31 @@ const TabProducto: React.FC = () => {
                                                         </button>
                                                     )}
                                                 </div>
-                                            </div>
                                         </div>
 
                                         <div className="space-y-4">
                                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
                                             <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                <input
-                                                    type="number"
+                                                <select
                                                     value={formData.whatsapp_time_3}
                                                     onChange={(e) => handleFieldChange("whatsapp_time_3", parseInt(e.target.value) || 0)}
-                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm"
-                                                    min="0"
-                                                />
+                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                >
+                                                    <option value={0}>Inmediato</option>
+                                                    <option value={1}>1 minuto</option>
+                                                    <option value={5}>5 minutos</option>
+                                                    <option value={10}>10 minutos</option>
+                                                    <option value={30}>30 minutos</option>
+                                                    <option value={45}>45 minutos</option>
+                                                    <option value={60}>1 hora</option>
+                                                </select>
                                                 <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 2.</p>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div className="space-y-2">
+                                <div className="space-y-2">
                                         <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
                                         <WhatsappEditor
                                             defaultValue={formData.mensaje_whatsapp_3}
