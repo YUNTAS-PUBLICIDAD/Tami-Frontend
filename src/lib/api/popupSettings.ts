@@ -1,7 +1,7 @@
 import apiClient from "../../services/apiClient";
 
 const POPUP_SETTINGS_ENDPOINT = "/api/v1/admin/popup-settings";
-const SAVE_POPUP_SETTINGS_ENDPOINT = "/api/v1/home-popup";
+const SAVE_POPUP_SETTINGS_ENDPOINT = "/api/v1/admin/popup-settings";
 const PUBLIC_POPUP_SETTINGS_ENDPOINT = "/api/v1/popup-settings/public";
 
 export interface PopupSettings {

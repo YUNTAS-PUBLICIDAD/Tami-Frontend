@@ -14,7 +14,7 @@ const TabProducto: React.FC = () => {
     const [formData, setFormData] = useState<any>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [previews, setPreviews] = useState<{ [key: string]: string }>({});
-    const [activeTab, setActiveTab] = useState<'info' | 'etiqueta' | 'whatsapp' | 'correo'>('info');
+    const [activeTab, setActiveTab] = useState<'popups' | 'etiqueta' | 'whatsapp' | 'correo'>('popups');
     const [whatsappSelected, setWhatsappSelected] = useState<number>(1);
     const [loading, setLoading] = useState(true);
 
@@ -37,13 +37,21 @@ const TabProducto: React.FC = () => {
         };
 
         window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
+        window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
+        window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
         window.addEventListener("update-email-preview", handleEmailUpdate);
 
         return () => {
             window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
+            window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
+            window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
             window.removeEventListener("update-email-preview", handleEmailUpdate);
         };
-    }, []);
+    }, [whatsappSelected]);
+    
+    useEffect(() => {
+        window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
+    }, [whatsappSelected]);
 
     useEffect(() => {
         if (formData) {
@@ -298,6 +306,16 @@ const TabProducto: React.FC = () => {
                         [field]: file,
                         [`delete_${field}`]: 0
                     };
+                    
+                    // Dispatch specific preview events for WhatsApp messages
+                    if (field === "imagen_whatsapp") {
+                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview", { detail: { image: url } }));
+                    } else if (field === "imagen_whatsapp_2") {
+                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-2", { detail: { image: url } }));
+                    } else if (field === "imagen_whatsapp_3") {
+                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", { detail: { image: url } }));
+                    }
+                    
                     // We pass the base64 URL as an override to ensure the preview uses it instead of the File
                     syncPreview(newData, { [field]: url });
                     return newData;
@@ -985,6 +1003,7 @@ const TabProducto: React.FC = () => {
                                             defaultValue={formData.texto_alt_whatsapp}
                                             inputId="whatsappMessageProducto"
                                             updateEventName="update-whatsapp-editor-producto"
+                                            previewEventName="update-whatsapp-preview"
                                         />
                                     </div>
                                 </div>
@@ -1069,6 +1088,7 @@ const TabProducto: React.FC = () => {
                                             defaultValue={formData.mensaje_whatsapp_2}
                                             inputId="whatsappMessageProducto2"
                                             updateEventName="update-whatsapp-editor-producto-2"
+                                            previewEventName="update-whatsapp-preview-2"
                                         />
                                     </div>
                                 </div>
@@ -1153,6 +1173,7 @@ const TabProducto: React.FC = () => {
                                             defaultValue={formData.mensaje_whatsapp_3}
                                             inputId="whatsappMessageProducto3"
                                             updateEventName="update-whatsapp-editor-producto-3"
+                                            previewEventName="update-whatsapp-preview-3"
                                         />
                                     </div>
                                 </div>
