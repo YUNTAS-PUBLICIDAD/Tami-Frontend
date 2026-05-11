@@ -49,6 +49,9 @@ export interface ProductFormularioPOST {
   email_btn_link?: string;
   email_btn_bg_color?: string;
   email_btn_text_color?: string;
+  detalle_titulo_tamano?: string;
+  detalle_titulo_color?: string;
+  detalle_titulo_estilo?: string;
   etiqueta: {
     keywords: string[];
     meta_titulo: string;
@@ -58,6 +61,9 @@ export interface ProductFormularioPOST {
     titulo_popup_1?: string;
     titulo_popup_2?: string;
     titulo_popup_3?: string;
+    titulo_detalle_producto_size?: string;
+    titulo_detalle_producto_color?: string;
+    titulo_detalle_producto_style?: string;
     popup_button_color?: string;
     popup_text_color?: string;
     popup_button_text?: string;
@@ -78,6 +84,9 @@ export interface ImagenBack {
   email_btn_link?: string;
   email_btn_bg_color?: string;
   email_btn_text_color?: string;
+  detalle_titulo_tamano?: string;
+  detalle_titulo_color?: string;
+  detalle_titulo_estilo?: string;
 }
 
 // Usado para el formulario de creación/edición
@@ -106,6 +115,9 @@ export default interface Producto {
   precio: number;
   video_url?: string;
   createdAt: string | null;
+  detalle_titulo_tamano?: string;
+  detalle_titulo_color?: string;
+  detalle_titulo_estilo?: string;
   etiqueta: {
     keywords: string
     meta_titulo: string;
@@ -115,6 +127,9 @@ export default interface Producto {
     titulo_popup_1?: string;
     titulo_popup_2?: string;
     titulo_popup_3?: string;
+    titulo_detalle_producto_size?: string;
+    titulo_detalle_producto_color?: string;
+    titulo_detalle_producto_style?: string;
     popup_button_color?: string;
     popup_text_color?: string;
     popup_button_text?: string;
@@ -150,6 +165,9 @@ export const defaultValuesProduct: ProductFormularioPOST = {
     titulo_popup_1: "",
     titulo_popup_2: "",
     titulo_popup_3: "",
+    titulo_detalle_producto_size: "24",
+    titulo_detalle_producto_color: "#015f86",
+    titulo_detalle_producto_style: "negrita",
     popup_button_color: "#008B8B",
     popup_text_color: "#000000",
     popup_button_text: "¡COTIZA AHORA!",
@@ -197,4 +215,7 @@ export const defaultValuesProduct: ProductFormularioPOST = {
   email_btn_link: "",
   email_btn_bg_color: "#000000",
   email_btn_text_color: "#FFFFFF",
+  detalle_titulo_tamano: "24",
+  detalle_titulo_color: "#015f86",
+  detalle_titulo_estilo: "negrita",
 };

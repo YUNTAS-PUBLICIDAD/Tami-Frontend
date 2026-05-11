@@ -248,11 +248,70 @@ const productosUrl = config.endpoints.productos;
       return;
     }
 
-    productTitle.textContent = product.titulo;
+    // Aplicar estilos y contenido al título principal (Hero)
+    if (productTitle) {
+
+      const title = product.titulo || "";
+      const titleParts = title.trim().split(/\s+/).filter(Boolean);
+      const firstWord = titleParts[0] || "";
+      const restWords = titleParts.slice(1).join(" ");
+
+      productTitle.innerHTML = "";
+      const spanFirst = document.createElement("span");
+      spanFirst.className = "block text-white";
+      spanFirst.textContent = firstWord;
+      productTitle.appendChild(spanFirst);
+
+      if (restWords) {
+        const spanRest = document.createElement("span");
+        spanRest.className = "block";
+        spanRest.style.setProperty('color', product.detalle_titulo_color || "#2DCCFF", 'important');
+        spanRest.textContent = restWords;
+        productTitle.appendChild(spanRest);
+      }
+
+      // Aplicar tamaño y estilo con alta prioridad
+      const style = product.detalle_titulo_estilo || "negrita";
+      const fontSize = product.detalle_titulo_tamano ? `${product.detalle_titulo_tamano}px` : "";
+      const fontWeight = (style === "negrita" || style === "negrita_cursiva") ? "800" : "600";
+      const fontStyle = (style === "cursiva" || style === "negrita_cursiva") ? "italic" : "normal";
+      const textDecoration = (style === "subrayado") ? "underline" : "none";
+
+      [productTitle, spanFirst].forEach(el => {
+        if (fontSize) el.style.setProperty('font-size', fontSize, 'important');
+        el.style.setProperty('font-weight', fontWeight, 'important');
+        el.style.setProperty('font-style', fontStyle, 'important');
+        el.style.setProperty('text-decoration', textDecoration, 'important');
+      });
+      
+      // El segundo span también necesita los estilos heredados o aplicados
+      if (productTitle.children[1]) {
+        const secondSpan = productTitle.children[1];
+        if (fontSize) secondSpan.style.setProperty('font-size', fontSize, 'important');
+        secondSpan.style.setProperty('font-weight', fontWeight, 'important');
+        secondSpan.style.setProperty('font-style', fontStyle, 'important');
+        secondSpan.style.setProperty('text-decoration', textDecoration, 'important');
+      }
+    }
+
     productSubtitle.textContent = product.subtitulo;
-    productImg.src = `${getApiUrl}${product.imagenes[0].url_imagen}`;
+    productImg.src = `${getApiUrl}${product.imagenes[0]?.url_imagen || ""}`;
     productImg.alt = product.titulo;
-    infoTitle.textContent = product.titulo;
+
+    // Aplicar estilos al título de información
+    if (infoTitle) {
+      infoTitle.textContent = product.titulo;
+      if (product.detalle_titulo_color) {
+        infoTitle.style.setProperty('color', product.detalle_titulo_color, 'important');
+      }
+      const style = product.detalle_titulo_estilo || "negrita";
+      infoTitle.style.setProperty('font-weight', (style === "negrita" || style === "negrita_cursiva") ? "800" : "600", 'important');
+      infoTitle.style.setProperty('font-style', (style === "cursiva" || style === "negrita_cursiva") ? "italic" : "normal", 'important');
+      infoTitle.style.setProperty('text-decoration', (style === "subrayado") ? "underline" : "none", 'important');
+      if (product.detalle_titulo_tamano) {
+        infoTitle.style.setProperty('font-size', `${product.detalle_titulo_tamano}px`, 'important');
+      }
+    }
     infoDescription.textContent = product.descripcion;
 
     if (product.imagenes?.length) {
@@ -422,7 +481,8 @@ const productosUrl = config.endpoints.productos;
 
     try {
       const res = await fetch(
-        `${getApiUrl}${productosUrl.list}/link/${productId}`
+        `${getApiUrl}${productosUrl.list}/link/${productId}`,
+        { cache: "no-store" }
       );
       if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
       const product = (await res.json()).data;
