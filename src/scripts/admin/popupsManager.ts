@@ -737,6 +737,8 @@ export function initPopupManager() {
                 currentInicioImages.popup_mobile_image_url = settings.imageMobile || settings.popup_mobile_image_url || null;
                 currentInicioImages.popup_mobile_image2_url = settings.imageMobile2 || settings.popup_mobile_image2_url || null;
                 currentInicioImages.whatsappImage = settings.whatsappImage || null;
+                currentInicioImages.whatsappImage2 = settings.whatsappImage2 || null;
+                currentInicioImages.whatsappImage3 = settings.whatsappImage3 || null;
                 currentInicioImages.emailImage = settings.emailImage || null;
 
                 if (btnBgColorInput)
@@ -826,26 +828,19 @@ export function initPopupManager() {
                     if (previewCorreoTitle) previewCorreoTitle.textContent = settings.emailTitle || "";
                 }
 
-                if (settings.whatsappImage || settings.whatsappImage2 || settings.whatsappImage3) {
-                    const previewWAImg = document.getElementById("previewWhatsappImageContainer");
-                    if (previewWAImg && settings.whatsappImage) {
-                        previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-auto object-contain">`;
-                        previewWAImg.classList.remove("hidden");
-                    }
-                    document.getElementById("clearWhatsappImage")?.classList.toggle("hidden", !settings.whatsappImage);
-                    document.getElementById("clearWhatsappImage2")?.classList.toggle("hidden", !settings.whatsappImage2);
-                    document.getElementById("clearWhatsappImage3")?.classList.toggle("hidden", !settings.whatsappImage3);
-                    
-                    currentInicioImages.whatsappImage = settings.whatsappImage || null;
-                    currentInicioImages.whatsappImage2 = settings.whatsappImage2 || null;
-                    currentInicioImages.whatsappImage3 = settings.whatsappImage3 || null;
+                document.getElementById("clearWhatsappImage")?.classList.toggle("hidden", !settings.whatsappImage);
+                document.getElementById("clearWhatsappImage2")?.classList.toggle("hidden", !settings.whatsappImage2);
+                document.getElementById("clearWhatsappImage3")?.classList.toggle("hidden", !settings.whatsappImage3);
+                
+                currentInicioImages.whatsappImage = settings.whatsappImage || null;
+                currentInicioImages.whatsappImage2 = settings.whatsappImage2 || null;
+                currentInicioImages.whatsappImage3 = settings.whatsappImage3 || null;
 
-                    whatsappData[1].image = settings.whatsappImage || null;
-                    whatsappData[2].image = settings.whatsappImage2 || null;
-                    whatsappData[3].image = settings.whatsappImage3 || null;
+                whatsappData[1].image = settings.whatsappImage || null;
+                whatsappData[2].image = settings.whatsappImage2 || null;
+                whatsappData[3].image = settings.whatsappImage3 || null;
 
-                    updateMainWhatsappPreview();
-                }
+                updateMainWhatsappPreview();
 
                 if (settings.emailImage) {
                     const previewImg = document.getElementById(
