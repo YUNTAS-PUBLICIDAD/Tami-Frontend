@@ -383,7 +383,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
 <style is:global>
     /* Estilos para cuando la vista previa está en modo móvil */
     #previewStage.is-mobile-view {
-        min-height: 650px;
+        min-height: 550px;
         background-color: #f3f4f6;
     }
 
@@ -392,22 +392,13 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
     }
 
     #previewStage.is-mobile-view #previewScrollModalContainer {
-        padding: 40px 0;
-        transform: scale(0.85);
-        transform-origin: center center;
+        padding: 0;
+        transform: none;
     }
 
-    /* Simulación de marco de teléfono para una vista más premium */
+    /* Marco eliminado a petición del usuario */
     #previewStage.is-mobile-view #previewScrollModalContainer::before {
-        content: "";
-        position: absolute;
-        width: 344px;
-        height: 624px;
-        border: 12px solid #1f2937;
-        border-radius: 40px;
-        background: transparent;
-        z-index: -1;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        display: none;
     }
 
     /* Fondo para la vista previa de escritorio (igual al móvil) */

@@ -275,6 +275,11 @@ const TabProducto: React.FC = () => {
         try {
             const formDataToSend = new FormData();
 
+            // Explicitly set PUT method for Laravel compatibility with multipart/form-data
+            formDataToSend.append("_method", "PUT");
+            // Flag to backend to only process popup-related fields
+            formDataToSend.append("only_popup", "1");
+
             // Baseline product fields (unchanged) to satisfy strict backend update handlers.
             formDataToSend.append("nombre", formData.nombre || "");
             formDataToSend.append("titulo", formData.titulo || "");
@@ -635,7 +640,7 @@ const TabProducto: React.FC = () => {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x320px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -697,7 +702,7 @@ const TabProducto: React.FC = () => {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x320px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
