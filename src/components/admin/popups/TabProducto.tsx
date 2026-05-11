@@ -275,6 +275,11 @@ const TabProducto: React.FC = () => {
         try {
             const formDataToSend = new FormData();
 
+            // Explicitly set PUT method for Laravel compatibility with multipart/form-data
+            formDataToSend.append("_method", "PUT");
+            // Flag to backend to only process popup-related fields
+            formDataToSend.append("only_popup", "1");
+
             // Baseline product fields (unchanged) to satisfy strict backend update handlers.
             formDataToSend.append("nombre", formData.nombre || "");
             formDataToSend.append("titulo", formData.titulo || "");
