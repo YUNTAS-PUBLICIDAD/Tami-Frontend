@@ -235,15 +235,13 @@ const BlogsTable = () => {
 
     // Helper para formatear la fecha
     const formatDate = (dateString?: string | null) => {
-      if (!dateString) return "FECHA / HORA DE PUBLICACIÓN";
+      if (!dateString) return "FECHA DE PUBLICACIÓN";
       // Parse manual para evitar desfases por zona horaria
       const parts = dateString.split(/[- :T]/);
       const year = parts[0];
       const month = parts[1];
       const day = parts[2];
-      const hours = parts[3] || "00";
-      const minutes = parts[4] || "00";
-      return `${day}-${month}-${year} / ${hours}:${minutes}`;
+      return `${day}-${month}-${year}`;
     };
 
     return (
