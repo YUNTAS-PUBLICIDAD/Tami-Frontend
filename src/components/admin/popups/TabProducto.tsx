@@ -280,36 +280,10 @@ const TabProducto: React.FC = () => {
             // Flag to backend to only process popup-related fields
             formDataToSend.append("only_popup", "1");
 
-            // Baseline product fields (unchanged) to satisfy strict backend update handlers.
-            formDataToSend.append("nombre", formData.nombre || "");
-            formDataToSend.append("titulo", formData.titulo || "");
-            formDataToSend.append("subtitulo", formData.subtitulo || "");
-            formDataToSend.append("descripcion", formData.descripcion || "");
-            formDataToSend.append("seccion", formData.seccion || "");
-            formDataToSend.append("link", formData.link || "");
-            formDataToSend.append("stock", String(formData.stock ?? 0));
-            formDataToSend.append("precio", String(formData.precio ?? 0));
+            // We REMOVED baseline fields (nombre, descripcion, etc.) and gallery images
+            // to avoid triggering strict backend validations that cause 500 errors.
+            // only_popup: 1 tells the backend to only look at what we send below.
 
-            // Keep current gallery references to avoid backend rules that require gallery context.
-            if (Array.isArray(formData.producto_imagenes)) {
-                formData.producto_imagenes
-                    .filter((img: any) => img?.tipo === "galeria" || !img?.tipo)
-                    .forEach((img: any, idx: number) => {
-                        let urlLimpia = img.url_imagen || "";
-                        if (typeof urlLimpia === "string" && urlLimpia.includes(config.apiUrl)) {
-                            urlLimpia = urlLimpia.replace(config.apiUrl, "");
-                        }
-                        if (typeof urlLimpia === "string") {
-                            urlLimpia = urlLimpia.split("?")[0];
-                        }
-
-                        formDataToSend.append(`imagenes_existentes[${idx}][url]`, urlLimpia || "");
-                        if (img.id != null) {
-                            formDataToSend.append(`imagenes_existentes[${idx}][id]`, String(img.id));
-                        }
-                        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.texto_alt_SEO || "");
-                    });
-            }
 
             // Popup Images
             if (formData.imagen_popup instanceof File) {
