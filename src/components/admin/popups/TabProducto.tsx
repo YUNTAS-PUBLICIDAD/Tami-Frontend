@@ -145,13 +145,13 @@ const TabProducto: React.FC = () => {
                 // Whatsapp Data
                 imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
                 texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "",
-                mensaje_whatsapp_2: imagenWhatsapp?.mensaje_whatsapp_2 || "",
-                mensaje_whatsapp_3: imagenWhatsapp?.mensaje_whatsapp_3 || "",
+                mensaje_whatsapp_2: imagenWhatsapp?.whatsapp_mensaje_2 || "",
+                mensaje_whatsapp_3: imagenWhatsapp?.whatsapp_mensaje_3 || "",
                 whatsapp_time_1: imagenWhatsapp?.whatsapp_time_1 || 0,
                 whatsapp_time_2: imagenWhatsapp?.whatsapp_time_2 || 0,
                 whatsapp_time_3: imagenWhatsapp?.whatsapp_time_3 || 0,
-                imagen_whatsapp_2: imagenWhatsapp?.imagen_whatsapp_2 ? getFullImageUrl(imagenWhatsapp.imagen_whatsapp_2) : null,
-                imagen_whatsapp_3: imagenWhatsapp?.imagen_whatsapp_3 ? getFullImageUrl(imagenWhatsapp.imagen_whatsapp_3) : null,
+                imagen_whatsapp_2: imagenWhatsapp?.whatsapp_image_url_2 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_2) : null,
+                imagen_whatsapp_3: imagenWhatsapp?.whatsapp_image_url_3 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_3) : null,
 
                 delete_imagen_popup: 0,
                 delete_imagen_popup2: 0,
