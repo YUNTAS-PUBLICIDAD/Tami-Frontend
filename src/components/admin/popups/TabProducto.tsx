@@ -382,18 +382,15 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
 
-            // Explicitly set PUT method for Laravel compatibility with multipart/form-data (at the end)
-            formDataToSend.append("_method", "PUT");
-            formDataToSend.append("only_popup", "1");
-
-            console.log("🚀 VERSIÓN ACTUALIZADA CON SPOOFING - Enviando datos:");
+            console.log("🚀 INTENTO CON PUT DIRECTO - Enviando datos:");
             for (let [key, value] of (formDataToSend as any).entries()) {
                 console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
             }
 
-            const response = await apiClient.post(
+            const response = await apiClient.put(
                 config.endpoints.productos.update(selectedProductId),
-                formDataToSend
+                formDataToSend,
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
 
             if (response.status === 200 || response.status === 201) {
