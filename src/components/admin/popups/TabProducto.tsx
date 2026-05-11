@@ -55,9 +55,7 @@ const TabProducto: React.FC = () => {
             }
         };
         fetchProducts();
-    }, []);
 
-    useEffect(() => {
         const handleReset = () => {
             setSelectedProductId("");
             setFormData(null);
@@ -277,6 +275,11 @@ const TabProducto: React.FC = () => {
         try {
             const formDataToSend = new FormData();
 
+            // Explicitly set PUT method for Laravel compatibility with multipart/form-data
+            formDataToSend.append("_method", "PUT");
+            // Flag to backend to only process popup-related fields
+            formDataToSend.append("only_popup", "1");
+
             // Baseline product fields (unchanged) to satisfy strict backend update handlers.
             formDataToSend.append("nombre", formData.nombre || "");
             formDataToSend.append("titulo", formData.titulo || "");
@@ -396,17 +399,6 @@ const TabProducto: React.FC = () => {
                 }
                 formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
             }
-            if (formData.especificaciones) {
-                let specsToSend = formData.especificaciones;
-                if (Array.isArray(specsToSend)) {
-                    const specsObj: Record<string, string> = {};
-                    specsToSend.forEach((s: any) => {
-                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-                    });
-                    specsToSend = specsObj;
-                }
-                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-            }
 
             if (formData.etiqueta?.keywords) {
                 const keywords = formData.etiqueta.keywords;
@@ -415,18 +407,17 @@ const TabProducto: React.FC = () => {
                     : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
-            if (formData.etiqueta?.keywords) {
-                const keywords = formData.etiqueta.keywords;
-                const kwArray = Array.isArray(keywords)
-                    ? keywords
-                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
-                formDataToSend.append("keywords", JSON.stringify(kwArray));
+
+            console.log("📤 Sending popup update (PUT spoofed). Data:");
+            for (let [key, value] of (formDataToSend as any).entries()) {
+                console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
             }
 
-            formDataToSend.append("_method", "PUT");
-            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const response = await apiClient.post(
+                config.endpoints.productos.update(selectedProductId),
+                formDataToSend,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
 
             if (response.status === 200 || response.status === 201) {
                 Swal.fire({
@@ -649,7 +640,7 @@ const TabProducto: React.FC = () => {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x320px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -711,7 +702,7 @@ const TabProducto: React.FC = () => {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x320px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -885,58 +876,45 @@ const TabProducto: React.FC = () => {
                     {activeTab === 'correo' && (
                         <div className="space-y-6">
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                                <div className="flex items-start gap-4 mb-6">
-                                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">Correo Electrónico</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Configura el título, mensaje, Boton e imagen para los emails.</p>
-                                    </div>
-                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-blue-600">Correo Electrónico</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Configura la imagen y mensaje de correo para este producto.</p>
 
-                                <div className="mb-6">
-                                    <input
-                                        type="file"
-                                        id="input_imagen_email"
-                                        accept="image/*"
-                                        onChange={(e) => handleFileChange(e, "imagen_email")}
-                                        className="hidden"
-                                    />
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => document.getElementById('input_imagen_email')?.click()}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
-                                        >
-                                            Añadir Imagen Adjunta
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                            </svg>
-                                        </button>
-                                        {(previews.imagen_email || formData.imagen_email) && (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleClearImage("imagen_email")}
-                                                className="text-red-500 hover:text-red-600 p-2 transition-colors"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
+                                <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
+                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
+                                        {previews.imagen_email || formData.imagen_email ? (
+                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
+                                        ) : (
+                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
                                     </div>
-
-                                    {(previews.imagen_email || formData.imagen_email) && (
-                                        <div className="mb-4 w-full sm:w-48 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shadow-inner">
-                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
+                                    <div className="flex-1 w-full">
+                                        <input
+                                            type="file"
+                                            id="input_imagen_email"
+                                            accept="image/*"
+                                            onChange={(e) => handleFileChange(e, "imagen_email")}
+                                            className="hidden"
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => document.getElementById('input_imagen_email')?.click()}
+                                                className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
+                                            >
+                                                Subir Imagen Correo
+                                            </button>
+                                            {(previews.imagen_email || formData.imagen_email) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleClearImage("imagen_email")}
+                                                    className="text-red-500 hover:text-red-600 p-2"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                         </div>
-                                    )}
-
-                                    <div className="p-4 bg-blue-50 dark:bg-[#1e2d4a] text-blue-600 dark:text-[#8cb8ff] text-[14px] rounded-xl leading-relaxed font-medium">
-                                        Recomendación para la imagen: Usa formato <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-[#283e66] px-2 py-0.5 rounded text-blue-700 dark:text-[#b3d4ff] mx-0.5">600x400px</span> o similar para un mejor diseño.
                                     </div>
                                 </div>
 
