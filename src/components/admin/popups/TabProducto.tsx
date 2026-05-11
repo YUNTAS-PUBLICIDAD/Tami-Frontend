@@ -408,15 +408,18 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
 
-            console.log("📤 Sending popup update (PUT spoofed). Data:");
+            // Explicitly set PUT method for Laravel compatibility with multipart/form-data (at the end)
+            formDataToSend.append("_method", "PUT");
+            formDataToSend.append("only_popup", "1");
+
+            console.log("🚀 VERSIÓN ACTUALIZADA CON SPOOFING - Enviando datos:");
             for (let [key, value] of (formDataToSend as any).entries()) {
                 console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
             }
 
             const response = await apiClient.post(
                 config.endpoints.productos.update(selectedProductId),
-                formDataToSend,
-                { headers: { "Content-Type": "multipart/form-data" } }
+                formDataToSend
             );
 
             if (response.status === 200 || response.status === 201) {
