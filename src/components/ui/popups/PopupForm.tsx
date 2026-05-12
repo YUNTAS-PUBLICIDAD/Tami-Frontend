@@ -49,7 +49,7 @@ const PopupForm = ({
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-[9999]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[280px] max-w-none h-[560px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[560px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[500px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[500px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -81,7 +81,7 @@ const PopupForm = ({
           <div
             className={`${isPreview ? (previewMode === "mobile" ? "flex" : "hidden") : "flex sm:hidden"} absolute inset-0 flex-col bg-white overflow-hidden`}
           >
-            <div className="h-1/2 w-full relative overflow-hidden">
+            <div className="h-[250px] w-full relative overflow-hidden">
               <img
                 src={settings?.popup_mobile_image_url || asesoriaImg.src}
                 alt="Imagen Móvil 1"
@@ -100,7 +100,7 @@ const PopupForm = ({
 
           {/* Form Content */}
           <div className="relative z-10 w-full text-white animate-fadeInRight h-full">
-            <div className="sm:py-10 p-8 pb-2 sm:px-8 h-full flex flex-col justify-start gap-6">
+            <div className="sm:py-10 p-6 pb-2 sm:px-8 h-full flex flex-col justify-start gap-6">
               {/* Close Button */}
               <button
                 onClick={closeModal}
@@ -119,13 +119,13 @@ const PopupForm = ({
                 </svg>
               </button>
 
-              <div className="flex justify-center w-full mt-4 min-h-[72px]">
+              <div className="flex justify-center w-full mt-4 min-h-[50px] sm:min-h-[72px]">
                 {/* Reserved space for title */}
               </div>
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-8 max-w-[175px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-8 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-6 max-w-[200px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-6 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
               >
                 <div className="relative mb-2 sm:mb-3">
                   {errors.general_top && (

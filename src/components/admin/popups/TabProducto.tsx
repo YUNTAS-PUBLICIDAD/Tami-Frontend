@@ -39,10 +39,14 @@ const TabProducto: React.FC = () => {
         window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
         window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
         window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
+        window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
+        window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
         window.addEventListener("update-email-preview", handleEmailUpdate);
 
         return () => {
             window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
+            window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
+            window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
             window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
             window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
             window.removeEventListener("update-email-preview", handleEmailUpdate);
@@ -57,6 +61,7 @@ const TabProducto: React.FC = () => {
         if (formData) {
             syncPreview(formData);
         }
+    }, [activeTab, whatsappSelected]);
     }, [activeTab, whatsappSelected]);
 
     useEffect(() => {
@@ -234,6 +239,7 @@ const TabProducto: React.FC = () => {
 
             window.dispatchEvent(new CustomEvent(eventName, {
                 detail: {
+                    text: waText,
                     text: waText,
                     image: waImage instanceof File ? null : waImage
                 }

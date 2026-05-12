@@ -276,12 +276,9 @@ const productsUrl = config.endpoints.productos.list;
               const year = parts[0];
               const month = parts[1];
               const day = parts[2];
-              const hours = parts[3] || "00";
-              const minutes = parts[4] || "00";
-
-              blogDateElement.innerHTML = `${day}-${month}-${year} / ${hours}:${minutes}`;
+              blogDateElement.innerHTML = `${day}-${month}-${year}`;
             } else {
-              blogDateElement.innerHTML = "FECHA / HORA DE PUBLICACIÓN";
+              blogDateElement.innerHTML = "FECHA DE PUBLICACIÓN";
             }
           }
 
