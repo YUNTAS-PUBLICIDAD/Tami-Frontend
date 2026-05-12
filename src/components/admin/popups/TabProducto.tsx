@@ -14,12 +14,20 @@ const TabProducto: React.FC = () => {
     const [formData, setFormData] = useState<any>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [previews, setPreviews] = useState<{ [key: string]: string }>({});
-    const [activeTab, setActiveTab] = useState<"popups" | "whatsapp" | "correo">("popups");
+    const [activeTab, setActiveTab] = useState<'popups' | 'etiqueta' | 'whatsapp' | 'correo'>('popups');
+    const [whatsappSelected, setWhatsappSelected] = useState<number>(1);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const handleWhatsappUpdate = (e: any) => {
             if (typeof e.detail === "string") {
-                setFormData((prev: any) => prev ? { ...prev, texto_alt_whatsapp: e.detail } : null);
+                setFormData((prev: any) => {
+                    if (!prev) return null;
+                    if (whatsappSelected === 1) return { ...prev, texto_alt_whatsapp: e.detail };
+                    if (whatsappSelected === 2) return { ...prev, mensaje_whatsapp_2: e.detail };
+                    if (whatsappSelected === 3) return { ...prev, mensaje_whatsapp_3: e.detail };
+                    return prev;
+                });
             }
         };
         const handleEmailUpdate = (e: any) => {
@@ -29,19 +37,27 @@ const TabProducto: React.FC = () => {
         };
 
         window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
+        window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
+        window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
         window.addEventListener("update-email-preview", handleEmailUpdate);
 
         return () => {
             window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
+            window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
+            window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
             window.removeEventListener("update-email-preview", handleEmailUpdate);
         };
-    }, []);
+    }, [whatsappSelected]);
+
+    useEffect(() => {
+        window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
+    }, [whatsappSelected]);
 
     useEffect(() => {
         if (formData) {
             syncPreview(formData);
         }
-    }, [activeTab]);
+    }, [activeTab, whatsappSelected]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -129,6 +145,13 @@ const TabProducto: React.FC = () => {
                 // Whatsapp Data
                 imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
                 texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "",
+                mensaje_whatsapp_2: imagenWhatsapp?.whatsapp_mensaje_2 || "",
+                mensaje_whatsapp_3: imagenWhatsapp?.whatsapp_mensaje_3 || "",
+                whatsapp_time_1: imagenWhatsapp?.whatsapp_time_1 || 0,
+                whatsapp_time_2: imagenWhatsapp?.whatsapp_time_2 || 0,
+                whatsapp_time_3: imagenWhatsapp?.whatsapp_time_3 || 0,
+                imagen_whatsapp_2: imagenWhatsapp?.whatsapp_image_url_2 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_2) : null,
+                imagen_whatsapp_3: imagenWhatsapp?.whatsapp_image_url_3 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_3) : null,
 
                 delete_imagen_popup: 0,
                 delete_imagen_popup2: 0,
@@ -136,6 +159,8 @@ const TabProducto: React.FC = () => {
                 delete_imagen_popup_mobile2: 0,
                 delete_imagen_email: 0,
                 delete_imagen_whatsapp: 0,
+                delete_imagen_whatsapp_2: 0,
+                delete_imagen_whatsapp_3: 0,
                 etiqueta: {
                     ...product.etiqueta,
                     popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
@@ -147,6 +172,8 @@ const TabProducto: React.FC = () => {
 
             // Update Editors
             window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto", { detail: initialData.texto_alt_whatsapp }));
+            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-2", { detail: initialData.mensaje_whatsapp_2 }));
+            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-3", { detail: initialData.mensaje_whatsapp_3 }));
             window.dispatchEvent(new CustomEvent("update-email-editor-producto", { detail: initialData.mensaje_email }));
 
             syncPreview(initialData);
@@ -187,13 +214,33 @@ const TabProducto: React.FC = () => {
         window.dispatchEvent(new CustomEvent("switch-preview-type", { detail: activeTab }));
 
         if (activeTab === "whatsapp") {
-            const waImage = overrides.imagen_whatsapp !== undefined ? overrides.imagen_whatsapp : (previews.imagen_whatsapp || data.imagen_whatsapp);
-            window.dispatchEvent(new CustomEvent("update-whatsapp-preview", {
+            let waText = "";
+            let waImage = null;
+
+            if (whatsappSelected === 1) {
+                waText = data.texto_alt_whatsapp || "";
+                waImage = overrides.imagen_whatsapp !== undefined ? overrides.imagen_whatsapp : (previews.imagen_whatsapp || data.imagen_whatsapp);
+            } else if (whatsappSelected === 2) {
+                waText = data.mensaje_whatsapp_2 || "";
+                waImage = overrides.imagen_whatsapp_2 !== undefined ? overrides.imagen_whatsapp_2 : (previews.imagen_whatsapp_2 || data.imagen_whatsapp_2);
+            } else if (whatsappSelected === 3) {
+                waText = data.mensaje_whatsapp_3 || "";
+                waImage = overrides.imagen_whatsapp_3 !== undefined ? overrides.imagen_whatsapp_3 : (previews.imagen_whatsapp_3 || data.imagen_whatsapp_3);
+            }
+
+            const eventName = whatsappSelected === 1 ? "update-whatsapp-preview" :
+                whatsappSelected === 2 ? "update-whatsapp-preview-2" :
+                    "update-whatsapp-preview-3";
+
+            window.dispatchEvent(new CustomEvent(eventName, {
                 detail: {
-                    text: data.texto_alt_whatsapp || "",
+                    text: waText,
                     image: waImage instanceof File ? null : waImage
                 }
             }));
+
+            // Also notify popupsManager about the selection to sync preview blocks if needed
+            window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
         } else if (activeTab === "correo") {
             const emailImage = overrides.imagen_email !== undefined ? overrides.imagen_email : (previews.imagen_email || data.imagen_email);
             window.dispatchEvent(new CustomEvent("update-email-preview", {
@@ -259,6 +306,16 @@ const TabProducto: React.FC = () => {
                         [field]: file,
                         [`delete_${field}`]: 0
                     };
+
+                    // Dispatch specific preview events for WhatsApp messages
+                    if (field === "imagen_whatsapp") {
+                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview", { detail: { image: url } }));
+                    } else if (field === "imagen_whatsapp_2") {
+                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-2", { detail: { image: url } }));
+                    } else if (field === "imagen_whatsapp_3") {
+                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", { detail: { image: url } }));
+                    }
+
                     // We pass the base64 URL as an override to ensure the preview uses it instead of the File
                     syncPreview(newData, { [field]: url });
                     return newData;
@@ -275,15 +332,36 @@ const TabProducto: React.FC = () => {
         try {
             const formDataToSend = new FormData();
 
-            // Explicitly set PUT method for Laravel compatibility with multipart/form-data
-            formDataToSend.append("_method", "PUT");
-            // Flag to backend to only process popup-related fields
-            formDataToSend.append("only_popup", "1");
+            // Baseline product fields (unchanged) to satisfy strict backend update handlers.
+            formDataToSend.append("nombre", formData.nombre || "");
+            formDataToSend.append("titulo", formData.titulo || "");
+            formDataToSend.append("subtitulo", formData.subtitulo || "");
+            formDataToSend.append("descripcion", formData.descripcion || "");
+            formDataToSend.append("seccion", formData.seccion || "");
+            formDataToSend.append("link", formData.link || "");
+            formDataToSend.append("stock", String(formData.stock ?? 0));
+            formDataToSend.append("precio", String(formData.precio ?? 0));
 
-            // We REMOVED baseline fields (nombre, descripcion, etc.) and gallery images
-            // to avoid triggering strict backend validations that cause 500 errors.
-            // only_popup: 1 tells the backend to only look at what we send below.
+            // Keep current gallery references to avoid backend rules that require gallery context.
+            if (Array.isArray(formData.producto_imagenes)) {
+                formData.producto_imagenes
+                    .filter((img: any) => img?.tipo === "galeria" || !img?.tipo)
+                    .forEach((img: any, idx: number) => {
+                        let urlLimpia = img.url_imagen || "";
+                        if (typeof urlLimpia === "string" && urlLimpia.includes(config.apiUrl)) {
+                            urlLimpia = urlLimpia.replace(config.apiUrl, "");
+                        }
+                        if (typeof urlLimpia === "string") {
+                            urlLimpia = urlLimpia.split("?")[0];
+                        }
 
+                        formDataToSend.append(`imagenes_existentes[${idx}][url]`, urlLimpia || "");
+                        if (img.id != null) {
+                            formDataToSend.append(`imagenes_existentes[${idx}][id]`, String(img.id));
+                        }
+                        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.texto_alt_SEO || "");
+                    });
+            }
 
             // Popup Images
             if (formData.imagen_popup instanceof File) {
@@ -331,6 +409,26 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("delete_imagen_whatsapp", "1");
             }
             formDataToSend.append("texto_alt_whatsapp", formData.texto_alt_whatsapp || "");
+            formDataToSend.append("mensaje_whatsapp", formData.texto_alt_whatsapp || "");
+
+            // Sequential WhatsApp Messages
+            if (formData.imagen_whatsapp_2 instanceof File) {
+                formDataToSend.append("imagen_whatsapp_2", formData.imagen_whatsapp_2);
+            } else if (formData.delete_imagen_whatsapp_2 === 1) {
+                formDataToSend.append("delete_imagen_whatsapp_2", "1");
+            }
+            formDataToSend.append("mensaje_whatsapp_2", formData.mensaje_whatsapp_2 || "");
+
+            if (formData.imagen_whatsapp_3 instanceof File) {
+                formDataToSend.append("imagen_whatsapp_3", formData.imagen_whatsapp_3);
+            } else if (formData.delete_imagen_whatsapp_3 === 1) {
+                formDataToSend.append("delete_imagen_whatsapp_3", "1");
+            }
+            formDataToSend.append("mensaje_whatsapp_3", formData.mensaje_whatsapp_3 || "");
+
+            formDataToSend.append("whatsapp_time_1", String(formData.whatsapp_time_1 || 0));
+            formDataToSend.append("whatsapp_time_2", String(formData.whatsapp_time_2 || 0));
+            formDataToSend.append("whatsapp_time_3", String(formData.whatsapp_time_3 || 0));
 
             // Deletion flags for Desktop images as well
             if (!(formData.imagen_popup instanceof File) && formData.delete_imagen_popup === 1) {
@@ -373,6 +471,17 @@ const TabProducto: React.FC = () => {
                 }
                 formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
             }
+            if (formData.especificaciones) {
+                let specsToSend = formData.especificaciones;
+                if (Array.isArray(specsToSend)) {
+                    const specsObj: Record<string, string> = {};
+                    specsToSend.forEach((s: any) => {
+                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
+                    });
+                    specsToSend = specsObj;
+                }
+                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
+            }
 
             if (formData.etiqueta?.keywords) {
                 const keywords = formData.etiqueta.keywords;
@@ -381,20 +490,18 @@ const TabProducto: React.FC = () => {
                     : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
                 formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
-
-            // Explicitly set PUT method for Laravel compatibility with multipart/form-data (at the end)
-            formDataToSend.append("_method", "PUT");
-            formDataToSend.append("only_popup", "1");
-
-            console.log("🚀 VERSIÓN ACTUALIZADA CON SPOOFING - Enviando datos:");
-            for (let [key, value] of (formDataToSend as any).entries()) {
-                console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value);
+            if (formData.etiqueta?.keywords) {
+                const keywords = formData.etiqueta.keywords;
+                const kwArray = Array.isArray(keywords)
+                    ? keywords
+                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
+                formDataToSend.append("keywords", JSON.stringify(kwArray));
             }
 
-            const response = await apiClient.post(
-                config.endpoints.productos.update(selectedProductId),
-                formDataToSend
-            );
+            formDataToSend.append("_method", "PUT");
+            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
             if (response.status === 200 || response.status === 201) {
                 Swal.fire({
@@ -617,7 +724,7 @@ const TabProducto: React.FC = () => {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x320px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -679,7 +786,7 @@ const TabProducto: React.FC = () => {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x320px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
+                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
@@ -795,58 +902,282 @@ const TabProducto: React.FC = () => {
 
                     {activeTab === 'whatsapp' && (
                         <div className="space-y-6">
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-emerald-600">WhatsApp</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Configura la imagen y mensaje de WhatsApp para este producto.</p>
-
-                                <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_whatsapp || formData.imagen_whatsapp ? (
-                                            <img src={previews.imagen_whatsapp || formData.imagen_whatsapp} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
+                            <div className="flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"></path>
+                                        </svg>
                                     </div>
-                                    <div className="flex-1 w-full">
-                                        <input
-                                            type="file"
-                                            id="input_imagen_whatsapp"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, "imagen_whatsapp")}
-                                            className="hidden"
-                                        />
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                type="button"
-                                                onClick={() => document.getElementById('input_imagen_whatsapp')?.click()}
-                                                className="inline-flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
-                                            >
-                                                Subir Imagen WhatsApp
-                                            </button>
-                                            {(previews.imagen_whatsapp || formData.imagen_whatsapp) && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleClearImage("imagen_whatsapp")}
-                                                    className="text-red-500 hover:text-red-600 p-2"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                            )}
+                                    <h3 className="font-bold text-gray-900 dark:text-gray-100">Configuración:</h3>
+                                </div>
+
+                                <select
+                                    id="whatsappMessageSelectorProducto"
+                                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer"
+                                    value={whatsappSelected}
+                                    onChange={(e) => setWhatsappSelected(parseInt(e.target.value))}
+                                >
+                                    <option value={1}>🟢 WhatsApp Mensaje 1</option>
+                                    <option value={2}>🟡 WhatsApp Mensaje 2</option>
+                                    <option value={3}>🟠 WhatsApp Mensaje 3</option>
+                                </select>
+                            </div>
+
+                            {/* Mensaje 1 */}
+                            {whatsappSelected === 1 && (
+                                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6 animate-in fade-in duration-300">
+                                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                            <span className="font-bold">1</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Primer Mensaje</h3>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Imagen del Mensaje 1</label>
+                                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                                                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
+                                                    {previews.imagen_whatsapp || formData.imagen_whatsapp ? (
+                                                        <img src={previews.imagen_whatsapp || getFullImageUrl(formData.imagen_whatsapp)} className="w-full h-full object-contain" />
+                                                    ) : (
+                                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 flex flex-col gap-2 w-full">
+                                                    <input
+                                                        type="file"
+                                                        id="input_imagen_whatsapp"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleFileChange(e, "imagen_whatsapp")}
+                                                        className="hidden"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => document.getElementById('input_imagen_whatsapp')?.click()}
+                                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm active:scale-95"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                        </svg>
+                                                        Subir Imagen
+                                                    </button>
+                                                    {(previews.imagen_whatsapp || formData.imagen_whatsapp) && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleClearImage("imagen_whatsapp")}
+                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
+                                                <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
+                                                    <select
+                                                        value={formData.whatsapp_time_1}
+                                                        onChange={(e) => handleFieldChange("whatsapp_time_1", parseInt(e.target.value) || 0)}
+                                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                    >
+                                                        <option value={0}>Inmediato</option>
+                                                        <option value={1}>1 minuto</option>
+                                                        <option value={5}>5 minutos</option>
+                                                        <option value={10}>10 minutos</option>
+                                                        <option value={30}>30 minutos</option>
+                                                        <option value={45}>45 minutos</option>
+                                                        <option value={60}>1 hora</option>
+                                                    </select>
+                                                    <p className="text-[10px] text-gray-500 italic mt-2">Envío inmediato al suscribirse.</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
-                                    <WhatsappEditor
-                                        defaultValue={formData.texto_alt_whatsapp}
-                                        inputId="whatsappMessageProducto"
-                                        updateEventName="update-whatsapp-editor-producto"
-                                    />
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
+                                        <WhatsappEditor
+                                            defaultValue={formData.texto_alt_whatsapp}
+                                            inputId="whatsappMessageProducto"
+                                            updateEventName="update-whatsapp-editor-producto"
+                                            previewEventName="update-whatsapp-preview"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {/* Mensaje 2 */}
+                            {whatsappSelected === 2 && (
+                                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6 animate-in fade-in duration-300">
+                                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                            <span className="font-bold">2</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Segundo Mensaje</h3>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Imagen del Mensaje 2</label>
+                                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                                                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
+                                                    {previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2 ? (
+                                                        <img src={previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2} className="w-full h-full object-contain" />
+                                                    ) : (
+                                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 flex flex-col gap-2 w-full">
+                                                    <input
+                                                        type="file"
+                                                        id="input_imagen_whatsapp_2"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleFileChange(e, "imagen_whatsapp_2")}
+                                                        className="hidden"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => document.getElementById('input_imagen_whatsapp_2')?.click()}
+                                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm active:scale-95"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                        </svg>
+                                                        Subir Imagen
+                                                    </button>
+                                                    {(previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2) && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleClearImage("imagen_whatsapp_2")}
+                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
+                                            <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
+                                                <select
+                                                    value={formData.whatsapp_time_2}
+                                                    onChange={(e) => handleFieldChange("whatsapp_time_2", parseInt(e.target.value) || 0)}
+                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                >
+                                                    <option value={0}>Inmediato</option>
+                                                    <option value={1}>1 minuto</option>
+                                                    <option value={5}>5 minutos</option>
+                                                    <option value={10}>10 minutos</option>
+                                                    <option value={30}>30 minutos</option>
+                                                    <option value={45}>45 minutos</option>
+                                                    <option value={60}>1 hora</option>
+                                                </select>
+                                                <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 1.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
+                                        <WhatsappEditor
+                                            defaultValue={formData.mensaje_whatsapp_2}
+                                            inputId="whatsappMessageProducto2"
+                                            updateEventName="update-whatsapp-editor-producto-2"
+                                            previewEventName="update-whatsapp-preview-2"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Mensaje 3 */}
+                            {whatsappSelected === 3 && (
+                                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6 animate-in fade-in duration-300">
+                                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                            <span className="font-bold">3</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Tercer Mensaje</h3>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Imagen del Mensaje 3</label>
+                                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                                                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
+                                                    {previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3 ? (
+                                                        <img src={previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3} className="w-full h-full object-contain" />
+                                                    ) : (
+                                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 flex flex-col gap-2 w-full">
+                                                    <input
+                                                        type="file"
+                                                        id="input_imagen_whatsapp_3"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleFileChange(e, "imagen_whatsapp_3")}
+                                                        className="hidden"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => document.getElementById('input_imagen_whatsapp_3')?.click()}
+                                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm active:scale-95"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                        </svg>
+                                                        Subir Imagen
+                                                    </button>
+                                                    {(previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3) && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleClearImage("imagen_whatsapp_3")}
+                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
+                                                <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
+                                                    <select
+                                                        value={formData.whatsapp_time_3}
+                                                        onChange={(e) => handleFieldChange("whatsapp_time_3", parseInt(e.target.value) || 0)}
+                                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                    >
+                                                        <option value={0}>Inmediato</option>
+                                                        <option value={1}>1 minuto</option>
+                                                        <option value={5}>5 minutos</option>
+                                                        <option value={10}>10 minutos</option>
+                                                        <option value={30}>30 minutos</option>
+                                                        <option value={45}>45 minutos</option>
+                                                        <option value={60}>1 hora</option>
+                                                    </select>
+                                                    <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 2.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
+                                        <WhatsappEditor
+                                            defaultValue={formData.mensaje_whatsapp_3}
+                                            inputId="whatsappMessageProducto3"
+                                            updateEventName="update-whatsapp-editor-producto-3"
+                                            previewEventName="update-whatsapp-preview-3"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
