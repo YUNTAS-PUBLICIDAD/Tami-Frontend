@@ -156,6 +156,9 @@ export function initPopupManager() {
         const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
         const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement;
         const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement;
+        const waMsgHidden1 = document.getElementById("whatsappMessage") as HTMLInputElement;
+        const waMsgHidden2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+        const waMsgHidden3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
 
         updatePreview({
             popup_image_url: currentInicioImages.popup_image_url,
@@ -167,14 +170,24 @@ export function initPopupManager() {
             button_text: btnTextInput ? btnTextInput.value : (savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS"),
         }, currentMode);
 
-        const waMsgHidden1 = document.getElementById("whatsappMessage") as HTMLInputElement;
-        const waMsgHidden2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
-        const waMsgHidden3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
-        
         window.dispatchEvent(new CustomEvent("update-whatsapp-preview", {
             detail: {
                 text: waMsgHidden1 ? waMsgHidden1.value : (savedHomeSettings.whatsappMessage || ""),
                 image: currentInicioImages.whatsappImage
+            }
+        }));
+
+        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-2", {
+            detail: {
+                text: waMsgHidden2 ? waMsgHidden2.value : (savedHomeSettings.whatsappMessage2 || ""),
+                image: currentInicioImages.whatsappImage2
+            }
+        }));
+
+        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", {
+            detail: {
+                text: waMsgHidden3 ? waMsgHidden3.value : (savedHomeSettings.whatsappMessage3 || ""),
+                image: currentInicioImages.whatsappImage3
             }
         }));
 
