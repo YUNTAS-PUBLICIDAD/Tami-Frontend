@@ -41,8 +41,18 @@ export function initPopupManager() {
         popup_mobile_image_url: null,
         popup_mobile_image2_url: null,
         whatsappImage: null,
+        whatsappImage2: null,
+        whatsappImage3: null,
         emailImage: null
     };
+
+    let whatsappData = {
+        1: { text: "", image: null },
+        2: { text: "", image: null },
+        3: { text: "", image: null }
+    };
+
+    let currentSelectedWaMessage = 1;
 
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
@@ -146,6 +156,9 @@ export function initPopupManager() {
         const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
         const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement;
         const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement;
+        const waMsgHidden1 = document.getElementById("whatsappMessage") as HTMLInputElement;
+        const waMsgHidden2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+        const waMsgHidden3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
 
         updatePreview({
             popup_image_url: currentInicioImages.popup_image_url,
@@ -157,11 +170,24 @@ export function initPopupManager() {
             button_text: btnTextInput ? btnTextInput.value : (savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS"),
         }, currentMode);
 
-        const waMsgHidden = document.getElementById("whatsappMessage") as HTMLInputElement;
         window.dispatchEvent(new CustomEvent("update-whatsapp-preview", {
             detail: {
-                text: waMsgHidden ? waMsgHidden.value : (savedHomeSettings.whatsappMessage || ""),
+                text: waMsgHidden1 ? waMsgHidden1.value : (savedHomeSettings.whatsappMessage || ""),
                 image: currentInicioImages.whatsappImage
+            }
+        }));
+
+        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-2", {
+            detail: {
+                text: waMsgHidden2 ? waMsgHidden2.value : (savedHomeSettings.whatsappMessage2 || ""),
+                image: currentInicioImages.whatsappImage2
+            }
+        }));
+
+        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", {
+            detail: {
+                text: waMsgHidden3 ? waMsgHidden3.value : (savedHomeSettings.whatsappMessage3 || ""),
+                image: currentInicioImages.whatsappImage3
             }
         }));
 
@@ -359,8 +385,8 @@ export function initPopupManager() {
             previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(textareaWhatsapp.value);
     });
 
-    window.addEventListener("update-whatsapp-preview", (e: any) => {
-        const data = typeof e.detail === "string" ? { text: e.detail } : e.detail;
+    const updateMainWhatsappPreview = () => {
+        const data = whatsappData[currentSelectedWaMessage as keyof typeof whatsappData];
         if (previewWhatsappText) {
             previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(data.text || "");
         }
@@ -371,12 +397,71 @@ export function initPopupManager() {
                 previewWAImg.innerHTML = `<img src="${data.image}" class="w-full h-auto object-contain">`;
                 previewWAImg.classList.remove("hidden");
             }
-        } else if (data.image === null) {
+        } else {
             if (previewWAImg) {
                 previewWAImg.innerHTML = "";
                 previewWAImg.classList.add("hidden");
             }
         }
+    };
+
+    window.addEventListener("update-whatsapp-preview", (e: any) => {
+        const detail = typeof e.detail === "string" ? { text: e.detail } : e.detail;
+        whatsappData[1].text = detail.text;
+        if (detail.image !== undefined) whatsappData[1].image = detail.image;
+        if (currentSelectedWaMessage === 1) updateMainWhatsappPreview();
+    });
+
+    window.addEventListener("update-whatsapp-preview-2", (e: any) => {
+        const detail = typeof e.detail === "string" ? { text: e.detail } : e.detail;
+        whatsappData[2].text = detail.text;
+        if (detail.image !== undefined) whatsappData[2].image = detail.image;
+        if (currentSelectedWaMessage === 2) updateMainWhatsappPreview();
+    });
+
+    window.addEventListener("update-whatsapp-preview-3", (e: any) => {
+        const detail = typeof e.detail === "string" ? { text: e.detail } : e.detail;
+        whatsappData[3].text = detail.text;
+        if (detail.image !== undefined) whatsappData[3].image = detail.image;
+        if (currentSelectedWaMessage === 3) updateMainWhatsappPreview();
+    });
+
+    window.addEventListener("sync-whatsapp-selector", (e: any) => {
+        const val = parseInt(e.detail);
+        currentSelectedWaMessage = val;
+        
+        // Sync the HTML selector if it exists (for Inicio)
+        const waSelector = document.getElementById("whatsappMessageSelector") as HTMLSelectElement | null;
+        if (waSelector) waSelector.value = String(val);
+
+        // Toggle blocks for Inicio if visible
+        document.querySelectorAll(".wa-message-block").forEach((block, idx) => {
+            if (idx + 1 === val) {
+                block.classList.remove("hidden");
+            } else {
+                block.classList.add("hidden");
+            }
+        });
+
+        updateMainWhatsappPreview();
+    });
+
+    // Selector logic
+    const waSelector = document.getElementById("whatsappMessageSelector") as HTMLSelectElement | null;
+    waSelector?.addEventListener("change", () => {
+        const val = parseInt(waSelector.value);
+        currentSelectedWaMessage = val;
+        
+        // Toggle blocks
+        document.querySelectorAll(".wa-message-block").forEach((block, idx) => {
+            if (idx + 1 === val) {
+                block.classList.remove("hidden");
+            } else {
+                block.classList.add("hidden");
+            }
+        });
+
+        updateMainWhatsappPreview();
     });
 
     const emailTitle = document.getElementById(
@@ -528,40 +613,54 @@ export function initPopupManager() {
         }
     }
 
-    function bindImageEvents(
+    const bindImageEvents = (
         inputId: string,
-        clearBtnId: string,
+        clearId: string,
         previewKey: string,
-        storageKey: string,
-        deleteId: string
-    ) {
-        const input = document.getElementById(inputId) as HTMLInputElement;
-        const clearBtn = document.getElementById(clearBtnId);
+        imageName: string,
+        deleteId: string,
+    ) => {
+        const input = document.getElementById(inputId) as HTMLInputElement | null;
+        const clearBtn = document.getElementById(clearId) as HTMLButtonElement | null;
+        const deleteInput = document.getElementById(deleteId) as HTMLInputElement | null;
 
-        input?.addEventListener("change", function (this: HTMLInputElement) {
+        input?.addEventListener("change", function () {
             handleImageUpload(this, (url) => {
-                updatePreview({ [previewKey]: url as string });
                 currentInicioImages[previewKey] = url as string;
+                
+                // Sync with whatsappData for preview
+                if (previewKey === "whatsappImage") whatsappData[1].image = url as string;
+                if (previewKey === "whatsappImage2") whatsappData[2].image = url as string;
+                if (previewKey === "whatsappImage3") whatsappData[3].image = url as string;
+                
+                updateMainWhatsappPreview();
                 clearBtn?.classList.remove("hidden");
-                const del = document.getElementById(deleteId) as HTMLInputElement;
-                if (del) del.value = "0";
+                if (deleteInput) deleteInput.value = "0";
             });
         });
 
         clearBtn?.addEventListener("click", () => {
             if (input) input.value = "";
-            updatePreview({ [previewKey]: null });
             currentInicioImages[previewKey] = null;
+            
+            // Sync with whatsappData for preview
+            if (previewKey === "whatsappImage") whatsappData[1].image = null;
+            if (previewKey === "whatsappImage2") whatsappData[2].image = null;
+            if (previewKey === "whatsappImage3") whatsappData[3].image = null;
+
+            updateMainWhatsappPreview();
             clearBtn?.classList.add("hidden");
-            const del = document.getElementById(deleteId) as HTMLInputElement;
-            if (del) del.value = "1";
+            if (deleteInput) deleteInput.value = "1";
         });
-    }
+    };
 
     bindImageEvents("popupImage1", "clearImage1", "popup_image_url", "popupImage", "delete_popupImage1");
     bindImageEvents("popupImage2", "clearImage2", "popup_image2_url", "popupImage2", "delete_popupImage2");
     bindImageEvents("popupImageMobile", "clearImageMobile", "popup_mobile_image_url", "popupImageMobile", "delete_popupImageMobile");
     bindImageEvents("popupImageMobile2", "clearImageMobile2", "popup_mobile_image2_url", "popupImageMobile2", "delete_popupImageMobile2");
+    bindImageEvents("whatsappImage", "clearWhatsappImage", "whatsappImage", "whatsappImage", "delete_whatsappImage");
+    bindImageEvents("whatsappImage2", "clearWhatsappImage2", "whatsappImage2", "whatsappImage2", "delete_whatsappImage2");
+    bindImageEvents("whatsappImage3", "clearWhatsappImage3", "whatsappImage3", "whatsappImage3", "delete_whatsappImage3");
 
     emailImage?.addEventListener("change", function () {
         handleImageUpload(this, (url) => {
@@ -636,38 +735,8 @@ export function initPopupManager() {
         }
     });
 
-    whatsappImage?.addEventListener("change", function () {
-        handleImageUpload(this, (url) => {
-            currentInicioImages.whatsappImage = url as string;
-            const previewWAImg = document.getElementById(
-                "previewWhatsappImageContainer",
-            );
-            if (previewWAImg) {
-                previewWAImg.innerHTML = `<img src="${url}" class="w-full h-auto object-contain">`;
-                previewWAImg.classList.remove("hidden");
-            }
-            document
-                .getElementById("clearWhatsappImage")
-                ?.classList.remove("hidden");
-        });
-    });
-
-    document
-        .getElementById("clearWhatsappImage")
-        ?.addEventListener("click", () => {
-            if (whatsappImage) whatsappImage.value = "";
-            currentInicioImages.whatsappImage = null;
-            const previewWAImg = document.getElementById(
-                "previewWhatsappImageContainer",
-            );
-            if (previewWAImg) {
-                previewWAImg.innerHTML = "";
-                previewWAImg.classList.add("hidden");
-            }
-            document
-                .getElementById("clearWhatsappImage")
-                ?.classList.add("hidden");
-        });
+    // WhatsApp Image 1 already handled by bindImageEvents above, 
+    // but we can add specific preview logic if needed.
 
     // LOAD SETTINGS FROM API
     async function loadSettings() {
@@ -681,6 +750,8 @@ export function initPopupManager() {
                 currentInicioImages.popup_mobile_image_url = settings.imageMobile || settings.popup_mobile_image_url || null;
                 currentInicioImages.popup_mobile_image2_url = settings.imageMobile2 || settings.popup_mobile_image2_url || null;
                 currentInicioImages.whatsappImage = settings.whatsappImage || null;
+                currentInicioImages.whatsappImage2 = settings.whatsappImage2 || null;
+                currentInicioImages.whatsappImage3 = settings.whatsappImage3 || null;
                 currentInicioImages.emailImage = settings.emailImage || null;
 
                 if (btnBgColorInput)
@@ -736,47 +807,53 @@ export function initPopupManager() {
                         60,
                     );
 
-                if (settings.whatsappMessage) {
-                    const whatsappMessageHidden = document.getElementById(
-                        "whatsappMessage",
-                    ) as HTMLInputElement;
-                    if (whatsappMessageHidden) {
-                        whatsappMessageHidden.value = settings.whatsappMessage;
-                    }
+                const waMsg1 = document.getElementById("whatsappMessage") as HTMLInputElement;
+                const waMsg2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+                const waMsg3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
 
-                    if (previewWhatsappText) {
-                        previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
-                    }
+                if (waMsg1) waMsg1.value = settings.whatsappMessage || "";
+                if (waMsg2) waMsg2.value = settings.whatsappMessage2 || "";
+                if (waMsg3) waMsg3.value = settings.whatsappMessage3 || "";
 
-                    window.dispatchEvent(
-                        new CustomEvent("update-whatsapp-editor", {
-                            detail: settings.whatsappMessage,
-                        }),
-                    );
+                if (previewWhatsappText) {
+                    previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage || "");
                 }
 
-                const emailTitleInput = document.getElementById(
-                    "emailTitle",
-                ) as HTMLInputElement;
-                if (emailTitleInput && settings.emailTitle) {
-                    emailTitleInput.value = settings.emailTitle;
-                    if (previewCorreoTitle)
-                        previewCorreoTitle.textContent =
-                            settings.emailTitle;
+                window.dispatchEvent(new CustomEvent("update-whatsapp-editor-1", { detail: settings.whatsappMessage || "" }));
+                window.dispatchEvent(new CustomEvent("update-whatsapp-editor-2", { detail: settings.whatsappMessage2 || "" }));
+                window.dispatchEvent(new CustomEvent("update-whatsapp-editor-3", { detail: settings.whatsappMessage3 || "" }));
+
+                whatsappData[1].text = settings.whatsappMessage || "";
+                whatsappData[2].text = settings.whatsappMessage2 || "";
+                whatsappData[3].text = settings.whatsappMessage3 || "";
+
+                const waTime1 = document.getElementById("whatsappTime1") as HTMLInputElement;
+                const waTime2 = document.getElementById("whatsappTime2") as HTMLInputElement;
+                const waTime3 = document.getElementById("whatsappTime3") as HTMLInputElement;
+
+                if (waTime1) waTime1.value = settings.whatsappTime1 !== undefined ? settings.whatsappTime1 : "0";
+                if (waTime2) waTime2.value = settings.whatsappTime2 !== undefined ? settings.whatsappTime2 : "0";
+                if (waTime3) waTime3.value = settings.whatsappTime3 !== undefined ? settings.whatsappTime3 : "0";
+
+                const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
+                if (emailTitleInput) {
+                    emailTitleInput.value = settings.emailTitle || "";
+                    if (previewCorreoTitle) previewCorreoTitle.textContent = settings.emailTitle || "";
                 }
 
-                if (settings.whatsappImage) {
-                    const previewWAImg = document.getElementById(
-                        "previewWhatsappImageContainer",
-                    );
-                    if (previewWAImg) {
-                        previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-auto object-contain">`;
-                        previewWAImg.classList.remove("hidden");
-                    }
-                    document
-                        .getElementById("clearWhatsappImage")
-                        ?.classList.remove("hidden");
-                }
+                document.getElementById("clearWhatsappImage")?.classList.toggle("hidden", !settings.whatsappImage);
+                document.getElementById("clearWhatsappImage2")?.classList.toggle("hidden", !settings.whatsappImage2);
+                document.getElementById("clearWhatsappImage3")?.classList.toggle("hidden", !settings.whatsappImage3);
+                
+                currentInicioImages.whatsappImage = settings.whatsappImage || null;
+                currentInicioImages.whatsappImage2 = settings.whatsappImage2 || null;
+                currentInicioImages.whatsappImage3 = settings.whatsappImage3 || null;
+
+                whatsappData[1].image = settings.whatsappImage || null;
+                whatsappData[2].image = settings.whatsappImage2 || null;
+                whatsappData[3].image = settings.whatsappImage3 || null;
+
+                updateMainWhatsappPreview();
 
                 if (settings.emailImage) {
                     const previewImg = document.getElementById(
@@ -880,12 +957,24 @@ export function initPopupManager() {
                     popupProductosDelay.value,
                 );
 
-            const whatsappMessage = document.getElementById(
-                "whatsappMessage",
-            ) as HTMLInputElement;
-            if (whatsappMessage)
-                formData.append("whatsappMessage", whatsappMessage.value);
+            const whatsappMessage = document.getElementById("whatsappMessage") as HTMLInputElement;
+            const whatsappMessage2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+            const whatsappMessage3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
+            
+            if (whatsappMessage) formData.append("whatsappMessage", whatsappMessage.value);
+            if (whatsappMessage2) formData.append("whatsappMessage2", whatsappMessage2.value);
+            if (whatsappMessage3) formData.append("whatsappMessage3", whatsappMessage3.value);
+
+            const whatsappTime1 = document.getElementById("whatsappTime1") as HTMLInputElement;
+            const whatsappTime2 = document.getElementById("whatsappTime2") as HTMLInputElement;
+            const whatsappTime3 = document.getElementById("whatsappTime3") as HTMLInputElement;
+
+            if (whatsappTime1) formData.append("whatsappTime1", whatsappTime1.value || "0");
+            if (whatsappTime2) formData.append("whatsappTime2", whatsappTime2.value || "0");
+            if (whatsappTime3) formData.append("whatsappTime3", whatsappTime3.value || "0");
+
             formData.append("whatsapp_enabled", "1");
+            formData.append("_method", "PUT");
 
             const emailTitle = document.getElementById(
                 "emailTitle",
@@ -925,6 +1014,8 @@ export function initPopupManager() {
             addFile("popupImageMobile", "imageMobile");
             addFile("popupImageMobile2", "imageMobile2");
             addFile("whatsappImage", "whatsappImage");
+            addFile("whatsappImage2", "whatsappImage2");
+            addFile("whatsappImage3", "whatsappImage3");
             addFile("emailImage", "emailImage");
 
             await updatePopupSettingsFormData(formData);
