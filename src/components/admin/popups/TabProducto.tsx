@@ -453,6 +453,10 @@ const TabProducto: React.FC = () => {
             formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
 
+    // Required flags for partial update
+    formDataToSend.append("_method", "PUT");
+    formDataToSend.append("only_popup", "1");
+
             // Title Customization Fields (Detailed View)
             formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
             formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
@@ -488,6 +492,13 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
             }
 
+            if (formData.etiqueta?.keywords) {
+                const keywords = formData.etiqueta.keywords;
+                const kwArray = Array.isArray(keywords)
+                    ? keywords
+                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
+                formDataToSend.append("keywords", JSON.stringify(kwArray));
+            }
             if (formData.etiqueta?.keywords) {
                 const keywords = formData.etiqueta.keywords;
                 const kwArray = Array.isArray(keywords)
