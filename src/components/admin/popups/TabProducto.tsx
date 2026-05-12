@@ -62,7 +62,6 @@ const TabProducto: React.FC = () => {
             syncPreview(formData);
         }
     }, [activeTab, whatsappSelected]);
-    }, [activeTab, whatsappSelected]);
 
     useEffect(() => {
         const fetchProducts = async () => {
