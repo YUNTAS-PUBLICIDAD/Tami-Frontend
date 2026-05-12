@@ -27,7 +27,11 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
         const allBlogs: Blog[] = result.data || result || [];
         const filtered = allBlogs.filter(
           blog => Number(blog.producto_id) === Number(productId)
-        );
+        ).sort((a, b) => {
+          const dateA = new Date(a.created_at || 0).getTime();
+          const dateB = new Date(b.created_at || 0).getTime();
+          return dateB !== dateA ? dateB - dateA : Number(b.id) - Number(a.id);
+        });
         setRelatedBlogs(filtered);
 
       } catch (error) {
