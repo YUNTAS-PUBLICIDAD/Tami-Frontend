@@ -14,6 +14,16 @@ export const GET: APIRoute = async () => {
     });
   } catch (error: any) {
     console.error("Error en el API Route GET blogs:", error);
+    
+    // Si es un error 403 durante el build, devolvemos un array vacío para no romper el despliegue
+    if (error.response?.status === 403) {
+      console.warn("⚠️ API de blogs devolvió 403 - Devolviendo array vacío para el build");
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
     return new Response(
       JSON.stringify({
         error: "Error al obtener los blogs",

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { config, getApiUrl } from "../../config";
 import { origenCliente } from "@data/origenCliente";
-
+import Swal from "sweetalert2";
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
 
@@ -362,12 +362,37 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
           if (errorData.errors.email) newErrors.correo = errorData.errors.email.join(" ");
           setErrors(newErrors);
         } else {
-          setErrors({ general: "No se pudo enviar la información. Intenta nuevamente." });
-        }
+          const backendMessage = errorData?.message || "No se pudo enviar la información. Intenta nuevamente.";
+          setErrors({ general: backendMessage });
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: backendMessage,
+            position: "bottom-end",
+            toast: true,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: "#FEE2E2",
+            color: "#7F1D1D",
+            width: "500px",
+          });
+      }
         return;
       }
 
-      setErrors({ general: "✅ Información enviada con éxito ✅" });
+      setErrors({ general: "Información enviada con éxito" });
+      Swal.fire({
+            toast: true,
+            position: "bottom-end",
+            icon: "success",
+            title: "¡Gracias! Nos pondremos en contacto contigo pronto.",
+            showConfirmButton: false,
+            timer: 2000, 
+            background: "#D1FAE5",
+            color: "#065F46",
+            width: "500px",
+          });
       setTimeout(() => {
         closeModal();
         setErrors({});

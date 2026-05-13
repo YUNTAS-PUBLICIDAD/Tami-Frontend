@@ -448,6 +448,10 @@ const TabProducto: React.FC = () => {
             formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
 
+    // Required flags for partial update
+    formDataToSend.append("_method", "PUT");
+    formDataToSend.append("only_popup", "1");
+
             // Title Customization Fields (Detailed View)
             formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
             formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");

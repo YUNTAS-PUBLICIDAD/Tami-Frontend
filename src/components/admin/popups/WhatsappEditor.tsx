@@ -5,6 +5,7 @@ interface WhatsappEditorProps {
   defaultValue?: string;
   inputId?: string;
   updateEventName?: string;
+  previewEventName?: string;
 }
 
 const COMMON_EMOJIS = [
@@ -15,7 +16,8 @@ const COMMON_EMOJIS = [
 const WhatsappEditor = ({
   defaultValue = "¡Hola! Me gustaría obtener más información sobre la promoción.",
   inputId = "whatsappMessage",
-  updateEventName = "update-whatsapp-editor"
+  updateEventName = "update-whatsapp-editor",
+  previewEventName = "update-whatsapp-preview"
 }: WhatsappEditorProps) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [activeStyles, setActiveStyles] = useState({
@@ -41,8 +43,8 @@ const WhatsappEditor = ({
     if (!editorRef.current) return;
     const content = editorRef.current.innerHTML;
 
-    // Dispatch event to update preview in popupsManager.ts
-    window.dispatchEvent(new CustomEvent('update-whatsapp-preview', { detail: content }));
+    // Dispatch event to update preview
+    window.dispatchEvent(new CustomEvent(previewEventName, { detail: content }));
 
     // Sync hidden input
     const hidden = document.getElementById(inputId) as HTMLInputElement | null;

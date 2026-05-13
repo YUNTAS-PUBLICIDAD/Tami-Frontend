@@ -368,7 +368,7 @@ return (
                         <button
                             onClick={handleDeploy}
                             disabled={deployInProgress}
-                            className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
+                            className={`flex cursor-pointer items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
     ${deployInProgress
                                     ? "bg-gray-400 cursor-not-allowed text-white"
                                     : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
@@ -382,7 +382,7 @@ return (
 
                         <button
                             onClick={() => setIsWhatsappModalOpen(true)}
-                            className="flex items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                            className="flex cursor-pointer items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
                         >
                             <FaWhatsapp className="h-5 w-5" />
                             Conexión WhatsApp
@@ -391,7 +391,7 @@ return (
                         <button
                             onClick={fetchData}
                             disabled={isLoading}
-                            className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                            className="flex cursor-pointer items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
                         >
                             <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                             {isLoading ? "Cargando..." : "Actualizar Catálogo"}
