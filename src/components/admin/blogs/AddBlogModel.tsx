@@ -560,14 +560,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         formDataToSend.append("miniatura", formData.miniatura);
       }
 
-      formData.imagenes.forEach((item) => {
+      formData.imagenes.forEach((item, index) => {
         if (item.imagen instanceof File) {
-          formDataToSend.append("imagenes[]", item.imagen);
-        } else if (typeof item.imagen === "string") {
-          formDataToSend.append("existing_images[]", item.imagen);
+          formDataToSend.append(`imagenes[${index}]`, item.imagen);
+        } else if (item.url) {
+          formDataToSend.append(`existing_images[${index}]`, item.url);
         }
-        formDataToSend.append("parrafos[]", item.parrafo);
-        formDataToSend.append("text_alt[]", item.text_alt);
+        formDataToSend.append(`parrafos[${index}]`, item.parrafo);
+        formDataToSend.append(`text_alt[${index}]`, item.text_alt);
       });
 
       if (blogToEdit) {
@@ -834,12 +834,22 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       {formData.miniatura ? (
-                        <span className="text-teal-600 font-medium text-lg flex flex-col items-center justify-center gap-1">
-                          <span>{(formData.miniatura as any).name || "Imagen cargada"}</span>
-                          <span className="text-sm font-normal text-teal-600/80 mt-2">
-                            Tamaño recomendado: 1200x800px. Soporta JPG, PNG, WEBP y GIF (Máx. 2MB).
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <img
+                            src={
+                              typeof formData.miniatura === "string"
+                                ? formData.miniatura.startsWith("http")
+                                  ? formData.miniatura
+                                  : `${config.apiUrl}${formData.miniatura}`
+                                : URL.createObjectURL(formData.miniatura)
+                            }
+                            alt="Vista previa miniatura"
+                            className="h-40 object-cover rounded shadow-md"
+                          />
+                          <span className="text-teal-600 font-medium text-sm">
+                            {(formData.miniatura as any).name || "Haz clic para cambiar la imagen"}
                           </span>
-                        </span>
+                        </div>
                       ) : (
                         <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-teal-500 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -961,9 +971,19 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                               required
                             />
                           </div>
-                          {imagen.url && (
+                          {(imagen.imagen || imagen.url) && (
                             <div className="mt-2">
-                              <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
+                              <img
+                                src={
+                                  imagen.imagen instanceof File
+                                    ? URL.createObjectURL(imagen.imagen)
+                                    : imagen.url?.startsWith("http")
+                                    ? imagen.url
+                                    : `${config.apiUrl}${imagen.url}`
+                                }
+                                alt={`Sección ${index + 1}`}
+                                className="w-20 h-20 object-cover rounded"
+                              />
                             </div>
                           )}
                         </div>
