@@ -39,20 +39,16 @@ const TabProducto: React.FC = () => {
         window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
         window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
         window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-        window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-        window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
         window.addEventListener("update-email-preview", handleEmailUpdate);
 
         return () => {
             window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
             window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
             window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-            window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-            window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
             window.removeEventListener("update-email-preview", handleEmailUpdate);
         };
     }, [whatsappSelected]);
-    
+
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
     }, [whatsappSelected]);
@@ -232,18 +228,17 @@ const TabProducto: React.FC = () => {
                 waImage = overrides.imagen_whatsapp_3 !== undefined ? overrides.imagen_whatsapp_3 : (previews.imagen_whatsapp_3 || data.imagen_whatsapp_3);
             }
 
-            const eventName = whatsappSelected === 1 ? "update-whatsapp-preview" : 
-                             whatsappSelected === 2 ? "update-whatsapp-preview-2" : 
-                             "update-whatsapp-preview-3";
+            const eventName = whatsappSelected === 1 ? "update-whatsapp-preview" :
+                whatsappSelected === 2 ? "update-whatsapp-preview-2" :
+                    "update-whatsapp-preview-3";
 
             window.dispatchEvent(new CustomEvent(eventName, {
                 detail: {
                     text: waText,
-                    text: waText,
                     image: waImage instanceof File ? null : waImage
                 }
             }));
-            
+
             // Also notify popupsManager about the selection to sync preview blocks if needed
             window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
         } else if (activeTab === "correo") {
@@ -311,7 +306,7 @@ const TabProducto: React.FC = () => {
                         [field]: file,
                         [`delete_${field}`]: 0
                     };
-                    
+
                     // Dispatch specific preview events for WhatsApp messages
                     if (field === "imagen_whatsapp") {
                         window.dispatchEvent(new CustomEvent("update-whatsapp-preview", { detail: { image: url } }));
@@ -320,7 +315,7 @@ const TabProducto: React.FC = () => {
                     } else if (field === "imagen_whatsapp_3") {
                         window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", { detail: { image: url } }));
                     }
-                    
+
                     // We pass the base64 URL as an override to ensure the preview uses it instead of the File
                     syncPreview(newData, { [field]: url });
                     return newData;
@@ -492,13 +487,6 @@ const TabProducto: React.FC = () => {
                 formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
             }
 
-            if (formData.etiqueta?.keywords) {
-                const keywords = formData.etiqueta.keywords;
-                const kwArray = Array.isArray(keywords)
-                    ? keywords
-                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
-                formDataToSend.append("keywords", JSON.stringify(kwArray));
-            }
             if (formData.etiqueta?.keywords) {
                 const keywords = formData.etiqueta.keywords;
                 const kwArray = Array.isArray(keywords)
@@ -927,8 +915,8 @@ const TabProducto: React.FC = () => {
                                     </div>
                                     <h3 className="font-bold text-gray-900 dark:text-gray-100">Configuración:</h3>
                                 </div>
-                                
-                                <select 
+
+                                <select
                                     id="whatsappMessageSelectorProducto"
                                     className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer"
                                     value={whatsappSelected}
@@ -989,29 +977,29 @@ const TabProducto: React.FC = () => {
                                                         </button>
                                                     )}
                                                 </div>
-                                        </div>
+                                            </div>
 
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
-                                            <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                <select
-                                                    value={formData.whatsapp_time_1}
-                                                    onChange={(e) => handleFieldChange("whatsapp_time_1", parseInt(e.target.value) || 0)}
-                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                                                >
-                                                    <option value={0}>Inmediato</option>
-                                                    <option value={1}>1 minuto</option>
-                                                    <option value={5}>5 minutos</option>
-                                                    <option value={10}>10 minutos</option>
-                                                    <option value={30}>30 minutos</option>
-                                                    <option value={45}>45 minutos</option>
-                                                    <option value={60}>1 hora</option>
-                                                </select>
-                                                <p className="text-[10px] text-gray-500 italic mt-2">Envío inmediato al suscribirse.</p>
+                                            <div className="space-y-4">
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
+                                                <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
+                                                    <select
+                                                        value={formData.whatsapp_time_1}
+                                                        onChange={(e) => handleFieldChange("whatsapp_time_1", parseInt(e.target.value) || 0)}
+                                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                    >
+                                                        <option value={0}>Inmediato</option>
+                                                        <option value={1}>1 minuto</option>
+                                                        <option value={5}>5 minutos</option>
+                                                        <option value={10}>10 minutos</option>
+                                                        <option value={30}>30 minutos</option>
+                                                        <option value={45}>45 minutos</option>
+                                                        <option value={60}>1 hora</option>
+                                                    </select>
+                                                    <p className="text-[10px] text-gray-500 italic mt-2">Envío inmediato al suscribirse.</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
                                     <div className="space-y-2">
                                         <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
@@ -1159,31 +1147,31 @@ const TabProducto: React.FC = () => {
                                                         </button>
                                                     )}
                                                 </div>
-                                        </div>
+                                            </div>
 
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
-                                            <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                <select
-                                                    value={formData.whatsapp_time_3}
-                                                    onChange={(e) => handleFieldChange("whatsapp_time_3", parseInt(e.target.value) || 0)}
-                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                                                >
-                                                    <option value={0}>Inmediato</option>
-                                                    <option value={1}>1 minuto</option>
-                                                    <option value={5}>5 minutos</option>
-                                                    <option value={10}>10 minutos</option>
-                                                    <option value={30}>30 minutos</option>
-                                                    <option value={45}>45 minutos</option>
-                                                    <option value={60}>1 hora</option>
-                                                </select>
-                                                <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 2.</p>
+                                            <div className="space-y-4">
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
+                                                <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
+                                                    <select
+                                                        value={formData.whatsapp_time_3}
+                                                        onChange={(e) => handleFieldChange("whatsapp_time_3", parseInt(e.target.value) || 0)}
+                                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                                                    >
+                                                        <option value={0}>Inmediato</option>
+                                                        <option value={1}>1 minuto</option>
+                                                        <option value={5}>5 minutos</option>
+                                                        <option value={10}>10 minutos</option>
+                                                        <option value={30}>30 minutos</option>
+                                                        <option value={45}>45 minutos</option>
+                                                        <option value={60}>1 hora</option>
+                                                    </select>
+                                                    <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 2.</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
+                                    <div className="space-y-2">
                                         <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
                                         <WhatsappEditor
                                             defaultValue={formData.mensaje_whatsapp_3}

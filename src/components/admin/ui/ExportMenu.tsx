@@ -114,7 +114,7 @@ const ExportMenu = ({ data, fileName = "reporte-productos" }: ExportMenuProps) =
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 cursor-pointer"
+        className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 cursor-pointer cursor-pointer"
       >
         <FaDownload className="h-4 w-4" />
         <span>Exportar</span>
