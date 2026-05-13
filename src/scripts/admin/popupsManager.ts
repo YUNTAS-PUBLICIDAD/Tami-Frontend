@@ -44,10 +44,30 @@ export function initPopupManager() {
         emailImage: null
     };
 
+    // State for 3 different emails
+    let currentEmailIdx = "1";
+    const emailsState: any = {
+        "1": { title: "", body: "", imageUrl: null, file: null, btnText: "", btnLink: "", btnBgColor: "", btnTextColor: "", delay: "5", deleteImage: "0" },
+        "2": { title: "", body: "", imageUrl: null, file: null, btnText: "", btnLink: "", btnBgColor: "", btnTextColor: "", delay: "5", deleteImage: "0" },
+        "3": { title: "", body: "", imageUrl: null, file: null, btnText: "", btnLink: "", btnBgColor: "", btnTextColor: "", delay: "5", deleteImage: "0" }
+    };
+
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
 
     const sharedSaveFooter = document.getElementById("sharedSaveFooter");
+
+    const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
+    const emailBody = document.getElementById("emailBody") as HTMLTextAreaElement;
+    const emailImage = document.getElementById("emailImage") as HTMLInputElement;
+    const clearEmailImage = document.getElementById("clearEmailImage");
+    const deleteEmailInput = document.getElementById("delete_emailImage") as HTMLInputElement;
+
+    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
+    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
+    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
 
     if (
         !tabPopups ||
@@ -79,15 +99,14 @@ export function initPopupManager() {
     const setStatus = (msg: string, type: string = "idle") => {
         if (!statusElement) return;
         statusElement.innerText = msg;
-        statusElement.className = `text-sm transition-colors duration-300 ${
-            type === "error"
-                ? "text-red-500 font-medium"
-                : type === "success"
+        statusElement.className = `text-sm transition-colors duration-300 ${type === "error"
+            ? "text-red-500 font-medium"
+            : type === "success"
                 ? "text-teal-600 font-medium"
                 : type === "loading"
-                ? "text-blue-500 animate-pulse"
-                : "text-gray-500 dark:text-gray-400"
-        }`;
+                    ? "text-blue-500 animate-pulse"
+                    : "text-gray-500 dark:text-gray-400"
+            }`;
     };
 
     function activarSubTab(tab: HTMLElement, content: HTMLElement | null, type: string) {
@@ -172,15 +191,18 @@ export function initPopupManager() {
         const emailBtnBg = document.getElementById("emailBtnBgColor") as HTMLInputElement;
         const emailBtnTextCol = document.getElementById("emailBtnTextColor") as HTMLInputElement;
 
+        // Restore based on CURRENTLY SELECTED email index
+        const state = emailsState[currentEmailIdx];
+
         window.dispatchEvent(new CustomEvent("update-email-preview", {
             detail: {
-                title: emailTitleInput ? emailTitleInput.value : (savedHomeSettings.emailTitle || ""),
-                body: emailBodyHidden ? emailBodyHidden.value : (savedHomeSettings.emailBody || ""),
-                image: currentInicioImages.emailImage,
-                btnText: emailBtnText ? emailBtnText.value : (savedHomeSettings.email_btn_text || savedHomeSettings.emailBtnText || "Ver Productos"),
-                btnLink: emailBtnLink ? emailBtnLink.value : (savedHomeSettings.email_btn_link || savedHomeSettings.emailBtnLink || "https://tami.com/productos"),
-                btnBgColor: emailBtnBg ? emailBtnBg.value : (savedHomeSettings.email_btn_bg_color || savedHomeSettings.emailBtnBgColor || "#0b1c3c"),
-                btnTextColor: emailBtnTextCol ? emailBtnTextCol.value : (savedHomeSettings.email_btn_text_color || savedHomeSettings.emailBtnTextColor || "#ffffff")
+                title: emailTitleInput ? emailTitleInput.value : (state.title || ""),
+                body: emailBodyHidden ? emailBodyHidden.value : (state.body || ""),
+                image: state.file ? URL.createObjectURL(state.file) : state.imageUrl,
+                btnText: emailBtnText ? emailBtnText.value : (state.btnText || "Ver Productos"),
+                btnLink: emailBtnLink ? emailBtnLink.value : (state.btnLink || "https://tami.com/productos"),
+                btnBgColor: emailBtnBg ? emailBtnBg.value : (state.btnBgColor || "#0b1c3c"),
+                btnTextColor: emailBtnTextCol ? emailBtnTextCol.value : (state.btnTextColor || "#ffffff")
             }
         }));
     }
@@ -241,7 +263,7 @@ export function initPopupManager() {
     // Listen for preview type changes from TabProducto.tsx
     window.addEventListener("switch-preview-type", (e: any) => {
         const type = e.detail;
-        
+
         if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
         if (previewCorreo) previewCorreo.classList.add("hidden");
         if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
@@ -364,7 +386,7 @@ export function initPopupManager() {
         if (previewWhatsappText) {
             previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(data.text || "");
         }
-        
+
         const previewWAImg = document.getElementById("previewWhatsappImageContainer");
         if (data.image) {
             if (previewWAImg) {
@@ -379,23 +401,14 @@ export function initPopupManager() {
         }
     });
 
-    const emailTitle = document.getElementById(
-        "emailTitle",
-    ) as HTMLInputElement;
-    const emailBody = document.getElementById(
-        "emailBody",
-    ) as HTMLTextAreaElement;
     const previewCorreoTitle =
         document.getElementById("previewCorreoTitle");
     const previewCorreoBody = document.getElementById("previewCorreoBody");
-    emailTitle?.addEventListener("input", () => {
+    emailTitleInput?.addEventListener("input", () => {
         if (previewCorreoTitle)
-            previewCorreoTitle.textContent = emailTitle.value;
+            previewCorreoTitle.textContent = emailTitleInput.value;
     });
-    emailBody?.addEventListener("input", () => {
-        if (previewCorreoBody)
-            previewCorreoBody.textContent = emailBody.value;
-    });
+
 
     // Colores del Botón
     const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
@@ -432,13 +445,6 @@ export function initPopupManager() {
         btnTextColorInput.addEventListener("change", handleTextChange);
     }
 
-    // Botón Correo
-    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
-    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
-    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
-    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
-    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
-
     if (emailBtnTextInput) {
         const handleEmailBtnTextChange = () => {
             const val = emailBtnTextInput.value;
@@ -474,6 +480,87 @@ export function initPopupManager() {
     const popupInicioDelayInput = document.getElementById(
         "popupInicioDelay",
     ) as HTMLSelectElement;
+    const popupProductosDelayInput = document.getElementById(
+        "popupProductosDelay",
+    ) as HTMLSelectElement;
+    const emailSendDelayInput = document.getElementById(
+        "emailSendDelay",
+    ) as HTMLSelectElement;
+
+    const emailSelector = document.getElementById("emailSelector") as HTMLSelectElement;
+
+    function syncUIFromEmailState(idx: string) {
+        const state = emailsState[idx];
+        if (emailTitleInput) emailTitleInput.value = state.title;
+        if (emailBtnTextInput) emailBtnTextInput.value = state.btnText;
+        if (emailBtnLinkInput) emailBtnLinkInput.value = state.btnLink;
+        if (emailBtnBgColorInput) emailBtnBgColorInput.value = state.btnBgColor;
+        if (emailBtnTextColorInput) emailBtnTextColorInput.value = state.btnTextColor;
+        if (emailSendDelayInput) emailSendDelayInput.value = state.delay;
+
+        const emailTitleDisplay = document.getElementById("emailTitleDisplay");
+        if (emailTitleDisplay) emailTitleDisplay.textContent = `Correo Electrónico #${idx}`;
+
+        // Sync Rich Text Editor
+        window.dispatchEvent(new CustomEvent("update-email-editor", { detail: state.body }));
+
+        // Sync Preview
+        const previewImg = document.getElementById("previewEmailImageThumb");
+        const container = document.getElementById("previewEmailAttachementContainer");
+        const imgUrl = state.file ? URL.createObjectURL(state.file) : state.imageUrl;
+
+        if (imgUrl) {
+            if (previewImg && container) {
+                previewImg.innerHTML = `<img src="${imgUrl}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
+                container.classList.remove("hidden");
+            }
+            if (clearEmailImage) clearEmailImage.classList.remove("hidden");
+        } else {
+            if (previewImg && container) {
+                previewImg.innerHTML = "";
+                container.classList.add("hidden");
+            }
+            if (clearEmailImage) clearEmailImage.classList.add("hidden");
+        }
+
+        // Trigger manual preview update
+        restoreInicioPreview();
+    }
+
+    function saveCurrentEmailToState() {
+        const state = emailsState[currentEmailIdx];
+        
+        const titleInput = document.getElementById("emailTitle") as HTMLInputElement;
+        if (titleInput) state.title = titleInput.value || "";
+        
+        const bodyInput = document.getElementById("emailBody") as HTMLInputElement;
+        if (bodyInput) state.body = bodyInput.value || "";
+        
+        const btnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
+        if (btnTextInput) state.btnText = btnTextInput.value || "";
+        
+        const btnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
+        if (btnLinkInput) state.btnLink = btnLinkInput.value || "";
+        
+        const btnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+        if (btnBgColorInput) state.btnBgColor = btnBgColorInput.value || "";
+        
+        const btnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+        if (btnTextColorInput) state.btnTextColor = btnTextColorInput.value || "";
+        
+        const delayInput = document.getElementById("emailSendDelay") as HTMLSelectElement;
+        if (delayInput) state.delay = delayInput.value || "5";
+        
+        const delImgInput = document.getElementById("delete_emailImage") as HTMLInputElement;
+        if (delImgInput) state.deleteImage = delImgInput.value || "0";
+    }
+
+    emailSelector?.addEventListener("change", () => {
+        saveCurrentEmailToState();
+        currentEmailIdx = emailSelector.value;
+        syncUIFromEmailState(currentEmailIdx);
+    });
+
     popupInicioDelayInput?.addEventListener("change", () => {
         const val = popupInicioDelayInput.value;
         updatePreview({
@@ -481,9 +568,6 @@ export function initPopupManager() {
         });
     });
 
-    const popupProductosDelayInput = document.getElementById(
-        "popupProductosDelay",
-    ) as HTMLSelectElement;
     popupProductosDelayInput?.addEventListener("change", () => {
         const val = popupProductosDelayInput.value;
         updatePreview({
@@ -507,15 +591,11 @@ export function initPopupManager() {
     const whatsappImage = document.getElementById(
         "whatsappImage",
     ) as HTMLInputElement;
-    const emailImage = document.getElementById(
-        "emailImage",
-    ) as HTMLInputElement;
 
     const clearImage1 = document.getElementById("clearImage1");
     const clearImage2 = document.getElementById("clearImage2");
     const clearImageMobile = document.getElementById("clearImageMobile");
     const clearImageMobile2 = document.getElementById("clearImageMobile2");
-    const clearEmailImage = document.getElementById("clearEmailImage");
 
     function handleImageUpload(
         input: HTMLInputElement,
@@ -565,7 +645,12 @@ export function initPopupManager() {
 
     emailImage?.addEventListener("change", function () {
         handleImageUpload(this, (url) => {
-            currentInicioImages.emailImage = url as string;
+            const file = this.files?.[0];
+            if (file) {
+                emailsState[currentEmailIdx].file = file;
+                emailsState[currentEmailIdx].deleteImage = "0";
+            }
+
             const previewImg = document.getElementById(
                 "previewEmailImageThumb",
             );
@@ -581,7 +666,10 @@ export function initPopupManager() {
     });
     clearEmailImage?.addEventListener("click", () => {
         if (emailImage) emailImage.value = "";
-        currentInicioImages.emailImage = null;
+        emailsState[currentEmailIdx].file = null;
+        emailsState[currentEmailIdx].imageUrl = null;
+        emailsState[currentEmailIdx].deleteImage = "1";
+
         const previewImg = document.getElementById(
             "previewEmailImageThumb",
         );
@@ -614,7 +702,7 @@ export function initPopupManager() {
 
         const previewImg = document.getElementById("previewEmailImageThumb");
         const container = document.getElementById("previewEmailAttachementContainer");
-        
+
         if (data.image) {
             if (previewImg && container) {
                 previewImg.innerHTML = `<img src="${data.image}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
@@ -699,111 +787,26 @@ export function initPopupManager() {
                     btnTextInput.value = bText;
                 }
 
-                if (emailBtnTextInput) {
-                    const text = settings.email_btn_text || settings.emailBtnText || "Ver Productos";
-                    emailBtnTextInput.value = text;
-                    if (previewEmailBtn) previewEmailBtn.textContent = text;
-                }
-                if (emailBtnLinkInput) {
-                    const link = settings.email_btn_link || settings.emailBtnLink || "https://tami.com/productos";
-                    emailBtnLinkInput.value = link;
-                    if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = link;
-                }
-                if (emailBtnBgColorInput) {
-                    const bgCol = settings.email_btn_bg_color || settings.emailBtnBgColor || "#0b1c3c";
-                    emailBtnBgColorInput.value = bgCol;
-                    if (previewEmailBtn) previewEmailBtn.style.backgroundColor = bgCol;
-                }
-                if (emailBtnTextColorInput) {
-                    const textCol = settings.email_btn_text_color || settings.emailBtnTextColor || "#ffffff";
-                    emailBtnTextColorInput.value = textCol;
-                    if (previewEmailBtn) previewEmailBtn.style.color = textCol;
-                }
-                if (popupInicioDelayInput)
-                    popupInicioDelayInput.value = String(
-                        settings.popup_start_delay_minutes ||
-                        settings.popupInicioDelay ||
-                        60,
-                    );
+                // Map all 3 emails from settings
+                const mapEmail = (idx: string, suffix: string = "") => {
+                    emailsState[idx].title = settings[`emailTitle${suffix}`] || settings[`email_subject${suffix}`] || (idx === "1" ? "Solicitud de información - Popup Web" : "");
+                    emailsState[idx].body = settings[`emailBody${suffix}`] || settings[`email_message${suffix}`] || "";
+                    emailsState[idx].imageUrl = settings[`emailImage${suffix}`] || settings[`email_image_url${suffix}`] || null;
+                    emailsState[idx].btnText = settings[`email_btn_text${suffix}`] || settings[`emailBtnText${suffix}`] || "Ver Productos";
+                    emailsState[idx].btnLink = settings[`email_btn_link${suffix}`] || settings[`emailBtnLink${suffix}`] || "https://tami.com/productos";
+                    emailsState[idx].btnBgColor = settings[`email_btn_bg_color${suffix}`] || settings[`emailBtnBgColor${suffix}`] || "#0b1c3c";
+                    emailsState[idx].btnTextColor = settings[`email_btn_text_color${suffix}`] || settings[`emailBtnTextColor${suffix}`] || "#ffffff";
+                    emailsState[idx].delay = String(settings[`email_send_delay_minutes${suffix}`] || settings[`emailSendDelay${suffix}`] || 5);
+                };
 
-                const popupProductosDelay = document.getElementById(
-                    "popupProductosDelay",
-                ) as HTMLSelectElement;
-                if (popupProductosDelay)
-                    popupProductosDelay.value = String(
-                        settings.product_popup_delay_minutes ||
-                        settings.popupProductosDelay ||
-                        60,
-                    );
+                mapEmail("1", "");
+                mapEmail("2", "_2");
+                mapEmail("3", "_3");
 
-                if (settings.whatsappMessage) {
-                    const whatsappMessageHidden = document.getElementById(
-                        "whatsappMessage",
-                    ) as HTMLInputElement;
-                    if (whatsappMessageHidden) {
-                        whatsappMessageHidden.value = settings.whatsappMessage;
-                    }
-
-                    if (previewWhatsappText) {
-                        previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
-                    }
-
-                    window.dispatchEvent(
-                        new CustomEvent("update-whatsapp-editor", {
-                            detail: settings.whatsappMessage,
-                        }),
-                    );
-                }
-
-                const emailTitleInput = document.getElementById(
-                    "emailTitle",
-                ) as HTMLInputElement;
-                if (emailTitleInput && settings.emailTitle) {
-                    emailTitleInput.value = settings.emailTitle;
-                    if (previewCorreoTitle)
-                        previewCorreoTitle.textContent =
-                            settings.emailTitle;
-                }
-
-                if (settings.whatsappImage) {
-                    const previewWAImg = document.getElementById(
-                        "previewWhatsappImageContainer",
-                    );
-                    if (previewWAImg) {
-                        previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-auto object-contain">`;
-                        previewWAImg.classList.remove("hidden");
-                    }
-                    document
-                        .getElementById("clearWhatsappImage")
-                        ?.classList.remove("hidden");
-                }
-
-                if (settings.emailImage) {
-                    const previewImg = document.getElementById(
-                        "previewEmailImageThumb",
-                    );
-                    const container = document.getElementById(
-                        "previewEmailAttachementContainer",
-                    );
-                    if (previewImg && container) {
-                        previewImg.innerHTML = `<img src="${settings.emailImage}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
-                        container.classList.remove("hidden");
-                    }
-                    if (clearEmailImage) clearEmailImage.classList.remove("hidden");
-                }
-
-                if (settings.emailBody) {
-                    const previewCorreoBody =
-                        document.getElementById("previewCorreoBody");
-                    if (previewCorreoBody) {
-                        previewCorreoBody.innerHTML = settings.emailBody;
-                    }
-                    window.dispatchEvent(
-                        new CustomEvent("update-email-editor", {
-                            detail: settings.emailBody,
-                        }),
-                    );
-                }
+                // Initialize UI with Email 1
+                currentEmailIdx = "1";
+                if (emailSelector) emailSelector.value = "1";
+                syncUIFromEmailState("1");
 
                 const restoreImg = (url: string | null, key: string, clearId: string) => {
                     if (url) {
@@ -871,13 +874,10 @@ export function initPopupManager() {
             }
             formData.append("popup_start_delay_minutes", delay.toString());
 
-            const popupProductosDelay = document.getElementById(
-                "popupProductosDelay",
-            ) as HTMLSelectElement;
-            if (popupProductosDelay)
+            if (popupProductosDelayInput)
                 formData.append(
                     "product_popup_delay_minutes",
-                    popupProductosDelay.value,
+                    popupProductosDelayInput.value,
                 );
 
             const whatsappMessage = document.getElementById(
@@ -886,23 +886,31 @@ export function initPopupManager() {
             if (whatsappMessage)
                 formData.append("whatsappMessage", whatsappMessage.value);
             formData.append("whatsapp_enabled", "1");
-
-            const emailTitle = document.getElementById(
-                "emailTitle",
-            ) as HTMLInputElement;
-            const emailBodyInput = document.getElementById(
-                "emailBody",
-            ) as HTMLInputElement;
-            if (emailTitle) formData.append("emailTitle", emailTitle.value);
-            if (emailBodyInput) {
-                formData.append("emailBody", emailBodyInput.value);
-            }
             formData.append("email_enabled", "1");
 
-            if (emailBtnTextInput) formData.append("email_btn_text", emailBtnTextInput.value);
-            if (emailBtnLinkInput) formData.append("email_btn_link", emailBtnLinkInput.value);
-            if (emailBtnBgColorInput) formData.append("email_btn_bg_color", emailBtnBgColorInput.value);
-            if (emailBtnTextColorInput) formData.append("email_btn_text_color", emailBtnTextColorInput.value);
+            // Save all 3 emails
+            saveCurrentEmailToState();
+
+            const appendEmailToFormData = (idx: string, suffix: string = "") => {
+                const state = emailsState[idx];
+                formData.append(`emailTitle${suffix}`, state.title);
+                formData.append(`emailBody${suffix}`, state.body);
+                formData.append(`email_btn_text${suffix}`, state.btnText);
+                formData.append(`email_btn_link${suffix}`, state.btnLink);
+                formData.append(`email_btn_bg_color${suffix}`, state.btnBgColor);
+                formData.append(`email_btn_text_color${suffix}`, state.btnTextColor);
+                formData.append(`email_send_delay_minutes${suffix}`, state.delay);
+
+                if (state.file) {
+                    formData.append(`emailImage${suffix}`, state.file);
+                } else if (state.deleteImage === "1") {
+                    formData.append(`delete_emailImage${suffix}`, "1");
+                }
+            };
+
+            appendEmailToFormData("1", "");
+            appendEmailToFormData("2", "_2");
+            appendEmailToFormData("3", "_3");
 
             const addFile = (id: string, name: string) => {
                 const input = document.getElementById(
@@ -925,7 +933,7 @@ export function initPopupManager() {
             addFile("popupImageMobile", "imageMobile");
             addFile("popupImageMobile2", "imageMobile2");
             addFile("whatsappImage", "whatsappImage");
-            addFile("emailImage", "emailImage");
+            // emailImage is handled per-email in appendEmailToFormData
 
             await updatePopupSettingsFormData(formData);
 

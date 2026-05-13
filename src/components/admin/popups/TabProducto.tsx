@@ -1243,6 +1243,7 @@ const TabProducto: React.FC = () => {
                                             defaultValue={formData.mensaje_email}
                                             inputId="emailBodyProducto"
                                             updateEventName="update-email-editor-producto"
+                                            onChangeHtml={(html) => handleFieldChange("mensaje_email", html)}
                                         />
                                     </div>
 
