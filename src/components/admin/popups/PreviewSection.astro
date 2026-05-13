@@ -300,18 +300,10 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                         </div>
                     </div>
 
-                    <!-- Cuerpo del mensaje RICH TEXT -->
-                    <div
-                        id="previewCorreoBody"
-                        class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed !p-0 font-sans min-h-0 break-words"
-                    >
-                        <!-- El contenido se inyecta desde Quill -->
-                    </div>
-
                     <!-- Archivos adjuntos (ahora como imagen completa en el correo) -->
                     <div
                         id="previewEmailAttachementContainer"
-                        class="hidden pt-4 text-center"
+                        class="hidden pb-4 text-center"
                     >
                         <div
                             id="previewEmailImageThumb"
@@ -319,6 +311,14 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
                         >
                             <!-- Imagen adjunta -->
                         </div>
+                    </div>
+
+                    <!-- Cuerpo del mensaje RICH TEXT -->
+                    <div
+                        id="previewCorreoBody"
+                        class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed !p-0 font-sans min-h-0 break-words"
+                    >
+                        <!-- El contenido se inyecta desde Quill -->
                     </div>
 
                     <!-- Botón Personalizado -->
