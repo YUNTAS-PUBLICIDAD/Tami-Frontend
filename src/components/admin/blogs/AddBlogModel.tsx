@@ -962,10 +962,30 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                             />
                           </div>
                           {imagen.url && (
-                            <div className="mt-2">
-                              <img src={imagen.url} alt={`Sección ${index + 1}`} className="w-20 h-20 object-cover rounded" />
-                            </div>
-                          )}
+                          <div className="mt-2">
+                            <label className="cursor-pointer block w-20 h-20 relative group">
+                              
+                              <img
+                                src={imagen.url}
+                                alt={`Sección ${index + 1}`}
+                                className="w-20 h-20 object-cover rounded group-hover:opacity-70 transition"
+                              />
+
+                              {/* overlay de edición */}
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded transition">
+                                <span className="text-white text-xs font-bold">Cambiar</span>
+                              </div>
+
+                              {/* input oculto encima */}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                onChange={(e) => handleFileChangeAdicional(e, index)}
+                              />
+                            </label>
+                          </div>
+                        )}
                         </div>
                         <div>
                           <div className="flex justify-between items-center mb-1">
