@@ -542,8 +542,8 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
               position: "relative"
             }}
           >
-            <div className="flex-1 flex items-center justify-center px-2">
-              <h3 className="text-base font-bold uppercase text-white text-start break-words">
+            <div className="flex-1 flex items-start justify-start px-2 pt-3 pb-12 pr-4 overflow-hidden">
+              <h3 className="text-base font-bold uppercase text-white text-start break-all leading-tight [display:-webkit-box] [-webkit-line-clamp:4] [-webkit-box-orient:vertical] overflow-hidden">
                 {producto.nombre}
               </h3>
             </div>
@@ -585,12 +585,10 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
             )}
           </div>
           <div className="w-full absolute left-0 bottom-0 overflow-hidden" style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`, height: '80px', minHeight: '80px', position: 'absolute', left: 0, bottom: 0, width: '100%', display: 'flex', alignItems: 'center', margin: 0, padding: 0 }}>
-            <div className="flex flex-row w-full h-full items-center" style={{ height: '100%' }}>
-              <div className="flex items-center pl-4" style={{ maxWidth: '65%', flex: '0 0 65%', height: '100%' }}>
-                <h3 className="text-base font-bold uppercase text-white break-words whitespace-normal">
+            <div className="w-full h-full flex items-center pl-4 pr-[130px] overflow-hidden" style={{ height: '100%' }}>
+              <h3 className="text-base font-bold uppercase text-white leading-tight break-all [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] overflow-hidden">
                   {producto.nombre}
-                </h3>
-              </div>
+              </h3>
             </div>
             <button
               className="bg-white font-bold text-lg text-[#0374A2] px-5 py-2 shadow-sm border-none transition-all duration-300 group-hover:bg-gray-50 group-hover:shadow-md group-hover:text-[#00B6FF]"
