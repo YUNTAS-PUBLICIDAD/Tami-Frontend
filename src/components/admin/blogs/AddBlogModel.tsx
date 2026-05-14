@@ -9,6 +9,7 @@ interface ImagenAdicional {
   parrafo: string;
   text_alt: string;
   url?: string;
+  previewUrl?: string;
   id?: number | string;
 }
 
@@ -99,8 +100,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     created_at: new Date().toISOString().split('T')[0],
     miniatura: null,
     imagenes: [
-      { imagen: null, parrafo: "", text_alt: "" },
-      { imagen: null, parrafo: "", text_alt: "" },
+      { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
+      { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
     ],
     etiqueta: {
       meta_titulo: "",
@@ -160,11 +161,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 ? raw
                 : `${import.meta.env.PUBLIC_API_URL}${raw}`
               : "",
+            previewUrl: undefined,
             id: img.id || img.imagen_id,
           };
         }) || [
-            { imagen: null, parrafo: "", text_alt: "", url: "", id: undefined },
-            { imagen: null, parrafo: "", text_alt: "", url: "", id: undefined },
+            { imagen: null, parrafo: "", text_alt: "", url: "", previewUrl: undefined, id: undefined },
+            { imagen: null, parrafo: "", text_alt: "", url: "", previewUrl: undefined, id: undefined },
           ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
@@ -183,8 +185,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         created_at: new Date().toISOString().split('T')[0],
         miniatura: null,
         imagenes: [
-          { imagen: null, parrafo: "", text_alt: "" },
-          { imagen: null, parrafo: "", text_alt: "" },
+          { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
+          { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
         ],
         etiqueta: {
           meta_titulo: "",
@@ -275,7 +277,15 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       return;
     }
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], imagen: f };
+    const previewActual = nuevoArray[index]?.previewUrl;
+    if (previewActual) {
+      URL.revokeObjectURL(previewActual);
+    }
+    nuevoArray[index] = {
+      ...nuevoArray[index],
+      imagen: f,
+      previewUrl: URL.createObjectURL(f),
+    };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -563,6 +573,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       }
 
       formData.imagenes.forEach((item, index) => {
+        formDataToSend.append(
+          "imagen_tipo[]",
+          item.imagen instanceof File ? "file" : "existing"
+        );
+
         if (item.imagen instanceof File) {
           // Nueva imagen
           formDataToSend.append("imagenes[]", item.imagen);
@@ -570,10 +585,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         } else if (item.id) {
           // Imagen existente que no se modificó - IMPORTANTE: preservar con ID
           formDataToSend.append("imagen_ids[]", item.id.toString());
-          formDataToSend.append("text_alt[]", item.text_alt);
-        } else if (item.url) {
-          // Fallback: si hay URL pero no ID, intentar preservar con URL
-          formDataToSend.append("imagenes_url[]", item.url);
           formDataToSend.append("text_alt[]", item.text_alt);
         }
         // SIEMPRE enviar el párrafo, aunque sea existente
@@ -990,10 +1001,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           </div>
 
                           {/* Vista previa de imagen */}
-                          {imagen.url && (
+                          {(imagen.previewUrl || imagen.url) && (
                             <div className="relative group">
                               <img
-                                src={imagen.url}
+                                src={imagen.previewUrl || imagen.url}
                                 alt={`Sección ${index + 1}`}
                                 className="w-full h-48 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md"
                               />
