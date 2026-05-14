@@ -9,8 +9,8 @@ import type { ProductFormData } from "../types/productTab.types";
 interface UseProductFormReturn {
   formData: ProductFormData | null;
   setFormData: (data: ProductFormData | null | ((prev: ProductFormData | null) => ProductFormData | null)) => void;
-  previews: Record<string, string>;
-  setPreviews: (previews: Record<string, string> | ((prev: Record<string, string>) => Record<string, string>)) => void;
+  previews: Record<string, string | File | null>;
+  setPreviews: (previews: Record<string, string | File | null> | ((prev: Record<string, string | File | null>) => Record<string, string | File | null>)) => void;
   
   // Field operations
   handleFieldChange: (field: string, value: any, isEtiqueta?: boolean) => void;
@@ -20,7 +20,7 @@ interface UseProductFormReturn {
 
 export const useProductForm = (): UseProductFormReturn => {
   const [formData, setFormData] = useState<ProductFormData | null>(null);
-  const [previews, setPreviews] = useState<Record<string, string>>({});
+  const [previews, setPreviews] = useState<Record<string, string | File | null>>({});
 
   /**
    * Update a form field with optional preview sync

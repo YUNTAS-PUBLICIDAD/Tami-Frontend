@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
 import apiClient from "../../../services/apiClient";
 import Swal from "sweetalert2";
 import { ProductoService } from "../../../services/producto.service";
@@ -12,6 +12,9 @@ import type { ProductFormData, TabType } from "./types/productTab.types";
 import { useProductForm } from "./hooks/useProductForm";
 import { useProductEventListeners } from "./hooks/useProductEventListeners";
 import { useProductSave } from "./hooks/useProductSave";
+import { useProductsLoad } from "./hooks/useProductsLoad";
+import { useProductPreviewSync } from "./hooks/useProductPreviewSync";
+import { useProductSelection } from "./hooks/useProductSelection";
 import { ImageUploadField } from "./components/ImageUploadField";
 import { ColorPickerField } from "./components/ColorPickerField";
 import { TabNavigation } from "./components/TabNavigation";
@@ -21,14 +24,28 @@ import { EmailSection } from "./components/EmailSection";
 import { getImageUrl } from "./utils/imageUrl";
 
 const TabProducto: React.FC = () => {
-    const [products, setProducts] = useState<Producto[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(true);
-    const [selectedProductId, setSelectedProductId] = useState<string>("");
-    const [activeTab, setActiveTab] = useState<TabType>('popups');
-    const [whatsappSelected, setWhatsappSelected] = useState<number>(1);
+    // Load products on mount
+    const { products, loadingProducts } = useProductsLoad();
     
-    // Custom hooks
+    // State management
+    const [activeTab, setActiveTab] = React.useState<TabType>('popups');
+    const [whatsappSelected, setWhatsappSelected] = React.useState<number>(1);
+    
+    // Form management
     const { formData, setFormData, previews, setPreviews, handleFieldChange: hookFieldChange, handleClearImage: hookClearImage, handleFileChange: hookFileChange } = useProductForm();
+    
+    // Product selection and loading
+    const { selectedProductId, setSelectedProductId, handleProductSelect } = useProductSelection(
+        setFormData,
+        setPreviews,
+        activeTab,
+        whatsappSelected
+    );
+    
+    // Auto-sync preview when data changes
+    useProductPreviewSync(formData, previews, activeTab, whatsappSelected);
+    
+    // Save management
     const { isSaving, handleSave: hookSave } = useProductSave();
 
     // Event listeners for editor updates
@@ -56,92 +73,15 @@ const TabProducto: React.FC = () => {
         }
     });
 
-    // Sync preview when data or tab changes
-    useEffect(() => {
-        if (formData) {
-            ProductSyncService.syncPreview(formData, previews, activeTab, whatsappSelected);
-        }
-    }, [formData, activeTab, whatsappSelected, previews]);
-
-    // Fetch products on mount
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await ProductoService.getAllProductos();
-                setProducts(data);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            } finally {
-                setLoadingProducts(false);
-            }
-        };
-        fetchProducts();
-    }, []);
-
-    const handleProductSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const id = e.target.value;
-        setSelectedProductId(id);
-
-        if (!id) {
-            setFormData(null);
-            return;
-        }
-
-        try {
-            // Fetch FULL product details
-            const response = await apiClient.get(config.endpoints.productos.detail(id));
-            const product = response.data.data || response.data;
-
-            // Use service to build initial form data
-            const initialData = ProductFormBuilderService.buildInitialFormData(product, config.apiUrl);
-            setFormData(initialData);
-
-            // Update Editors
-            ProductSyncService.updateEditors(initialData);
-
-            // Sync preview
-            ProductSyncService.syncPreview(initialData, {}, activeTab, whatsappSelected);
-        } catch (error) {
-            console.error("Error fetching product details:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudieron obtener los detalles del producto."
-            });
-        }
-    };
-
 
 
     // Wrapper to add preview sync after field change
     const handleFieldChange = (field: string, value: any, isEtiqueta = false) => {
         hookFieldChange(field, value, isEtiqueta);
-        
-        // Sync preview if not a File
-        if (!(value instanceof File)) {
-            setTimeout(() => {
-                setFormData((prev: any) => {
-                    if (prev) {
-                        ProductSyncService.syncPreview(prev, previews, activeTab, whatsappSelected);
-                    }
-                    return prev;
-                });
-            }, 0);
-        }
     };
 
     const handleClearImage = (field: string) => {
         hookClearImage(field);
-        
-        // Sync preview after clearing
-        setTimeout(() => {
-            setFormData((prev: any) => {
-                if (prev) {
-                    ProductSyncService.syncPreview(prev, previews, activeTab, whatsappSelected, { [field]: null });
-                }
-                return prev;
-            });
-        }, 0);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
@@ -149,9 +89,6 @@ const TabProducto: React.FC = () => {
             // Dispatch specific preview events for WhatsApp messages
             const url = overrides[field] as string;
             ProductSyncService.updateWhatsAppImagePreview(field, url);
-
-            // Sync preview with the new URL
-            ProductSyncService.syncPreview(newData, previews, activeTab, whatsappSelected, overrides);
         });
     };
 
@@ -173,7 +110,7 @@ const TabProducto: React.FC = () => {
                 <div className="relative">
                     <select
                         value={selectedProductId}
-                        onChange={handleProductSelect}
+                        onChange={(e) => handleProductSelect(e.target.value)}
                         className="w-full p-3 pr-10 rounded-lg border border-teal-200 dark:border-teal-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-500 outline-none transition-all appearance-none"
                     >
                         <option value="">-- Elige un producto --</option>
