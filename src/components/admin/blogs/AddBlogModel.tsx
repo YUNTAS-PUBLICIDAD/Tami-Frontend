@@ -140,6 +140,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       const productoEncontrado = productos.find(
         (p) => p.nombre === blogToEdit.nombre_producto
       );
+      const productoIdEdit = blogToEdit.producto_id ?? productoEncontrado?.id ?? "";
       setFormData({
         titulo: blogToEdit.titulo || "",
         link: blogToEdit.link || "",
@@ -147,7 +148,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         subtitulo2: blogToEdit.subtitulo2 || "",
         video_url: blogToEdit.video_url || "",
         video_titulo: blogToEdit.video_titulo || "",
-        producto_id: productoEncontrado ? String(productoEncontrado.id) : "",
+        producto_id: productoIdEdit ? String(productoIdEdit) : "",
         created_at: blogToEdit.created_at ? blogToEdit.created_at.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
         miniatura: blogToEdit.miniatura || null,
         imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
