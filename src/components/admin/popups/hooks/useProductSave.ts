@@ -15,8 +15,8 @@
  */
 
 import { useState, useCallback } from "react";
-import apiClient from "../../../services/apiClient";
-import { config } from "../../../../config";
+import apiClient from "src/services/apiClient";
+import { config } from '../../../../../config';
 import Swal from "sweetalert2";
 import { ProductFormBuilderService } from "../services/productFormBuilder";
 import type { ProductFormData } from "../types/productTab.types";

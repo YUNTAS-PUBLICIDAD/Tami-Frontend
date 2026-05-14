@@ -17,7 +17,25 @@
  * - getFullImageUrl(url, apiUrl): Converts relative to full URL
  */
 
-import { ProductFormData } from "../types/productTab.types";
+/**
+ * @fileoverview ProductFormBuilderService
+ * Transforms ProductFormData state into FormData for API submission
+ *
+ * Responsibilities:
+ * - Build FormData from ProductFormData state
+ * - Handle file serialization (File objects → FormData)
+ * - Transform nested fields (etiqueta, gallery images)
+ * - Mark deleted fields with delete_* flags
+ * - Handle URL cleanup (remove baseURL from existing images)
+ * - Build initial ProductFormData from API response
+ * - Convert relative URLs to full URLs for preview
+ *
+ * Methods:
+ * - buildProductFormData(formData, productId): FormData for save
+ * - buildInitialFormData(product, apiUrl): ProductFormData from API
+ * - getFullImageUrl(url, apiUrl): Converts relative to full URL
+ */
+import type { ProductFormData } from "../types/productTab.types";
 import { config } from "../../../../../config";
 
 export class ProductFormBuilderService {

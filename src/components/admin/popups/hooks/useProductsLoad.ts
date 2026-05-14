@@ -14,8 +14,8 @@
  * return products.map(p => <ProductOption key={p.id} product={p} />);
  */
 import { useState, useEffect } from "react";
-import type Producto from "../../../models/Product";
-import { ProductoService } from "../../../services/producto.service";
+import type Producto from "src/models/Product";
+import { ProductoService } from "../../../../services/producto.service";
 
 /**
  * @typedef {Object} UseProductsLoadReturn

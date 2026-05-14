@@ -2,7 +2,7 @@
 
 import React from 'react';
 import type Producto from '../../models/Product';
-import { config } from 'config';
+import { config } from '../../../config';
 
 interface Props {
   product: Producto;

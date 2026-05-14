@@ -3,7 +3,7 @@ import boxSize from "@icons/box-size.svg";
 import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import type Producto from '../../models/Product'
 import { insertJsonLd } from "../../utils/schema-markup-generator";
-import { config } from 'config';
+import { config } from '../../../config';
 import RelatedBlogs from './RelatedBlogs';
 
 import { Swiper, SwiperSlide } from 'swiper/react';

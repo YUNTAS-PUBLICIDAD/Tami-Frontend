@@ -20,8 +20,8 @@
  */
 import { useState, useCallback } from "react";
 import Swal from "sweetalert2";
-import apiClient from "../../../services/apiClient";
-import { config } from "../../../../config";
+import apiClient from "../../../../services/apiClient";
+import { config } from "../../../../../config";
 import { ProductFormBuilderService } from "../services/productFormBuilder";
 import { ProductSyncService } from "../services/productSyncService";
 import type { ProductFormData, TabType } from "../types/productTab.types";
