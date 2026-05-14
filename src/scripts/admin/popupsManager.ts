@@ -733,6 +733,12 @@ export function initPopupManager() {
                 if (previewKey === "whatsappImage3") whatsappData["3"].image = url as string;
 
                 syncWhatsAppPreview(currentSelectedWaMessage);
+                
+                // Update popup preview
+                if (previewKey.startsWith("popup_")) {
+                    updatePreview({ [previewKey]: url as string }, currentMode);
+                }
+
                 clearBtn?.classList.remove("hidden");
                 if (deleteInput) deleteInput.value = "0";
             });
@@ -748,6 +754,12 @@ export function initPopupManager() {
             if (previewKey === "whatsappImage3") whatsappData["3"].image = null;
 
             syncWhatsAppPreview(currentSelectedWaMessage);
+            
+            // Update popup preview
+            if (previewKey.startsWith("popup_")) {
+                updatePreview({ [previewKey]: null }, currentMode);
+            }
+
             clearBtn?.classList.add("hidden");
             if (deleteInput) deleteInput.value = "1";
         });
