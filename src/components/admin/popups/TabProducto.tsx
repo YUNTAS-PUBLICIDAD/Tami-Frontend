@@ -6,6 +6,9 @@ import type Producto from "../../../models/Product";
 import Swal from "sweetalert2";
 import WhatsappEditor from "./WhatsappEditor";
 import EmailEditor from "./EmailEditor";
+import { ProductFormBuilderService } from "./services/productFormBuilder";
+import { ProductSyncService } from "./services/productSyncService";
+import type { ProductFormData, TabType } from "./types/productTab.types";
 
 const TabProducto: React.FC = () => {
     const [products, setProducts] = useState<Producto[]>([]);
@@ -90,8 +93,9 @@ const TabProducto: React.FC = () => {
         };
     }, [selectedProductId, formData, isSaving]); // Added dependencies to ensure handleSave has latest state
 
-    const getFullImageUrl = (url: string) => {
-        if (!url) return "";
+    // Helper function to ensure full URL for display
+    const ensureFullUrl = (url: string | File | null): string | null => {
+        if (!url || url instanceof File) return null;
         if (url.startsWith("http")) return url;
         return `${config.apiUrl}${url}`;
     };
@@ -110,73 +114,15 @@ const TabProducto: React.FC = () => {
             const response = await apiClient.get(config.endpoints.productos.detail(id));
             const product = response.data.data || response.data;
 
-            const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
-            const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
-                const tipo = (img.tipo || "").toLowerCase();
-                return tipo === "popup2" || tipo === "popup_2";
-            });
-
-            const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
-            const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
-
-            const imagenEmail = product.producto_imagenes?.find((img: any) => img.tipo === "email");
-            const imagenWhatsapp = product.producto_imagenes?.find((img: any) => img.tipo === "whatsapp");
-
-            const initialData = {
-                ...product, // Store ALL product fields
-                imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
-                texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-                imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
-                texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
-                imagen_popup_mobile: imagenPopupMobile ? getFullImageUrl(imagenPopupMobile.url_imagen) : null,
-                texto_alt_popup_mobile: imagenPopupMobile?.texto_alt_SEO || "",
-                imagen_popup_mobile2: imagenPopupMobile2 ? getFullImageUrl(imagenPopupMobile2.url_imagen) : null,
-                texto_alt_popup_mobile2: imagenPopupMobile2?.texto_alt_SEO || "",
-
-                // Email Data
-                imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
-                asunto: imagenEmail?.asunto || "",
-                mensaje_email: imagenEmail?.email_mensaje || "",
-                email_btn_text: imagenEmail?.email_btn_text || "Ver Productos",
-                email_btn_link: imagenEmail?.email_btn_link || "https://tami.com/productos",
-                email_btn_bg_color: imagenEmail?.email_btn_bg_color || "#0b1c3c",
-                email_btn_text_color: imagenEmail?.email_btn_text_color || "#ffffff",
-
-                // Whatsapp Data
-                imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
-                texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "",
-                mensaje_whatsapp_2: imagenWhatsapp?.whatsapp_mensaje_2 || "",
-                mensaje_whatsapp_3: imagenWhatsapp?.whatsapp_mensaje_3 || "",
-                whatsapp_time_1: imagenWhatsapp?.whatsapp_time_1 || 0,
-                whatsapp_time_2: imagenWhatsapp?.whatsapp_time_2 || 0,
-                whatsapp_time_3: imagenWhatsapp?.whatsapp_time_3 || 0,
-                imagen_whatsapp_2: imagenWhatsapp?.whatsapp_image_url_2 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_2) : null,
-                imagen_whatsapp_3: imagenWhatsapp?.whatsapp_image_url_3 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_3) : null,
-
-                delete_imagen_popup: 0,
-                delete_imagen_popup2: 0,
-                delete_imagen_popup_mobile: 0,
-                delete_imagen_popup_mobile2: 0,
-                delete_imagen_email: 0,
-                delete_imagen_whatsapp: 0,
-                delete_imagen_whatsapp_2: 0,
-                delete_imagen_whatsapp_3: 0,
-                etiqueta: {
-                    ...product.etiqueta,
-                    popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
-                    popup_text_color: product.etiqueta?.popup_text_color || "#000000",
-                    popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
-                }
-            };
+            // Use service to build initial form data
+            const initialData = ProductFormBuilderService.buildInitialFormData(product, config.apiUrl);
             setFormData(initialData);
 
             // Update Editors
-            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto", { detail: initialData.texto_alt_whatsapp }));
-            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-2", { detail: initialData.mensaje_whatsapp_2 }));
-            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-3", { detail: initialData.mensaje_whatsapp_3 }));
-            window.dispatchEvent(new CustomEvent("update-email-editor-producto", { detail: initialData.mensaje_email }));
+            ProductSyncService.updateEditors(initialData);
 
-            syncPreview(initialData);
+            // Sync preview
+            ProductSyncService.syncPreview(initialData, {}, activeTab, whatsappSelected);
         } catch (error) {
             console.error("Error fetching product details:", error);
             Swal.fire({
@@ -188,73 +134,7 @@ const TabProducto: React.FC = () => {
     };
 
     const syncPreview = (data: any, overrides: any = {}) => {
-        const previewSettings = {
-            popup_image_url: overrides.imagen_popup || previews.imagen_popup || data.imagen_popup,
-            popup_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2,
-            button_bg_color: data.etiqueta.popup_button_color,
-            button_text_color: data.etiqueta.popup_text_color,
-            button_text: data.etiqueta.popup_button_text,
-            popup_mobile_image_url: overrides.imagen_popup_mobile !== undefined ? overrides.imagen_popup_mobile : (previews.imagen_popup_mobile || data.imagen_popup_mobile),
-            popup_mobile_image2_url: overrides.imagen_popup_mobile2 !== undefined ? overrides.imagen_popup_mobile2 : (previews.imagen_popup_mobile2 || data.imagen_popup_mobile2)
-        };
-
-        // Final check: if any of these are still File objects, we don't send them
-        if (previewSettings.popup_image_url instanceof File) previewSettings.popup_image_url = null;
-        if (previewSettings.popup_image2_url instanceof File) previewSettings.popup_image2_url = null;
-        if (previewSettings.popup_mobile_image_url instanceof File) previewSettings.popup_mobile_image_url = null;
-        if (previewSettings.popup_mobile_image2_url instanceof File) previewSettings.popup_mobile_image2_url = null;
-
-        window.dispatchEvent(
-            new CustomEvent("update-popup-preview", {
-                detail: { settings: previewSettings },
-            }),
-        );
-
-        // Switch preview type based on active tab
-        window.dispatchEvent(new CustomEvent("switch-preview-type", { detail: activeTab }));
-
-        if (activeTab === "whatsapp") {
-            let waText = "";
-            let waImage = null;
-
-            if (whatsappSelected === 1) {
-                waText = data.texto_alt_whatsapp || "";
-                waImage = overrides.imagen_whatsapp !== undefined ? overrides.imagen_whatsapp : (previews.imagen_whatsapp || data.imagen_whatsapp);
-            } else if (whatsappSelected === 2) {
-                waText = data.mensaje_whatsapp_2 || "";
-                waImage = overrides.imagen_whatsapp_2 !== undefined ? overrides.imagen_whatsapp_2 : (previews.imagen_whatsapp_2 || data.imagen_whatsapp_2);
-            } else if (whatsappSelected === 3) {
-                waText = data.mensaje_whatsapp_3 || "";
-                waImage = overrides.imagen_whatsapp_3 !== undefined ? overrides.imagen_whatsapp_3 : (previews.imagen_whatsapp_3 || data.imagen_whatsapp_3);
-            }
-
-            const eventName = whatsappSelected === 1 ? "update-whatsapp-preview" :
-                whatsappSelected === 2 ? "update-whatsapp-preview-2" :
-                    "update-whatsapp-preview-3";
-
-            window.dispatchEvent(new CustomEvent(eventName, {
-                detail: {
-                    text: waText,
-                    image: waImage instanceof File ? null : waImage
-                }
-            }));
-
-            // Also notify popupsManager about the selection to sync preview blocks if needed
-            window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
-        } else if (activeTab === "correo") {
-            const emailImage = overrides.imagen_email !== undefined ? overrides.imagen_email : (previews.imagen_email || data.imagen_email);
-            window.dispatchEvent(new CustomEvent("update-email-preview", {
-                detail: {
-                    body: data.mensaje_email || "",
-                    title: data.asunto || "",
-                    image: emailImage instanceof File ? null : emailImage,
-                    btnText: data.email_btn_text,
-                    btnLink: data.email_btn_link,
-                    btnBgColor: data.email_btn_bg_color,
-                    btnTextColor: data.email_btn_text_color
-                }
-            }));
-        }
+        ProductSyncService.syncPreview(data, previews, activeTab, whatsappSelected, overrides);
     };
 
     const handleFieldChange = (field: string, value: any, isEtiqueta = false) => {
@@ -308,13 +188,7 @@ const TabProducto: React.FC = () => {
                     };
 
                     // Dispatch specific preview events for WhatsApp messages
-                    if (field === "imagen_whatsapp") {
-                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview", { detail: { image: url } }));
-                    } else if (field === "imagen_whatsapp_2") {
-                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-2", { detail: { image: url } }));
-                    } else if (field === "imagen_whatsapp_3") {
-                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", { detail: { image: url } }));
-                    }
+                    ProductSyncService.updateWhatsAppImagePreview(field, url);
 
                     // We pass the base64 URL as an override to ensure the preview uses it instead of the File
                     syncPreview(newData, { [field]: url });
@@ -330,179 +204,9 @@ const TabProducto: React.FC = () => {
 
         setIsSaving(true);
         try {
-            const formDataToSend = new FormData();
+            // Build FormData using service
+            const formDataToSend = ProductFormBuilderService.buildProductFormData(formData, selectedProductId);
 
-            // Baseline product fields (unchanged) to satisfy strict backend update handlers.
-            formDataToSend.append("nombre", formData.nombre || "");
-            formDataToSend.append("titulo", formData.titulo || "");
-            formDataToSend.append("subtitulo", formData.subtitulo || "");
-            formDataToSend.append("descripcion", formData.descripcion || "");
-            formDataToSend.append("seccion", formData.seccion || "");
-            formDataToSend.append("link", formData.link || "");
-            formDataToSend.append("stock", String(formData.stock ?? 0));
-            formDataToSend.append("precio", String(formData.precio ?? 0));
-
-            // Keep current gallery references to avoid backend rules that require gallery context.
-            if (Array.isArray(formData.producto_imagenes)) {
-                formData.producto_imagenes
-                    .filter((img: any) => img?.tipo === "galeria" || !img?.tipo)
-                    .forEach((img: any, idx: number) => {
-                        let urlLimpia = img.url_imagen || "";
-                        if (typeof urlLimpia === "string" && urlLimpia.includes(config.apiUrl)) {
-                            urlLimpia = urlLimpia.replace(config.apiUrl, "");
-                        }
-                        if (typeof urlLimpia === "string") {
-                            urlLimpia = urlLimpia.split("?")[0];
-                        }
-
-                        formDataToSend.append(`imagenes_existentes[${idx}][url]`, urlLimpia || "");
-                        if (img.id != null) {
-                            formDataToSend.append(`imagenes_existentes[${idx}][id]`, String(img.id));
-                        }
-                        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.texto_alt_SEO || "");
-                    });
-            }
-
-            // Popup Images
-            if (formData.imagen_popup instanceof File) {
-                formDataToSend.append("imagen_popup", formData.imagen_popup);
-            }
-            formDataToSend.append("texto_alt_popup", formData.texto_alt_popup || "");
-
-            if (formData.imagen_popup2 instanceof File) {
-                formDataToSend.append("imagen_popup2", formData.imagen_popup2);
-            }
-            formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2 || "");
-            formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || "");
-
-            // Mobile Images
-            if (formData.imagen_popup_mobile instanceof File) {
-                formDataToSend.append("imagen_popup_mobile", formData.imagen_popup_mobile);
-            } else if (formData.delete_imagen_popup_mobile === 1) {
-                formDataToSend.append("delete_imagen_popup_mobile", "1");
-            }
-            formDataToSend.append("texto_alt_popup_mobile", formData.texto_alt_popup_mobile || "");
-
-            if (formData.imagen_popup_mobile2 instanceof File) {
-                formDataToSend.append("imagen_popup_mobile2", formData.imagen_popup_mobile2);
-            } else if (formData.delete_imagen_popup_mobile2 === 1) {
-                formDataToSend.append("delete_imagen_popup_mobile2", "1");
-            }
-            formDataToSend.append("texto_alt_popup_mobile2", formData.texto_alt_popup_mobile2 || "");
-
-            // Email & Whatsapp Data
-            if (formData.imagen_email instanceof File) {
-                formDataToSend.append("imagen_email", formData.imagen_email);
-            } else if (formData.delete_imagen_email === 1) {
-                formDataToSend.append("delete_imagen_email", "1");
-            }
-            formDataToSend.append("asunto", formData.asunto || "");
-            formDataToSend.append("mensaje_email", formData.mensaje_email || "");
-            formDataToSend.append("email_btn_text", formData.email_btn_text || "Ver Productos");
-            formDataToSend.append("email_btn_link", formData.email_btn_link || "https://tami.com/productos");
-            formDataToSend.append("email_btn_bg_color", formData.email_btn_bg_color || "#0b1c3c");
-            formDataToSend.append("email_btn_text_color", formData.email_btn_text_color || "#ffffff");
-
-            if (formData.imagen_whatsapp instanceof File) {
-                formDataToSend.append("imagen_whatsapp", formData.imagen_whatsapp);
-            } else if (formData.delete_imagen_whatsapp === 1) {
-                formDataToSend.append("delete_imagen_whatsapp", "1");
-            }
-            formDataToSend.append("texto_alt_whatsapp", formData.texto_alt_whatsapp || "");
-            formDataToSend.append("mensaje_whatsapp", formData.texto_alt_whatsapp || "");
-
-            // Sequential WhatsApp Messages
-            if (formData.imagen_whatsapp_2 instanceof File) {
-                formDataToSend.append("imagen_whatsapp_2", formData.imagen_whatsapp_2);
-            } else if (formData.delete_imagen_whatsapp_2 === 1) {
-                formDataToSend.append("delete_imagen_whatsapp_2", "1");
-            }
-            formDataToSend.append("mensaje_whatsapp_2", formData.mensaje_whatsapp_2 || "");
-
-            if (formData.imagen_whatsapp_3 instanceof File) {
-                formDataToSend.append("imagen_whatsapp_3", formData.imagen_whatsapp_3);
-            } else if (formData.delete_imagen_whatsapp_3 === 1) {
-                formDataToSend.append("delete_imagen_whatsapp_3", "1");
-            }
-            formDataToSend.append("mensaje_whatsapp_3", formData.mensaje_whatsapp_3 || "");
-
-            formDataToSend.append("whatsapp_time_1", String(formData.whatsapp_time_1 || 0));
-            formDataToSend.append("whatsapp_time_2", String(formData.whatsapp_time_2 || 0));
-            formDataToSend.append("whatsapp_time_3", String(formData.whatsapp_time_3 || 0));
-
-            // Deletion flags for Desktop images as well
-            if (!(formData.imagen_popup instanceof File) && formData.delete_imagen_popup === 1) {
-                formDataToSend.append("delete_imagen_popup", "1");
-            }
-            if (!(formData.imagen_popup2 instanceof File) && formData.delete_imagen_popup2 === 1) {
-                formDataToSend.append("delete_imagen_popup2", "1");
-                formDataToSend.append("delete_imagen_popup_2", "1");
-            }
-
-            // Button text and colors
-            formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta?.meta_titulo || "");
-            formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta?.meta_descripcion || "");
-            formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta?.popup_estilo || "estilo1");
-            formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta?.popup_button_text || "¡COTIZA AHORA!");
-            formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
-            formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
-
-
-    // Required flags for partial update
-    formDataToSend.append("_method", "PUT");
-    formDataToSend.append("only_popup", "1");
-
-            // Title Customization Fields (Detailed View)
-            formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
-            formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
-            formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
-
-            // Include safe fallbacks if they exist in formData
-            if (formData.dimensiones) {
-                formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
-                formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
-                formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
-            }
-
-            if (formData.especificaciones) {
-                let specsToSend = formData.especificaciones;
-                if (Array.isArray(specsToSend)) {
-                    const specsObj: Record<string, string> = {};
-                    specsToSend.forEach((s: any) => {
-                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-                    });
-                    specsToSend = specsObj;
-                }
-                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-            }
-            if (formData.especificaciones) {
-                let specsToSend = formData.especificaciones;
-                if (Array.isArray(specsToSend)) {
-                    const specsObj: Record<string, string> = {};
-                    specsToSend.forEach((s: any) => {
-                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-                    });
-                    specsToSend = specsObj;
-                }
-                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-            }
-
-            if (formData.etiqueta?.keywords) {
-                const keywords = formData.etiqueta.keywords;
-                const kwArray = Array.isArray(keywords)
-                    ? keywords
-                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
-                formDataToSend.append("keywords", JSON.stringify(kwArray));
-            }
-            if (formData.etiqueta?.keywords) {
-                const keywords = formData.etiqueta.keywords;
-                const kwArray = Array.isArray(keywords)
-                    ? keywords
-                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
-                formDataToSend.append("keywords", JSON.stringify(kwArray));
-            }
-
-            formDataToSend.append("_method", "PUT");
             const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
@@ -944,7 +648,7 @@ const TabProducto: React.FC = () => {
                                             <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
                                                 <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
                                                     {previews.imagen_whatsapp || formData.imagen_whatsapp ? (
-                                                        <img src={previews.imagen_whatsapp || getFullImageUrl(formData.imagen_whatsapp)} className="w-full h-full object-contain" />
+                                                        <img src={previews.imagen_whatsapp || ensureFullUrl(formData.imagen_whatsapp) || ""} className="w-full h-full object-contain" />
                                                     ) : (
                                                         <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
                                                     )}
