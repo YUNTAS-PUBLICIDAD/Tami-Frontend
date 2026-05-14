@@ -417,7 +417,7 @@ export function initPopupManager() {
                 previewWAImg.classList.add("hidden");
             }
         }
-    });
+    };
 
     const previewCorreoTitle =
         document.getElementById("previewCorreoTitle");
