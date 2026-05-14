@@ -57,7 +57,7 @@ const TabProducto: React.FC = () => {
         if (formData) {
             syncPreview(formData);
         }
-    }, [activeTab, whatsappSelected]);
+    }, [formData, activeTab, whatsappSelected]);
 
     useEffect(() => {
         const fetchProducts = async () => {
