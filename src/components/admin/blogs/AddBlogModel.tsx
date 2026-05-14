@@ -9,6 +9,7 @@ interface ImagenAdicional {
   parrafo: string;
   text_alt: string;
   url?: string;
+  id?: number | string;
 }
 
 interface BlogPOST {
@@ -159,10 +160,11 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 ? raw
                 : `${import.meta.env.PUBLIC_API_URL}${raw}`
               : "",
+            id: img.id || img.imagen_id,
           };
         }) || [
-            { imagen: null, parrafo: "", text_alt: "", url: "" },
-            { imagen: null, parrafo: "", text_alt: "", url: "" },
+            { imagen: null, parrafo: "", text_alt: "", url: "", id: undefined },
+            { imagen: null, parrafo: "", text_alt: "", url: "", id: undefined },
           ],
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
@@ -560,14 +562,22 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         formDataToSend.append("miniatura", formData.miniatura);
       }
 
-      formData.imagenes.forEach((item) => {
+      formData.imagenes.forEach((item, index) => {
         if (item.imagen instanceof File) {
+          // Nueva imagen
           formDataToSend.append("imagenes[]", item.imagen);
-        } else if (typeof item.imagen === "string") {
-          formDataToSend.append("existing_images[]", item.imagen);
+          formDataToSend.append("text_alt[]", item.text_alt);
+        } else if (item.id) {
+          // Imagen existente que no se modificó - IMPORTANTE: preservar con ID
+          formDataToSend.append("imagen_ids[]", item.id.toString());
+          formDataToSend.append("text_alt[]", item.text_alt);
+        } else if (item.url) {
+          // Fallback: si hay URL pero no ID, intentar preservar con URL
+          formDataToSend.append("imagenes_url[]", item.url);
+          formDataToSend.append("text_alt[]", item.text_alt);
         }
+        // SIEMPRE enviar el párrafo, aunque sea existente
         formDataToSend.append("parrafos[]", item.parrafo);
-        formDataToSend.append("text_alt[]", item.text_alt);
       });
 
       if (blogToEdit) {
@@ -934,74 +944,106 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
 
                 <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
-                  <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4">Contenido del Blog</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400">Contenido del Blog</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Edita una sección a la vez y usa el botón X para limpiar su imagen</p>
+                  </div>
                   {formData.imagenes.map((imagen, index) => (
-                    <div key={index} className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/60 dark:border-gray-700">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-bold text-teal-700 dark:text-teal-300">Sección {numeroAPalabras(index + 1)}</span>
+                    <div key={index} className="mb-6 p-5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900/50">
+                      <div className="mb-4 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
+                        <span className="inline-block font-bold text-base text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1 rounded-full">
+                          Sección {numeroAPalabras(index + 1)}
+                        </span>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagen*</label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileChangeAdicional(e, index)}
-                            className="w-full text-sm text-gray-700 dark:text-gray-300"
-                          />
-                          <div className="mt-2">
-                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Texto Alternativo (SEO)*</label>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* COLUMNA IZQUIERDA - IMAGEN */}
+                        <div className="flex flex-col space-y-4">
+                          {/* Zona de carga */}
+                          <div className="border-2 border-dashed border-teal-400 dark:border-teal-600 rounded-xl p-4 bg-teal-50 dark:bg-teal-900/10 hover:bg-teal-100 dark:hover:bg-teal-900/20 transition-colors">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleFileChangeAdicional(e, index)}
+                              className="hidden"
+                              id={`file-input-${index}`}
+                            />
+                            <label htmlFor={`file-input-${index}`} className="cursor-pointer block text-center">
+                              <button
+                                type="button"
+                                onClick={() => document.getElementById(`file-input-${index}`)?.click()}
+                                className="w-full inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors mb-3"
+                              >
+                                Seleccionar archivo
+                              </button>
+                            </label>
+
+                            {/* Recomendaciones */}
+                            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                              <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">💡 Recomendación:</p>
+                              <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                                <li>• Formatos: JPG, PNG o WEBP</li>
+                                <li>• Tamaño ideal: 1200x800 px</li>
+                                <li>• Máximo: 2 MB</li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Vista previa de imagen */}
+                          {imagen.url && (
+                            <div className="relative group">
+                              <img
+                                src={imagen.url}
+                                alt={`Sección ${index + 1}`}
+                                className="w-full h-48 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md"
+                              />
+                              {/* overlay para cambiar */}
+                              <label
+                                htmlFor={`file-input-change-${index}`}
+                                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                              >
+                                <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">Cambiar imagen</span>
+                              </label>
+                              <input
+                                type="file"
+                                id={`file-input-change-${index}`}
+                                accept="image/*"
+                                onChange={(e) => handleFileChangeAdicional(e, index)}
+                                className="hidden"
+                              />
+                            </div>
+                          )}
+
+                          {/* Campo SEO */}
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Texto Alternativo (SEO)*</label>
                             <input
                               type="text"
                               value={imagen.text_alt}
                               onChange={(e) => handleAltTextChange(e, index)}
-                              placeholder="Descripción de la imagen"
-                              className="w-full border rounded p-1 text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+                              placeholder="Describe brevemente el contenido de la imagen"
+                              className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                               required
                             />
                           </div>
-                          {imagen.url && (
-                          <div className="mt-2">
-                            <label className="cursor-pointer block w-20 h-20 relative group">
-                              
-                              <img
-                                src={imagen.url}
-                                alt={`Sección ${index + 1}`}
-                                className="w-20 h-20 object-cover rounded group-hover:opacity-70 transition"
-                              />
-
-                              {/* overlay de edición */}
-                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded transition">
-                                <span className="text-white text-xs font-bold">Cambiar</span>
-                              </div>
-
-                              {/* input oculto encima */}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                onChange={(e) => handleFileChangeAdicional(e, index)}
-                              />
-                            </label>
-                          </div>
-                        )}
                         </div>
-                        <div>
-                          <div className="flex justify-between items-center mb-1">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Párrafo de la sección*</label>
-                            <div className="space-x-2">
+
+                        {/* COLUMNA DERECHA - PÁRRAFO */}
+                        <div className="flex flex-col space-y-3">
+                          <div className="flex justify-between items-start gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Párrafo de la sección*</label>
+                            <div className="flex gap-2 flex-wrap justify-end">
                               <button
                                 type="button"
                                 onClick={() => handleInsertLinkClick(index)}
-                                className="text-xs text-teal-600 hover:text-teal-800 underline"
+                                className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium"
                               >
                                 Insertar Link
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleProductLinkClick(index)}
-                                className="text-xs text-teal-600 hover:text-teal-800 underline"
+                                className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium"
                               >
                                 Link Producto
                               </button>
@@ -1011,8 +1053,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                             id={`crear_descripcion_antes_${index}`}
                             value={imagen.parrafo}
                             onChange={(e) => handleParrafoChange(e, index)}
-                            className="w-full border rounded p-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                            rows={4}
+                            placeholder="Escribe el contenido de esta sección..."
+                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors resize-none"
+                            rows={8}
                             required
                           />
                         </div>
