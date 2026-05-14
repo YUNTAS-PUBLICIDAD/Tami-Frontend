@@ -1,3 +1,23 @@
+/**
+ * @fileoverview useProductSelection Hook
+ * Orchestrates complete product selection workflow
+ * 
+ * Responsibilities:
+ * - Fetch product details from API
+ * - Transform API response to form data
+ * - Sync initial data to editor components
+ * - Trigger initial preview synchronization
+ * - Handle selection errors with user feedback
+ * - Manage selectedProductId state
+ * 
+ * @example
+ * const { selectedProductId, handleProductSelect } = useProductSelection(
+ *   setFormData,
+ *   setPreviews,
+ *   activeTab,
+ *   whatsappSelected
+ * );
+ */
 import { useState, useCallback } from "react";
 import Swal from "sweetalert2";
 import apiClient from "../../../services/apiClient";
@@ -7,26 +27,22 @@ import { ProductSyncService } from "../services/productSyncService";
 import type { ProductFormData, TabType } from "../types/productTab.types";
 
 /**
- * Hook que maneja la selección y carga de un producto
- * Incluye:
- * - Fetch del producto completo
- * - Build del formulario inicial
- * - Update de editores
- * - Sincronización inicial del preview
- * - Manejo de errores
- * 
- * @param setFormData - Setter del formData desde useProductForm
- * @param setPreviews - Setter del previews desde useProductForm
- * @param activeTab - Tab actual
- * @param whatsappSelected - WhatsApp message selected
- * @returns { selectedProductId, setSelectedProductId, handleProductSelect }
+ * @typedef {Object} UseProductSelectionReturn
+ * @property {string} selectedProductId - Currently selected product ID (empty string if none)
+ * @property {Function} setSelectedProductId - Direct setter for product ID
+ * @property {Function} handleProductSelect - Async handler to fetch and load product
  */
+interface UseProductSelectionReturn {
+    selectedProductId: string;
+    setSelectedProductId: (id: string) => void;
+    handleProductSelect: (productId: string) => Promise<void>;
+}
 export const useProductSelection = (
     setFormData: (data: ProductFormData | null | ((prev: ProductFormData | null) => ProductFormData | null)) => void,
     setPreviews: (previews: Record<string, string | File | null> | ((prev: Record<string, string | File | null>) => Record<string, string | File | null>)) => void,
     activeTab: TabType,
     whatsappSelected: number
-) => {
+): UseProductSelectionReturn => {
     const [selectedProductId, setSelectedProductId] = useState<string>("");
 
     const handleProductSelect = useCallback(

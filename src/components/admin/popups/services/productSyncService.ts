@@ -1,6 +1,21 @@
 /**
- * Product Sync Service
- * Manages preview synchronization with preview components
+ * @fileoverview ProductSyncService
+ * Orchestrates preview updates across all preview components
+ * 
+ * Responsibilities:
+ * - Construct preview settings from form data and overrides
+ * - Dispatch custom events to update preview components
+ * - Handle tab-specific preview synchronization
+ * - Dispatch editor update events
+ * - Update WhatsApp image previews
+ * 
+ * Methods:
+ * - syncPreview(formData, previews, activeTab, whatsappSelected): Main orchestrator
+ * - syncPopupPreview(data, previews, overrides): Popup settings
+ * - syncWhatsAppPreview(data, previews, selected, overrides): WhatsApp settings
+ * - syncEmailPreview(data, previews, overrides): Email settings
+ * - updateWhatsAppImagePreview(field, url): WhatsApp image update
+ * - updateEditors(formData): Dispatch editor sync events
  */
 
 import { ProductFormData, TabType, ProductPreviewSettings, WhatsAppPreviewData, EmailPreviewData } from "../types/productTab.types";
@@ -8,6 +23,17 @@ import { ProductFormData, TabType, ProductPreviewSettings, WhatsAppPreviewData, 
 export class ProductSyncService {
   /**
    * Sync popup preview with current form data
+   * Constructs ProductPreviewSettings and dispatches update-popup-preview event
+   * 
+   * Handles:
+   * - Desktop and mobile image URLs
+   * - Button styling (colors and text)
+   * - File object cleanup (converts File to null)
+   * - Override support for newly uploaded files
+   * 
+   * @param {ProductFormData} data - Current form state
+   * @param {Record<string, string>} previews - Base64 preview URLs
+   * @param {Record<string, any>} overrides - Temporary overrides (e.g., newly uploaded files)
    */
   static syncPopupPreview(
     data: ProductFormData,

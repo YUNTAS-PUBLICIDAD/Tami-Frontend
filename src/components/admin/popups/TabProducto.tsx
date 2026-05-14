@@ -75,22 +75,22 @@ const TabProducto: React.FC = () => {
 
 
 
-    // Wrapper to add preview sync after field change
-    const handleFieldChange = (field: string, value: any, isEtiqueta = false) => {
+    // Wrapper to add preview sync after field change (memoized to avoid re-renders)
+    const handleFieldChange = useCallback((field: string, value: any, isEtiqueta = false) => {
         hookFieldChange(field, value, isEtiqueta);
-    };
+    }, [hookFieldChange]);
 
-    const handleClearImage = (field: string) => {
+    const handleClearImage = useCallback((field: string) => {
         hookClearImage(field);
-    };
+    }, [hookClearImage]);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: string) => {
         hookFileChange(e, field, (newData, overrides) => {
             // Dispatch specific preview events for WhatsApp messages
             const url = overrides[field] as string;
             ProductSyncService.updateWhatsAppImagePreview(field, url);
         });
-    };
+    }, [hookFileChange]);
 
     // Wrapper for save with selectedProductId
     const handleSave = useCallback(async () => {

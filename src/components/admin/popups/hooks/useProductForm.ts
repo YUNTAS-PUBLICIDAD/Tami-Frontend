@@ -1,11 +1,31 @@
 /**
- * useProductForm Hook
- * Manages product form state and field changes
+ * @fileoverview useProductForm Hook
+ * Manages complete product form state including field updates, image uploads, and preview generation
+ * 
+ * Responsibilities:
+ * - Maintains ProductFormData state (50+ form fields)
+ * - Manages image preview state (base64 strings from FileReader)
+ * - Provides field update handlers (both simple and nested fields)
+ * - Handles file uploads with FileReader API for instant preview
+ * - Marks images for deletion with delete_* flags
+ * 
+ * @example
+ * const { formData, handleFieldChange, handleFileChange } = useProductForm();
  */
 
 import { useState, useCallback } from "react";
 import type { ProductFormData } from "../types/productTab.types";
 
+/**
+ * @typedef {Object} UseProductFormReturn
+ * @property {ProductFormData | null} formData - Complete form state (null when no product selected)
+ * @property {Function} setFormData - Setter for form data (accepts direct value or updater function)
+ * @property {Record<string, string | File | null>} previews - Base64 preview strings for images
+ * @property {Function} setPreviews - Setter for preview state
+ * @property {Function} handleFieldChange - Update a single form field
+ * @property {Function} handleClearImage - Remove image and mark for deletion
+ * @property {Function} handleFileChange - Upload file, generate preview, update form
+ */
 interface UseProductFormReturn {
   formData: ProductFormData | null;
   setFormData: (data: ProductFormData | null | ((prev: ProductFormData | null) => ProductFormData | null)) => void;

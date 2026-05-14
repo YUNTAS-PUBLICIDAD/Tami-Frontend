@@ -1,6 +1,17 @@
 /**
- * useProductSave Hook
- * Manages product save logic and API communication
+ * @fileoverview useProductSave Hook
+ * Handles product form submission with validation error formatting and user feedback
+ * 
+ * Responsibilities:
+ * - Submits form data via API (multipart/form-data for file support)
+ * - Transforms FormData using ProductFormBuilderService
+ * - Formats Laravel validation errors for user display
+ * - Manages loading state during save operation
+ * - Shows success/error feedback via SweetAlert2
+ * 
+ * @example
+ * const { isSaving, handleSave } = useProductSave();
+ * await handleSave(productId, formData);
  */
 
 import { useState, useCallback } from "react";
@@ -10,6 +21,11 @@ import Swal from "sweetalert2";
 import { ProductFormBuilderService } from "../services/productFormBuilder";
 import type { ProductFormData } from "../types/productTab.types";
 
+/**
+ * @typedef {Object} UseProductSaveReturn
+ * @property {boolean} isSaving - Loading state (true while saving)
+ * @property {Function} handleSave - Async function to save product (selectedProductId, formData) => Promise<void>
+ */
 interface UseProductSaveReturn {
   isSaving: boolean;
   handleSave: (selectedProductId: string, formData: ProductFormData | null) => Promise<void>;

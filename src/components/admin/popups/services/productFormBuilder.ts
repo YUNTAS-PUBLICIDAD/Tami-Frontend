@@ -1,6 +1,20 @@
 /**
- * Product Form Builder Service
- * Constructs FormData for API submission
+ * @fileoverview ProductFormBuilderService
+ * Transforms ProductFormData state into FormData for API submission
+ * 
+ * Responsibilities:
+ * - Build FormData from ProductFormData state
+ * - Handle file serialization (File objects → FormData)
+ * - Transform nested fields (etiqueta, gallery images)
+ * - Mark deleted fields with delete_* flags
+ * - Handle URL cleanup (remove baseURL from existing images)
+ * - Build initial ProductFormData from API response
+ * - Convert relative URLs to full URLs for preview
+ * 
+ * Methods:
+ * - buildProductFormData(formData, productId): FormData for save
+ * - buildInitialFormData(product, apiUrl): ProductFormData from API
+ * - getFullImageUrl(url, apiUrl): Converts relative to full URL
  */
 
 import { ProductFormData } from "../types/productTab.types";
@@ -9,7 +23,19 @@ import { config } from "../../../../../config";
 export class ProductFormBuilderService {
   /**
    * Build FormData object for product update
-   * Handles all field transformation and serialization
+   * Serializes ProductFormData into multipart/form-data for API submission
+   * 
+   * Handles:
+   * - Simple string fields (nombre, titulo, descripcion, etc.)
+   * - Numeric fields (stock, precio)
+   * - File uploads (popup images, whatsapp images, email image)
+   * - Nested fields (button colors, links in etiqueta)
+   * - Deletion flags (delete_* fields)
+   * - Gallery images (existing and new)
+   * 
+   * @param {ProductFormData} formData - Complete form state
+   * @param {string} selectedProductId - Product ID for API endpoint
+   * @returns {FormData} Serialized data ready for multipart POST
    */
   static buildProductFormData(
     formData: ProductFormData,
