@@ -1,549 +1,101 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback } from "react";
 import apiClient from "../../../services/apiClient";
-import { config, getApiUrl } from "../../../../config";
+import Swal from "sweetalert2";
 import { ProductoService } from "../../../services/producto.service";
 import type Producto from "../../../models/Product";
-import Swal from "sweetalert2";
+import { config } from "../../../../config";
 import WhatsappEditor from "./WhatsappEditor";
 import EmailEditor from "./EmailEditor";
+import { ProductFormBuilderService } from "./services/productFormBuilder";
+import { ProductSyncService } from "./services/productSyncService";
+import type { ProductFormData, TabType } from "./types/productTab.types";
+import { useProductForm } from "./hooks/useProductForm";
+import { useProductEventListeners } from "./hooks/useProductEventListeners";
+import { useProductSave } from "./hooks/useProductSave";
+import { useProductsLoad } from "./hooks/useProductsLoad";
+import { useProductPreviewSync } from "./hooks/useProductPreviewSync";
+import { useProductSelection } from "./hooks/useProductSelection";
+import { ImageUploadField } from "./components/ImageUploadField";
+import { ColorPickerField } from "./components/ColorPickerField";
+import { TabNavigation } from "./components/TabNavigation";
+import { PopupSection } from "./components/PopupSection";
+import { WhatsAppSection } from "./components/WhatsAppSection";
+import { EmailSection } from "./components/EmailSection";
+import { getImageUrl } from "./utils/imageUrl";
 
 const TabProducto: React.FC = () => {
-    const [products, setProducts] = useState<Producto[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(true);
-    const [selectedProductId, setSelectedProductId] = useState<string>("");
-    const [formData, setFormData] = useState<any>(null);
-    const [isSaving, setIsSaving] = useState(false);
-    const [previews, setPreviews] = useState<{ [key: string]: string }>({});
-    const [activeTab, setActiveTab] = useState<'popups' | 'etiqueta' | 'whatsapp' | 'correo'>('popups');
-    const [whatsappSelected, setWhatsappSelected] = useState<number>(1);
-    const [loading, setLoading] = useState(true);
+    // Load products on mount
+    const { products, loadingProducts } = useProductsLoad();
+    
+    // State management
+    const [activeTab, setActiveTab] = React.useState<TabType>('popups');
+    const [whatsappSelected, setWhatsappSelected] = React.useState<number>(1);
+    
+    // Form management
+    const { formData, setFormData, previews, setPreviews, handleFieldChange: hookFieldChange, handleClearImage: hookClearImage, handleFileChange: hookFileChange } = useProductForm();
+    
+    // Product selection and loading
+    const { selectedProductId, setSelectedProductId, handleProductSelect } = useProductSelection(
+        setFormData,
+        setPreviews,
+        activeTab,
+        whatsappSelected
+    );
+    
+    // Auto-sync preview when data changes
+    useProductPreviewSync(formData, previews, activeTab, whatsappSelected);
+    
+    // Save management
+    const { isSaving, handleSave: hookSave } = useProductSave();
 
-    useEffect(() => {
-        const handleWhatsappUpdate = (e: any) => {
-            if (typeof e.detail === "string") {
-                setFormData((prev: any) => {
-                    if (!prev) return null;
-                    if (whatsappSelected === 1) return { ...prev, texto_alt_whatsapp: e.detail };
-                    if (whatsappSelected === 2) return { ...prev, mensaje_whatsapp_2: e.detail };
-                    if (whatsappSelected === 3) return { ...prev, mensaje_whatsapp_3: e.detail };
-                    return prev;
-                });
-            }
-        };
-        const handleEmailUpdate = (e: any) => {
-            if (typeof e.detail === "string") {
-                setFormData((prev: any) => prev ? { ...prev, mensaje_email: e.detail } : null);
-            }
-        };
-
-        window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
-        window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-        window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-        window.addEventListener("update-email-preview", handleEmailUpdate);
-
-        return () => {
-            window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
-            window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-            window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-            window.removeEventListener("update-email-preview", handleEmailUpdate);
-        };
-    }, [whatsappSelected]);
-
-    useEffect(() => {
-        window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
-    }, [whatsappSelected]);
-
-    useEffect(() => {
-        if (formData) {
-            syncPreview(formData);
-        }
-    }, [formData, activeTab, whatsappSelected]);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await ProductoService.getAllProductos();
-                setProducts(data);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            } finally {
-                setLoadingProducts(false);
-            }
-        };
-        fetchProducts();
-
-        const handleReset = () => {
+    // Event listeners for editor updates
+    useProductEventListeners({
+        whatsappSelected,
+        onWhatsappUpdate: (messageNumber, text) => {
+            setFormData((prev: any) => {
+                if (!prev) return null;
+                if (messageNumber === 1) return { ...prev, texto_alt_whatsapp: text };
+                if (messageNumber === 2) return { ...prev, mensaje_whatsapp_2: text };
+                if (messageNumber === 3) return { ...prev, mensaje_whatsapp_3: text };
+                return prev;
+            });
+        },
+        onEmailUpdate: (text) => {
+            setFormData((prev: any) => (prev ? { ...prev, mensaje_email: text } : null));
+        },
+        onReset: () => {
             setSelectedProductId("");
             setFormData(null);
             setPreviews({});
-        };
-
-        const handleExternalSave = () => {
+        },
+        onExternalSave: () => {
             handleSave();
-        };
-
-        window.addEventListener("reset-product-selection", handleReset);
-        window.addEventListener("request-save-product-popup", handleExternalSave);
-        return () => {
-            window.removeEventListener("reset-product-selection", handleReset);
-            window.removeEventListener("request-save-product-popup", handleExternalSave);
-        };
-    }, [selectedProductId, formData, isSaving]); // Added dependencies to ensure handleSave has latest state
-
-    const getFullImageUrl = (url: string) => {
-        if (!url) return "";
-        if (url.startsWith("http")) return url;
-        return `${config.apiUrl}${url}`;
-    };
-
-    const handleProductSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const id = e.target.value;
-        setSelectedProductId(id);
-
-        if (!id) {
-            setFormData(null);
-            return;
         }
+    });
 
-        try {
-            // Fetch FULL product details
-            const response = await apiClient.get(config.endpoints.productos.detail(id));
-            const product = response.data.data || response.data;
 
-            const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
-            const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
-                const tipo = (img.tipo || "").toLowerCase();
-                return tipo === "popup2" || tipo === "popup_2";
-            });
 
-            const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
-            const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
+    // Wrapper to add preview sync after field change (memoized to avoid re-renders)
+    const handleFieldChange = useCallback((field: string, value: any, isEtiqueta = false) => {
+        hookFieldChange(field, value, isEtiqueta);
+    }, [hookFieldChange]);
 
-            const imagenEmail = product.producto_imagenes?.find((img: any) => img.tipo === "email");
-            const imagenWhatsapp = product.producto_imagenes?.find((img: any) => img.tipo === "whatsapp");
+    const handleClearImage = useCallback((field: string) => {
+        hookClearImage(field);
+    }, [hookClearImage]);
 
-            const initialData = {
-                ...product, // Store ALL product fields
-                imagen_popup: imagenPopup ? getFullImageUrl(imagenPopup.url_imagen) : null,
-                texto_alt_popup: imagenPopup?.texto_alt_SEO || "",
-                imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
-                texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
-                imagen_popup_mobile: imagenPopupMobile ? getFullImageUrl(imagenPopupMobile.url_imagen) : null,
-                texto_alt_popup_mobile: imagenPopupMobile?.texto_alt_SEO || "",
-                imagen_popup_mobile2: imagenPopupMobile2 ? getFullImageUrl(imagenPopupMobile2.url_imagen) : null,
-                texto_alt_popup_mobile2: imagenPopupMobile2?.texto_alt_SEO || "",
-
-                // Email Data
-                imagen_email: imagenEmail ? getFullImageUrl(imagenEmail.url_imagen) : null,
-                asunto: imagenEmail?.asunto || "",
-                mensaje_email: imagenEmail?.email_mensaje || "",
-                email_btn_text: imagenEmail?.email_btn_text || "Ver Productos",
-                email_btn_link: imagenEmail?.email_btn_link || "https://tami.com/productos",
-                email_btn_bg_color: imagenEmail?.email_btn_bg_color || "#0b1c3c",
-                email_btn_text_color: imagenEmail?.email_btn_text_color || "#ffffff",
-
-                // Whatsapp Data
-                imagen_whatsapp: imagenWhatsapp ? getFullImageUrl(imagenWhatsapp.url_imagen) : null,
-                texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || "",
-                mensaje_whatsapp_2: imagenWhatsapp?.whatsapp_mensaje_2 || "",
-                mensaje_whatsapp_3: imagenWhatsapp?.whatsapp_mensaje_3 || "",
-                whatsapp_time_1: imagenWhatsapp?.whatsapp_time_1 || 0,
-                whatsapp_time_2: imagenWhatsapp?.whatsapp_time_2 || 0,
-                whatsapp_time_3: imagenWhatsapp?.whatsapp_time_3 || 0,
-                imagen_whatsapp_2: imagenWhatsapp?.whatsapp_image_url_2 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_2) : null,
-                imagen_whatsapp_3: imagenWhatsapp?.whatsapp_image_url_3 ? getFullImageUrl(imagenWhatsapp.whatsapp_image_url_3) : null,
-
-                delete_imagen_popup: 0,
-                delete_imagen_popup2: 0,
-                delete_imagen_popup_mobile: 0,
-                delete_imagen_popup_mobile2: 0,
-                delete_imagen_email: 0,
-                delete_imagen_whatsapp: 0,
-                delete_imagen_whatsapp_2: 0,
-                delete_imagen_whatsapp_3: 0,
-                etiqueta: {
-                    ...product.etiqueta,
-                    popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
-                    popup_text_color: product.etiqueta?.popup_text_color || "#000000",
-                    popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
-                }
-            };
-            setFormData(initialData);
-
-            // Update Editors
-            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto", { detail: initialData.texto_alt_whatsapp }));
-            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-2", { detail: initialData.mensaje_whatsapp_2 }));
-            window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-3", { detail: initialData.mensaje_whatsapp_3 }));
-            window.dispatchEvent(new CustomEvent("update-email-editor-producto", { detail: initialData.mensaje_email }));
-
-            syncPreview(initialData);
-        } catch (error) {
-            console.error("Error fetching product details:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudieron obtener los detalles del producto."
-            });
-        }
-    };
-
-    const syncPreview = (data: any, overrides: any = {}) => {
-        const previewSettings = {
-            popup_image_url: overrides.imagen_popup || previews.imagen_popup || data.imagen_popup,
-            popup_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2,
-            button_bg_color: data.etiqueta.popup_button_color,
-            button_text_color: data.etiqueta.popup_text_color,
-            button_text: data.etiqueta.popup_button_text,
-            popup_mobile_image_url: overrides.imagen_popup_mobile !== undefined ? overrides.imagen_popup_mobile : (previews.imagen_popup_mobile || data.imagen_popup_mobile),
-            popup_mobile_image2_url: overrides.imagen_popup_mobile2 !== undefined ? overrides.imagen_popup_mobile2 : (previews.imagen_popup_mobile2 || data.imagen_popup_mobile2)
-        };
-
-        // Final check: if any of these are still File objects, we don't send them
-        if (previewSettings.popup_image_url instanceof File) previewSettings.popup_image_url = null;
-        if (previewSettings.popup_image2_url instanceof File) previewSettings.popup_image2_url = null;
-        if (previewSettings.popup_mobile_image_url instanceof File) previewSettings.popup_mobile_image_url = null;
-        if (previewSettings.popup_mobile_image2_url instanceof File) previewSettings.popup_mobile_image2_url = null;
-
-        window.dispatchEvent(
-            new CustomEvent("update-popup-preview", {
-                detail: { settings: previewSettings },
-            }),
-        );
-
-        // Switch preview type based on active tab
-        window.dispatchEvent(new CustomEvent("switch-preview-type", { detail: activeTab }));
-
-        if (activeTab === "whatsapp") {
-            let waText = "";
-            let waImage = null;
-
-            if (whatsappSelected === 1) {
-                waText = data.texto_alt_whatsapp || "";
-                waImage = overrides.imagen_whatsapp !== undefined ? overrides.imagen_whatsapp : (previews.imagen_whatsapp || data.imagen_whatsapp);
-            } else if (whatsappSelected === 2) {
-                waText = data.mensaje_whatsapp_2 || "";
-                waImage = overrides.imagen_whatsapp_2 !== undefined ? overrides.imagen_whatsapp_2 : (previews.imagen_whatsapp_2 || data.imagen_whatsapp_2);
-            } else if (whatsappSelected === 3) {
-                waText = data.mensaje_whatsapp_3 || "";
-                waImage = overrides.imagen_whatsapp_3 !== undefined ? overrides.imagen_whatsapp_3 : (previews.imagen_whatsapp_3 || data.imagen_whatsapp_3);
-            }
-
-            const eventName = whatsappSelected === 1 ? "update-whatsapp-preview" :
-                whatsappSelected === 2 ? "update-whatsapp-preview-2" :
-                    "update-whatsapp-preview-3";
-
-            window.dispatchEvent(new CustomEvent(eventName, {
-                detail: {
-                    text: waText,
-                    image: waImage instanceof File ? null : waImage
-                }
-            }));
-
-            // Also notify popupsManager about the selection to sync preview blocks if needed
-            window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
-        } else if (activeTab === "correo") {
-            const emailImage = overrides.imagen_email !== undefined ? overrides.imagen_email : (previews.imagen_email || data.imagen_email);
-            window.dispatchEvent(new CustomEvent("update-email-preview", {
-                detail: {
-                    body: data.mensaje_email || "",
-                    title: data.asunto || "",
-                    image: emailImage instanceof File ? null : emailImage,
-                    btnText: data.email_btn_text,
-                    btnLink: data.email_btn_link,
-                    btnBgColor: data.email_btn_bg_color,
-                    btnTextColor: data.email_btn_text_color
-                }
-            }));
-        }
-    };
-
-    const handleFieldChange = (field: string, value: any, isEtiqueta = false) => {
-        setFormData((prev: any) => {
-            const newData = { ...prev };
-            if (isEtiqueta) {
-                newData.etiqueta = { ...newData.etiqueta, [field]: value };
-            } else {
-                newData[field] = value;
-            }
-
-            // Only sync preview if it's not a File object (to avoid broken images in preview)
-            if (!(value instanceof File)) {
-                syncPreview(newData);
-            }
-            return newData;
+    const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+        hookFileChange(e, field, (newData, overrides) => {
+            // Dispatch specific preview events for WhatsApp messages
+            const url = overrides[field] as string;
+            ProductSyncService.updateWhatsAppImagePreview(field, url);
         });
-    };
+    }, [hookFileChange]);
 
-    const handleClearImage = (field: string) => {
-        setPreviews(prev => {
-            const newPreviews = { ...prev };
-            delete newPreviews[field];
-            return newPreviews;
-        });
-
-        setFormData((prev: any) => {
-            const newData = {
-                ...prev,
-                [field]: null,
-                [`delete_${field}`]: 1
-            };
-            syncPreview(newData, { [field]: null });
-            return newData;
-        });
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const url = reader.result as string;
-                setPreviews(prev => ({ ...prev, [field]: url }));
-
-                setFormData((prev: any) => {
-                    const newData = {
-                        ...prev,
-                        [field]: file,
-                        [`delete_${field}`]: 0
-                    };
-
-                    // Dispatch specific preview events for WhatsApp messages
-                    if (field === "imagen_whatsapp") {
-                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview", { detail: { image: url } }));
-                    } else if (field === "imagen_whatsapp_2") {
-                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-2", { detail: { image: url } }));
-                    } else if (field === "imagen_whatsapp_3") {
-                        window.dispatchEvent(new CustomEvent("update-whatsapp-preview-3", { detail: { image: url } }));
-                    }
-
-                    // We pass the base64 URL as an override to ensure the preview uses it instead of the File
-                    syncPreview(newData, { [field]: url });
-                    return newData;
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSave = async () => {
-        if (!selectedProductId || !formData) return;
-
-        setIsSaving(true);
-        try {
-            const formDataToSend = new FormData();
-
-            // Baseline product fields (unchanged) to satisfy strict backend update handlers.
-            formDataToSend.append("nombre", formData.nombre || "");
-            formDataToSend.append("titulo", formData.titulo || "");
-            formDataToSend.append("subtitulo", formData.subtitulo || "");
-            formDataToSend.append("descripcion", formData.descripcion || "");
-            formDataToSend.append("seccion", formData.seccion || "");
-            formDataToSend.append("link", formData.link || "");
-            formDataToSend.append("stock", String(formData.stock ?? 0));
-            formDataToSend.append("precio", String(formData.precio ?? 0));
-
-            // Keep current gallery references to avoid backend rules that require gallery context.
-            if (Array.isArray(formData.producto_imagenes)) {
-                formData.producto_imagenes
-                    .filter((img: any) => img?.tipo === "galeria" || !img?.tipo)
-                    .forEach((img: any, idx: number) => {
-                        let urlLimpia = img.url_imagen || "";
-                        if (typeof urlLimpia === "string" && urlLimpia.includes(config.apiUrl)) {
-                            urlLimpia = urlLimpia.replace(config.apiUrl, "");
-                        }
-                        if (typeof urlLimpia === "string") {
-                            urlLimpia = urlLimpia.split("?")[0];
-                        }
-
-                        formDataToSend.append(`imagenes_existentes[${idx}][url]`, urlLimpia || "");
-                        if (img.id != null) {
-                            formDataToSend.append(`imagenes_existentes[${idx}][id]`, String(img.id));
-                        }
-                        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.texto_alt_SEO || "");
-                    });
-            }
-
-            // Popup Images
-            if (formData.imagen_popup instanceof File) {
-                formDataToSend.append("imagen_popup", formData.imagen_popup);
-            }
-            formDataToSend.append("texto_alt_popup", formData.texto_alt_popup || "");
-
-            if (formData.imagen_popup2 instanceof File) {
-                formDataToSend.append("imagen_popup2", formData.imagen_popup2);
-            }
-            formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2 || "");
-            formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || "");
-
-            // Mobile Images
-            if (formData.imagen_popup_mobile instanceof File) {
-                formDataToSend.append("imagen_popup_mobile", formData.imagen_popup_mobile);
-            } else if (formData.delete_imagen_popup_mobile === 1) {
-                formDataToSend.append("delete_imagen_popup_mobile", "1");
-            }
-            formDataToSend.append("texto_alt_popup_mobile", formData.texto_alt_popup_mobile || "");
-
-            if (formData.imagen_popup_mobile2 instanceof File) {
-                formDataToSend.append("imagen_popup_mobile2", formData.imagen_popup_mobile2);
-            } else if (formData.delete_imagen_popup_mobile2 === 1) {
-                formDataToSend.append("delete_imagen_popup_mobile2", "1");
-            }
-            formDataToSend.append("texto_alt_popup_mobile2", formData.texto_alt_popup_mobile2 || "");
-
-            // Email & Whatsapp Data
-            if (formData.imagen_email instanceof File) {
-                formDataToSend.append("imagen_email", formData.imagen_email);
-            } else if (formData.delete_imagen_email === 1) {
-                formDataToSend.append("delete_imagen_email", "1");
-            }
-            formDataToSend.append("asunto", formData.asunto || "");
-            formDataToSend.append("mensaje_email", formData.mensaje_email || "");
-            formDataToSend.append("email_btn_text", formData.email_btn_text || "Ver Productos");
-            formDataToSend.append("email_btn_link", formData.email_btn_link || "https://tami.com/productos");
-            formDataToSend.append("email_btn_bg_color", formData.email_btn_bg_color || "#0b1c3c");
-            formDataToSend.append("email_btn_text_color", formData.email_btn_text_color || "#ffffff");
-
-            if (formData.imagen_whatsapp instanceof File) {
-                formDataToSend.append("imagen_whatsapp", formData.imagen_whatsapp);
-            } else if (formData.delete_imagen_whatsapp === 1) {
-                formDataToSend.append("delete_imagen_whatsapp", "1");
-            }
-            formDataToSend.append("texto_alt_whatsapp", formData.texto_alt_whatsapp || "");
-            formDataToSend.append("mensaje_whatsapp", formData.texto_alt_whatsapp || "");
-
-            // Sequential WhatsApp Messages
-            if (formData.imagen_whatsapp_2 instanceof File) {
-                formDataToSend.append("imagen_whatsapp_2", formData.imagen_whatsapp_2);
-            } else if (formData.delete_imagen_whatsapp_2 === 1) {
-                formDataToSend.append("delete_imagen_whatsapp_2", "1");
-            }
-            formDataToSend.append("mensaje_whatsapp_2", formData.mensaje_whatsapp_2 || "");
-
-            if (formData.imagen_whatsapp_3 instanceof File) {
-                formDataToSend.append("imagen_whatsapp_3", formData.imagen_whatsapp_3);
-            } else if (formData.delete_imagen_whatsapp_3 === 1) {
-                formDataToSend.append("delete_imagen_whatsapp_3", "1");
-            }
-            formDataToSend.append("mensaje_whatsapp_3", formData.mensaje_whatsapp_3 || "");
-
-            formDataToSend.append("whatsapp_time_1", String(formData.whatsapp_time_1 || 0));
-            formDataToSend.append("whatsapp_time_2", String(formData.whatsapp_time_2 || 0));
-            formDataToSend.append("whatsapp_time_3", String(formData.whatsapp_time_3 || 0));
-
-            // Deletion flags for Desktop images as well
-            if (!(formData.imagen_popup instanceof File) && formData.delete_imagen_popup === 1) {
-                formDataToSend.append("delete_imagen_popup", "1");
-            }
-            if (!(formData.imagen_popup2 instanceof File) && formData.delete_imagen_popup2 === 1) {
-                formDataToSend.append("delete_imagen_popup2", "1");
-                formDataToSend.append("delete_imagen_popup_2", "1");
-            }
-
-            // Button text and colors
-            formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta?.meta_titulo || "");
-            formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta?.meta_descripcion || "");
-            formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta?.popup_estilo || "estilo1");
-            formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta?.popup_button_text || "¡COTIZA AHORA!");
-            formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
-            formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
-
-
-    // Required flags for partial update
-    formDataToSend.append("_method", "PUT");
-    formDataToSend.append("only_popup", "1");
-
-            // Title Customization Fields (Detailed View)
-            formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
-            formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
-            formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
-
-            // Include safe fallbacks if they exist in formData
-            if (formData.dimensiones) {
-                formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
-                formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
-                formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
-            }
-
-            if (formData.especificaciones) {
-                let specsToSend = formData.especificaciones;
-                if (Array.isArray(specsToSend)) {
-                    const specsObj: Record<string, string> = {};
-                    specsToSend.forEach((s: any) => {
-                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-                    });
-                    specsToSend = specsObj;
-                }
-                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-            }
-            if (formData.especificaciones) {
-                let specsToSend = formData.especificaciones;
-                if (Array.isArray(specsToSend)) {
-                    const specsObj: Record<string, string> = {};
-                    specsToSend.forEach((s: any) => {
-                        if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-                    });
-                    specsToSend = specsObj;
-                }
-                formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-            }
-
-            if (formData.etiqueta?.keywords) {
-                const keywords = formData.etiqueta.keywords;
-                const kwArray = Array.isArray(keywords)
-                    ? keywords
-                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
-                formDataToSend.append("keywords", JSON.stringify(kwArray));
-            }
-            if (formData.etiqueta?.keywords) {
-                const keywords = formData.etiqueta.keywords;
-                const kwArray = Array.isArray(keywords)
-                    ? keywords
-                    : String(keywords).split(",").map((k: string) => k.trim()).filter(Boolean);
-                formDataToSend.append("keywords", JSON.stringify(kwArray));
-            }
-
-            formDataToSend.append("_method", "PUT");
-            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Configuración guardada",
-                    text: "El pop-up del producto ha sido actualizado.",
-                    timer: 2000,
-                    showConfirmButton: false,
-                });
-            } else {
-                throw new Error(`Error al guardar: ${response.status}`);
-            }
-        } catch (error: any) {
-            console.error("❌ Error saving product popup:", error);
-
-            let errorMessage = "No se pudo guardar la configuración.";
-
-            if (error.response?.data?.errors) {
-                // Format Laravel validation errors
-                const errors = error.response.data.errors;
-                errorMessage = Object.keys(errors)
-                    .map(key => `${key}: ${errors[key].join(', ')}`)
-                    .join('\n');
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else {
-                errorMessage = error.message || "Error desconocido.";
-            }
-
-            Swal.fire({
-                icon: "error",
-                title: "Error de Guardado",
-                text: `❌ ${errorMessage}`,
-            });
-        } finally {
-            setIsSaving(false);
-        }
-    };
+    // Wrapper for save with selectedProductId
+    const handleSave = useCallback(async () => {
+        await hookSave(selectedProductId, formData);
+    }, [selectedProductId, formData, hookSave]);
 
     if (loadingProducts) {
         return <div className="p-8 text-center text-gray-500">Cargando productos...</div>;
@@ -558,7 +110,7 @@ const TabProducto: React.FC = () => {
                 <div className="relative">
                     <select
                         value={selectedProductId}
-                        onChange={handleProductSelect}
+                        onChange={(e) => handleProductSelect(e.target.value)}
                         className="w-full p-3 pr-10 rounded-lg border border-teal-200 dark:border-teal-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-500 outline-none transition-all appearance-none"
                     >
                         <option value="">-- Elige un producto --</option>
@@ -577,746 +129,46 @@ const TabProducto: React.FC = () => {
             {formData && (
                 <div className="space-y-6 animate-fadeIn">
                     {/* Sub-Tabs for Product */}
-                    <div className="flex gap-2 mb-6 pb-2">
-                        {[
+                    <TabNavigation
+                        tabs={[
                             { id: 'popups', label: 'Pop-ups' },
                             { id: 'whatsapp', label: 'WhatsApp' },
                             { id: 'correo', label: 'Correo' }
-                        ].map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => {
-                                    setActiveTab(tab.id as any);
-                                }}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === tab.id
-                                    ? "bg-teal-600 dark:bg-teal-500 text-white shadow-sm"
-                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200"
-                                    }`}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
+                        ]}
+                        activeTab={activeTab}
+                        onTabChange={(tab) => setActiveTab(tab as TabType)}
+                    />
 
                     {activeTab === 'popups' && (
-                        <div className="space-y-6">
-                            {/* Imagen 1 */}
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Sube una imagen promocional para tu popup. Resolución recomendada: <strong>448x550px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
-                                </p>
-                                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_popup || formData.imagen_popup ? (
-                                            <img src={previews.imagen_popup || formData.imagen_popup} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 space-y-4 w-full">
-                                        <div className="flex flex-col gap-2">
-                                            <input
-                                                type="file"
-                                                id="input_imagen_popup"
-                                                accept="image/*"
-                                                onChange={(e) => handleFileChange(e, "imagen_popup")}
-                                                className="hidden"
-                                            />
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => document.getElementById('input_imagen_popup')?.click()}
-                                                    className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
-                                                >
-                                                    Seleccionar Imagen 1
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                    </svg>
-                                                </button>
-                                                {(previews.imagen_popup || formData.imagen_popup) && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleClearImage("imagen_popup")}
-                                                        className="text-red-500 hover:text-red-600 transition-colors p-2"
-                                                        title="Borrar Imagen 1"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
-                                            <input
-                                                type="text"
-                                                value={formData.texto_alt_popup}
-                                                onChange={(e) => handleFieldChange("texto_alt_popup", e.target.value)}
-                                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
-                                                placeholder="Ej: Ventilador holográfico Tami..."
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Imagen 2 */}
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Segunda imagen para el popup (mitad derecha). Resolución recomendada: <strong>448x550px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
-                                </p>
-                                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_popup2 || formData.imagen_popup2 ? (
-                                            <img src={previews.imagen_popup2 || formData.imagen_popup2} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 space-y-4 w-full">
-                                        <div className="flex flex-col gap-2">
-                                            <input
-                                                type="file"
-                                                id="input_imagen_popup2"
-                                                accept="image/*"
-                                                onChange={(e) => handleFileChange(e, "imagen_popup2")}
-                                                className="hidden"
-                                            />
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => document.getElementById('input_imagen_popup2')?.click()}
-                                                    className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
-                                                >
-                                                    Seleccionar Imagen 2
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                    </svg>
-                                                </button>
-                                                {(previews.imagen_popup2 || formData.imagen_popup2) && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleClearImage("imagen_popup2")}
-                                                        className="text-red-500 hover:text-red-600 transition-colors p-2"
-                                                        title="Borrar Imagen 2"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
-                                            <input
-                                                type="text"
-                                                value={formData.texto_alt_popup2}
-                                                onChange={(e) => handleFieldChange("texto_alt_popup2", e.target.value)}
-                                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
-                                                placeholder="Ej: Fondo decorativo azul..."
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Primera Imagen Móvil */}
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Primera Imagen Móvil</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Imagen para vista en dispositivos móviles. Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
-                                </p>
-                                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_popup_mobile || formData.imagen_popup_mobile ? (
-                                            <img src={previews.imagen_popup_mobile || formData.imagen_popup_mobile} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 space-y-4 w-full">
-                                        <div className="flex flex-col gap-2">
-                                            <input
-                                                type="file"
-                                                id="input_imagen_popup_mobile"
-                                                accept="image/*"
-                                                onChange={(e) => handleFileChange(e, "imagen_popup_mobile")}
-                                                className="hidden"
-                                            />
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => document.getElementById('input_imagen_popup_mobile')?.click()}
-                                                    className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
-                                                >
-                                                    Seleccionar Imagen Móvil 1
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                    </svg>
-                                                </button>
-                                                {(previews.imagen_popup_mobile || formData.imagen_popup_mobile) && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleClearImage("imagen_popup_mobile")}
-                                                        className="text-red-500 hover:text-red-600 transition-colors p-2"
-                                                        title="Borrar Imagen Móvil 1"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
-                                            <input
-                                                type="text"
-                                                value={formData.texto_alt_popup_mobile}
-                                                onChange={(e) => handleFieldChange("texto_alt_popup_mobile", e.target.value)}
-                                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
-                                                placeholder="Ej: Imagen móvil principal..."
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Segunda Imagen Móvil */}
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Segunda Imagen Móvil</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                    Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: <strong>448x640px</strong>. La imagen debe pesar <strong>2MB</strong> como máximo, recomendación formato <strong>webp</strong>.
-                                </p>
-                                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2 ? (
-                                            <img src={previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 space-y-4 w-full">
-                                        <div className="flex flex-col gap-2">
-                                            <input
-                                                type="file"
-                                                id="input_imagen_popup_mobile2"
-                                                accept="image/*"
-                                                onChange={(e) => handleFileChange(e, "imagen_popup_mobile2")}
-                                                className="hidden"
-                                            />
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => document.getElementById('input_imagen_popup_mobile2')?.click()}
-                                                    className="inline-flex items-center gap-2 px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95 w-fit"
-                                                >
-                                                    Seleccionar Imagen Móvil 2
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                    </svg>
-                                                </button>
-                                                {(previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2) && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleClearImage("imagen_popup_mobile2")}
-                                                        className="text-red-500 hover:text-red-600 transition-colors p-2"
-                                                        title="Borrar Imagen Móvil 2"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Texto ALT (SEO):</label>
-                                            <input
-                                                type="text"
-                                                value={formData.texto_alt_popup_mobile2}
-                                                onChange={(e) => handleFieldChange("texto_alt_popup_mobile2", e.target.value)}
-                                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm"
-                                                placeholder="Ej: Imagen móvil secundaria..."
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Mensaje del Botón */}
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Mensaje del Botón</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Escribe el texto que aparecerá en el botón del popup.</p>
-                                <input
-                                    type="text"
-                                    value={formData.etiqueta.popup_button_text}
-                                    onChange={(e) => handleFieldChange("popup_button_text", e.target.value, true)}
-                                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
-                                    placeholder="!REGISTRARME!"
-                                />
-                            </div>
-
-                            {/* Colores */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                                {/* Color del Botón */}
-                                <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                                    <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Botón</span>
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
-                                            <input
-                                                type="color"
-                                                value={formData.etiqueta.popup_button_color}
-                                                onChange={(e) => handleFieldChange("popup_button_color", e.target.value, true)}
-                                                className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
-                                            <span className="text-xs text-gray-400">fondo</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Color del Texto */}
-                                <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                                    <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Texto</span>
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
-                                            <input
-                                                type="color"
-                                                value={formData.etiqueta.popup_text_color}
-                                                onChange={(e) => handleFieldChange("popup_text_color", e.target.value, true)}
-                                                className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
-                                            <span className="text-xs text-gray-400">texto</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <PopupSection
+                            formData={formData}
+                            previews={previews}
+                            onFieldChange={handleFieldChange}
+                            onFileChange={handleFileChange}
+                            onClearImage={handleClearImage}
+                        />
                     )}
 
                     {activeTab === 'whatsapp' && (
-                        <div className="space-y-6">
-                            <div className="flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 className="font-bold text-gray-900 dark:text-gray-100">Configuración:</h3>
-                                </div>
-
-                                <select
-                                    id="whatsappMessageSelectorProducto"
-                                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer"
-                                    value={whatsappSelected}
-                                    onChange={(e) => setWhatsappSelected(parseInt(e.target.value))}
-                                >
-                                    <option value={1}>🟢 WhatsApp Mensaje 1</option>
-                                    <option value={2}>🟡 WhatsApp Mensaje 2</option>
-                                    <option value={3}>🟠 WhatsApp Mensaje 3</option>
-                                </select>
-                            </div>
-
-                            {/* Mensaje 1 */}
-                            {whatsappSelected === 1 && (
-                                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6 animate-in fade-in duration-300">
-                                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
-                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                                            <span className="font-bold">1</span>
-                                        </div>
-                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Primer Mensaje</h3>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Imagen del Mensaje 1</label>
-                                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
-                                                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
-                                                    {previews.imagen_whatsapp || formData.imagen_whatsapp ? (
-                                                        <img src={previews.imagen_whatsapp || getFullImageUrl(formData.imagen_whatsapp)} className="w-full h-full object-contain" />
-                                                    ) : (
-                                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 flex flex-col gap-2 w-full">
-                                                    <input
-                                                        type="file"
-                                                        id="input_imagen_whatsapp"
-                                                        accept="image/*"
-                                                        onChange={(e) => handleFileChange(e, "imagen_whatsapp")}
-                                                        className="hidden"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => document.getElementById('input_imagen_whatsapp')?.click()}
-                                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm active:scale-95"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                        </svg>
-                                                        Subir Imagen
-                                                    </button>
-                                                    {(previews.imagen_whatsapp || formData.imagen_whatsapp) && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleClearImage("imagen_whatsapp")}
-                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all"
-                                                        >
-                                                            Eliminar
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-4">
-                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
-                                                <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                    <select
-                                                        value={formData.whatsapp_time_1}
-                                                        onChange={(e) => handleFieldChange("whatsapp_time_1", parseInt(e.target.value) || 0)}
-                                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                                                    >
-                                                        <option value={0}>Inmediato</option>
-                                                        <option value={1}>1 minuto</option>
-                                                        <option value={5}>5 minutos</option>
-                                                        <option value={10}>10 minutos</option>
-                                                        <option value={30}>30 minutos</option>
-                                                        <option value={45}>45 minutos</option>
-                                                        <option value={60}>1 hora</option>
-                                                    </select>
-                                                    <p className="text-[10px] text-gray-500 italic mt-2">Envío inmediato al suscribirse.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
-                                        <WhatsappEditor
-                                            defaultValue={formData.texto_alt_whatsapp}
-                                            inputId="whatsappMessageProducto"
-                                            updateEventName="update-whatsapp-editor-producto"
-                                            previewEventName="update-whatsapp-preview"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Mensaje 2 */}
-                            {whatsappSelected === 2 && (
-                                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6 animate-in fade-in duration-300">
-                                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
-                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                                            <span className="font-bold">2</span>
-                                        </div>
-                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Segundo Mensaje</h3>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Imagen del Mensaje 2</label>
-                                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
-                                                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
-                                                    {previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2 ? (
-                                                        <img src={previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2} className="w-full h-full object-contain" />
-                                                    ) : (
-                                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 flex flex-col gap-2 w-full">
-                                                    <input
-                                                        type="file"
-                                                        id="input_imagen_whatsapp_2"
-                                                        accept="image/*"
-                                                        onChange={(e) => handleFileChange(e, "imagen_whatsapp_2")}
-                                                        className="hidden"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => document.getElementById('input_imagen_whatsapp_2')?.click()}
-                                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm active:scale-95"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                        </svg>
-                                                        Subir Imagen
-                                                    </button>
-                                                    {(previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2) && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleClearImage("imagen_whatsapp_2")}
-                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all"
-                                                        >
-                                                            Eliminar
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
-                                            <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                <select
-                                                    value={formData.whatsapp_time_2}
-                                                    onChange={(e) => handleFieldChange("whatsapp_time_2", parseInt(e.target.value) || 0)}
-                                                    className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                                                >
-                                                    <option value={0}>Inmediato</option>
-                                                    <option value={1}>1 minuto</option>
-                                                    <option value={5}>5 minutos</option>
-                                                    <option value={10}>10 minutos</option>
-                                                    <option value={30}>30 minutos</option>
-                                                    <option value={45}>45 minutos</option>
-                                                    <option value={60}>1 hora</option>
-                                                </select>
-                                                <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 1.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
-                                        <WhatsappEditor
-                                            defaultValue={formData.mensaje_whatsapp_2}
-                                            inputId="whatsappMessageProducto2"
-                                            updateEventName="update-whatsapp-editor-producto-2"
-                                            previewEventName="update-whatsapp-preview-2"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Mensaje 3 */}
-                            {whatsappSelected === 3 && (
-                                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6 animate-in fade-in duration-300">
-                                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
-                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                                            <span className="font-bold">3</span>
-                                        </div>
-                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Tercer Mensaje</h3>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <div className="space-y-4">
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Imagen del Mensaje 3</label>
-                                            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
-                                                <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
-                                                    {previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3 ? (
-                                                        <img src={previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3} className="w-full h-full object-contain" />
-                                                    ) : (
-                                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 flex flex-col gap-2 w-full">
-                                                    <input
-                                                        type="file"
-                                                        id="input_imagen_whatsapp_3"
-                                                        accept="image/*"
-                                                        onChange={(e) => handleFileChange(e, "imagen_whatsapp_3")}
-                                                        className="hidden"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => document.getElementById('input_imagen_whatsapp_3')?.click()}
-                                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm active:scale-95"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                        </svg>
-                                                        Subir Imagen
-                                                    </button>
-                                                    {(previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3) && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleClearImage("imagen_whatsapp_3")}
-                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all"
-                                                        >
-                                                            Eliminar
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-4">
-                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
-                                                <div className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                                                    <select
-                                                        value={formData.whatsapp_time_3}
-                                                        onChange={(e) => handleFieldChange("whatsapp_time_3", parseInt(e.target.value) || 0)}
-                                                        className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                                                    >
-                                                        <option value={0}>Inmediato</option>
-                                                        <option value={1}>1 minuto</option>
-                                                        <option value={5}>5 minutos</option>
-                                                        <option value={10}>10 minutos</option>
-                                                        <option value={30}>30 minutos</option>
-                                                        <option value={45}>45 minutos</option>
-                                                        <option value={60}>1 hora</option>
-                                                    </select>
-                                                    <p className="text-[10px] text-gray-500 italic mt-2">Tiempo después del mensaje 2.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
-                                        <WhatsappEditor
-                                            defaultValue={formData.mensaje_whatsapp_3}
-                                            inputId="whatsappMessageProducto3"
-                                            updateEventName="update-whatsapp-editor-producto-3"
-                                            previewEventName="update-whatsapp-preview-3"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <WhatsAppSection
+                            formData={formData}
+                            previews={previews}
+                            onFieldChange={handleFieldChange}
+                            onFileChange={handleFileChange}
+                            onClearImage={handleClearImage}
+                            whatsappSelected={whatsappSelected}
+                            onWhatsappSelectChange={setWhatsappSelected}
+                        />
                     )}
 
                     {activeTab === 'correo' && (
-                        <div className="space-y-6">
-                            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-blue-600">Correo Electrónico</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Configura la imagen y mensaje de correo para este producto.</p>
-
-                                <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
-                                    <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
-                                        {previews.imagen_email || formData.imagen_email ? (
-                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
-                                        ) : (
-                                            <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 w-full">
-                                        <input
-                                            type="file"
-                                            id="input_imagen_email"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, "imagen_email")}
-                                            className="hidden"
-                                        />
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                type="button"
-                                                onClick={() => document.getElementById('input_imagen_email')?.click()}
-                                                className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all shadow-md active:scale-95"
-                                            >
-                                                Subir Imagen Correo
-                                            </button>
-                                            {(previews.imagen_email || formData.imagen_email) && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleClearImage("imagen_email")}
-                                                    className="text-red-500 hover:text-red-600 p-2"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 uppercase tracking-wider">Asunto del Correo:</label>
-                                        <input
-                                            type="text"
-                                            value={formData.asunto}
-                                            onChange={(e) => handleFieldChange("asunto", e.target.value)}
-                                            className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
-                                            placeholder="Ej: ¡Tu oferta especial de Tami!"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Cuerpo del Correo:</label>
-                                        <EmailEditor
-                                            defaultValue={formData.mensaje_email}
-                                            inputId="emailBodyProducto"
-                                            updateEventName="update-email-editor-producto"
-                                            onChangeHtml={(html) => handleFieldChange("mensaje_email", html)}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-4 pt-6 mt-4 border-t border-gray-100 dark:border-gray-700/50">
-                                        <h4 className="font-bold text-gray-800 dark:text-gray-100">Configuración del Botón en el Correo</h4>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Texto del Botón:</label>
-                                                <input
-                                                    type="text"
-                                                    value={formData.email_btn_text}
-                                                    onChange={(e) => handleFieldChange("email_btn_text", e.target.value)}
-                                                    className="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
-                                                    placeholder="Ej: COTIZAR AHORA"
-                                                />
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace del Botón (Opcional):</label>
-                                                <input
-                                                    type="url"
-                                                    value={formData.email_btn_link}
-                                                    onChange={(e) => handleFieldChange("email_btn_link", e.target.value)}
-                                                    className="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
-                                                    placeholder="https://..."
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                                                <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color de Fondo:</span>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
-                                                        <input
-                                                            type="color"
-                                                            value={formData.email_btn_bg_color}
-                                                            onChange={(e) => handleFieldChange("email_btn_bg_color", e.target.value)}
-                                                            className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                                        />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-xs font-bold text-gray-900 dark:text-gray-100">{formData.email_btn_bg_color}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                                                <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Texto:</span>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
-                                                        <input
-                                                            type="color"
-                                                            value={formData.email_btn_text_color}
-                                                            onChange={(e) => handleFieldChange("email_btn_text_color", e.target.value)}
-                                                            className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                                        />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-xs font-bold text-gray-900 dark:text-gray-100">{formData.email_btn_text_color}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <EmailSection
+                            formData={formData}
+                            previews={previews}
+                            onFieldChange={handleFieldChange}
+                            onFileChange={handleFileChange}
+                            onClearImage={handleClearImage}
+                        />
                     )}
                 </div>
             )}

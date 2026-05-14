@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import Swal from 'sweetalert2';
-import { config } from 'config';
+import { config } from '../../../../config';
 import { useWhatsapp } from 'src/hooks/admin/whatsapp/useWhatsapp';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
