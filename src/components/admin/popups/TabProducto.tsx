@@ -1,67 +1,62 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import apiClient from "../../../services/apiClient";
-import { config, getApiUrl } from "../../../../config";
+import Swal from "sweetalert2";
 import { ProductoService } from "../../../services/producto.service";
 import type Producto from "../../../models/Product";
-import Swal from "sweetalert2";
+import { config } from "../../../../config";
 import WhatsappEditor from "./WhatsappEditor";
 import EmailEditor from "./EmailEditor";
 import { ProductFormBuilderService } from "./services/productFormBuilder";
 import { ProductSyncService } from "./services/productSyncService";
 import type { ProductFormData, TabType } from "./types/productTab.types";
+import { useProductForm } from "./hooks/useProductForm";
+import { useProductEventListeners } from "./hooks/useProductEventListeners";
+import { useProductSave } from "./hooks/useProductSave";
 
 const TabProducto: React.FC = () => {
     const [products, setProducts] = useState<Producto[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [selectedProductId, setSelectedProductId] = useState<string>("");
-    const [formData, setFormData] = useState<any>(null);
-    const [isSaving, setIsSaving] = useState(false);
-    const [previews, setPreviews] = useState<{ [key: string]: string }>({});
-    const [activeTab, setActiveTab] = useState<'popups' | 'etiqueta' | 'whatsapp' | 'correo'>('popups');
+    const [activeTab, setActiveTab] = useState<TabType>('popups');
     const [whatsappSelected, setWhatsappSelected] = useState<number>(1);
-    const [loading, setLoading] = useState(true);
+    
+    // Custom hooks
+    const { formData, setFormData, previews, setPreviews, handleFieldChange: hookFieldChange, handleClearImage: hookClearImage, handleFileChange: hookFileChange } = useProductForm();
+    const { isSaving, handleSave: hookSave } = useProductSave();
 
-    useEffect(() => {
-        const handleWhatsappUpdate = (e: any) => {
-            if (typeof e.detail === "string") {
-                setFormData((prev: any) => {
-                    if (!prev) return null;
-                    if (whatsappSelected === 1) return { ...prev, texto_alt_whatsapp: e.detail };
-                    if (whatsappSelected === 2) return { ...prev, mensaje_whatsapp_2: e.detail };
-                    if (whatsappSelected === 3) return { ...prev, mensaje_whatsapp_3: e.detail };
-                    return prev;
-                });
-            }
-        };
-        const handleEmailUpdate = (e: any) => {
-            if (typeof e.detail === "string") {
-                setFormData((prev: any) => prev ? { ...prev, mensaje_email: e.detail } : null);
-            }
-        };
+    // Event listeners for editor updates
+    useProductEventListeners({
+        whatsappSelected,
+        onWhatsappUpdate: (messageNumber, text) => {
+            setFormData((prev: any) => {
+                if (!prev) return null;
+                if (messageNumber === 1) return { ...prev, texto_alt_whatsapp: text };
+                if (messageNumber === 2) return { ...prev, mensaje_whatsapp_2: text };
+                if (messageNumber === 3) return { ...prev, mensaje_whatsapp_3: text };
+                return prev;
+            });
+        },
+        onEmailUpdate: (text) => {
+            setFormData((prev: any) => (prev ? { ...prev, mensaje_email: text } : null));
+        },
+        onReset: () => {
+            setSelectedProductId("");
+            setFormData(null);
+            setPreviews({});
+        },
+        onExternalSave: () => {
+            handleSave();
+        }
+    });
 
-        window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
-        window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-        window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-        window.addEventListener("update-email-preview", handleEmailUpdate);
-
-        return () => {
-            window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
-            window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-            window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-            window.removeEventListener("update-email-preview", handleEmailUpdate);
-        };
-    }, [whatsappSelected]);
-
-    useEffect(() => {
-        window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: whatsappSelected }));
-    }, [whatsappSelected]);
-
+    // Sync preview when data or tab changes
     useEffect(() => {
         if (formData) {
-            syncPreview(formData);
+            ProductSyncService.syncPreview(formData, previews, activeTab, whatsappSelected);
         }
-    }, [formData, activeTab, whatsappSelected]);
+    }, [formData, activeTab, whatsappSelected, previews]);
 
+    // Fetch products on mount
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -74,30 +69,17 @@ const TabProducto: React.FC = () => {
             }
         };
         fetchProducts();
-
-        const handleReset = () => {
-            setSelectedProductId("");
-            setFormData(null);
-            setPreviews({});
-        };
-
-        const handleExternalSave = () => {
-            handleSave();
-        };
-
-        window.addEventListener("reset-product-selection", handleReset);
-        window.addEventListener("request-save-product-popup", handleExternalSave);
-        return () => {
-            window.removeEventListener("reset-product-selection", handleReset);
-            window.removeEventListener("request-save-product-popup", handleExternalSave);
-        };
-    }, [selectedProductId, formData, isSaving]); // Added dependencies to ensure handleSave has latest state
+    }, []);
 
     // Helper function to ensure full URL for display
-    const ensureFullUrl = (url: string | File | null): string | null => {
-        if (!url || url instanceof File) return null;
-        if (url.startsWith("http")) return url;
-        return `${config.apiUrl}${url}`;
+    const getImageUrl = (preview: string | undefined, data: string | File | null): string => {
+        if (preview) return preview;
+        if (!data || data instanceof File) return "";
+        if (typeof data === "string") {
+            if (data.startsWith("http")) return data;
+            return `${config.apiUrl}${data}`;
+        }
+        return "";
     };
 
     const handleProductSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -133,121 +115,54 @@ const TabProducto: React.FC = () => {
         }
     };
 
-    const syncPreview = (data: any, overrides: any = {}) => {
-        ProductSyncService.syncPreview(data, previews, activeTab, whatsappSelected, overrides);
-    };
 
+
+    // Wrapper to add preview sync after field change
     const handleFieldChange = (field: string, value: any, isEtiqueta = false) => {
-        setFormData((prev: any) => {
-            const newData = { ...prev };
-            if (isEtiqueta) {
-                newData.etiqueta = { ...newData.etiqueta, [field]: value };
-            } else {
-                newData[field] = value;
-            }
-
-            // Only sync preview if it's not a File object (to avoid broken images in preview)
-            if (!(value instanceof File)) {
-                syncPreview(newData);
-            }
-            return newData;
-        });
+        hookFieldChange(field, value, isEtiqueta);
+        
+        // Sync preview if not a File
+        if (!(value instanceof File)) {
+            setTimeout(() => {
+                setFormData((prev: any) => {
+                    if (prev) {
+                        ProductSyncService.syncPreview(prev, previews, activeTab, whatsappSelected);
+                    }
+                    return prev;
+                });
+            }, 0);
+        }
     };
 
     const handleClearImage = (field: string) => {
-        setPreviews(prev => {
-            const newPreviews = { ...prev };
-            delete newPreviews[field];
-            return newPreviews;
-        });
-
-        setFormData((prev: any) => {
-            const newData = {
-                ...prev,
-                [field]: null,
-                [`delete_${field}`]: 1
-            };
-            syncPreview(newData, { [field]: null });
-            return newData;
-        });
+        hookClearImage(field);
+        
+        // Sync preview after clearing
+        setTimeout(() => {
+            setFormData((prev: any) => {
+                if (prev) {
+                    ProductSyncService.syncPreview(prev, previews, activeTab, whatsappSelected, { [field]: null });
+                }
+                return prev;
+            });
+        }, 0);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const url = reader.result as string;
-                setPreviews(prev => ({ ...prev, [field]: url }));
+        hookFileChange(e, field, (newData, overrides) => {
+            // Dispatch specific preview events for WhatsApp messages
+            const url = overrides[field] as string;
+            ProductSyncService.updateWhatsAppImagePreview(field, url);
 
-                setFormData((prev: any) => {
-                    const newData = {
-                        ...prev,
-                        [field]: file,
-                        [`delete_${field}`]: 0
-                    };
-
-                    // Dispatch specific preview events for WhatsApp messages
-                    ProductSyncService.updateWhatsAppImagePreview(field, url);
-
-                    // We pass the base64 URL as an override to ensure the preview uses it instead of the File
-                    syncPreview(newData, { [field]: url });
-                    return newData;
-                });
-            };
-            reader.readAsDataURL(file);
-        }
+            // Sync preview with the new URL
+            ProductSyncService.syncPreview(newData, previews, activeTab, whatsappSelected, overrides);
+        });
     };
 
-    const handleSave = async () => {
-        if (!selectedProductId || !formData) return;
-
-        setIsSaving(true);
-        try {
-            // Build FormData using service
-            const formDataToSend = ProductFormBuilderService.buildProductFormData(formData, selectedProductId);
-
-            const response = await apiClient.post(config.endpoints.productos.update(selectedProductId), formDataToSend, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Configuración guardada",
-                    text: "El pop-up del producto ha sido actualizado.",
-                    timer: 2000,
-                    showConfirmButton: false,
-                });
-            } else {
-                throw new Error(`Error al guardar: ${response.status}`);
-            }
-        } catch (error: any) {
-            console.error("❌ Error saving product popup:", error);
-
-            let errorMessage = "No se pudo guardar la configuración.";
-
-            if (error.response?.data?.errors) {
-                // Format Laravel validation errors
-                const errors = error.response.data.errors;
-                errorMessage = Object.keys(errors)
-                    .map(key => `${key}: ${errors[key].join(', ')}`)
-                    .join('\n');
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else {
-                errorMessage = error.message || "Error desconocido.";
-            }
-
-            Swal.fire({
-                icon: "error",
-                title: "Error de Guardado",
-                text: `❌ ${errorMessage}`,
-            });
-        } finally {
-            setIsSaving(false);
-        }
-    };
+    // Wrapper for save with selectedProductId
+    const handleSave = useCallback(async () => {
+        await hookSave(selectedProductId, formData);
+    }, [selectedProductId, formData, hookSave]);
 
     if (loadingProducts) {
         return <div className="p-8 text-center text-gray-500">Cargando productos...</div>;
@@ -313,7 +228,7 @@ const TabProducto: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
                                         {previews.imagen_popup || formData.imagen_popup ? (
-                                            <img src={previews.imagen_popup || formData.imagen_popup} className="w-full h-full object-contain" />
+                                            <img src={getImageUrl(previews.imagen_popup, formData.imagen_popup)} className="w-full h-full object-contain" />
                                         ) : (
                                             <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
@@ -375,7 +290,7 @@ const TabProducto: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
                                         {previews.imagen_popup2 || formData.imagen_popup2 ? (
-                                            <img src={previews.imagen_popup2 || formData.imagen_popup2} className="w-full h-full object-contain" />
+                                            <img src={getImageUrl(previews.imagen_popup2, formData.imagen_popup2)} className="w-full h-full object-contain" />
                                         ) : (
                                             <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
@@ -437,7 +352,7 @@ const TabProducto: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
                                         {previews.imagen_popup_mobile || formData.imagen_popup_mobile ? (
-                                            <img src={previews.imagen_popup_mobile || formData.imagen_popup_mobile} className="w-full h-full object-contain" />
+                                            <img src={getImageUrl(previews.imagen_popup_mobile, formData.imagen_popup_mobile)} className="w-full h-full object-contain" />
                                         ) : (
                                             <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
@@ -499,7 +414,7 @@ const TabProducto: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
                                         {previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2 ? (
-                                            <img src={previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2} className="w-full h-full object-contain" />
+                                            <img src={getImageUrl(previews.imagen_popup_mobile2, formData.imagen_popup_mobile2)} className="w-full h-full object-contain" />
                                         ) : (
                                             <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
@@ -648,7 +563,7 @@ const TabProducto: React.FC = () => {
                                             <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
                                                 <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
                                                     {previews.imagen_whatsapp || formData.imagen_whatsapp ? (
-                                                        <img src={previews.imagen_whatsapp || ensureFullUrl(formData.imagen_whatsapp) || ""} className="w-full h-full object-contain" />
+                                                        <img src={getImageUrl(previews.imagen_whatsapp, formData.imagen_whatsapp)} className="w-full h-full object-contain" />
                                                     ) : (
                                                         <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
                                                     )}
@@ -733,7 +648,7 @@ const TabProducto: React.FC = () => {
                                             <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
                                                 <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
                                                     {previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2 ? (
-                                                        <img src={previews.imagen_whatsapp_2 || formData.imagen_whatsapp_2} className="w-full h-full object-contain" />
+                                                        <img src={getImageUrl(previews.imagen_whatsapp_2, formData.imagen_whatsapp_2)} className="w-full h-full object-contain" />
                                                     ) : (
                                                         <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
                                                     )}
@@ -818,7 +733,7 @@ const TabProducto: React.FC = () => {
                                             <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
                                                 <div className="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
                                                     {previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3 ? (
-                                                        <img src={previews.imagen_whatsapp_3 || formData.imagen_whatsapp_3} className="w-full h-full object-contain" />
+                                                        <img src={getImageUrl(previews.imagen_whatsapp_3, formData.imagen_whatsapp_3)} className="w-full h-full object-contain" />
                                                     ) : (
                                                         <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Sin imagen</span>
                                                     )}
@@ -898,7 +813,7 @@ const TabProducto: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-6 items-start mb-6">
                                     <div className="w-full sm:w-32 h-32 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner">
                                         {previews.imagen_email || formData.imagen_email ? (
-                                            <img src={previews.imagen_email || formData.imagen_email} className="w-full h-full object-contain" />
+                                            <img src={getImageUrl(previews.imagen_email, formData.imagen_email)} className="w-full h-full object-contain" />
                                         ) : (
                                             <span className="text-xs text-gray-400 font-medium">Sin imagen</span>
                                         )}
