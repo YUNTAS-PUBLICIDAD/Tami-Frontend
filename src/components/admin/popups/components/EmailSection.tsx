@@ -87,7 +87,7 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                         value={(formData as any)[`imagen_email_${selectedEmail}`]}
                         onFileChange={onFileChange}
                         onClearImage={onClearImage}
-                        previewWidth="sm:w-32"
+                        previewWidth="w-full sm:w-32"
                         previewHeight="h-32"
                         buttonLabel={`Subir Imagen Correo ${selectedEmail}`}
                     />

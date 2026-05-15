@@ -44,6 +44,15 @@ import WhatsappEditor from "./WhatsappEditor";
                 <!-- Imagen 1 -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Imagen del Mensaje 1</label>
+                    <div class="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 p-3 rounded-xl mb-2">
+                        <p class="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                            <span class="font-bold">Recomendación para la imagen:</span> Usa formato 
+                            <span class="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200">webp, png o jpg</span> 
+                            y un tamaño sugerido de 
+                            <span class="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200">600x400px</span> 
+                            o similar para un mejor diseño.
+                        </p>
+                    </div>
                     <div class="flex items-center gap-3">
                         <input type="hidden" name="delete_whatsappImage" id="delete_whatsappImage" value="0" />
                         <input type="file" id="whatsappImage" accept="image/*" class="hidden" />
@@ -66,28 +75,27 @@ import WhatsappEditor from "./WhatsappEditor";
                     </div>
                 </div>
 
-                <!-- Tiempo 1 -->
-                <div class="space-y-3">
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos)</label>
-                    <select 
-                        id="whatsappTime1" 
-                        class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
-                    >
-                        <option value="0">Inmediato</option>
-                        <option value="1">1 minuto</option>
-                        <option value="5">5 minutos</option>
-                        <option value="10">10 minutos</option>
-                        <option value="30">30 minutos</option>
-                        <option value="45">45 minutos</option>
-                        <option value="60">1 hora</option>
-                    </select>
-                    <p class="text-[10px] text-gray-500 italic">Recomendado: Inmediato para envío al suscribirse.</p>
-                </div>
-            </div>
-
             <div class="space-y-2">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de WhatsApp</label>
                 <WhatsappEditor client:load inputId="whatsappMessage" updateEventName="update-whatsapp-editor-1" previewEventName="update-whatsapp-preview" />
+            </div>
+
+            <!-- Tiempo 1 -->
+            <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos)</label>
+                <select 
+                    id="whatsappTime1" 
+                    class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
+                >
+                    <option value="0">Inmediato</option>
+                    <option value="1">1 minuto</option>
+                    <option value="5">5 minutos</option>
+                    <option value="10">10 minutos</option>
+                    <option value="30">30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60">1 hora</option>
+                </select>
+                <p class="text-[10px] text-gray-500 italic">Recomendado: Inmediato para envío al suscribirse.</p>
             </div>
         </div>
         </div>
@@ -111,6 +119,15 @@ import WhatsappEditor from "./WhatsappEditor";
                 <!-- Imagen 2 -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Imagen del Mensaje 2</label>
+                    <div class="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 p-3 rounded-xl mb-2">
+                        <p class="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                            <span class="font-bold">Recomendación para la imagen:</span> Usa formato 
+                            <span class="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200">webp, png o jpg</span> 
+                            y un tamaño sugerido de 
+                            <span class="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200">600x400px</span> 
+                            o similar para un mejor diseño.
+                        </p>
+                    </div>
                     <div class="flex items-center gap-3">
                         <input type="hidden" name="delete_whatsappImage2" id="delete_whatsappImage2" value="0" />
                         <input type="file" id="whatsappImage2" accept="image/*" class="hidden" />
@@ -133,28 +150,27 @@ import WhatsappEditor from "./WhatsappEditor";
                     </div>
                 </div>
 
-                <!-- Tiempo 2 -->
-                <div class="space-y-3">
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos)</label>
-                    <select 
-                        id="whatsappTime2" 
-                        class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
-                    >
-                        <option value="0">Inmediato</option>
-                        <option value="1">1 minuto</option>
-                        <option value="5">5 minutos</option>
-                        <option value="10">10 minutos</option>
-                        <option value="30" selected>30 minutos</option>
-                        <option value="45">45 minutos</option>
-                        <option value="60">1 hora</option>
-                    </select>
-                    <p class="text-[10px] text-gray-500 italic">Tiempo después de haber enviado el primer mensaje.</p>
-                </div>
-            </div>
-
             <div class="space-y-2">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de WhatsApp</label>
                 <WhatsappEditor client:load inputId="whatsappMessage2" updateEventName="update-whatsapp-editor-2" previewEventName="update-whatsapp-preview-2" />
+            </div>
+
+            <!-- Tiempo 2 -->
+            <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos)</label>
+                <select 
+                    id="whatsappTime2" 
+                    class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
+                >
+                    <option value="0">Inmediato</option>
+                    <option value="1">1 minuto</option>
+                    <option value="5">5 minutos</option>
+                    <option value="10">10 minutos</option>
+                    <option value="30" selected>30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60">1 hora</option>
+                </select>
+                <p class="text-[10px] text-gray-500 italic">Tiempo después de haber enviado el primer mensaje.</p>
             </div>
         </div>
         </div>
@@ -178,6 +194,15 @@ import WhatsappEditor from "./WhatsappEditor";
                 <!-- Imagen 3 -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Imagen del Mensaje 3</label>
+                    <div class="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 p-3 rounded-xl mb-2">
+                        <p class="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                            <span class="font-bold">Recomendación para la imagen:</span> Usa formato 
+                            <span class="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200">webp, png o jpg</span> 
+                            y un tamaño sugerido de 
+                            <span class="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200">600x400px</span> 
+                            o similar para un mejor diseño.
+                        </p>
+                    </div>
                     <div class="flex items-center gap-3">
                         <input type="hidden" name="delete_whatsappImage3" id="delete_whatsappImage3" value="0" />
                         <input type="file" id="whatsappImage3" accept="image/*" class="hidden" />
@@ -200,28 +225,27 @@ import WhatsappEditor from "./WhatsappEditor";
                     </div>
                 </div>
 
-                <!-- Tiempo 3 -->
-                <div class="space-y-3">
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos)</label>
-                    <select 
-                        id="whatsappTime3" 
-                        class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
-                    >
-                        <option value="0">Inmediato</option>
-                        <option value="1">1 minuto</option>
-                        <option value="5">5 minutos</option>
-                        <option value="10">10 minutos</option>
-                        <option value="30">30 minutos</option>
-                        <option value="45">45 minutos</option>
-                        <option value="60" selected>1 hora</option>
-                    </select>
-                    <p class="text-[10px] text-gray-500 italic">Tiempo después de haber enviado el segundo mensaje.</p>
-                </div>
-            </div>
-
             <div class="space-y-2">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de WhatsApp</label>
                 <WhatsappEditor client:load inputId="whatsappMessage3" updateEventName="update-whatsapp-editor-3" previewEventName="update-whatsapp-preview-3" />
+            </div>
+
+            <!-- Tiempo 3 -->
+            <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos)</label>
+                <select 
+                    id="whatsappTime3" 
+                    class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
+                >
+                    <option value="0">Inmediato</option>
+                    <option value="1">1 minuto</option>
+                    <option value="5">5 minutos</option>
+                    <option value="10">10 minutos</option>
+                    <option value="30">30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60" selected>1 hora</option>
+                </select>
+                <p class="text-[10px] text-gray-500 italic">Tiempo después de haber enviado el segundo mensaje.</p>
             </div>
         </div>
     </div>
