@@ -13,38 +13,43 @@
  * if (loadingProducts) return <Loading />;
  * return products.map(p => <ProductOption key={p.id} product={p} />);
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type Producto from "src/models/Product";
 import { ProductoService } from "../../../../services/producto.service";
 
-/**
- * @typedef {Object} UseProductsLoadReturn
- * @property {Producto[]} products - Array of products fetched from API
- * @property {boolean} loadingProducts - Loading state (true while fetching, false when complete)
- */
 interface UseProductsLoadReturn {
     products: Producto[];
     loadingProducts: boolean;
+    loadError: string | null;
+    retry: () => void;
 }
+
 export const useProductsLoad = (): UseProductsLoadReturn => {
     const [products, setProducts] = useState<Producto[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await ProductoService.getAllProductos();
-                setProducts(data);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-                setProducts([]);
-            } finally {
-                setLoadingProducts(false);
+    const fetchProducts = useCallback(async () => {
+        setLoadingProducts(true);
+        setLoadError(null);
+        try {
+            const data = await ProductoService.getAllProductos();
+            setProducts(data);
+            if (data.length === 0) {
+                setLoadError("No se encontraron productos disponibles.");
             }
-        };
-
-        fetchProducts();
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setProducts([]);
+            setLoadError("Error al cargar los productos. Reintenta de nuevo.");
+        } finally {
+            setLoadingProducts(false);
+        }
     }, []);
 
-    return { products, loadingProducts };
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    return { products, loadingProducts, loadError, retry: fetchProducts };
 };

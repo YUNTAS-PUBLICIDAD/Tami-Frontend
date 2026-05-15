@@ -73,13 +73,35 @@ export interface ProductFormData {
   texto_alt_popup_mobile2: string;
 
   // Email Configuration
-  imagen_email: string | File | null;
-  asunto: string;
-  mensaje_email: string;
-  email_btn_text: string;
-  email_btn_link: string;
-  email_btn_bg_color: string;
-  email_btn_text_color: string;
+  // Support three different email variants for product-level emails
+  imagen_email_1: string | File | null;
+  asunto_1: string;
+  mensaje_email_1: string;
+  email_btn_text_1: string;
+  email_btn_link_1: string;
+  email_btn_bg_color_1: string;
+  email_btn_text_color_1: string;
+
+  imagen_email_2: string | File | null;
+  asunto_2: string;
+  mensaje_email_2: string;
+  email_btn_text_2: string;
+  email_btn_link_2: string;
+  email_btn_bg_color_2: string;
+  email_btn_text_color_2: string;
+
+  imagen_email_3: string | File | null;
+  asunto_3: string;
+  mensaje_email_3: string;
+  email_btn_text_3: string;
+  email_btn_link_3: string;
+  email_btn_bg_color_3: string;
+  email_btn_text_color_3: string;
+
+  // Delay (temporizador) in minutes for each email
+  email_time_1: number;
+  email_time_2: number;
+  email_time_3: number;
 
   // WhatsApp Configuration
   imagen_whatsapp: string | File | null;

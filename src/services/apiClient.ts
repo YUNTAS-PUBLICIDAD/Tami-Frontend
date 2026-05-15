@@ -18,6 +18,15 @@ apiClient.interceptors.request.use(
                 config.headers.Authorization = `Bearer ${token}`;
             }
         }
+
+        // If we are sending FormData, let the browser set Content-Type with boundary.
+        if (config.data instanceof FormData) {
+            if (config.headers) {
+                delete config.headers['Content-Type'];
+                delete config.headers['content-type'];
+            }
+        }
+
         return config;
     },
     (error) => Promise.reject(error)

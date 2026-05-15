@@ -39,7 +39,7 @@ import type { ProductFormData } from "../types/productTab.types";
 interface UseProductEventListenersProps {
   whatsappSelected: number;
   onWhatsappUpdate: (messageNumber: 1 | 2 | 3, text: string) => void;
-  onEmailUpdate: (text: string) => void;
+  onEmailUpdate: (index: 1 | 2 | 3, text: string) => void;
   onReset: () => void;
   onExternalSave: () => void;
 }
@@ -65,9 +65,11 @@ export const useProductEventListeners = ({
   /**
    * Memoized handler for Email updates
    */
-  const handleEmailUpdate = useCallback((e: any) => {
+  const handleEmailUpdate = useCallback((idx: number) => (e: any) => {
     if (typeof e.detail === "string") {
-      onEmailUpdate(e.detail);
+      onEmailUpdate(idx as 1|2|3, e.detail);
+    } else if (e?.detail && typeof e.detail === 'object' && typeof e.detail.body === 'string') {
+      onEmailUpdate(idx as 1|2|3, e.detail.body);
     }
   }, [onEmailUpdate]);
 
@@ -78,13 +80,17 @@ export const useProductEventListeners = ({
     window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
     window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
     window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-    window.addEventListener("update-email-preview", handleEmailUpdate);
+    window.addEventListener("update-email-preview-1", handleEmailUpdate(1));
+    window.addEventListener("update-email-preview-2", handleEmailUpdate(2));
+    window.addEventListener("update-email-preview-3", handleEmailUpdate(3));
 
     return () => {
       window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
       window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
       window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
-      window.removeEventListener("update-email-preview", handleEmailUpdate);
+      window.removeEventListener("update-email-preview-1", handleEmailUpdate(1));
+      window.removeEventListener("update-email-preview-2", handleEmailUpdate(2));
+      window.removeEventListener("update-email-preview-3", handleEmailUpdate(3));
     };
   }, [handleWhatsappUpdate, handleEmailUpdate]);
 

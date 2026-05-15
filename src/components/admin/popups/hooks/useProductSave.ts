@@ -51,10 +51,7 @@ export const useProductSave = (): UseProductSaveReturn => {
 
         const response = await apiClient.post(
           config.endpoints.productos.update(selectedProductId),
-          formDataToSend,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          formDataToSend
         );
 
         if (response.status === 200 || response.status === 201) {

@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import apiClient from "../../../services/apiClient";
 import Swal from "sweetalert2";
 import { ProductoService } from "../../../services/producto.service";
 import type Producto from "../../../models/Product";
@@ -25,11 +24,12 @@ import { getImageUrl } from "./utils/imageUrl";
 
 const TabProducto: React.FC = () => {
     // Load products on mount
-    const { products, loadingProducts } = useProductsLoad();
+    const { products, loadingProducts, loadError, retry } = useProductsLoad();
     
     // State management
     const [activeTab, setActiveTab] = React.useState<TabType>('popups');
     const [whatsappSelected, setWhatsappSelected] = React.useState<number>(1);
+    const [emailSelected, setEmailSelected] = React.useState<number>(1);
     
     // Form management
     const { formData, setFormData, previews, setPreviews, handleFieldChange: hookFieldChange, handleClearImage: hookClearImage, handleFileChange: hookFileChange } = useProductForm();
@@ -43,7 +43,7 @@ const TabProducto: React.FC = () => {
     );
     
     // Auto-sync preview when data changes
-    useProductPreviewSync(formData, previews, activeTab, whatsappSelected);
+    useProductPreviewSync(formData, previews, activeTab, whatsappSelected, emailSelected);
     
     // Save management
     const { isSaving, handleSave: hookSave } = useProductSave();
@@ -60,8 +60,11 @@ const TabProducto: React.FC = () => {
                 return prev;
             });
         },
-        onEmailUpdate: (text) => {
-            setFormData((prev: any) => (prev ? { ...prev, mensaje_email: text } : null));
+        onEmailUpdate: (index, text) => {
+            setFormData((prev: any) => {
+                if (!prev) return null;
+                return { ...prev, [`mensaje_email_${index}`]: text } as any;
+            });
         },
         onReset: () => {
             setSelectedProductId("");
@@ -111,10 +114,11 @@ const TabProducto: React.FC = () => {
                     <select
                         value={selectedProductId}
                         onChange={(e) => handleProductSelect(e.target.value)}
-                        className="w-full p-3 pr-10 rounded-lg border border-teal-200 dark:border-teal-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-500 outline-none transition-all appearance-none"
+                        disabled={products.length === 0}
+                        className="w-full p-3 pr-10 rounded-lg border border-teal-200 dark:border-teal-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-teal-500 outline-none transition-all appearance-none disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         <option value="">-- Elige un producto --</option>
-                        {products.map(p => (
+                        {products.map((p) => (
                             <option key={p.id} value={p.id}>{p.nombre}</option>
                         ))}
                     </select>
@@ -124,6 +128,24 @@ const TabProducto: React.FC = () => {
                         </svg>
                     </div>
                 </div>
+                {products.length === 0 && (
+                    <div className="mt-3 space-y-2">
+                        <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                            {loadError
+                                ? loadError
+                                : "No se encontraron productos para configurar. Verifica la API o tus permisos de administrador."}
+                        </p>
+                        {loadError && (
+                            <button
+                                type="button"
+                                onClick={retry}
+                                className="inline-flex items-center px-4 py-2 rounded-md bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"
+                            >
+                                Reintentar carga
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
             {formData && (
@@ -168,6 +190,8 @@ const TabProducto: React.FC = () => {
                             onFieldChange={handleFieldChange}
                             onFileChange={handleFileChange}
                             onClearImage={handleClearImage}
+                            selectedEmail={emailSelected}
+                            onSelectedEmailChange={setEmailSelected}
                         />
                     )}
                 </div>
