@@ -146,7 +146,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                 </p>
                 <input
                     type="text"
-                    value={formData.etiqueta.popup_button_text}
+                    value={formData.etiqueta?.popup_button_text || ""}
                     onChange={(e) => onFieldChange("popup_button_text", e.target.value, true)}
                     className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
                     placeholder="!REGISTRARME!"
@@ -158,14 +158,14 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                 <ColorPickerField
                     label="Color del Botón"
                     description="fondo"
-                    color={formData.etiqueta.popup_button_color}
+                    color={formData.etiqueta?.popup_button_color || "#4FB9AF"}
                     onChange={(color) => onFieldChange("popup_button_color", color, true)}
                     isNested={true}
                 />
                 <ColorPickerField
                     label="Color del Texto"
                     description="texto"
-                    color={formData.etiqueta.popup_text_color}
+                    color={formData.etiqueta?.popup_text_color || "#ffffff"}
                     onChange={(color) => onFieldChange("popup_text_color", color, true)}
                     isNested={true}
                 />
