@@ -302,6 +302,9 @@ export function initPopupManager() {
 
     // Listen for preview type changes from TabProducto.tsx
     window.addEventListener("switch-preview-type", (e: any) => {
+        // Bloquear actualizaciones si estamos en la pestaña de Inicio para evitar bugs de sincronización
+        if (sectionProducto?.classList.contains("hidden")) return;
+
         const type = e.detail;
 
         if (previewWhatsapp) previewWhatsapp.classList.add("hidden");

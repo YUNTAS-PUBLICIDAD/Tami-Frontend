@@ -182,38 +182,34 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                     <span className="w-2 h-8 bg-teal-500 rounded-full"></span>
                     Botón y Colores
                 </h3>
-                
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-widest">
-                            Texto del Botón:
-                        </label>
-                        <input
-                            type="text"
-                            value={formData.etiqueta.popup_button_text}
-                            onChange={(e) => onFieldChange("popup_button_text", e.target.value, true)}
-                            className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-3 text-sm font-bold focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
-                            placeholder="!REGISTRARME!"
-                        />
-                    </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Escribe el texto que aparecerá en el botón del popup.
+                </p>
+                <input
+                    type="text"
+                    value={formData.etiqueta?.popup_button_text || ""}
+                    onChange={(e) => onFieldChange("popup_button_text", e.target.value, true)}
+                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
+                    placeholder="!REGISTRARME!"
+                />
+            </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <ColorPickerField
-                            label="Fondo Botón"
-                            description=""
-                            color={formData.etiqueta.popup_button_color}
-                            onChange={(color) => onFieldChange("popup_button_color", color, true)}
-                            isNested={true}
-                        />
-                        <ColorPickerField
-                            label="Texto Botón"
-                            description=""
-                            color={formData.etiqueta.popup_text_color}
-                            onChange={(color) => onFieldChange("popup_text_color", color, true)}
-                            isNested={true}
-                        />
-                    </div>
-                </div>
+            {/* Colores */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <ColorPickerField
+                    label="Color del Botón"
+                    description="fondo"
+                    color={formData.etiqueta?.popup_button_color || "#4FB9AF"}
+                    onChange={(color) => onFieldChange("popup_button_color", color, true)}
+                    isNested={true}
+                />
+                <ColorPickerField
+                    label="Color del Texto"
+                    description="texto"
+                    color={formData.etiqueta?.popup_text_color || "#ffffff"}
+                    onChange={(color) => onFieldChange("popup_text_color", color, true)}
+                    isNested={true}
+                />
             </div>
         </div>
     );
