@@ -1095,6 +1095,8 @@ export function initPopupManager() {
             addFile("popupImageMobile", "imageMobile");
             addFile("popupImageMobile2", "imageMobile2");
             addFile("whatsappImage", "whatsappImage");
+            addFile("whatsappImage2", "whatsappImage2");
+            addFile("whatsappImage3", "whatsappImage3");
             // emailImage is handled per-email in appendEmailToFormData
 
             await updatePopupSettingsFormData(formData);
