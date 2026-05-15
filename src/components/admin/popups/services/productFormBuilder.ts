@@ -244,7 +244,7 @@ export class ProductFormBuilderService {
     });
     const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
     const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
-    const imagenEmail = product.producto_imagenes?.find((img: any) => img.tipo === "email");
+    const imagenEmail = product.producto_imagenes?.find((img: any) => img.tipo === "email" || img.tipo === "email1");
     const imagenWhatsapp = product.producto_imagenes?.find((img: any) => img.tipo === "whatsapp");
 
     const fallbackImage = (field: string) => {
