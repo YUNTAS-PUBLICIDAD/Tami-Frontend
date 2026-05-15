@@ -92,6 +92,11 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                         buttonLabel={`Subir Imagen Correo ${selectedEmail}`}
                     />
 
+                    {/* Recomendación de Imagen */}
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-xl border border-blue-100 dark:border-blue-800/20">
+                        <span className="font-medium">Recomendación para la imagen:</span> Usa formato <span className="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">webp, png o jpg</span> y un tamaño sugerido de <span className="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">600x400px</span> o similar para un mejor diseño.
+                    </div>
+
                     {/* Email Subject */}
                     <div>
                         <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 uppercase tracking-wider">
