@@ -88,7 +88,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
             <div>
                 <ImageUploadField
                     label="Primera Imagen Móvil"
-                    description="Imagen para vista en dispositivos móviles. Resolución recomendada: 448x640px. La imagen debe pesar 2MB como máximo, recomendación formato webp."
+                    description="Imagen para vista en dispositivos móviles. Resolución recomendada: 448x320px. La imagen debe pesar 2MB como máximo, recomendación formato webp."
                     fieldName="imagen_popup_mobile"
                     preview={previews.imagen_popup_mobile}
                     value={formData.imagen_popup_mobile}
@@ -114,7 +114,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
             <div>
                 <ImageUploadField
                     label="Segunda Imagen Móvil"
-                    description="Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: 448x640px. La imagen debe pesar 2MB como máximo, recomendación formato webp."
+                    description="Segunda imagen para vista en dispositivos móviles (abajo). Resolución recomendada: 448x320px. La imagen debe pesar 2MB como máximo, recomendación formato webp."
                     fieldName="imagen_popup_mobile2"
                     preview={previews.imagen_popup_mobile2}
                     value={formData.imagen_popup_mobile2}
