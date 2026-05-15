@@ -1001,23 +1001,27 @@ export function initPopupManager() {
         setStatus("Guardando cambios...", "loading");
 
         try {
-            // If we are on the Product tab, trigger the product-specific save logic
-            if (sectionProducto && !sectionProducto.classList.contains("hidden")) {
-                window.dispatchEvent(new CustomEvent("request-save-product-popup"));
-            }
+            // Detectar qué pestaña está activa
+            const isProductoTab = sectionProducto && !sectionProducto.classList.contains("hidden");
+            const currentPopupType = isProductoTab ? "producto" : "inicio";
+            
+            const formData = new FormData();
+            formData.append("popup_type", currentPopupType);
 
             const bgColor = btnBgColorInput?.value || "#14b8a6";
             const textColor = btnTextColorInput?.value || "#ffffff";
             const delay = parseInt(popupInicioDelayInput?.value || "60");
-            const productDelay = parseInt(
-                popupProductosDelayInput?.value || "60",
-            );
+            
+            // Solo enviar el delay de productos si estamos en la pestaña de productos
+            let productDelayValue = "60";
+            if (isProductoTab && popupProductosDelayInput) {
+                productDelayValue = popupProductosDelayInput.value;
+            }
 
             if (!isHexColor(bgColor) || !isHexColor(textColor)) {
                 throw new Error("Colores no válidos.");
             }
 
-            const formData = new FormData();
             formData.append("button_bg_color", bgColor);
             formData.append("button_text_color", textColor);
             if (btnTextInput) {
@@ -1025,11 +1029,10 @@ export function initPopupManager() {
             }
             formData.append("popup_start_delay_minutes", delay.toString());
 
-            if (popupProductosDelayInput)
-                formData.append(
-                    "product_popup_delay_minutes",
-                    popupProductosDelayInput.value,
-                );
+            if (isProductoTab) {
+                formData.append("product_popup_delay_minutes", productDelayValue);
+                window.dispatchEvent(new CustomEvent("request-save-product-popup"));
+            }
 
             const whatsappMessage = document.getElementById("whatsappMessage") as HTMLInputElement;
             const whatsappMessage2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
