@@ -20,8 +20,7 @@
  */
 import { useState, useCallback } from "react";
 import Swal from "sweetalert2";
-import apiClient from "../../../../services/apiClient";
-import { config } from "../../../../../config";
+import { config, getApiUrl } from "../../../../../config";
 import { ProductFormBuilderService } from "../services/productFormBuilder";
 import { ProductSyncService } from "../services/productSyncService";
 import type { ProductFormData, TabType } from "../types/productTab.types";
@@ -45,12 +44,17 @@ export const useProductSelection = (
 ): UseProductSelectionReturn => {
     const [selectedProductId, setSelectedProductId] = useState<string>("");
 
+    const normalizeProductDetail = (responseData: any) => {
+        if (!responseData) return null;
+        if (responseData.data) return responseData.data;
+        return responseData;
+    };
+
     const handleProductSelect = useCallback(
         async (productId: string) => {
-            setSelectedProductId(productId);
-
             // Clear data if no product selected
             if (!productId) {
+                setSelectedProductId("");
                 setFormData(null);
                 setPreviews({});
                 return;
@@ -58,12 +62,24 @@ export const useProductSelection = (
 
             try {
                 // Fetch complete product details
-                const response = await apiClient.get(config.endpoints.productos.detail(productId));
-                const product = response.data.data || response.data;
+                const url = getApiUrl(config.endpoints.productos.detail(productId));
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Error al obtener producto ${productId}: ${response.status} ${response.statusText}`);
+                }
+
+                const responseData = await response.json();
+                const product = normalizeProductDetail(responseData);
+
+                if (!product) {
+                    throw new Error("Respuesta de producto inválida");
+                }
 
                 // Build initial form data using service
                 const initialData = ProductFormBuilderService.buildInitialFormData(product, config.apiUrl);
                 setFormData(initialData);
+                setPreviews({});
+                setSelectedProductId(productId);
 
                 // Update editors with initial values
                 ProductSyncService.updateEditors(initialData);
@@ -73,7 +89,9 @@ export const useProductSelection = (
             } catch (error) {
                 console.error("Error fetching product details:", error);
                 setSelectedProductId("");
-                
+                setFormData(null);
+                setPreviews({});
+
                 Swal.fire({
                     icon: "error",
                     title: "Error",

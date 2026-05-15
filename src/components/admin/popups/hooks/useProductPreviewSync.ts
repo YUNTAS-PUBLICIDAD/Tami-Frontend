@@ -23,11 +23,12 @@ export const useProductPreviewSync = (
     formData: ProductFormData | null,
     previews: Record<string, string | File | null>,
     activeTab: TabType,
-    whatsappSelected: number
+    whatsappSelected: number,
+    emailSelected: number = 1
 ) => {
     useEffect(() => {
         if (formData) {
-            ProductSyncService.syncPreview(formData, previews, activeTab, whatsappSelected);
+            ProductSyncService.syncPreview(formData, previews, activeTab, whatsappSelected, emailSelected);
         }
-    }, [formData, activeTab, whatsappSelected, previews]);
+    }, [formData, activeTab, whatsappSelected, previews, emailSelected]);
 };

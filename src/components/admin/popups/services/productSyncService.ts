@@ -18,7 +18,7 @@
  * - updateEditors(formData): Dispatch editor sync events
  */
 
-import { ProductFormData, TabType, ProductPreviewSettings, WhatsAppPreviewData, EmailPreviewData } from "../types/productTab.types";
+import type { ProductFormData, TabType, ProductPreviewSettings, WhatsAppPreviewData, EmailPreviewData } from "../types/productTab.types";
 
 export class ProductSyncService {
   /**
@@ -37,15 +37,15 @@ export class ProductSyncService {
    */
   static syncPopupPreview(
     data: ProductFormData,
-    previews: Record<string, string>,
+    previews: Record<string, string | File | null>,
     overrides: Record<string, any> = {}
   ): void {
     const previewSettings: ProductPreviewSettings = {
       popup_image_url: overrides.imagen_popup || previews.imagen_popup || data.imagen_popup,
       popup_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2,
-      button_bg_color: data.etiqueta.popup_button_color,
-      button_text_color: data.etiqueta.popup_text_color,
-      button_text: data.etiqueta.popup_button_text,
+      button_bg_color: data.etiqueta?.popup_button_color || "#008B8B",
+      button_text_color: data.etiqueta?.popup_text_color || "#000000",
+      button_text: data.etiqueta?.popup_button_text || "",
       popup_mobile_image_url: overrides.imagen_popup_mobile !== undefined 
         ? overrides.imagen_popup_mobile 
         : (previews.imagen_popup_mobile || data.imagen_popup_mobile),
@@ -72,7 +72,7 @@ export class ProductSyncService {
    */
   static syncWhatsAppPreview(
     data: ProductFormData,
-    previews: Record<string, string>,
+    previews: Record<string, string | File | null>,
     whatsappSelected: number,
     overrides: Record<string, any> = {}
   ): void {
@@ -111,22 +111,38 @@ export class ProductSyncService {
    */
   static syncEmailPreview(
     data: ProductFormData,
-    previews: Record<string, string>,
-    overrides: Record<string, any> = {}
+    previews: Record<string, string | File | null>,
+    overrides: Record<string, any> = {},
+    selectedIndex: number = 1
   ): void {
-    const emailImage = overrides.imagen_email !== undefined ? overrides.imagen_email : (previews.imagen_email || data.imagen_email);
-    
-    window.dispatchEvent(new CustomEvent("update-email-preview", {
-      detail: {
-        body: data.mensaje_email || "",
-        title: data.asunto || "",
-        image: emailImage instanceof File ? null : emailImage,
-        btnText: data.email_btn_text,
-        btnLink: data.email_btn_link,
-        btnBgColor: data.email_btn_bg_color,
-        btnTextColor: data.email_btn_text_color
-      }
-    }));
+    // Choose fields based on selected index (1..3)
+    const idx = selectedIndex || 1;
+    const imgKey = `imagen_email_${idx}`;
+    const asuntoKey = `asunto_${idx}` as keyof ProductFormData;
+    const mensajeKey = `mensaje_email_${idx}` as keyof ProductFormData;
+    const btnTextKey = `email_btn_text_${idx}` as keyof ProductFormData;
+    const btnLinkKey = `email_btn_link_${idx}` as keyof ProductFormData;
+    const btnBgKey = `email_btn_bg_color_${idx}` as keyof ProductFormData;
+    const btnTextColorKey = `email_btn_text_color_${idx}` as keyof ProductFormData;
+
+    const emailImage = overrides[imgKey] !== undefined ? overrides[imgKey] : (previews[imgKey] || (data as any)[imgKey]);
+
+    const payload = {
+      body: (data as any)[mensajeKey] || "",
+      title: (data as any)[asuntoKey] || "",
+      image: emailImage instanceof File ? null : emailImage,
+      btnText: (data as any)[btnTextKey],
+      btnLink: (data as any)[btnLinkKey],
+      btnBgColor: (data as any)[btnBgKey],
+      btnTextColor: (data as any)[btnTextColorKey]
+    };
+
+    // Dispatch a general update for the preview (popups manager listens to this)
+    window.dispatchEvent(new CustomEvent("update-email-preview", { detail: payload }));
+
+    // Also dispatch per-index events if other parts listen specifically
+    window.dispatchEvent(new CustomEvent(`update-email-preview-${idx}`, { detail: payload }));
+
   }
 
   /**
@@ -134,9 +150,10 @@ export class ProductSyncService {
    */
   static syncPreview(
     data: ProductFormData,
-    previews: Record<string, string>,
+    previews: Record<string, string | File | null>,
     activeTab: TabType,
     whatsappSelected: number,
+    emailSelected: number = 1,
     overrides: Record<string, any> = {}
   ): void {
     // Always sync popup preview
@@ -149,7 +166,7 @@ export class ProductSyncService {
     if (activeTab === "whatsapp") {
       this.syncWhatsAppPreview(data, previews, whatsappSelected, overrides);
     } else if (activeTab === "correo") {
-      this.syncEmailPreview(data, previews, overrides);
+      this.syncEmailPreview(data, previews, overrides, emailSelected);
     }
   }
 
@@ -160,7 +177,10 @@ export class ProductSyncService {
     window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto", { detail: data.texto_alt_whatsapp }));
     window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-2", { detail: data.mensaje_whatsapp_2 }));
     window.dispatchEvent(new CustomEvent("update-whatsapp-editor-producto-3", { detail: data.mensaje_whatsapp_3 }));
-    window.dispatchEvent(new CustomEvent("update-email-editor-producto", { detail: data.mensaje_email }));
+    // Email editors for 3 variants
+    window.dispatchEvent(new CustomEvent("update-email-editor-producto-1", { detail: (data as any).mensaje_email_1 }));
+    window.dispatchEvent(new CustomEvent("update-email-editor-producto-2", { detail: (data as any).mensaje_email_2 }));
+    window.dispatchEvent(new CustomEvent("update-email-editor-producto-3", { detail: (data as any).mensaje_email_3 }));
   }
 
   /**

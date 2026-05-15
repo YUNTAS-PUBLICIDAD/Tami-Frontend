@@ -82,7 +82,10 @@ export const config = {
 };
 
 export const getApiUrl = (endpoint: string) => {
-  const url = `${config.apiUrl}${endpoint}`;
-  console.log(`[${config.environment}] Requesting:`, url);
+  const baseUrl = config.apiUrl ? String(config.apiUrl).replace(/\/$/, "") : "";
+  const url = baseUrl ? `${baseUrl}${endpoint}` : endpoint;
+  if (config.environment !== "production") {
+    console.debug(`[${config.environment}] Requesting:`, url);
+  }
   return url;
 };
