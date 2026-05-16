@@ -319,7 +319,11 @@ const BlogsTable = () => {
                       </div>
                     </section>
                   ))}
-
+                  <div className="flex justify-center mb-8 md:mb-12">
+                  <a id="btn-ver-producto" href="#"  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105">
+                    Ver Producto
+                  </a>
+                  </div>
                   {blog.video_id?.trim() && (
                     <section className="rounded-lg md:rounded-xl shadow-md py-4 md:py-8 px-4 md:px-12 bg-gray-50 mt-12 border border-gray-100">
                       <h1 className="text-lg md:text-xl lg:text-2xl text-[#00B6FF] font-bold mb-4 md:mb-6 text-center md:text-left break-words">

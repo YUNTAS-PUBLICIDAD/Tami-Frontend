@@ -6,6 +6,7 @@ interface EmailEditorProps {
   onChangeHtml?: (html: string) => void;
   inputId?: string;
   updateEventName?: string;
+  previewEventName?: string;
 }
 
 const COMMON_EMOJIS = [
@@ -17,7 +18,8 @@ const EmailEditor = ({
   defaultValue = "¡Hola! Me interesa la oferta mostrada en su página web y me gustaría recibir más detalles.",
   onChangeHtml,
   inputId = "emailBody",
-  updateEventName = "update-email-editor"
+  updateEventName = "update-email-editor",
+  previewEventName = "update-email-preview"
 }: EmailEditorProps) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const [activeStyles, setActiveStyles] = useState({
@@ -46,8 +48,10 @@ const EmailEditor = ({
     const content = editorRef.current.innerHTML;
     onChangeHtml?.(content);
 
-    // Dispatch event to update preview in popups.astro
-    window.dispatchEvent(new CustomEvent('update-email-preview', { detail: content }));
+    // Dispatch event to update preview using the provided preview event name only.
+    // Avoid emitting the generic `update-email-preview` here to prevent cross-tab preview overrides.
+    const previewEvent = previewEventName && previewEventName.length ? previewEventName : 'update-email-preview';
+    window.dispatchEvent(new CustomEvent(previewEvent, { detail: content }));
 
     // Sync hidden input
     const hidden = document.getElementById(inputId) as HTMLInputElement | null;
@@ -77,6 +81,19 @@ const EmailEditor = ({
     window.addEventListener(updateEventName, handleUpdate as EventListener);
     return () => window.removeEventListener(updateEventName, handleUpdate as EventListener);
   }, [inputId, updateEventName]);
+
+  // Keep editor in sync if defaultValue changes (e.g., after product load)
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const current = editorRef.current.innerHTML || "";
+    if (defaultValue !== undefined && defaultValue !== null && defaultValue !== current) {
+      // Only update if editor is empty or differs from the incoming default (to avoid clobbering user edits sometimes)
+      // If user is actively editing, we assume defaultValue won't change frequently.
+      editorRef.current.innerHTML = defaultValue;
+      const hidden = document.getElementById(inputId) as HTMLInputElement | null;
+      if (hidden) hidden.value = defaultValue;
+    }
+  }, [defaultValue, inputId]);
 
   const execCommand = (command: keyof typeof activeStyles) => {
     document.execCommand(command, false, undefined);

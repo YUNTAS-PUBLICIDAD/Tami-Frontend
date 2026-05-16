@@ -518,7 +518,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
   return (
     <>
-      <button onClick={openModal} className="flex items-center gap-2 bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300 px-5 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl">
+      <button onClick={openModal} className="flex items-center gap-2 bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300 px-5 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
@@ -566,6 +566,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       placeholder="Nombre del producto..."
                       className={errors.nombre ? "border-red-500 focus:ring-red-400" : ""}
                     />
+                    <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-3 py-2 mt-2">
+                      ⚠️ <span className="font-semibold">Mínimo 40 caracteres</span> • <span className="font-semibold">Máximo recomendado 80</span> para evitar que el título se corte.
+                    </p>
                     {errors.nombre && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.nombre}</p>}
                   </div>
                   <div className="form-input">

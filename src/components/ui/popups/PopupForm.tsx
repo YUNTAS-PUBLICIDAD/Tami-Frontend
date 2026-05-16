@@ -41,12 +41,13 @@ const PopupForm = ({
   handleSubmit,
   isAllowed,
 }: PopupFormProps) => {
+  /*if (!true) return null;*/ //para probar alerta
   if (!isAllowed || !showModal) return null;
 
   return (
     <div
       id="catalog-modal"
-      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 z-[9999]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
         className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[500px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[500px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
@@ -191,7 +192,7 @@ const PopupForm = ({
                       backgroundColor: settings?.button_bg_color || "#4FB9AF",
                       color: settings?.button_text_color || "#ffffff",
                     }}
-                    className={`rounded-full w-fit max-w-full uppercase font-black text-center whitespace-nowrap overflow-hidden text-ellipsis shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-6 text-[11px] tracking-[0.12em]" : "py-1.5 px-8 text-xs sm:py-2 sm:px-10 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
+                    className={`cursor-pointer rounded-full w-fit max-w-full uppercase font-black text-center whitespace-nowrap overflow-hidden text-ellipsis shadow-[0_4px_10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:brightness-90 hover:scale-105 active:scale-95 ${isPreview && previewMode === "mobile" ? "py-1 px-6 text-[11px] tracking-[0.12em]" : "py-1.5 px-8 text-xs sm:py-2 sm:px-10 sm:text-sm tracking-[0.15em] sm:tracking-[0.2em]"}`}
                     title={settings?.button_text || "CONOCER MAS"}
                   >
                     {isSubmitting ? "Enviando..." : (settings?.button_text || "CONOCER MAS")}

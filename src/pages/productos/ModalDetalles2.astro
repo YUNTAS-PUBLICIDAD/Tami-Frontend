@@ -510,6 +510,8 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
             }),
           }).catch(() => {});
 
+          // Delay email slightly to avoid overwhelming backend when many immediate requests happen
+          await new Promise((res) => setTimeout(res, 10000));
           const p2 = fetch(
             `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
             {
@@ -517,9 +519,11 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 name: nombre,
+                phone: telefonoConCodigo,
                 celular: telefonoConCodigo,
+                telefono: telefonoConCodigo,
                 email: correo,
-                link: productLink,
+                link: productLink || window.location.href,
               }),
             },
           ).catch(() => {});

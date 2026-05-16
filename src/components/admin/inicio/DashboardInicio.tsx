@@ -3,7 +3,7 @@ import { Users, Package, FileText, TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getProducts } from 'src/hooks/admin/productos/productos';
 import useClientes from 'src/hooks/admin/seguimiento/useClientes';
-import { config, getApiUrl } from 'config';
+import { config, getApiUrl } from '../../../../config';
 
 const data = [
   { name: 'Inicio', visitas: 1200 },

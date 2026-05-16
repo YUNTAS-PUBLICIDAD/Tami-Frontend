@@ -41,13 +41,62 @@ export function initPopupManager() {
         popup_mobile_image_url: null,
         popup_mobile_image2_url: null,
         whatsappImage: null,
+        whatsappImage2: null,
+        whatsappImage3: null,
         emailImage: null
+    };
+
+    type WhatsappMessageKey = "1" | "2" | "3";
+
+    const whatsappMessageSelector = document.getElementById(
+        "whatsappMessageSelector",
+    ) as HTMLSelectElement | null;
+    const whatsappBlocks: Record<WhatsappMessageKey, HTMLElement | null> = {
+        "1": document.getElementById("waBlock1"),
+        "2": document.getElementById("waBlock2"),
+        "3": document.getElementById("waBlock3"),
+    };
+
+    let currentSelectedWaMessage: WhatsappMessageKey = "1";
+    const whatsappData: Record<WhatsappMessageKey, { text: string; image: string | null }> = {
+        "1": { text: "", image: null },
+        "2": { text: "", image: null },
+        "3": { text: "", image: null },
+    };
+
+    // State for 3 different emails
+    let currentEmailIdx = "1";
+    const emailsState: any = {
+        "1": { title: "", body: "", imageUrl: null, file: null, btnText: "", btnLink: "", btnBgColor: "", btnTextColor: "", delay: "5", deleteImage: "0" },
+        "2": { title: "", body: "", imageUrl: null, file: null, btnText: "", btnLink: "", btnBgColor: "", btnTextColor: "", delay: "5", deleteImage: "0" },
+        "3": { title: "", body: "", imageUrl: null, file: null, btnText: "", btnLink: "", btnBgColor: "", btnTextColor: "", delay: "5", deleteImage: "0" }
     };
 
     const isMobileScreen = window.innerWidth < 1024;
     let currentMode = isMobileScreen ? "mobile" : "desktop";
 
     const sharedSaveFooter = document.getElementById("sharedSaveFooter");
+
+    const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
+    const emailBody = document.getElementById("emailBody") as HTMLTextAreaElement;
+    const emailImage = document.getElementById("emailImage") as HTMLInputElement;
+    const clearEmailImage = document.getElementById("clearEmailImage");
+    const deleteEmailInput = document.getElementById("delete_emailImage") as HTMLInputElement;
+
+    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
+    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
+    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
+
+    const getSettingValue = (settings: any, keys: string[], fallback: any = "") => {
+        for (const key of keys) {
+            if (settings?.[key] !== undefined && settings?.[key] !== null && settings?.[key] !== "") {
+                return settings[key];
+            }
+        }
+        return fallback;
+    };
 
     if (
         !tabPopups ||
@@ -79,15 +128,14 @@ export function initPopupManager() {
     const setStatus = (msg: string, type: string = "idle") => {
         if (!statusElement) return;
         statusElement.innerText = msg;
-        statusElement.className = `text-sm transition-colors duration-300 ${
-            type === "error"
-                ? "text-red-500 font-medium"
-                : type === "success"
+        statusElement.className = `text-sm transition-colors duration-300 ${type === "error"
+            ? "text-red-500 font-medium"
+            : type === "success"
                 ? "text-teal-600 font-medium"
                 : type === "loading"
-                ? "text-blue-500 animate-pulse"
-                : "text-gray-500 dark:text-gray-400"
-        }`;
+                    ? "text-blue-500 animate-pulse"
+                    : "text-gray-500 dark:text-gray-400"
+            }`;
     };
 
     function activarSubTab(tab: HTMLElement, content: HTMLElement | null, type: string) {
@@ -146,6 +194,9 @@ export function initPopupManager() {
         const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
         const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement;
         const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement;
+        const waMsgHidden1 = document.getElementById("whatsappMessage") as HTMLInputElement;
+        const waMsgHidden2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+        const waMsgHidden3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
 
         updatePreview({
             popup_image_url: currentInicioImages.popup_image_url,
@@ -157,13 +208,20 @@ export function initPopupManager() {
             button_text: btnTextInput ? btnTextInput.value : (savedHomeSettings.button_text || savedHomeSettings.btnText || "CONOCER MAS"),
         }, currentMode);
 
-        const waMsgHidden = document.getElementById("whatsappMessage") as HTMLInputElement;
-        window.dispatchEvent(new CustomEvent("update-whatsapp-preview", {
-            detail: {
-                text: waMsgHidden ? waMsgHidden.value : (savedHomeSettings.whatsappMessage || ""),
-                image: currentInicioImages.whatsappImage
-            }
-        }));
+        whatsappData["1"] = {
+            text: waMsgHidden1 ? waMsgHidden1.value : (savedHomeSettings.whatsappMessage || ""),
+            image: currentInicioImages.whatsappImage,
+        };
+        whatsappData["2"] = {
+            text: waMsgHidden2 ? waMsgHidden2.value : (savedHomeSettings.whatsappMessage2 || ""),
+            image: currentInicioImages.whatsappImage2,
+        };
+        whatsappData["3"] = {
+            text: waMsgHidden3 ? waMsgHidden3.value : (savedHomeSettings.whatsappMessage3 || ""),
+            image: currentInicioImages.whatsappImage3,
+        };
+
+        syncWhatsAppPreview(currentSelectedWaMessage);
 
         const emailTitleInput = document.getElementById("emailTitle") as HTMLInputElement;
         const emailBodyHidden = document.getElementById("emailBody") as HTMLInputElement;
@@ -172,15 +230,18 @@ export function initPopupManager() {
         const emailBtnBg = document.getElementById("emailBtnBgColor") as HTMLInputElement;
         const emailBtnTextCol = document.getElementById("emailBtnTextColor") as HTMLInputElement;
 
+        // Restore based on CURRENTLY SELECTED email index
+        const state = emailsState[currentEmailIdx];
+
         window.dispatchEvent(new CustomEvent("update-email-preview", {
             detail: {
-                title: emailTitleInput ? emailTitleInput.value : (savedHomeSettings.emailTitle || ""),
-                body: emailBodyHidden ? emailBodyHidden.value : (savedHomeSettings.emailBody || ""),
-                image: currentInicioImages.emailImage,
-                btnText: emailBtnText ? emailBtnText.value : (savedHomeSettings.email_btn_text || savedHomeSettings.emailBtnText || "Ver Productos"),
-                btnLink: emailBtnLink ? emailBtnLink.value : (savedHomeSettings.email_btn_link || savedHomeSettings.emailBtnLink || "https://tami.com/productos"),
-                btnBgColor: emailBtnBg ? emailBtnBg.value : (savedHomeSettings.email_btn_bg_color || savedHomeSettings.emailBtnBgColor || "#0b1c3c"),
-                btnTextColor: emailBtnTextCol ? emailBtnTextCol.value : (savedHomeSettings.email_btn_text_color || savedHomeSettings.emailBtnTextColor || "#ffffff")
+                title: emailTitleInput ? emailTitleInput.value : (state.title || ""),
+                body: emailBodyHidden ? emailBodyHidden.value : (state.body || ""),
+                image: state.file ? URL.createObjectURL(state.file) : state.imageUrl,
+                btnText: emailBtnText ? emailBtnText.value : (state.btnText || "Ver Productos"),
+                btnLink: emailBtnLink ? emailBtnLink.value : (state.btnLink || "https://tami.com/productos"),
+                btnBgColor: emailBtnBg ? emailBtnBg.value : (state.btnBgColor || "#0b1c3c"),
+                btnTextColor: emailBtnTextCol ? emailBtnTextCol.value : (state.btnTextColor || "#ffffff")
             }
         }));
     }
@@ -198,6 +259,7 @@ export function initPopupManager() {
 
         // Por defecto activar la primera sub-tab de Inicio (Pop-ups)
         activarSubTab(tabPopups, contentPopups, "popups");
+        setActiveWhatsappMessage("1");
 
         restoreInicioPreview();
     });
@@ -240,8 +302,11 @@ export function initPopupManager() {
 
     // Listen for preview type changes from TabProducto.tsx
     window.addEventListener("switch-preview-type", (e: any) => {
+        // Bloquear actualizaciones si estamos en la pestaña de Inicio para evitar bugs de sincronización
+        if (sectionProducto?.classList.contains("hidden")) return;
+
         const type = e.detail;
-        
+
         if (previewWhatsapp) previewWhatsapp.classList.add("hidden");
         if (previewCorreo) previewCorreo.classList.add("hidden");
         if (previewScrollModalContainer) previewScrollModalContainer.classList.add("hidden");
@@ -355,47 +420,102 @@ export function initPopupManager() {
     }
 
     textareaWhatsapp?.addEventListener("input", () => {
-        if (previewWhatsappText)
-            previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(textareaWhatsapp.value);
+        whatsappData["1"].text = textareaWhatsapp.value;
+        if (currentSelectedWaMessage === "1") {
+            syncWhatsAppPreview("1");
+        }
     });
 
-    window.addEventListener("update-whatsapp-preview", (e: any) => {
-        const data = typeof e.detail === "string" ? { text: e.detail } : e.detail;
+    const normalizeWhatsappKey = (value: string): WhatsappMessageKey => {
+        if (value === "2" || value === "3") return value;
+        return "1";
+    };
+
+    const syncWhatsAppPreview = (messageKey: WhatsappMessageKey = currentSelectedWaMessage) => {
+        const data = whatsappData[messageKey];
+
         if (previewWhatsappText) {
             previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(data.text || "");
         }
-        
+
         const previewWAImg = document.getElementById("previewWhatsappImageContainer");
         if (data.image) {
             if (previewWAImg) {
                 previewWAImg.innerHTML = `<img src="${data.image}" class="w-full h-auto object-contain">`;
                 previewWAImg.classList.remove("hidden");
             }
-        } else if (data.image === null) {
-            if (previewWAImg) {
-                previewWAImg.innerHTML = "";
-                previewWAImg.classList.add("hidden");
-            }
+        } else if (previewWAImg) {
+            previewWAImg.innerHTML = "";
+            previewWAImg.classList.add("hidden");
+        }
+    };
+
+    const setActiveWhatsappMessage = (messageKey: WhatsappMessageKey) => {
+        currentSelectedWaMessage = messageKey;
+
+        if (whatsappMessageSelector && whatsappMessageSelector.value !== messageKey) {
+            whatsappMessageSelector.value = messageKey;
+        }
+
+        Object.entries(whatsappBlocks).forEach(([key, block]) => {
+            block?.classList.toggle("hidden", key !== messageKey);
+        });
+
+        syncWhatsAppPreview(messageKey);
+    };
+
+    whatsappMessageSelector?.addEventListener("change", () => {
+        setActiveWhatsappMessage(normalizeWhatsappKey(whatsappMessageSelector.value));
+    });
+
+    window.addEventListener("sync-whatsapp-selector", (e: any) => {
+        setActiveWhatsappMessage(normalizeWhatsappKey(String(e.detail)));
+    });
+
+    window.addEventListener("update-whatsapp-preview", (e: any) => {
+        const detail = typeof e.detail === "string" ? { text: e.detail } : (e.detail || {});
+        whatsappData["1"] = {
+            text: detail.text ?? whatsappData["1"].text,
+            image: detail.image !== undefined ? detail.image : whatsappData["1"].image,
+        };
+
+        if (currentSelectedWaMessage === "1") {
+            syncWhatsAppPreview("1");
         }
     });
 
-    const emailTitle = document.getElementById(
-        "emailTitle",
-    ) as HTMLInputElement;
-    const emailBody = document.getElementById(
-        "emailBody",
-    ) as HTMLTextAreaElement;
+    window.addEventListener("update-whatsapp-preview-2", (e: any) => {
+        const detail = typeof e.detail === "string" ? { text: e.detail } : (e.detail || {});
+        whatsappData["2"] = {
+            text: detail.text ?? whatsappData["2"].text,
+            image: detail.image !== undefined ? detail.image : whatsappData["2"].image,
+        };
+
+        if (currentSelectedWaMessage === "2") {
+            syncWhatsAppPreview("2");
+        }
+    });
+
+    window.addEventListener("update-whatsapp-preview-3", (e: any) => {
+        const detail = typeof e.detail === "string" ? { text: e.detail } : (e.detail || {});
+        whatsappData["3"] = {
+            text: detail.text ?? whatsappData["3"].text,
+            image: detail.image !== undefined ? detail.image : whatsappData["3"].image,
+        };
+
+        if (currentSelectedWaMessage === "3") {
+            syncWhatsAppPreview("3");
+        }
+    });
+
     const previewCorreoTitle =
         document.getElementById("previewCorreoTitle");
     const previewCorreoBody = document.getElementById("previewCorreoBody");
-    emailTitle?.addEventListener("input", () => {
+    emailTitleInput?.addEventListener("input", () => {
         if (previewCorreoTitle)
-            previewCorreoTitle.textContent = emailTitle.value;
+            previewCorreoTitle.textContent = emailTitleInput.value;
     });
-    emailBody?.addEventListener("input", () => {
-        if (previewCorreoBody)
-            previewCorreoBody.textContent = emailBody.value;
-    });
+
 
     // Colores del Botón
     const btnTextInput = document.getElementById("btnText") as HTMLInputElement;
@@ -432,13 +552,6 @@ export function initPopupManager() {
         btnTextColorInput.addEventListener("change", handleTextChange);
     }
 
-    // Botón Correo
-    const emailBtnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
-    const emailBtnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
-    const emailBtnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
-    const emailBtnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
-    const previewEmailBtn = document.getElementById("previewEmailBtn") as HTMLAnchorElement | HTMLButtonElement | null;
-
     if (emailBtnTextInput) {
         const handleEmailBtnTextChange = () => {
             const val = emailBtnTextInput.value;
@@ -474,6 +587,87 @@ export function initPopupManager() {
     const popupInicioDelayInput = document.getElementById(
         "popupInicioDelay",
     ) as HTMLSelectElement;
+    const popupProductosDelayInput = document.getElementById(
+        "popupProductosDelay",
+    ) as HTMLSelectElement;
+    const emailSendDelayInput = document.getElementById(
+        "emailSendDelay",
+    ) as HTMLSelectElement;
+
+    const emailSelector = document.getElementById("emailSelector") as HTMLSelectElement;
+
+    function syncUIFromEmailState(idx: string) {
+        const state = emailsState[idx];
+        if (emailTitleInput) emailTitleInput.value = state.title;
+        if (emailBtnTextInput) emailBtnTextInput.value = state.btnText;
+        if (emailBtnLinkInput) emailBtnLinkInput.value = state.btnLink;
+        if (emailBtnBgColorInput) emailBtnBgColorInput.value = state.btnBgColor;
+        if (emailBtnTextColorInput) emailBtnTextColorInput.value = state.btnTextColor;
+        if (emailSendDelayInput) emailSendDelayInput.value = state.delay;
+
+        const emailTitleDisplay = document.getElementById("emailTitleDisplay");
+        if (emailTitleDisplay) emailTitleDisplay.textContent = `Correo Electrónico #${idx}`;
+
+        // Sync Rich Text Editor
+        window.dispatchEvent(new CustomEvent("update-email-editor", { detail: state.body }));
+
+        // Sync Preview
+        const previewImg = document.getElementById("previewEmailImageThumb");
+        const container = document.getElementById("previewEmailAttachementContainer");
+        const imgUrl = state.file ? URL.createObjectURL(state.file) : state.imageUrl;
+
+        if (imgUrl) {
+            if (previewImg && container) {
+                previewImg.innerHTML = `<img src="${imgUrl}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
+                container.classList.remove("hidden");
+            }
+            if (clearEmailImage) clearEmailImage.classList.remove("hidden");
+        } else {
+            if (previewImg && container) {
+                previewImg.innerHTML = "";
+                container.classList.add("hidden");
+            }
+            if (clearEmailImage) clearEmailImage.classList.add("hidden");
+        }
+
+        // Trigger manual preview update
+        restoreInicioPreview();
+    }
+
+    function saveCurrentEmailToState() {
+        const state = emailsState[currentEmailIdx];
+
+        const titleInput = document.getElementById("emailTitle") as HTMLInputElement;
+        if (titleInput) state.title = titleInput.value || "";
+
+        const bodyInput = document.getElementById("emailBody") as HTMLInputElement;
+        if (bodyInput) state.body = bodyInput.value || "";
+
+        const btnTextInput = document.getElementById("emailBtnText") as HTMLInputElement;
+        if (btnTextInput) state.btnText = btnTextInput.value || "";
+
+        const btnLinkInput = document.getElementById("emailBtnLink") as HTMLInputElement;
+        if (btnLinkInput) state.btnLink = btnLinkInput.value || "";
+
+        const btnBgColorInput = document.getElementById("emailBtnBgColor") as HTMLInputElement;
+        if (btnBgColorInput) state.btnBgColor = btnBgColorInput.value || "";
+
+        const btnTextColorInput = document.getElementById("emailBtnTextColor") as HTMLInputElement;
+        if (btnTextColorInput) state.btnTextColor = btnTextColorInput.value || "";
+
+        const delayInput = document.getElementById("emailSendDelay") as HTMLSelectElement;
+        if (delayInput) state.delay = delayInput.value || "5";
+
+        const delImgInput = document.getElementById("delete_emailImage") as HTMLInputElement;
+        if (delImgInput) state.deleteImage = delImgInput.value || "0";
+    }
+
+    emailSelector?.addEventListener("change", () => {
+        saveCurrentEmailToState();
+        currentEmailIdx = emailSelector.value;
+        syncUIFromEmailState(currentEmailIdx);
+    });
+
     popupInicioDelayInput?.addEventListener("change", () => {
         const val = popupInicioDelayInput.value;
         updatePreview({
@@ -481,9 +675,6 @@ export function initPopupManager() {
         });
     });
 
-    const popupProductosDelayInput = document.getElementById(
-        "popupProductosDelay",
-    ) as HTMLSelectElement;
     popupProductosDelayInput?.addEventListener("change", () => {
         const val = popupProductosDelayInput.value;
         updatePreview({
@@ -507,15 +698,11 @@ export function initPopupManager() {
     const whatsappImage = document.getElementById(
         "whatsappImage",
     ) as HTMLInputElement;
-    const emailImage = document.getElementById(
-        "emailImage",
-    ) as HTMLInputElement;
 
     const clearImage1 = document.getElementById("clearImage1");
     const clearImage2 = document.getElementById("clearImage2");
     const clearImageMobile = document.getElementById("clearImageMobile");
     const clearImageMobile2 = document.getElementById("clearImageMobile2");
-    const clearEmailImage = document.getElementById("clearEmailImage");
 
     function handleImageUpload(
         input: HTMLInputElement,
@@ -528,44 +715,75 @@ export function initPopupManager() {
         }
     }
 
-    function bindImageEvents(
+    const bindImageEvents = (
         inputId: string,
-        clearBtnId: string,
+        clearId: string,
         previewKey: string,
-        storageKey: string,
-        deleteId: string
-    ) {
-        const input = document.getElementById(inputId) as HTMLInputElement;
-        const clearBtn = document.getElementById(clearBtnId);
+        imageName: string,
+        deleteId: string,
+    ) => {
+        const input = document.getElementById(inputId) as HTMLInputElement | null;
+        const clearBtn = document.getElementById(clearId) as HTMLButtonElement | null;
+        const deleteInput = document.getElementById(deleteId) as HTMLInputElement | null;
 
-        input?.addEventListener("change", function (this: HTMLInputElement) {
+        input?.addEventListener("change", function () {
             handleImageUpload(this, (url) => {
-                updatePreview({ [previewKey]: url as string });
                 currentInicioImages[previewKey] = url as string;
+
+                // Sync with whatsappData for preview
+                if (previewKey === "whatsappImage") whatsappData["1"].image = url as string;
+                if (previewKey === "whatsappImage2") whatsappData["2"].image = url as string;
+                if (previewKey === "whatsappImage3") whatsappData["3"].image = url as string;
+
+                syncWhatsAppPreview(currentSelectedWaMessage);
+                
+                // Update popup preview
+                if (previewKey.startsWith("popup_")) {
+                    updatePreview({ [previewKey]: url as string }, currentMode);
+                }
+
                 clearBtn?.classList.remove("hidden");
-                const del = document.getElementById(deleteId) as HTMLInputElement;
-                if (del) del.value = "0";
+                if (deleteInput) deleteInput.value = "0";
             });
         });
 
         clearBtn?.addEventListener("click", () => {
             if (input) input.value = "";
-            updatePreview({ [previewKey]: null });
             currentInicioImages[previewKey] = null;
+
+            // Sync with whatsappData for preview
+            if (previewKey === "whatsappImage") whatsappData["1"].image = null;
+            if (previewKey === "whatsappImage2") whatsappData["2"].image = null;
+            if (previewKey === "whatsappImage3") whatsappData["3"].image = null;
+
+            syncWhatsAppPreview(currentSelectedWaMessage);
+            
+            // Update popup preview
+            if (previewKey.startsWith("popup_")) {
+                updatePreview({ [previewKey]: null }, currentMode);
+            }
+
             clearBtn?.classList.add("hidden");
-            const del = document.getElementById(deleteId) as HTMLInputElement;
-            if (del) del.value = "1";
+            if (deleteInput) deleteInput.value = "1";
         });
-    }
+    };
 
     bindImageEvents("popupImage1", "clearImage1", "popup_image_url", "popupImage", "delete_popupImage1");
     bindImageEvents("popupImage2", "clearImage2", "popup_image2_url", "popupImage2", "delete_popupImage2");
     bindImageEvents("popupImageMobile", "clearImageMobile", "popup_mobile_image_url", "popupImageMobile", "delete_popupImageMobile");
     bindImageEvents("popupImageMobile2", "clearImageMobile2", "popup_mobile_image2_url", "popupImageMobile2", "delete_popupImageMobile2");
+    bindImageEvents("whatsappImage", "clearWhatsappImage", "whatsappImage", "whatsappImage", "delete_whatsappImage");
+    bindImageEvents("whatsappImage2", "clearWhatsappImage2", "whatsappImage2", "whatsappImage2", "delete_whatsappImage2");
+    bindImageEvents("whatsappImage3", "clearWhatsappImage3", "whatsappImage3", "whatsappImage3", "delete_whatsappImage3");
 
     emailImage?.addEventListener("change", function () {
         handleImageUpload(this, (url) => {
-            currentInicioImages.emailImage = url as string;
+            const file = this.files?.[0];
+            if (file) {
+                emailsState[currentEmailIdx].file = file;
+                emailsState[currentEmailIdx].deleteImage = "0";
+            }
+
             const previewImg = document.getElementById(
                 "previewEmailImageThumb",
             );
@@ -581,7 +799,10 @@ export function initPopupManager() {
     });
     clearEmailImage?.addEventListener("click", () => {
         if (emailImage) emailImage.value = "";
-        currentInicioImages.emailImage = null;
+        emailsState[currentEmailIdx].file = null;
+        emailsState[currentEmailIdx].imageUrl = null;
+        emailsState[currentEmailIdx].deleteImage = "1";
+
         const previewImg = document.getElementById(
             "previewEmailImageThumb",
         );
@@ -614,7 +835,7 @@ export function initPopupManager() {
 
         const previewImg = document.getElementById("previewEmailImageThumb");
         const container = document.getElementById("previewEmailAttachementContainer");
-        
+
         if (data.image) {
             if (previewImg && container) {
                 previewImg.innerHTML = `<img src="${data.image}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
@@ -636,38 +857,8 @@ export function initPopupManager() {
         }
     });
 
-    whatsappImage?.addEventListener("change", function () {
-        handleImageUpload(this, (url) => {
-            currentInicioImages.whatsappImage = url as string;
-            const previewWAImg = document.getElementById(
-                "previewWhatsappImageContainer",
-            );
-            if (previewWAImg) {
-                previewWAImg.innerHTML = `<img src="${url}" class="w-full h-auto object-contain">`;
-                previewWAImg.classList.remove("hidden");
-            }
-            document
-                .getElementById("clearWhatsappImage")
-                ?.classList.remove("hidden");
-        });
-    });
-
-    document
-        .getElementById("clearWhatsappImage")
-        ?.addEventListener("click", () => {
-            if (whatsappImage) whatsappImage.value = "";
-            currentInicioImages.whatsappImage = null;
-            const previewWAImg = document.getElementById(
-                "previewWhatsappImageContainer",
-            );
-            if (previewWAImg) {
-                previewWAImg.innerHTML = "";
-                previewWAImg.classList.add("hidden");
-            }
-            document
-                .getElementById("clearWhatsappImage")
-                ?.classList.add("hidden");
-        });
+    // WhatsApp Image 1 already handled by bindImageEvents above, 
+    // but we can add specific preview logic if needed.
 
     // LOAD SETTINGS FROM API
     async function loadSettings() {
@@ -681,6 +872,8 @@ export function initPopupManager() {
                 currentInicioImages.popup_mobile_image_url = settings.imageMobile || settings.popup_mobile_image_url || null;
                 currentInicioImages.popup_mobile_image2_url = settings.imageMobile2 || settings.popup_mobile_image2_url || null;
                 currentInicioImages.whatsappImage = settings.whatsappImage || null;
+                currentInicioImages.whatsappImage2 = settings.whatsappImage2 || null;
+                currentInicioImages.whatsappImage3 = settings.whatsappImage3 || null;
                 currentInicioImages.emailImage = settings.emailImage || null;
 
                 if (btnBgColorInput)
@@ -699,111 +892,72 @@ export function initPopupManager() {
                     btnTextInput.value = bText;
                 }
 
-                if (emailBtnTextInput) {
-                    const text = settings.email_btn_text || settings.emailBtnText || "Ver Productos";
-                    emailBtnTextInput.value = text;
-                    if (previewEmailBtn) previewEmailBtn.textContent = text;
-                }
-                if (emailBtnLinkInput) {
-                    const link = settings.email_btn_link || settings.emailBtnLink || "https://tami.com/productos";
-                    emailBtnLinkInput.value = link;
-                    if (previewEmailBtn && 'href' in previewEmailBtn) previewEmailBtn.href = link;
-                }
-                if (emailBtnBgColorInput) {
-                    const bgCol = settings.email_btn_bg_color || settings.emailBtnBgColor || "#0b1c3c";
-                    emailBtnBgColorInput.value = bgCol;
-                    if (previewEmailBtn) previewEmailBtn.style.backgroundColor = bgCol;
-                }
-                if (emailBtnTextColorInput) {
-                    const textCol = settings.email_btn_text_color || settings.emailBtnTextColor || "#ffffff";
-                    emailBtnTextColorInput.value = textCol;
-                    if (previewEmailBtn) previewEmailBtn.style.color = textCol;
-                }
-                if (popupInicioDelayInput)
-                    popupInicioDelayInput.value = String(
-                        settings.popup_start_delay_minutes ||
-                        settings.popupInicioDelay ||
-                        60,
-                    );
+                const popupInicioDelayValue = String(getSettingValue(settings, ["popup_start_delay_minutes", "popupInicioDelay"], 0));
+                const popupProductosDelayValue = String(getSettingValue(settings, ["product_popup_delay_minutes", "popupProductosDelay"], 0));
 
-                const popupProductosDelay = document.getElementById(
-                    "popupProductosDelay",
-                ) as HTMLSelectElement;
-                if (popupProductosDelay)
-                    popupProductosDelay.value = String(
-                        settings.product_popup_delay_minutes ||
-                        settings.popupProductosDelay ||
-                        60,
-                    );
+                if (popupInicioDelayInput) popupInicioDelayInput.value = popupInicioDelayValue;
+                if (popupProductosDelayInput) popupProductosDelayInput.value = popupProductosDelayValue;
 
-                if (settings.whatsappMessage) {
-                    const whatsappMessageHidden = document.getElementById(
-                        "whatsappMessage",
-                    ) as HTMLInputElement;
-                    if (whatsappMessageHidden) {
-                        whatsappMessageHidden.value = settings.whatsappMessage;
-                    }
+                const whatsappMessageInput = document.getElementById("whatsappMessage") as HTMLInputElement;
+                const whatsappMessageInput2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+                const whatsappMessageInput3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
+                const whatsappTimeInput1 = document.getElementById("whatsappTime1") as HTMLSelectElement;
+                const whatsappTimeInput2 = document.getElementById("whatsappTime2") as HTMLSelectElement;
+                const whatsappTimeInput3 = document.getElementById("whatsappTime3") as HTMLSelectElement;
 
-                    if (previewWhatsappText) {
-                        previewWhatsappText.innerHTML = formatWhatsAppTextToHTML(settings.whatsappMessage);
-                    }
+                const whatsappMessage1Value = getSettingValue(settings, ["whatsappMessage", "whatsapp_message", "texto_alt_whatsapp", "mensaje_whatsapp"], "");
+                const whatsappMessage2Value = getSettingValue(settings, ["whatsappMessage2", "whatsapp_message_2", "mensaje_whatsapp_2"], "");
+                const whatsappMessage3Value = getSettingValue(settings, ["whatsappMessage3", "whatsapp_message_3", "mensaje_whatsapp_3"], "");
 
-                    window.dispatchEvent(
-                        new CustomEvent("update-whatsapp-editor", {
-                            detail: settings.whatsappMessage,
-                        }),
-                    );
-                }
+                const whatsappTime1Value = String(getSettingValue(settings, ["whatsappTime1", "whatsapp_time_1"], 0));
+                const whatsappTime2Value = String(getSettingValue(settings, ["whatsappTime2", "whatsapp_time_2"], 0));
+                const whatsappTime3Value = String(getSettingValue(settings, ["whatsappTime3", "whatsapp_time_3"], 0));
 
-                const emailTitleInput = document.getElementById(
-                    "emailTitle",
-                ) as HTMLInputElement;
-                if (emailTitleInput && settings.emailTitle) {
-                    emailTitleInput.value = settings.emailTitle;
-                    if (previewCorreoTitle)
-                        previewCorreoTitle.textContent =
-                            settings.emailTitle;
-                }
+                if (whatsappMessageInput) whatsappMessageInput.value = whatsappMessage1Value;
+                if (whatsappMessageInput2) whatsappMessageInput2.value = whatsappMessage2Value;
+                if (whatsappMessageInput3) whatsappMessageInput3.value = whatsappMessage3Value;
 
-                if (settings.whatsappImage) {
-                    const previewWAImg = document.getElementById(
-                        "previewWhatsappImageContainer",
-                    );
-                    if (previewWAImg) {
-                        previewWAImg.innerHTML = `<img src="${settings.whatsappImage}" class="w-full h-auto object-contain">`;
-                        previewWAImg.classList.remove("hidden");
-                    }
-                    document
-                        .getElementById("clearWhatsappImage")
-                        ?.classList.remove("hidden");
-                }
+                if (whatsappTimeInput1) whatsappTimeInput1.value = whatsappTime1Value;
+                if (whatsappTimeInput2) whatsappTimeInput2.value = whatsappTime2Value;
+                if (whatsappTimeInput3) whatsappTimeInput3.value = whatsappTime3Value;
 
-                if (settings.emailImage) {
-                    const previewImg = document.getElementById(
-                        "previewEmailImageThumb",
-                    );
-                    const container = document.getElementById(
-                        "previewEmailAttachementContainer",
-                    );
-                    if (previewImg && container) {
-                        previewImg.innerHTML = `<img src="${settings.emailImage}" class="max-w-full h-auto object-contain rounded-lg shadow-sm" style="max-height: 400px;">`;
-                        container.classList.remove("hidden");
-                    }
-                    if (clearEmailImage) clearEmailImage.classList.remove("hidden");
-                }
+                whatsappData["1"] = {
+                    text: whatsappMessage1Value,
+                    image: currentInicioImages.whatsappImage,
+                };
+                whatsappData["2"] = {
+                    text: whatsappMessage2Value,
+                    image: currentInicioImages.whatsappImage2,
+                };
+                whatsappData["3"] = {
+                    text: whatsappMessage3Value,
+                    image: currentInicioImages.whatsappImage3,
+                };
 
-                if (settings.emailBody) {
-                    const previewCorreoBody =
-                        document.getElementById("previewCorreoBody");
-                    if (previewCorreoBody) {
-                        previewCorreoBody.innerHTML = settings.emailBody;
-                    }
-                    window.dispatchEvent(
-                        new CustomEvent("update-email-editor", {
-                            detail: settings.emailBody,
-                        }),
-                    );
-                }
+                window.dispatchEvent(new CustomEvent("update-whatsapp-editor-1", { detail: whatsappMessage1Value }));
+                window.dispatchEvent(new CustomEvent("update-whatsapp-editor-2", { detail: whatsappMessage2Value }));
+                window.dispatchEvent(new CustomEvent("update-whatsapp-editor-3", { detail: whatsappMessage3Value }));
+
+                // Map all 3 emails from settings
+                const mapEmail = (idx: string, suffix: string = "") => {
+                    emailsState[idx].title = settings[`emailTitle${suffix}`] || settings[`email_subject${suffix}`] || (idx === "1" ? "Solicitud de información - Popup Web" : "");
+                    emailsState[idx].body = settings[`emailBody${suffix}`] || settings[`email_message${suffix}`] || "";
+                    emailsState[idx].imageUrl = settings[`emailImage${suffix}`] || settings[`email_image_url${suffix}`] || null;
+                    emailsState[idx].btnText = settings[`email_btn_text${suffix}`] || settings[`emailBtnText${suffix}`] || "Ver Productos";
+                    emailsState[idx].btnLink = settings[`email_btn_link${suffix}`] || settings[`emailBtnLink${suffix}`] || "https://tami.com/productos";
+                    emailsState[idx].btnBgColor = settings[`email_btn_bg_color${suffix}`] || settings[`emailBtnBgColor${suffix}`] || "#0b1c3c";
+                    emailsState[idx].btnTextColor = settings[`email_btn_text_color${suffix}`] || settings[`emailBtnTextColor${suffix}`] || "#ffffff";
+                    emailsState[idx].delay = String(settings[`email_send_delay_minutes${suffix}`] || settings[`emailSendDelay${suffix}`] || 5);
+                };
+
+                mapEmail("1", "");
+                mapEmail("2", "_2");
+                mapEmail("3", "_3");
+
+                // Initialize UI with Email 1
+                currentEmailIdx = "1";
+                if (emailSelector) emailSelector.value = "1";
+                syncUIFromEmailState("1");
 
                 const restoreImg = (url: string | null, key: string, clearId: string) => {
                     if (url) {
@@ -847,23 +1001,27 @@ export function initPopupManager() {
         setStatus("Guardando cambios...", "loading");
 
         try {
-            // If we are on the Product tab, trigger the product-specific save logic
-            if (sectionProducto && !sectionProducto.classList.contains("hidden")) {
-                window.dispatchEvent(new CustomEvent("request-save-product-popup"));
-            }
+            // Detectar qué pestaña está activa
+            const isProductoTab = sectionProducto && !sectionProducto.classList.contains("hidden");
+            const currentPopupType = isProductoTab ? "producto" : "inicio";
+            
+            const formData = new FormData();
+            formData.append("popup_type", currentPopupType);
 
             const bgColor = btnBgColorInput?.value || "#14b8a6";
             const textColor = btnTextColorInput?.value || "#ffffff";
             const delay = parseInt(popupInicioDelayInput?.value || "60");
-            const productDelay = parseInt(
-                popupProductosDelayInput?.value || "60",
-            );
+            
+            // Solo enviar el delay de productos si estamos en la pestaña de productos
+            let productDelayValue = "60";
+            if (isProductoTab && popupProductosDelayInput) {
+                productDelayValue = popupProductosDelayInput.value;
+            }
 
             if (!isHexColor(bgColor) || !isHexColor(textColor)) {
                 throw new Error("Colores no válidos.");
             }
 
-            const formData = new FormData();
             formData.append("button_bg_color", bgColor);
             formData.append("button_text_color", textColor);
             if (btnTextInput) {
@@ -871,38 +1029,53 @@ export function initPopupManager() {
             }
             formData.append("popup_start_delay_minutes", delay.toString());
 
-            const popupProductosDelay = document.getElementById(
-                "popupProductosDelay",
-            ) as HTMLSelectElement;
-            if (popupProductosDelay)
-                formData.append(
-                    "product_popup_delay_minutes",
-                    popupProductosDelay.value,
-                );
-
-            const whatsappMessage = document.getElementById(
-                "whatsappMessage",
-            ) as HTMLInputElement;
-            if (whatsappMessage)
-                formData.append("whatsappMessage", whatsappMessage.value);
-            formData.append("whatsapp_enabled", "1");
-
-            const emailTitle = document.getElementById(
-                "emailTitle",
-            ) as HTMLInputElement;
-            const emailBodyInput = document.getElementById(
-                "emailBody",
-            ) as HTMLInputElement;
-            if (emailTitle) formData.append("emailTitle", emailTitle.value);
-            if (emailBodyInput) {
-                formData.append("emailBody", emailBodyInput.value);
+            if (isProductoTab) {
+                formData.append("product_popup_delay_minutes", productDelayValue);
+                window.dispatchEvent(new CustomEvent("request-save-product-popup"));
             }
+
+            const whatsappMessage = document.getElementById("whatsappMessage") as HTMLInputElement;
+            const whatsappMessage2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
+            const whatsappMessage3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
+
+            if (whatsappMessage) formData.append("whatsappMessage", whatsappMessage.value);
+            if (whatsappMessage2) formData.append("whatsappMessage2", whatsappMessage2.value);
+            if (whatsappMessage3) formData.append("whatsappMessage3", whatsappMessage3.value);
+
+            const whatsappTime1 = document.getElementById("whatsappTime1") as HTMLInputElement;
+            const whatsappTime2 = document.getElementById("whatsappTime2") as HTMLInputElement;
+            const whatsappTime3 = document.getElementById("whatsappTime3") as HTMLInputElement;
+
+            if (whatsappTime1) formData.append("whatsappTime1", whatsappTime1.value || "0");
+            if (whatsappTime2) formData.append("whatsappTime2", whatsappTime2.value || "0");
+            if (whatsappTime3) formData.append("whatsappTime3", whatsappTime3.value || "0");
+
+            formData.append("whatsapp_enabled", "1");
             formData.append("email_enabled", "1");
 
-            if (emailBtnTextInput) formData.append("email_btn_text", emailBtnTextInput.value);
-            if (emailBtnLinkInput) formData.append("email_btn_link", emailBtnLinkInput.value);
-            if (emailBtnBgColorInput) formData.append("email_btn_bg_color", emailBtnBgColorInput.value);
-            if (emailBtnTextColorInput) formData.append("email_btn_text_color", emailBtnTextColorInput.value);
+            // Save all 3 emails
+            saveCurrentEmailToState();
+
+            const appendEmailToFormData = (idx: string, suffix: string = "") => {
+                const state = emailsState[idx];
+                formData.append(`emailTitle${suffix}`, state.title);
+                formData.append(`emailBody${suffix}`, state.body);
+                formData.append(`email_btn_text${suffix}`, state.btnText);
+                formData.append(`email_btn_link${suffix}`, state.btnLink);
+                formData.append(`email_btn_bg_color${suffix}`, state.btnBgColor);
+                formData.append(`email_btn_text_color${suffix}`, state.btnTextColor);
+                formData.append(`email_send_delay_minutes${suffix}`, state.delay);
+
+                if (state.file) {
+                    formData.append(`emailImage${suffix}`, state.file);
+                } else if (state.deleteImage === "1") {
+                    formData.append(`delete_emailImage${suffix}`, "1");
+                }
+            };
+
+            appendEmailToFormData("1", "");
+            appendEmailToFormData("2", "_2");
+            appendEmailToFormData("3", "_3");
 
             const addFile = (id: string, name: string) => {
                 const input = document.getElementById(
@@ -925,7 +1098,9 @@ export function initPopupManager() {
             addFile("popupImageMobile", "imageMobile");
             addFile("popupImageMobile2", "imageMobile2");
             addFile("whatsappImage", "whatsappImage");
-            addFile("emailImage", "emailImage");
+            addFile("whatsappImage2", "whatsappImage2");
+            addFile("whatsappImage3", "whatsappImage3");
+            // emailImage is handled per-email in appendEmailToFormData
 
             await updatePopupSettingsFormData(formData);
 

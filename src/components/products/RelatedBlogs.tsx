@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import type Blog from '../../models/Blog';
-import { config } from 'config';
+import { config } from '../../../config';
 import CardBlog from '../blog/CardBlog';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';

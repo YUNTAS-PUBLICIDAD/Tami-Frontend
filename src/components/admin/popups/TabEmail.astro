@@ -5,6 +5,31 @@ import EmailEditor from "./EmailEditor.tsx";
     id="contentCorreo"
     class="hidden space-y-6"
 >
+    <!-- Selector de Correo -->
+    <div class="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30 flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex items-center gap-3 shrink-0">
+             <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                @
+             </div>
+             <span class="text-sm font-bold text-blue-900 dark:text-blue-100">Configuración:</span>
+        </div>
+        <div class="relative flex-1 w-full">
+            <select 
+                id="emailSelector" 
+                class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none shadow-sm cursor-pointer transition-all appearance-none"
+            >
+                <option value="1">📧 Correo 1</option>
+                <option value="2">📧 Correo 2</option>
+                <option value="3">📧 Correo 3</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
     <!-- Editar Mensaje de Correo -->
     <div
         class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm space-y-6"
@@ -17,7 +42,7 @@ import EmailEditor from "./EmailEditor.tsx";
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Correo Electrónico</h3>
+                    <h3 id="emailTitleDisplay" class="font-bold text-gray-900 dark:text-gray-100 text-lg">Correo Electrónico #1</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Configura el título, mensaje, Boton e imagen para los emails.</p>
                 </div>
             </div>
@@ -120,6 +145,43 @@ import EmailEditor from "./EmailEditor.tsx";
                                 <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
                                 <span class="text-xs text-gray-400">texto</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tiempo de Envío del Correo -->
+            <h2 class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-8 mb-4">
+                Tiempo de Envío
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                    <label for="emailSendDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2 w-full text-center sm:text-left">
+                        Retraso de Envío del Correo
+                    </label>
+                    <div class="relative w-full max-w-[200px]">
+                        <select
+                            id="emailSendDelay"
+                            class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 pr-10 text-sm font-medium focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer shadow-inner appearance-none"
+                        >
+                            <option value="-1">No enviar</option>
+                            <option value="0">Instantáneo</option>
+                            <option value="1">1 minuto</option>
+                            <option value="2">2 minutos</option>
+                            <option value="3">3 minutos</option>
+                            <option value="4">4 minutos</option>
+                            <option value="5" selected>5 minutos</option>
+                            <option value="10">10 minutos</option>
+                            <option value="15">15 minutos</option>
+                            <option value="20">20 minutos</option>
+                            <option value="30">30 minutos</option>
+                            <option value="60">1 hora</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 dark:text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
                         </div>
                     </div>
                 </div>
