@@ -27,6 +27,9 @@ interface BlogPOST {
   etiqueta: {
     meta_titulo: string; // sugerido <= 60
     meta_descripcion: string; // sugerido <= 160
+    popup_button_text: string;
+    popup_button_color: string;
+    popup_text_color: string;
   };
 }
 
@@ -106,6 +109,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     etiqueta: {
       meta_titulo: "",
       meta_descripcion: "",
+      popup_button_text: "",
+      popup_button_color: "#47ce36",
+      popup_text_color: "#ffffff",
     },
   });
 
@@ -172,6 +178,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
+          popup_button_text: blogToEdit.etiqueta?.popup_button_text || "",
+          popup_button_color: blogToEdit.etiqueta?.popup_button_color || "#47ce36",
+          popup_text_color: blogToEdit.etiqueta?.popup_text_color || "#ffffff",
         },
       });
     } else {
@@ -192,6 +201,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         etiqueta: {
           meta_titulo: "",
           meta_descripcion: "",
+          popup_button_text: "",
+          popup_button_color: "#47ce36",
+          popup_text_color: "#ffffff",
         },
       });
     }
@@ -450,7 +462,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         { imagen: null, parrafo: "", text_alt: "" },
         { imagen: null, parrafo: "", text_alt: "" },
       ],
-      etiqueta: { meta_titulo: "", meta_descripcion: "" },
+      etiqueta: { meta_titulo: "", meta_descripcion: "",popup_button_text: "", popup_button_color: "#47ce36", popup_text_color: "#ffffff", },
     });
   };
 
@@ -565,6 +577,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
       formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
       formDataToSend.append("producto_id", formData.producto_id.toString());
+      formDataToSend.append("popup_button_text", formData.etiqueta.popup_button_text || "");
+      formDataToSend.append("popup_button_color", formData.etiqueta.popup_button_color || "#47ce36");
+      formDataToSend.append("popup_text_color", formData.etiqueta.popup_text_color || "#ffffff");
       if (formData.created_at) {
         formDataToSend.append("created_at", formData.created_at);
       }
@@ -1086,7 +1101,132 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   ))}
                 </div>
               </div>
+              {/* CONFIGURACIÓN DEL BOTÓN */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
+                
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                    Configuración del Botón
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Personaliza el texto y colores del botón de vista previa
+                  </p>
+                </div>
 
+                {/* TEXTO DEL BOTÓN */}
+                <div className="mb-6">
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
+                    Texto del Botón
+                  </label>
+
+                  <input
+                    type="text"
+                    value={formData.etiqueta.popup_button_text}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        etiqueta: {
+                          ...formData.etiqueta,
+                          popup_button_text: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-green-500 dark:text-white transition-all shadow-inner"
+                    placeholder="Ver Producto"
+                  />
+                </div>
+
+                {/* COLORES */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+
+                  {/* COLOR DEL BOTÓN */}
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                    
+                    <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">
+                      Color del Botón
+                    </span>
+
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
+                        <input
+                          type="color"
+                          value={formData.etiqueta.popup_button_color}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              etiqueta: {
+                                ...formData.etiqueta,
+                                popup_button_color: e.target.value,
+                              },
+                            })
+                          }
+                          className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                          Seleccionar
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          fondo
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* COLOR DEL TEXTO */}
+                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                    
+                    <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">
+                      Color del Texto
+                    </span>
+
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
+                        <input
+                          type="color"
+                          value={formData.etiqueta.popup_text_color}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              etiqueta: {
+                                ...formData.etiqueta,
+                                popup_text_color: e.target.value,
+                              },
+                            })
+                          }
+                          className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                          Seleccionar
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          texto
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* PREVIEW */}
+                <div className="mt-8 flex justify-center">
+                  <button
+                    type="button"
+                    style={{
+                      backgroundColor: formData.etiqueta.popup_button_color,
+                      color: formData.etiqueta.popup_text_color,
+                    }}
+                    className="px-6 py-3 rounded-xl font-bold shadow-md transition-all hover:scale-105"
+                  >
+                    {formData.etiqueta.popup_button_text || "ver producto"}
+                  </button>
+                </div>
+              </div>
+              
               <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"
