@@ -1086,7 +1086,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   ))}
                 </div>
               </div>
-
+              <p>test de conflicto</p>
               <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"
