@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import robotIcon from "../../../assets/icons/Tami_ChatBot.png";
+import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 
 interface Opcion {
   label: string;
