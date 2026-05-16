@@ -30,6 +30,11 @@ const TabProducto: React.FC = () => {
     const [activeTab, setActiveTab] = React.useState<TabType>('popups');
     const [whatsappSelected, setWhatsappSelected] = React.useState<number>(1);
     const [emailSelected, setEmailSelected] = React.useState<number>(1);
+
+    // Sync active tab with external listeners on mount
+    React.useEffect(() => {
+        window.dispatchEvent(new CustomEvent("product-tab-change", { detail: activeTab }));
+    }, []);
     
     // Form management
     const { formData, setFormData, previews, setPreviews, handleFieldChange: hookFieldChange, handleClearImage: hookClearImage, handleFileChange: hookFileChange } = useProductForm();
@@ -158,7 +163,10 @@ const TabProducto: React.FC = () => {
                             { id: 'correo', label: 'Correo' }
                         ]}
                         activeTab={activeTab}
-                        onTabChange={(tab) => setActiveTab(tab as TabType)}
+                        onTabChange={(tab) => {
+                            setActiveTab(tab as TabType);
+                            window.dispatchEvent(new CustomEvent("product-tab-change", { detail: tab }));
+                        }}
                     />
 
                     {activeTab === 'popups' && (

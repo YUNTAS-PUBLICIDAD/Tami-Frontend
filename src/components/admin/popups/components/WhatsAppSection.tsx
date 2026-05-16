@@ -70,6 +70,15 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                     </div>
 
                     <div className="space-y-6">
+                        <div className="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 p-3 rounded-xl">
+                            <p className="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                                <span className="font-bold">Recomendación para la imagen:</span> Usa formato 
+                                <span className="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200 mx-1">webp, png o jpg</span> 
+                                y un tamaño sugerido de 
+                                <span className="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200 mx-1">600x400px</span> 
+                                o similar para un mejor diseño.
+                            </p>
+                        </div>
                         <ImageUploadField
                             label="Imagen del Mensaje 1"
                             description=""
@@ -83,23 +92,6 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                             buttonLabel="Subir Imagen"
                         />
 
-                        <div className="space-y-4">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
-                            <select
-                                value={formData.whatsapp_time_1}
-                                onChange={(e) => onFieldChange("whatsapp_time_1", parseInt(e.target.value) || 0)}
-                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                            >
-                                <option value={0}>Inmediato</option>
-                                <option value={1}>1 minuto</option>
-                                <option value={5}>5 minutos</option>
-                                <option value={10}>10 minutos</option>
-                                <option value={30}>30 minutos</option>
-                                <option value={45}>45 minutos</option>
-                                <option value={60}>1 hora</option>
-                            </select>
-                            <p className="text-[10px] text-gray-500 italic">Envío inmediato al suscribirse.</p>
-                        </div>
 
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
@@ -109,6 +101,29 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                                 updateEventName="update-whatsapp-editor-producto"
                                 previewEventName="update-whatsapp-preview"
                             />
+                        </div>
+
+                        <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
+                            <select
+                                value={formData.whatsapp_time_1}
+                                onChange={(e) => onFieldChange("whatsapp_time_1", parseInt(e.target.value))}
+                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                            >
+                                <option value={-1}>No enviar</option>
+                                <option value={0}>Inmediato</option>
+                                <option value={1}>1 minuto</option>
+                                <option value={2}>2 minutos</option>
+                                <option value={3}>3 minutos</option>
+                                <option value={4}>4 minutos</option>
+                                <option value={5}>5 minutos</option>
+                                <option value={10}>10 minutos</option>
+                                <option value={15}>15 minutos</option>
+                                <option value={20}>20 minutos</option>
+                                <option value={30}>30 minutos</option>
+                                <option value={60}>1 hora</option>
+                            </select>
+                            <p className="text-[10px] text-gray-500 italic">Envío inmediato al suscribirse.</p>
                         </div>
                     </div>
                 </div>
@@ -125,6 +140,15 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                     </div>
 
                     <div className="space-y-6">
+                        <div className="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 p-3 rounded-xl">
+                            <p className="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                                <span className="font-bold">Recomendación para la imagen:</span> Usa formato 
+                                <span className="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200 mx-1">webp, png o jpg</span> 
+                                y un tamaño sugerido de 
+                                <span className="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200 mx-1">600x400px</span> 
+                                o similar para un mejor diseño.
+                            </p>
+                        </div>
                         <ImageUploadField
                             label="Imagen del Mensaje 2"
                             description=""
@@ -138,23 +162,6 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                             buttonLabel="Subir Imagen"
                         />
 
-                        <div className="space-y-4">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
-                            <select
-                                value={formData.whatsapp_time_2}
-                                onChange={(e) => onFieldChange("whatsapp_time_2", parseInt(e.target.value) || 0)}
-                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                            >
-                                <option value={0}>Inmediato</option>
-                                <option value={1}>1 minuto</option>
-                                <option value={5}>5 minutos</option>
-                                <option value={10}>10 minutos</option>
-                                <option value={30}>30 minutos</option>
-                                <option value={45}>45 minutos</option>
-                                <option value={60}>1 hora</option>
-                            </select>
-                            <p className="text-[10px] text-gray-500 italic">Tiempo después del mensaje 1.</p>
-                        </div>
 
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
@@ -164,6 +171,29 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                                 updateEventName="update-whatsapp-editor-producto-2"
                                 previewEventName="update-whatsapp-preview-2"
                             />
+                        </div>
+
+                        <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
+                            <select
+                                value={formData.whatsapp_time_2}
+                                onChange={(e) => onFieldChange("whatsapp_time_2", parseInt(e.target.value))}
+                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                            >
+                                <option value={-1}>No enviar</option>
+                                <option value={0}>Inmediato</option>
+                                <option value={1}>1 minuto</option>
+                                <option value={2}>2 minutos</option>
+                                <option value={3}>3 minutos</option>
+                                <option value={4}>4 minutos</option>
+                                <option value={5}>5 minutos</option>
+                                <option value={10}>10 minutos</option>
+                                <option value={15}>15 minutos</option>
+                                <option value={20}>20 minutos</option>
+                                <option value={30}>30 minutos</option>
+                                <option value={60}>1 hora</option>
+                            </select>
+                            <p className="text-[10px] text-gray-500 italic">Tiempo después del mensaje 1.</p>
                         </div>
                     </div>
                 </div>
@@ -180,6 +210,15 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                     </div>
 
                     <div className="space-y-6">
+                        <div className="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 p-3 rounded-xl">
+                            <p className="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                                <span className="font-bold">Recomendación para la imagen:</span> Usa formato 
+                                <span className="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200 mx-1">webp, png o jpg</span> 
+                                y un tamaño sugerido de 
+                                <span className="bg-blue-100 dark:bg-blue-800 px-1 rounded text-blue-800 dark:text-blue-200 mx-1">600x400px</span> 
+                                o similar para un mejor diseño.
+                            </p>
+                        </div>
                         <ImageUploadField
                             label="Imagen del Mensaje 3"
                             description=""
@@ -193,23 +232,6 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                             buttonLabel="Subir Imagen"
                         />
 
-                        <div className="space-y-4">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
-                            <select
-                                value={formData.whatsapp_time_3}
-                                onChange={(e) => onFieldChange("whatsapp_time_3", parseInt(e.target.value) || 0)}
-                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                            >
-                                <option value={0}>Inmediato</option>
-                                <option value={1}>1 minuto</option>
-                                <option value={5}>5 minutos</option>
-                                <option value={10}>10 minutos</option>
-                                <option value={30}>30 minutos</option>
-                                <option value={45}>45 minutos</option>
-                                <option value={60}>1 hora</option>
-                            </select>
-                            <p className="text-[10px] text-gray-500 italic">Tiempo después del mensaje 2.</p>
-                        </div>
 
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mensaje de WhatsApp:</label>
@@ -219,6 +241,29 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                                 updateEventName="update-whatsapp-editor-producto-3"
                                 previewEventName="update-whatsapp-preview-3"
                             />
+                        </div>
+
+                        <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos):</label>
+                            <select
+                                value={formData.whatsapp_time_3}
+                                onChange={(e) => onFieldChange("whatsapp_time_3", parseInt(e.target.value))}
+                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
+                            >
+                                <option value={-1}>No enviar</option>
+                                <option value={0}>Inmediato</option>
+                                <option value={1}>1 minuto</option>
+                                <option value={2}>2 minutos</option>
+                                <option value={3}>3 minutos</option>
+                                <option value={4}>4 minutos</option>
+                                <option value={5}>5 minutos</option>
+                                <option value={10}>10 minutos</option>
+                                <option value={15}>15 minutos</option>
+                                <option value={20}>20 minutos</option>
+                                <option value={30}>30 minutos</option>
+                                <option value={60}>1 hora</option>
+                            </select>
+                            <p className="text-[10px] text-gray-500 italic">Tiempo después del mensaje 2.</p>
                         </div>
                     </div>
                 </div>

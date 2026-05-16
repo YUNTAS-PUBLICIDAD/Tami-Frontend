@@ -526,33 +526,17 @@ const { link = "" } = Astro.props as ModalProps;
           }
           return;
         }
-        const minutes = Math.floor(remainingMs / 60000);
-        const seconds = Math.floor((remainingMs % 60000) / 1000);
-        // console.log(
-        //   `⏳ Tiempo restante para el popup de producto: ${minutes}m ${seconds}s`,
-          // Email (delay slightly to avoid overwhelming email service when many requests arrive simultaneously)
-          await new Promise((res) => setTimeout(res, 10000));
-          // Email
-          const p2 = fetch(
-            `${config.apiUrl}${config.endpoints.email.sendEmailByProductLink}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: nombre,
-                phone: telefono,
-                celular: telefono,
-                telefono: telefono,
-                email: correo,
-                link: productLink || window.location.href,
-              }),
-            },
-          );
+        // const minutes = Math.floor(remainingMs / 60000);
+        // const seconds = Math.floor((remainingMs % 60000) / 1000);
+      }, 1000);
+
       modalTimeout = setTimeout(async () => {
         if (myId !== currentCallId) return;
         if (modalMostrado || !puedeMostrarModal()) return;
         await showCotizacionModal();
-      }, 3 * 60 * 1000);
+      }, delayMs);
+    } catch (e) {
+      console.error("Error programando popup:", e);
     }
   }
 

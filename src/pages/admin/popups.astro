@@ -114,7 +114,7 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
                             <TabProducto client:load />
 
                             <!-- Configuración Global: Tiempo de Aparición del Pop-up de Producto -->
-                            <div class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start mt-8">
+                            <div id="globalAppearanceTimeContainer" class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start mt-8">
                                 <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Tiempo de Aparición Global</h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 w-full text-center sm:text-left">Configura el tiempo de espera antes de que aparezca el pop-up en la página de cualquier producto.</p>
                                 <label for="popupProductosDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2 w-full text-center sm:text-left">Pop-up de Producto</label>
@@ -172,6 +172,21 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 <script>
     import { initPopupManager } from "../../scripts/admin/popupsManager";
 
-    document.addEventListener("DOMContentLoaded", initPopupManager);
+    document.addEventListener("DOMContentLoaded", () => {
+        initPopupManager();
+        
+        // Listen for tab changes in TabProducto
+        window.addEventListener("product-tab-change", (e: any) => {
+            const activeTab = e.detail;
+            const container = document.getElementById("globalAppearanceTimeContainer");
+            if (container) {
+                if (activeTab === 'popups') {
+                    container.classList.remove("hidden");
+                } else {
+                    container.classList.add("hidden");
+                }
+            }
+        });
+    });
     document.addEventListener("astro:page-load", initPopupManager);
 </script>
