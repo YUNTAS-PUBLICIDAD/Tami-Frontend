@@ -319,7 +319,22 @@ const productsUrl = config.endpoints.productos.list;
 
             if (slugProducto) {
               btnVerProducto.href = `/productos/${slugProducto}`;
-              btnVerProducto.innerText = "Ver Producto";
+              btnVerProducto.innerText =
+                blog.etiqueta?.popup_button_text?.trim() || "Ver Producto";
+              if (blog.etiqueta?.popup_button_color) {
+                btnVerProducto.style.setProperty(
+                  "background-color",
+                  blog.etiqueta.popup_button_color,
+                  "important"
+                );
+              }
+              if (blog.etiqueta?.popup_text_color) {
+                btnVerProducto.style.setProperty(
+                  "color",
+                  blog.etiqueta.popup_text_color,
+                  "important"
+                );
+              }
               btnVerProducto.classList.remove("hidden");
               btnVerProducto.classList.add("inline-block");
             }
