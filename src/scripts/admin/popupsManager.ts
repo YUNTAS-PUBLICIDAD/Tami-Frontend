@@ -403,19 +403,20 @@ export function initPopupManager() {
         if (!text) return "";
         let html = text;
 
-        // Si el texto ya tiene formato HTML (del nuevo editor), no escapamos los tags
-        const hasHTML = /<[a-z][\s\S]*>/i.test(html);
+        // Escape HTML to prevent injection, but preserve newlines
+        html = html
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
 
-        if (!hasHTML) {
-            // Escape basic tags only if it's plain text to prevent injection
-            html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        // format whatsapp markdown
+        // Format WhatsApp Markdown
         html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
         html = html.replace(/_(.*?)_/g, "<em>$1</em>");
         html = html.replace(/~(.*?)~/g, "<del>$1</del>");
+        
+        // Convertir todos los \n a <br> para que se rendericen en el HTML de la vista previa
         html = html.replace(/\n/g, "<br>");
+        
         return html;
     }
 
