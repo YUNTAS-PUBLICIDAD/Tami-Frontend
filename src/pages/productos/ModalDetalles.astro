@@ -252,11 +252,11 @@ const { link = "" } = Astro.props as ModalProps;
 
     if (!productLink) return null;
 
-    if (window.__detalleProducto) return window.__detalleProducto;
+    if (window.__detalleProducto && window.__detalleProducto.link === productLink) return window.__detalleProducto;
 
     try {
       const response = await fetch(
-        `${config.apiUrl}/api/v1/productos/link/${productLink}`,
+        `${config.apiUrl}/api/v1/productos/link/${productLink}?t=${Date.now()}`,
       );
       if (response.ok) {
         const result = await response.json();

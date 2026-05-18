@@ -196,10 +196,10 @@ const { link = "", seccion = "" } = Astro.props as ModalProps;
     let imagenAlt2 = "Imagen de fondo";
     let modoVisual = "fondo";
 
-    if (!window.__detalleProducto && productLink) {
+    if (productLink && (!window.__detalleProducto || window.__detalleProducto.link !== productLink)) {
       try {
         const response = await fetch(
-          `${config.apiUrl}/api/v1/productos/link/${productLink}`,
+          `${config.apiUrl}/api/v1/productos/link/${productLink}?t=${Date.now()}`,
         );
         if (response.ok) {
           const result = await response.json();

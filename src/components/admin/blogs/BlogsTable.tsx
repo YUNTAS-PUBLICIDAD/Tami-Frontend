@@ -25,6 +25,11 @@ interface Blog {
   created_at?: string | null;
   parrafos: { parrafo: string }[];
   nombre_producto?: string;
+  etiqueta?: {
+    popup_button_color?: string;
+    popup_text_color?: string;
+    popup_button_text?: string;
+  };
 }
 
 interface BlogPreviewProps {
@@ -320,8 +325,16 @@ const BlogsTable = () => {
                     </section>
                   ))}
                   <div className="flex justify-center mb-8 md:mb-12">
-                  <a id="btn-ver-producto" href="#"  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105">
-                    Ver Producto
+                  <a
+                    id="btn-ver-producto"
+                    href="#"
+                    className="text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+                    style={{
+                      backgroundColor: blog.etiqueta?.popup_button_color || "#22c55e",
+                      color: blog.etiqueta?.popup_text_color || "#ffffff",
+                    }}
+                  >
+                    {blog.etiqueta?.popup_button_text?.trim() || "Ver Producto"}
                   </a>
                   </div>
                   {blog.video_id?.trim() && (
