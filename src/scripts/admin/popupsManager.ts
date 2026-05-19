@@ -4,7 +4,10 @@ import initEmail from "./popupsEmail";
 import initImages, { addFileToForm } from "./popupsImages";
 import initSettings from "./popupsSettings";
 
+let popupManagerInitialized = false;
+
 export function initPopupManager() {
+    if (popupManagerInitialized) return;
     const navInicio = document.getElementById("navInicio");
     const navProducto = document.getElementById("navProducto");
     const sectionInicio = document.getElementById("sectionInicio");
@@ -64,6 +67,15 @@ export function initPopupManager() {
     const contents = [contentPopups, contentWhatsapp, contentCorreo];
 
     function updatePreview(settings: any = {}, mode: string | null = null) {
+        (window as any).__popupPreviewSettings = {
+            ...(window as any).__popupPreviewSettings,
+            settings: {
+                ...((window as any).__popupPreviewSettings?.settings || {}),
+                ...settings,
+            },
+            mode: mode ?? (window as any).__popupPreviewSettings?.mode ?? null,
+        };
+
         window.dispatchEvent(
             new CustomEvent("update-popup-preview", {
                 detail: { settings, mode },
@@ -129,6 +141,7 @@ export function initPopupManager() {
             updatePreview({}, currentMode);
         } else if (type === "whatsapp" && previewWhatsapp) {
             previewWhatsapp.classList.remove("hidden");
+            (window as any).popupsWhatsapp?.syncWhatsAppPreview?.(sharedState.currentSelectedWaMessage || "1");
         } else if (type === "correo" && previewCorreo) {
             previewCorreo.classList.remove("hidden");
         }
@@ -561,5 +574,7 @@ export function initPopupManager() {
     // LOAD SETTINGS FROM API
     // initialize settings loader + save handler in separate module
     initSettings(updatePreview, setStatus);
+
+    popupManagerInitialized = true;
 
 }

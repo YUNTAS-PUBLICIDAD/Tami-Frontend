@@ -39,31 +39,182 @@ const WhatsappEditor = ({
     });
   };
 
+  const htmlToWhatsappMarkdown = (html: string) => {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    
+    let result = "";
+    
+    const isBlockElement = (node: Node | null): boolean => {
+      if (!node || node.nodeType !== 1) return false;
+      const tag = (node as HTMLElement).tagName.toLowerCase();
+      return tag === 'div' || tag === 'p' || tag === 'li';
+    };
+
+    const hasAdjacentBlock = (node: Node): boolean => {
+      let prev = node.previousSibling;
+      while (prev && prev.nodeType === 3 && !prev.textContent?.trim()) {
+        prev = prev.previousSibling;
+      }
+      if (prev && isBlockElement(prev)) return true;
+
+      let next = node.nextSibling;
+      while (next && next.nodeType === 3 && !next.textContent?.trim()) {
+        next = next.nextSibling;
+      }
+      if (next && isBlockElement(next)) return true;
+
+      return false;
+    };
+
+    const endsWithNewline = (str: string): boolean => {
+      return /\n[ \t\r]*$/.test(str);
+    };
+
+    const walk = (node: Node) => {
+      if (node.nodeType === 3) { // Text node
+        // Skip whitespace-only text nodes that are direct children of the temp container
+        if (node.parentNode === temp && !node.textContent?.trim()) {
+          return;
+        }
+        result += node.textContent;
+      } else if (node.nodeType === 1) { // Element node
+        const el = node as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+        
+        // Define which tags should be treated as line breaks
+        const isBlock = tag === 'div' || tag === 'p' || tag === 'li' || tag === 'br';
+        
+        if (tag === 'br' && hasAdjacentBlock(el)) {
+          return; // Skip browser artifact br tags between/adjacent to block elements
+        }
+
+        // Add newline before block elements if not already there
+        if (isBlock && result !== "") {
+          if (tag === 'br' || !endsWithNewline(result)) {
+            result += '\n';
+          }
+        }
+        
+        if (tag === 'br') return; // Line break already handled
+        
+        // Add markdown symbols for formatting
+        const isBold = tag === 'b' || tag === 'strong';
+        const isItalic = tag === 'i' || tag === 'em';
+        const isStrike = tag === 's' || tag === 'strike' || tag === 'del';
+        
+        if (isBold) result += '*';
+        if (isItalic) result += '_';
+        if (isStrike) result += '~';
+        
+        // Process children
+        for (let i = 0; i < el.childNodes.length; i++) {
+          walk(el.childNodes[i]);
+        }
+        
+        // Close markdown symbols
+        if (isBold) result += '*';
+        if (isItalic) result += '_';
+        if (isStrike) result += '~';
+        
+        // Add newline after block elements if not already there
+        if (isBlock && !endsWithNewline(result)) {
+          result += '\n';
+        }
+      }
+    };
+    
+    for (let i = 0; i < temp.childNodes.length; i++) {
+      walk(temp.childNodes[i]);
+    }
+    
+    // Final cleanup
+    let finalResult = result.trim();
+    
+    // Clean spaces inside formatting symbols before final save (so WhatsApp and our preview render them properly)
+    finalResult = finalResult.replace(/\*(.*?)\*/g, (match, content) => {
+      const leading = content.match(/^\s*/)[0];
+      const trailing = content.match(/\s*$/)[0];
+      return leading + '*' + content.trim() + '*' + trailing;
+    });
+    finalResult = finalResult.replace(/_(.*?)_/g, (match, content) => {
+      const leading = content.match(/^\s*/)[0];
+      const trailing = content.match(/\s*$/)[0];
+      return leading + '_' + content.trim() + '_' + trailing;
+    });
+    finalResult = finalResult.replace(/~(.*?)~/g, (match, content) => {
+      const leading = content.match(/^\s*/)[0];
+      const trailing = content.match(/\s*$/)[0];
+      return leading + '~' + content.trim() + '~' + trailing;
+    });
+
+    // Normalize any multiple consecutive newlines (2 or more, possibly with spaces) to exactly clean double newlines "\n\n"
+    finalResult = finalResult.replace(/\n([ \t]*\n)+/g, '\n\n');
+    
+    return finalResult;
+  };
+
+  const whatsappMarkdownToHtml = (text: string) => {
+    if (!text) return "";
+    // Normalize any multiple consecutive newlines (2 or more, possibly with spaces) back to clean "\n\n"
+    const normalized = text.replace(/\n([ \t]*\n)+/g, '\n\n');
+    let html = normalized
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\*(.*?)\*/g, "<strong>$1</strong>")
+      .replace(/_(.*?)_/g, "<em>$1</em>")
+      .replace(/~(.*?)~/g, "<del>$1</del>")
+      .replace(/\n/g, "<br>");
+    return html;
+  };
+
   const handleInput = () => {
     if (!editorRef.current) return;
     const content = editorRef.current.innerHTML;
+    const markdown = htmlToWhatsappMarkdown(content);
 
     // Dispatch event to update preview
-    window.dispatchEvent(new CustomEvent(previewEventName, { detail: content }));
+    window.dispatchEvent(new CustomEvent(previewEventName, { detail: markdown }));
 
     // Sync hidden input
     const hidden = document.getElementById(inputId) as HTMLInputElement | null;
     if (hidden) {
-      hidden.value = content;
+      hidden.value = markdown;
     }
   };
 
   useEffect(() => {
     // Initialize default value safely
-    if (editorRef.current && !editorRef.current.innerHTML) {
-      editorRef.current.innerHTML = defaultValue;
-      handleInput();
+    if (editorRef.current) {
+      document.execCommand('defaultParagraphSeparator', false, 'br');
+      if (!editorRef.current.innerHTML && defaultValue) {
+        // Check if legacy HTML
+        const hasHTML = /<[a-z][\s\S]*>/i.test(defaultValue);
+        if (hasHTML) {
+          editorRef.current.innerHTML = defaultValue;
+        } else {
+          editorRef.current.innerHTML = whatsappMarkdownToHtml(defaultValue);
+        }
+        handleInput();
+      }
     }
 
     const handleUpdate = (e: CustomEvent) => {
       const content = e.detail;
-      if (editorRef.current && editorRef.current.innerHTML !== content) {
-        editorRef.current.innerHTML = content;
+      if (editorRef.current) {
+        // Force <br> mode
+        document.execCommand('defaultParagraphSeparator', false, 'br');
+        // If the content is already what we have (as markdown), don't update
+        const currentMarkdown = htmlToWhatsappMarkdown(editorRef.current.innerHTML);
+        if (currentMarkdown !== content) {
+          const hasHTML = /<[a-z][\s\S]*>/i.test(content);
+          if (hasHTML) {
+            editorRef.current.innerHTML = content;
+          } else {
+            editorRef.current.innerHTML = whatsappMarkdownToHtml(content);
+          }
+        }
       }
       const hidden = document.getElementById(inputId) as HTMLInputElement | null;
       if (hidden) {
@@ -80,6 +231,13 @@ const WhatsappEditor = ({
     editorRef.current?.focus();
     handleInput();
     checkActiveStyles();
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData("text/plain");
+    document.execCommand("insertText", false, text);
+    handleInput();
   };
 
   const insertEmoji = (emoji: string) => {
@@ -101,6 +259,14 @@ const WhatsappEditor = ({
   return (
     <div className="whatsapp-editor-wrapper border rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm flex flex-col">
       <style>{`
+        .whatsapp-editor-content {
+           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+           font-size: 14.2px;
+           line-height: 1.45;
+           padding: 12px;
+           min-height: 150px;
+           outline: none;
+        }
         .whatsapp-editor-content ul {
            list-style-type: disc;
            padding-left: 24px;
@@ -221,6 +387,7 @@ const WhatsappEditor = ({
         suppressContentEditableWarning
         onInput={() => { handleInput(); checkActiveStyles(); }}
         onBlur={() => { handleInput(); checkActiveStyles(); }}
+        onPaste={handlePaste}
         onKeyUp={checkActiveStyles}
         onMouseUp={checkActiveStyles}
         onMouseOver={checkActiveStyles}

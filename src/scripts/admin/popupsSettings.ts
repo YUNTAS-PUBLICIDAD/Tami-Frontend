@@ -73,6 +73,8 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 window.dispatchEvent(new CustomEvent("update-whatsapp-editor-2", { detail: whatsappMessage2Value }));
                 window.dispatchEvent(new CustomEvent("update-whatsapp-editor-3", { detail: whatsappMessage3Value }));
 
+                (window as any).popupsWhatsapp?.syncWhatsAppPreview?.(sharedState.currentSelectedWaMessage || "1");
+
                 // Map all 3 emails from settings
                 const mapEmail = (idx: string, suffix: string = "") => {
                     emailsState[idx].title = settings[`emailTitle${suffix}`] || settings[`email_subject${suffix}`] || (idx === "1" ? "Solicitud de información - Popup Web" : "");

@@ -92,6 +92,8 @@ export function initWhatsapp() {
         if (sharedState.currentSelectedWaMessage === "3") syncWhatsAppPreview("3");
     });
 
+    setActiveWhatsappMessage(sharedState.currentSelectedWaMessage || "1");
+
     // expose some helpers on window for other parts (optional)
     (window as any).popupsWhatsapp = { setActiveWhatsappMessage, syncWhatsAppPreview };
 }
