@@ -271,6 +271,7 @@ export class ProductFormBuilderService {
     };
 
     const getEmailTime = (image: any, fallbackField: string) => {
+      if (image?.delay_minutes !== undefined && image.delay_minutes !== null) return image.delay_minutes;
       if (image?.email_time !== undefined && image.email_time !== null) return image.email_time;
       if (image?.email_time_1 !== undefined && image.email_time_1 !== null) return image.email_time_1;
       if (image?.email_time_2 !== undefined && image.email_time_2 !== null) return image.email_time_2;
