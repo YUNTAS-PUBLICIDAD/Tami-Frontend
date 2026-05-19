@@ -149,22 +149,17 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                         </button>
                     </div>
 
-                    <div className="relative flex items-center justify-center h-full w-full">
-
-                        <div className="relative w-[90%] aspect-square">
-
-                            <div className="absolute inset-0 bg-white rounded-full shadow-2xl" />
-
-                            <img
-                                src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
-                                alt={producto.nombre}
-                                title={producto.nombre}
-                                className="relative w-full h-full object-contain"
-                                fetchPriority="high"
-                            />
-                        </div>
+                    <div className="relative flex items-center justify-center w-full h-full">
+                    <div className="relative w-[90%] aspect-square flex items-center justify-center rounded-full bg-white shadow-2xl overflow-hidden">
+                        <img
+                        src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
+                        alt={producto.nombre}
+                        title={producto.nombre}
+                        className="w-full h-full object-contain object-center"
+                        fetchPriority="high"
+                        />
                     </div>
-
+                    </div>
                 </div>
             </div>
 
