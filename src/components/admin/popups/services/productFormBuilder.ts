@@ -197,26 +197,6 @@ export class ProductFormBuilderService {
     formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
     formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
 
-    // Dimensiones
-    if (formData.dimensiones) {
-      formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
-      formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
-      formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
-    }
-
-    // Especificaciones
-    if (formData.especificaciones) {
-      let specsToSend = formData.especificaciones;
-      if (Array.isArray(specsToSend)) {
-        const specsObj: Record<string, string> = {};
-        specsToSend.forEach((s: any) => {
-          if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-        });
-        specsToSend = specsObj;
-      }
-      formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-    }
-
     // Keywords
     if (formData.etiqueta?.keywords) {
       const keywords = formData.etiqueta.keywords;
