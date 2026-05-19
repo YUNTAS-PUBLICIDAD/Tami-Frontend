@@ -22,14 +22,21 @@ export interface UsePopupLogicProps {
 }
 
 export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLogicProps) => {
+  const cachedPreviewSettings = typeof window !== "undefined"
+    ? ((window as any).__popupPreviewSettings?.settings || {})
+    : {};
+  const cachedPreviewMode = typeof window !== "undefined"
+    ? ((window as any).__popupPreviewSettings?.mode === "mobile" ? "mobile" : "desktop")
+    : "desktop";
+
   const [pathname, setPathname] = useState<string>(() => 
     typeof window !== "undefined" ? window.location.pathname : ""
   );
   const [showModal, setShowModal] = useState(isPreview);
-  const [settings, setSettings] = useState<PopupSettings>(initialSettings || {});
+  const [settings, setSettings] = useState<PopupSettings>(initialSettings || cachedPreviewSettings);
   const [loadingSettings, setLoadingSettings] = useState(!isPreview);
   const [isClosing, setIsClosing] = useState(false);
-  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">(cachedPreviewMode);
   const [isDelayFinished, setIsDelayFinished] = useState(false);
 
   // Form states
