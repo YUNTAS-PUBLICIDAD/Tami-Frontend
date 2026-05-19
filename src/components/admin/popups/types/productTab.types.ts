@@ -20,6 +20,10 @@ export interface ProductImage {
   whatsapp_time_1?: number;
   whatsapp_time_2?: number;
   whatsapp_time_3?: number;
+  email_time?: number;
+  email_time_1?: number;
+  email_time_2?: number;
+  email_time_3?: number;
   whatsapp_image_url_2?: string;
   whatsapp_image_url_3?: string;
 }
