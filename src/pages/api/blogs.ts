@@ -1,55 +1,82 @@
 // src/pages/api/blogs.ts
 import type { APIRoute } from "astro";
-import { apiClient } from "../../services/apiClient";
-import { config } from "config";
+import { config, getApiUrl } from "../../../config";
+
+const buildBlogHeaders = () => {
+  const apiKey =
+    process.env.BLOGS_API_KEY ||
+    process.env.BLOGS_API_TOKEN ||
+    process.env.BLOGS_API_SECRET;
+
+  if (!apiKey) {
+    return undefined;
+  }
+
+  return {
+    Authorization: `Bearer ${apiKey}`,
+  };
+};
+
+const emptyBlogsResponse = () =>
+  new Response(JSON.stringify([]), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 
 // GET: obtener blogs desde la API remota
 export const GET: APIRoute = async () => {
   try {
-    const response = await apiClient.get(config.endpoints.blogs.list);
+    const response = await fetch(getApiUrl(config.endpoints.blogs.list), {
+      headers: buildBlogHeaders(),
+    });
 
-    return new Response(JSON.stringify(response.data), {
+    if (response.status === 401 || response.status === 403) {
+      console.warn(
+        `⚠️ API de blogs devolvió ${response.status} - Devolviendo array vacío para evitar romper el despliegue`
+      );
+      return emptyBlogsResponse();
+    }
+
+    if (!response.ok) {
+      return new Response(
+        JSON.stringify({
+          error: "Error al obtener los blogs",
+          status: response.status,
+        }),
+        {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const data = await response.json();
+
+    return new Response(JSON.stringify(data), {
       status: response.status || 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
     console.error("Error en el API Route GET blogs:", error);
-    
-    // Si es un error 403 durante el build, devolvemos un array vacío para no romper el despliegue
-    if (error.response?.status === 403) {
-      console.warn("⚠️ API de blogs devolvió 403 - Devolviendo array vacío para el build");
-      return new Response(JSON.stringify([]), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
 
-    return new Response(
-      JSON.stringify({
-        error: "Error al obtener los blogs",
-        message: error.message,
-        data: error.response?.data
-      }),
-      {
-        status: error.response?.status || 500,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+    return emptyBlogsResponse();
   }
 };
 
 // POST: crear blog con autenticación
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // Nota: El apiClient inyectará automáticamente el token desde localStorage
-    // en el interceptor de peticiones si está presente.
-
-    // Si la petición original tiene FormData, Axios lo manejará correctamente.
     const formData = await request.formData();
 
-    const response = await apiClient.post(config.endpoints.blogs.create, formData);
+    const response = await fetch(getApiUrl(config.endpoints.blogs.create), {
+      method: "POST",
+      headers: buildBlogHeaders(),
+      body: formData,
+    });
 
-    return new Response(JSON.stringify(response.data), {
+    const payload = await response.json();
+
+    return new Response(JSON.stringify(payload), {
       status: response.status || 201,
       headers: { "Content-Type": "application/json" },
     });
