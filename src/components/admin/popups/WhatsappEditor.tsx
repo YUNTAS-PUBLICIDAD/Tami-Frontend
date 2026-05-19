@@ -44,8 +44,39 @@ const WhatsappEditor = ({
     temp.innerHTML = html;
     
     let result = "";
+    
+    const isBlockElement = (node: Node | null): boolean => {
+      if (!node || node.nodeType !== 1) return false;
+      const tag = (node as HTMLElement).tagName.toLowerCase();
+      return tag === 'div' || tag === 'p' || tag === 'li';
+    };
+
+    const hasAdjacentBlock = (node: Node): boolean => {
+      let prev = node.previousSibling;
+      while (prev && prev.nodeType === 3 && !prev.textContent?.trim()) {
+        prev = prev.previousSibling;
+      }
+      if (prev && isBlockElement(prev)) return true;
+
+      let next = node.nextSibling;
+      while (next && next.nodeType === 3 && !next.textContent?.trim()) {
+        next = next.nextSibling;
+      }
+      if (next && isBlockElement(next)) return true;
+
+      return false;
+    };
+
+    const endsWithNewline = (str: string): boolean => {
+      return /\n[ \t\r]*$/.test(str);
+    };
+
     const walk = (node: Node) => {
       if (node.nodeType === 3) { // Text node
+        // Skip whitespace-only text nodes that are direct children of the temp container
+        if (node.parentNode === temp && !node.textContent?.trim()) {
+          return;
+        }
         result += node.textContent;
       } else if (node.nodeType === 1) { // Element node
         const el = node as HTMLElement;
@@ -54,9 +85,13 @@ const WhatsappEditor = ({
         // Define which tags should be treated as line breaks
         const isBlock = tag === 'div' || tag === 'p' || tag === 'li' || tag === 'br';
         
+        if (tag === 'br' && hasAdjacentBlock(el)) {
+          return; // Skip browser artifact br tags between/adjacent to block elements
+        }
+
         // Add newline before block elements if not already there
         if (isBlock && result !== "") {
-          if (tag === 'br' || !result.endsWith('\n')) {
+          if (tag === 'br' || !endsWithNewline(result)) {
             result += '\n';
           }
         }
@@ -83,7 +118,7 @@ const WhatsappEditor = ({
         if (isStrike) result += '~';
         
         // Add newline after block elements if not already there
-        if (isBlock && !result.endsWith('\n')) {
+        if (isBlock && !endsWithNewline(result)) {
           result += '\n';
         }
       }
@@ -93,7 +128,7 @@ const WhatsappEditor = ({
       walk(temp.childNodes[i]);
     }
     
-    // Final cleanup: preserve user's intended blank lines with a space for API compatibility
+    // Final cleanup
     let finalResult = result.trim();
     
     // Clean spaces inside formatting symbols before final save (so WhatsApp and our preview render them properly)
@@ -113,14 +148,17 @@ const WhatsappEditor = ({
       return leading + '~' + content.trim() + '~' + trailing;
     });
 
-    finalResult = finalResult.replace(/\n(?=\n)/g, '\n ');
+    // Normalize any multiple consecutive newlines (2 or more, possibly with spaces) to exactly clean double newlines "\n\n"
+    finalResult = finalResult.replace(/\n([ \t]*\n)+/g, '\n\n');
     
     return finalResult;
   };
 
   const whatsappMarkdownToHtml = (text: string) => {
     if (!text) return "";
-    let html = text
+    // Normalize any multiple consecutive newlines (2 or more, possibly with spaces) back to clean "\n\n"
+    const normalized = text.replace(/\n([ \t]*\n)+/g, '\n\n');
+    let html = normalized
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")

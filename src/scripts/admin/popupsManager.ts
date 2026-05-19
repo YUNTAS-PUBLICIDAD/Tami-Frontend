@@ -401,7 +401,8 @@ export function initPopupManager() {
     ) as HTMLTextAreaElement;
     function formatWhatsAppTextToHTML(text: string | null) {
         if (!text) return "";
-        let html = text;
+        // Normalize any multiple consecutive newlines (2 or more, possibly with spaces) to exactly clean double newlines "\n\n"
+        let html = text.replace(/\n([ \t]*\n)+/g, '\n\n');
 
         // Escape HTML to prevent injection, but preserve newlines
         html = html
