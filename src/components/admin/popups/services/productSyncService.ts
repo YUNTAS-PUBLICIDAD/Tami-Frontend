@@ -134,13 +134,17 @@ export class ProductSyncService {
       btnText: (data as any)[btnTextKey],
       btnLink: (data as any)[btnLinkKey],
       btnBgColor: (data as any)[btnBgKey],
-      btnTextColor: (data as any)[btnTextColorKey]
+      btnTextColor: (data as any)[btnTextColorKey],
+      // Mark this payload as originating from the product editor to allow
+      // listeners to ignore product updates when appropriate.
+      source: "product"
     };
 
-    // Dispatch a general update for the preview (popups manager listens to this)
-    window.dispatchEvent(new CustomEvent("update-email-preview", { detail: payload }));
-
-    // Also dispatch per-index events if other parts listen specifically
+    // Dispatch per-index event only. Avoid emitting the generic
+    // `update-email-preview` to prevent product preview updates from
+    // unintentionally overwriting Inicio (home) email previews.
+    // Consumers that need a general update should listen to the
+    // per-index events as well.
     window.dispatchEvent(new CustomEvent(`update-email-preview-${idx}`, { detail: payload }));
 
   }
