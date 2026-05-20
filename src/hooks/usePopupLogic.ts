@@ -360,6 +360,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
         body: formData,
       });
 
+      const isMobile = window.innerWidth <= 768;
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         if (errorData?.errors) {
@@ -382,13 +383,23 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
             timerProgressBar: true,
             background: "#FEE2E2",
             color: "#7F1D1D",
-            width: "500px",
+            width: isMobile ? 250 : 400,
+            padding: isMobile ? "0.5rem" : "1rem",
+            customClass: {
+              title: isMobile
+                ? "!text-[12px] !leading-4"
+                : "!text-md",
+              htmlContainer: isMobile
+                ? "!text-[11px]"
+                : "!text-md",
+            },
           });
       }
         return;
       }
 
       setErrors({ general: "Información enviada con éxito" });
+
       Swal.fire({
             toast: true,
             position: "bottom-end",
@@ -398,7 +409,16 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
             timer: 2000, 
             background: "#D1FAE5",
             color: "#065F46",
-            width: "500px",
+            width: isMobile ? 250 : 400,
+            padding: isMobile ? "0.5rem" : "1rem",
+            customClass: {
+              title: isMobile
+                ? "!text-[12px] !leading-4"
+                : "!text-md",
+              htmlContainer: isMobile
+                ? "!text-[11px]"
+                : "!text-md",
+            },
           });
       setTimeout(() => {
         closeModal();
