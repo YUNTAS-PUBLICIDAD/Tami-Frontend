@@ -128,9 +128,12 @@ export class ProductFormBuilderService {
       formDataToSend.append(`email_btn_link_${i}`, (formData as any)[`email_btn_link_${i}`] || "https://tami.com/productos");
       formDataToSend.append(`email_btn_bg_color_${i}`, (formData as any)[`email_btn_bg_color_${i}`] || "#0b1c3c");
       formDataToSend.append(`email_btn_text_color_${i}`, (formData as any)[`email_btn_text_color_${i}`] || "#ffffff");
-      formDataToSend.append(`email_time_${i}`, String((formData as any)[`email_time_${i}`] || 0));
+      const currentEmailTime = (formData as any)[`email_time_${i}`];
+      if (currentEmailTime !== undefined && currentEmailTime !== null) {
+        formDataToSend.append(`email_time_${i}`, String(currentEmailTime));
+      }
       // If immediate (0), include a seconds delay hint so backend can stagger quick sends (10 seconds)
-      if (((formData as any)[`email_time_${i}`] ?? 0) === 0) {
+      if (currentEmailTime === 0) {
         formDataToSend.append(`email_delay_seconds_${i}`, String(10));
       }
     }
@@ -158,9 +161,15 @@ export class ProductFormBuilderService {
     formDataToSend.append("mensaje_whatsapp_3", formData.mensaje_whatsapp_3 || "");
 
     // WhatsApp Timing
-    formDataToSend.append("whatsapp_time_1", String(formData.whatsapp_time_1 || 0));
-    formDataToSend.append("whatsapp_time_2", String(formData.whatsapp_time_2 || 0));
-    formDataToSend.append("whatsapp_time_3", String(formData.whatsapp_time_3 || 0));
+    if (formData.whatsapp_time_1 !== undefined && formData.whatsapp_time_1 !== null) {
+      formDataToSend.append("whatsapp_time_1", String(formData.whatsapp_time_1));
+    }
+    if (formData.whatsapp_time_2 !== undefined && formData.whatsapp_time_2 !== null) {
+      formDataToSend.append("whatsapp_time_2", String(formData.whatsapp_time_2));
+    }
+    if (formData.whatsapp_time_3 !== undefined && formData.whatsapp_time_3 !== null) {
+      formDataToSend.append("whatsapp_time_3", String(formData.whatsapp_time_3));
+    }
 
     // Desktop image deletion flags
     if (!(formData.imagen_popup instanceof File) && formData.delete_imagen_popup === 1) {
@@ -187,26 +196,6 @@ export class ProductFormBuilderService {
     formDataToSend.append("detalle_titulo_tamano", String(formData.detalle_titulo_tamano || 24));
     formDataToSend.append("detalle_titulo_color", formData.detalle_titulo_color || "#015f86");
     formDataToSend.append("detalle_titulo_estilo", formData.detalle_titulo_estilo || "negrita");
-
-    // Dimensiones
-    if (formData.dimensiones) {
-      formDataToSend.append("dimensiones[alto]", String(formData.dimensiones.alto || "0"));
-      formDataToSend.append("dimensiones[largo]", String(formData.dimensiones.largo || "0"));
-      formDataToSend.append("dimensiones[ancho]", String(formData.dimensiones.ancho || "0"));
-    }
-
-    // Especificaciones
-    if (formData.especificaciones) {
-      let specsToSend = formData.especificaciones;
-      if (Array.isArray(specsToSend)) {
-        const specsObj: Record<string, string> = {};
-        specsToSend.forEach((s: any) => {
-          if (s?.nombre && s?.valor) specsObj[s.nombre] = s.valor;
-        });
-        specsToSend = specsObj;
-      }
-      formDataToSend.append("especificaciones", typeof specsToSend === 'string' ? specsToSend : JSON.stringify(specsToSend));
-    }
 
     // Keywords
     if (formData.etiqueta?.keywords) {
@@ -244,7 +233,6 @@ export class ProductFormBuilderService {
     });
     const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
     const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
-    const imagenEmail = product.producto_imagenes?.find((img: any) => img.tipo === "email" || img.tipo === "email1");
     const imagenWhatsapp = product.producto_imagenes?.find((img: any) => img.tipo === "whatsapp");
 
     const fallbackImage = (field: string) => {
@@ -254,6 +242,26 @@ export class ProductFormBuilderService {
       }
       return null;
     };
+
+    const findEmailImage = (types: string[]) => {
+      return (product.producto_imagenes || []).find((img: any) => {
+        const t = (img.tipo || "").toLowerCase();
+        return types.includes(t);
+      }) as any | undefined;
+    };
+
+    const getEmailTime = (image: any, fallbackField: string) => {
+      if (image?.delay_minutes !== undefined && image.delay_minutes !== null) return image.delay_minutes;
+      if (image?.email_time !== undefined && image.email_time !== null) return image.email_time;
+      if (image?.email_time_1 !== undefined && image.email_time_1 !== null) return image.email_time_1;
+      if (image?.email_time_2 !== undefined && image.email_time_2 !== null) return image.email_time_2;
+      if (image?.email_time_3 !== undefined && image.email_time_3 !== null) return image.email_time_3;
+      return (product as any)[fallbackField] ?? 0;
+    };
+
+    const imagenEmail = findEmailImage(["email", "email1", "email_1"]);
+    const imagenEmail2 = findEmailImage(["email2", "email_2", "email-2", "email_2"]);
+    const imagenEmail3 = findEmailImage(["email3", "email_3", "email-3"]);
 
     return {
       ...product,
@@ -274,43 +282,16 @@ export class ProductFormBuilderService {
       email_btn_link_1: imagenEmail?.email_btn_link || product.email_btn_link || "https://tami.com/productos",
       email_btn_bg_color_1: imagenEmail?.email_btn_bg_color || product.email_btn_bg_color || "#0b1c3c",
       email_btn_text_color_1: imagenEmail?.email_btn_text_color || product.email_btn_text_color || "#ffffff",
-      email_time_1: imagenEmail?.email_time || product.email_time_1 || 0,
+      email_time_1: getEmailTime(imagenEmail, "email_time_1"),
 
-      imagen_email_2: (product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) ? this.getFullImageUrl(((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any).url_imagen, apiUrl) : fallbackImage("imagen_email_2"),
-      asunto_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.asunto || product.asunto_2 || "",
-      mensaje_email_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.email_mensaje || product.mensaje_email_2 || "",
-      email_btn_text_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.email_btn_text || product.email_btn_text_2 || "Ver Productos",
-      email_btn_link_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.email_btn_link || product.email_btn_link_2 || "https://tami.com/productos",
-      email_btn_bg_color_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.email_btn_bg_color || product.email_btn_bg_color_2 || "#0b1c3c",
-      email_btn_text_color_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.email_btn_text_color || product.email_btn_text_color_2 || "#ffffff",
-      email_time_2: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email2" || t === "email_2" || t === "email-2" || t === "email2";
-      }) as any)?.email_time || product.email_time_2 || 0,
+      imagen_email_2: imagenEmail2 ? this.getFullImageUrl(imagenEmail2.url_imagen, apiUrl) : fallbackImage("imagen_email_2"),
+      asunto_2: imagenEmail2?.asunto || product.asunto_2 || "",
+      mensaje_email_2: imagenEmail2?.email_mensaje || product.mensaje_email_2 || "",
+      email_btn_text_2: imagenEmail2?.email_btn_text || product.email_btn_text_2 || "Ver Productos",
+      email_btn_link_2: imagenEmail2?.email_btn_link || product.email_btn_link_2 || "https://tami.com/productos",
+      email_btn_bg_color_2: imagenEmail2?.email_btn_bg_color || product.email_btn_bg_color_2 || "#0b1c3c",
+      email_btn_text_color_2: imagenEmail2?.email_btn_text_color || product.email_btn_text_color_2 || "#ffffff",
+      email_time_2: getEmailTime(imagenEmail2, "email_time_2"),
 
       imagen_email_3: (product.producto_imagenes || []).find((img: any) => {
         const t = (img.tipo || "").toLowerCase();
@@ -327,26 +308,11 @@ export class ProductFormBuilderService {
         const t = (img.tipo || "").toLowerCase();
         return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
       }) as any)?.email_mensaje || product.mensaje_email_3 || "",
-      email_btn_text_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.email_btn_text || product.email_btn_text_3 || "Ver Productos",
-      email_btn_link_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.email_btn_link || product.email_btn_link_3 || "https://tami.com/productos",
-      email_btn_bg_color_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.email_btn_bg_color || product.email_btn_bg_color_3 || "#0b1c3c",
-      email_btn_text_color_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.email_btn_text_color || product.email_btn_text_color_3 || "#ffffff",
-      email_time_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.email_time || product.email_time_3 || 0,
+      email_btn_text_3: imagenEmail3?.email_btn_text || product.email_btn_text_3 || "Ver Productos",
+      email_btn_link_3: imagenEmail3?.email_btn_link || product.email_btn_link_3 || "https://tami.com/productos",
+      email_btn_bg_color_3: imagenEmail3?.email_btn_bg_color || product.email_btn_bg_color_3 || "#0b1c3c",
+      email_btn_text_color_3: imagenEmail3?.email_btn_text_color || product.email_btn_text_color_3 || "#ffffff",
+      email_time_3: getEmailTime(imagenEmail3, "email_time_3"),
 
       imagen_whatsapp: imagenWhatsapp ? this.getFullImageUrl(imagenWhatsapp.url_imagen, apiUrl) : fallbackImage("imagen_whatsapp"),
       texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || product.texto_alt_whatsapp || "",

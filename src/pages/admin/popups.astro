@@ -172,8 +172,10 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
 <script>
     import { initPopupManager } from "../../scripts/admin/popupsManager";
 
+    const startPopupManager = () => initPopupManager();
+
     document.addEventListener("DOMContentLoaded", () => {
-        initPopupManager();
+        startPopupManager();
         
         // Listen for tab changes in TabProducto
         window.addEventListener("product-tab-change", (e: any) => {
@@ -188,5 +190,5 @@ import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
             }
         });
     });
-    document.addEventListener("astro:page-load", initPopupManager);
+    document.addEventListener("astro:page-load", startPopupManager);
 </script>
