@@ -231,8 +231,12 @@ const ChatbotWidget: React.FC = () => {
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
-                <div className="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl flex items-center justify-center font-bold text-xl shadow-inner">
-                  <span className="bg-gradient-to-br from-white to-gray-200 bg-clip-text text-transparent">T</span>
+                <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
+                  <img
+                    src={robotIcon.src}
+                    alt="Asistente Tami"
+                    className="absolute inset-0 w-full h-full object-cover object-center transform scale-125 origin-center"
+                  />
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
               </div>
@@ -240,7 +244,7 @@ const ChatbotWidget: React.FC = () => {
                 <h3 className="font-bold text-base leading-tight tracking-tight">Asistente Tami</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
-                  <p className="text-[12px] font-medium opacity-90">En línea ahora</p>
+                  <p className="text-[12px] font-medium opacity-90">En línea</p>
                 </div>
               </div>
             </div>
