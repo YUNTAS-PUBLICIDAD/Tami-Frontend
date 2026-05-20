@@ -76,6 +76,40 @@ const isValidUrl = (value: string) => {
 
 const bytesToMB = (bytes: number) => bytes / (1024 * 1024);
 
+//asegurando 2 secciones para blog
+const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
+  const base = imagenes.map((img: any, index: number) => {
+    const raw = img.ruta_imagen || "";
+
+    return {
+      imagen: null,
+      parrafo: blogToEdit?.parrafos?.[index]?.parrafo || "",
+      text_alt: img.text_alt || "",
+      url: raw
+        ? raw.startsWith("http")
+          ? raw
+          : `${import.meta.env.PUBLIC_API_URL}${raw}`
+        : "",
+      previewUrl: undefined,
+      id: img.id || img.imagen_id,
+    };
+  });
+
+  while (base.length < 2) {
+    base.push({
+      imagen: null,
+      parrafo: "",
+      text_alt: "",
+      url: "",
+      previewUrl: undefined,
+      id: undefined,
+    });
+  }
+
+  return base;
+};
+
+
 const AddBlogModal: React.FC<AddBlogModalProps> = ({
   onBlogAdded,
   isOpen: propIsOpen,
@@ -158,24 +192,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         producto_id: productoIdEdit ? String(productoIdEdit) : "",
         created_at: blogToEdit.created_at ? blogToEdit.created_at.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
         miniatura: blogToEdit.miniatura || null,
-        imagenes: blogToEdit.imagenes?.map((img: any, index: number) => {
-          const raw = img.ruta_imagen || "";
-          return {
-            imagen: null,
-            parrafo: blogToEdit.parrafos?.[index]?.parrafo || "",
-            text_alt: img.text_alt || "",
-            url: raw
-              ? raw.startsWith("http")
-                ? raw
-                : `${import.meta.env.PUBLIC_API_URL}${raw}`
-              : "",
-            previewUrl: undefined,
-            id: img.id || img.imagen_id,
-          };
-        }) || [
-            { imagen: null, parrafo: "", text_alt: "", url: "", previewUrl: undefined, id: undefined },
-            { imagen: null, parrafo: "", text_alt: "", url: "", previewUrl: undefined, id: undefined },
-          ],
+        imagenes: normalizeImagenes(blogToEdit.imagenes || [], blogToEdit),
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
@@ -484,8 +501,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       created_at: new Date().toISOString().split('T')[0],
       miniatura: null,
       imagenes: [
-        { imagen: null, parrafo: "", text_alt: "" },
-        { imagen: null, parrafo: "", text_alt: "" },
+      { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
+      { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
       ],
       etiqueta: { meta_titulo: "", meta_descripcion: "",popup_button_text: "", popup_button_color: "#47ce36", popup_text_color: "#ffffff", },
     });
