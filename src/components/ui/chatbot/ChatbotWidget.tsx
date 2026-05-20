@@ -83,6 +83,7 @@ const ChatbotWidget: React.FC = () => {
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstBubble = useRef(true);
 
@@ -147,12 +148,23 @@ const ChatbotWidget: React.FC = () => {
 
   //Botón reiniciar chat
   const reiniciarChat = () => {
-    setMessages([mensajeInicial]);
-    setContext({ paso: 'menu_principal' });
-    try {
-      localStorage.removeItem(MESSAGES_KEY);
-      localStorage.removeItem(CONTEXT_KEY);
-    } catch { }
+    if (isLoading || isResetting) return;
+
+    setIsResetting(true);
+
+    setTimeout(() => {
+      setMessages([mensajeInicial]);
+      setContext({ paso: 'menu_principal' });
+      setInput('');
+      try {
+        localStorage.removeItem(MESSAGES_KEY);
+        localStorage.removeItem(CONTEXT_KEY);
+      } catch { }
+
+      setTimeout(() => {
+        setIsResetting(false);
+      }, 180);
+    }, 2000);
   };
 
 
@@ -227,12 +239,16 @@ const ChatbotWidget: React.FC = () => {
         <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#015f86] to-[#0d9488] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
+          <div className="bg-gradient-to-r from-[#2A938B] to-[#0D2D2B] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
-                <div className="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl flex items-center justify-center font-bold text-xl shadow-inner">
-                  <span className="bg-gradient-to-br from-white to-gray-200 bg-clip-text text-transparent">T</span>
+                <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
+                  <img
+                    src={robotIcon.src}
+                    alt="Asistente Tami"
+                    className="absolute inset-0 w-full h-full object-cover object-center transform scale-125 origin-center"
+                  />
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
               </div>
@@ -240,7 +256,7 @@ const ChatbotWidget: React.FC = () => {
                 <h3 className="font-bold text-base leading-tight tracking-tight">Asistente Tami</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
-                  <p className="text-[12px] font-medium opacity-90">En línea ahora</p>
+                  <p className="text-[12px] font-medium opacity-90">En línea</p>
                 </div>
               </div>
             </div>
@@ -251,7 +267,8 @@ const ChatbotWidget: React.FC = () => {
               <button
                 onClick={reiniciarChat}
                 title="Reiniciar conversación"
-                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
+                disabled={isLoading || isResetting}
+                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -272,7 +289,15 @@ const ChatbotWidget: React.FC = () => {
 
           {/* Área de Mensajes */}
           <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-5 scrollbar-thin scrollbar-thumb-gray-200">
-            {messages.map((msg, index) => (
+            {isResetting ? (
+              <div className="flex flex-1 items-center justify-center py-10">
+                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                </div>
+              </div>
+            ) : messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                 <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
                   ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
