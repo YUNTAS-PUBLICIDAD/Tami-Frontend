@@ -83,6 +83,7 @@ const ChatbotWidget: React.FC = () => {
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstBubble = useRef(true);
 
@@ -147,12 +148,23 @@ const ChatbotWidget: React.FC = () => {
 
   //Botón reiniciar chat
   const reiniciarChat = () => {
-    setMessages([mensajeInicial]);
-    setContext({ paso: 'menu_principal' });
-    try {
-      localStorage.removeItem(MESSAGES_KEY);
-      localStorage.removeItem(CONTEXT_KEY);
-    } catch { }
+    if (isLoading || isResetting) return;
+
+    setIsResetting(true);
+
+    setTimeout(() => {
+      setMessages([mensajeInicial]);
+      setContext({ paso: 'menu_principal' });
+      setInput('');
+      try {
+        localStorage.removeItem(MESSAGES_KEY);
+        localStorage.removeItem(CONTEXT_KEY);
+      } catch { }
+
+      setTimeout(() => {
+        setIsResetting(false);
+      }, 180);
+    }, 2000);
   };
 
 
@@ -255,7 +267,8 @@ const ChatbotWidget: React.FC = () => {
               <button
                 onClick={reiniciarChat}
                 title="Reiniciar conversación"
-                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
+                disabled={isLoading || isResetting}
+                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -276,7 +289,15 @@ const ChatbotWidget: React.FC = () => {
 
           {/* Área de Mensajes */}
           <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-5 scrollbar-thin scrollbar-thumb-gray-200">
-            {messages.map((msg, index) => (
+            {isResetting ? (
+              <div className="flex flex-1 items-center justify-center py-10">
+                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                </div>
+              </div>
+            ) : messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                 <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
                   ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
