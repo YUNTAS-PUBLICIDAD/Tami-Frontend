@@ -227,7 +227,7 @@ const ChatbotWidget: React.FC = () => {
         <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#015f86] to-[#0d9488] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
+          <div className="bg-gradient-to-r from-[#2A938B] to-[#0D2D2B] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
