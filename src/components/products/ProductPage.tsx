@@ -7,9 +7,8 @@ import { config } from '../../../config';
 import RelatedBlogs from './RelatedBlogs';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import SimilarProductCard from './SimilarProductCard';
 
@@ -289,7 +288,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                         {relatedProducts.length > carouselThreshold ? (
 
                             <Swiper
-                                modules={[Navigation, Pagination, Autoplay]}
+                                modules={[Pagination, Autoplay]}
                                 spaceBetween={24}
                                 slidesPerView={1}
                                 pagination={{
@@ -297,11 +296,11 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     bulletClass: 'swiper-pagination-bullet-custom',
                                     bulletActiveClass: 'swiper-pagination-bullet-active-custom'
                                 }}
-                                navigation={{
-                                    nextEl: '.swiper-button-next-custom',
-                                    prevEl: '.swiper-button-prev-custom',
-                                }}
                                 loop={relatedProducts.length > 3}
+                                speed={700}
+                                effect="slide"
+                                observer={true}
+                                observeSlideChildren={true}
                                 breakpoints={{
                                     640: { slidesPerView: 2 },
                                     1024: { slidesPerView: 3 },
