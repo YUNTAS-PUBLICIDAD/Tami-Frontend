@@ -1023,7 +1023,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
                           <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
                             <li>• Formatos: JPG, PNG, WEBP o GIF</li>
-                            <li>• Tamaño ideal: 1900x800 px</li>
+                            <li>• Tamaño ideal: 1200x800 px</li>
                             <li>• Máximo: 2 MB</li>
                           </ul>
                         </div>
