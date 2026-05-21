@@ -65,7 +65,9 @@ export class ProductFormBuilderService {
     formDataToSend.append("nombre", formData.nombre || "");
     formDataToSend.append("titulo", formData.titulo || "");
     formDataToSend.append("subtitulo", formData.subtitulo || "");
-    formDataToSend.append("descripcion", formData.descripcion || "");
+    // Enviamos una descripción limpia sin HTML para evitar bloqueos del Firewall (ModSecurity/WAF)
+    // El backend ignora esto cuando recibe only_popup = 1
+    formDataToSend.append("descripcion", "Actualización de configuración de popup");
     formDataToSend.append("seccion", formData.seccion || "");
     formDataToSend.append("link", formData.link || "");
     formDataToSend.append("stock", String(formData.stock ?? 0));
