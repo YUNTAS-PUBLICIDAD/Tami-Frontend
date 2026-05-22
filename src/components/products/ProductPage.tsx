@@ -8,8 +8,7 @@ import RelatedBlogs from './RelatedBlogs';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
+
 import SimilarProductCard from './SimilarProductCard';
 
 declare global {
@@ -33,13 +32,39 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
     const detailTitleColor = producto.detalle_titulo_color || producto.etiqueta?.titulo_detalle_producto_color || '#2DCCFF';
     const detailTitleSize = Number(producto.detalle_titulo_tamano || producto.etiqueta?.titulo_detalle_producto_size || 24);
-    const detailTitleStyle = producto.detalle_titulo_estilo || producto.etiqueta?.titulo_detalle_producto_style || 'bold';
+    const rawDetailTitleStyle = producto.detalle_titulo_estilo || producto.etiqueta?.titulo_detalle_producto_style || 'negrita';
+
+    const normalizedDetailTitleStyle = (() => {
+        switch (rawDetailTitleStyle) {
+            case 'normal':
+                return 'normal';
+            case 'negrita':
+            case 'bold':
+                return 'bold';
+            case 'cursiva':
+            case 'italic':
+                return 'italic';
+            case 'subrayado':
+            case 'underline':
+                return 'underline';
+            case 'negrita_cursiva':
+            case 'bold-italic':
+                return 'bold-italic';
+            default:
+                return 'normal';
+        }
+    })();
 
     const detalleProductoTituloStyle: React.CSSProperties = {
-        fontSize: `${detailTitleSize}px`,
-        fontWeight: detailTitleStyle === 'bold-italic' || detailTitleStyle === 'bold' ? 800 : 600,
-        fontStyle: detailTitleStyle === 'italic' || detailTitleStyle === 'bold-italic' ? 'italic' : 'normal',
-        textDecoration: detailTitleStyle === 'underline' ? 'underline' : 'none',
+        color: detailTitleColor,
+        fontWeight: normalizedDetailTitleStyle === 'bold-italic' || normalizedDetailTitleStyle === 'bold' ? 800 : 600,
+        fontStyle: normalizedDetailTitleStyle === 'italic' || normalizedDetailTitleStyle === 'bold-italic' ? 'italic' : 'normal',
+        textDecoration: normalizedDetailTitleStyle === 'underline' ? 'underline' : 'none',
+        ...(normalizedDetailTitleStyle === 'underline' && {
+            textDecorationColor: 'white',
+            textDecorationThickness: '2px',
+            textUnderlineOffset: '4px'
+        })
     };
 
     // Cargar datos frescos del producto
@@ -106,6 +131,16 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
     return (
         <div className="w-full bg-gray-50"> {/* Fondo general gris claro */}
+            <style>{`
+                .detalle-producto-titulo-desktop {
+                    --detalle-titulo-size: ${detailTitleSize}px;
+                }
+                @media (min-width: 768px) {
+                    .detalle-producto-titulo-desktop {
+                        font-size: var(--detalle-titulo-size) !important;
+                    }
+                }
+            `}</style>
             {/* -------------------- HERO Section -------------------- */}
             <div className="
                     relative pt-32 md:pt-40 pb-20 min-h-screen 
@@ -115,7 +150,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                 <div className="w-full px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
                     <div className="flex flex-col justify-center text-left">
-                        <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words">
+                        <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>
                             <span className="block text-white">{productTitleFirstWord}</span>
                             {productTitleRest && (
                                 <span
@@ -207,7 +242,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             </div>
 
                             <div className="bg-gray-100  rounded-xl p-6 mb-8 border border-gray-200">
-                                <h3 className="mb-4" style={detalleProductoTituloStyle}>Detalles del producto</h3>
+                                <h3 className="mb-4 detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>Detalles del producto</h3>
 
                                 <h4 className="font-semibold text-lg text-gray-800 mb-2">Especificaciones técnicas:</h4>
                                 <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
