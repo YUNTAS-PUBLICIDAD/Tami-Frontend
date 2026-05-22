@@ -327,179 +327,180 @@ const ProductosTabla = () => {
 
 
 
-return (
-    <div className="container mx-auto px-4 py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+                <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
 
 
-                    <div>
-                        <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
-                            <FaTags />
-                            <span>Gestión de Productos</span>
-                        </h2>
-                        <p className="text-teal-50 mt-2 text-lg">
-                            Administra el catálogo de productos de tu empresa
-                        </p>
-                    </div>
+                        <div>
+                            <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
+                                <FaTags />
+                                <span>Gestión de Productos</span>
+                            </h2>
+                            <p className="text-teal-50 mt-2 text-lg">
+                                Administra el catálogo de productos de tu empresa
+                            </p>
+                        </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 items-center">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full items-stretch sm:items-center [&_button]:!w-full [&_a]:!w-full [&_button]:py-3">
 
+                            <div className="w-full sm:w-auto flex flex-col [&_button]:flex [&_button]:items-center [&_button]:justify-between [&_button]:px-5">
+                                {/* Botón de Exportar */}
+                                <ExportMenu data={filteredProductos} fileName="Reporte_Productos_Tami" />
+                            </div>
 
-                        {/* Botón de Exportar */}
-                        <ExportMenu data={filteredProductos} fileName="Reporte_Productos_Tami" />
+                            {/* Botón de Agregar */}
+                            <div className="flex-shrink-0 w-full sm:w-auto flex flex-col [&_button]:!w-full [&_button]:flex [&_button]:flex-row [&_button]:items-center [&_button]:justify-center [&_button]:gap-2">
+                                <AddProduct onProductAdded={fetchData} />
+                            </div>
 
-                        {/* Botón de Agregar */}
-                        <div className="flex-shrink-0">
-                            <AddProduct onProductAdded={fetchData} />
                         </div>
 
                     </div>
-
                 </div>
-            </div>
 
-            <div className="p-8 space-y-6">
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-                    <SearchInput placeholder="Buscar productos..." value={searchTerm} onChange={setSearchTerm} />
-                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div className="p-8 space-y-6">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+                        <SearchInput placeholder="Buscar productos..." value={searchTerm} onChange={setSearchTerm} />
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
 
-                        <button
-                            onClick={handleDeploy}
-                            disabled={deployInProgress}
-                            className={`flex cursor-pointer items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
+                            <button
+                                onClick={handleDeploy}
+                                disabled={deployInProgress}
+                                className={`flex cursor-pointer items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
     ${deployInProgress
-                                    ? "bg-gray-400 cursor-not-allowed text-white"
-                                    : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                                }`}
-                        >
-                            <FaSyncAlt className={`h-4 w-4 ${deployInProgress ? "animate-spin" : ""}`} />
-                            {deployInProgress
-                                ? `Actualizando (${deployRemaining}s)`
-                                : "Actualizar Cambios"}
-                        </button>
+                                        ? "bg-gray-400 cursor-not-allowed text-white"
+                                        : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                                    }`}
+                            >
+                                <FaSyncAlt className={`h-4 w-4 ${deployInProgress ? "animate-spin" : ""}`} />
+                                {deployInProgress
+                                    ? `Actualizando (${deployRemaining}s)`
+                                    : "Actualizar Cambios"}
+                            </button>
 
-                        <button
-                            onClick={() => setIsWhatsappModalOpen(true)}
-                            className="flex cursor-pointer items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
-                        >
-                            <FaWhatsapp className="h-5 w-5" />
-                            Conexión WhatsApp
-                        </button>
+                            <button
+                                onClick={() => setIsWhatsappModalOpen(true)}
+                                className="flex cursor-pointer items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                            >
+                                <FaWhatsapp className="h-5 w-5" />
+                                Conexión WhatsApp
+                            </button>
 
-                        <button
-                            onClick={fetchData}
-                            disabled={isLoading}
-                            className="flex cursor-pointer items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
-                        >
-                            <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-                            {isLoading ? "Cargando..." : "Actualizar Catálogo"}
-                        </button>
+                            <button
+                                onClick={fetchData}
+                                disabled={isLoading}
+                                className="flex cursor-pointer items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                            >
+                                <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                                {isLoading ? "Cargando..." : "Actualizar Catálogo"}
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <GenericModal
-                    isOpen={isWhatsappModalOpen}
-                    onClose={() => setIsWhatsappModalOpen(false)}
-                    title="Canal de Comunicación WhatsApp"
-                >
-                    <WhatsappFormWithTabs
+                    <GenericModal
+                        isOpen={isWhatsappModalOpen}
                         onClose={() => setIsWhatsappModalOpen(false)}
-                    />
-                </GenericModal>
+                        title="Canal de Comunicación WhatsApp"
+                    >
+                        <WhatsappFormWithTabs
+                            onClose={() => setIsWhatsappModalOpen(false)}
+                        />
+                    </GenericModal>
 
-                <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-                    <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
-                        <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
-                            {filteredProductos.length}
-                        </span>
-                        {filteredProductos.length === 1 ? "producto" : "productos"} encontrados
+                    <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
+                        <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+                            <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
+                                {filteredProductos.length}
+                            </span>
+                            {filteredProductos.length === 1 ? "producto" : "productos"} encontrados
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        {["ID", "NOMBRE", "SECCIÓN", "IMAGEN", "ACCIÓN"].map((head, i) => (
-                            <TableHead key={i} className="font-bold tracking-wide uppercase text-xs">
-                                {head}
-                            </TableHead>
-                        ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {currentItems.length > 0 ? (
-                        currentItems.map((item) => (
-                            <TableRow key={item.id}>
-                                <TableCell className="whitespace-nowrap text-teal-700">
-                                    #{item.id}
-                                </TableCell>
-                                <TableCell className="px-6 py-4 font-medium">{item.nombre}</TableCell>
-                                <TableCell className="px-6 py-4">
-                                    <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                                        {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
-                                    </span>
-                                </TableCell>
-                                <TableCell className="px-6 py-4">
-                                    <div className="flex items-center">
-                                        {item.imagenes?.[0]?.url_imagen ? (
-                                            <img
-                                                src={item.imagenes[0].url_imagen.startsWith("http")
-                                                    ? item.imagenes[0].url_imagen
-                                                    : `${getApiUrl}${item.imagenes[0].url_imagen}`}
-                                                alt={item.nombre}
-                                                className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
-                                            // onError={(e) => {
-                                            //     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
-                                            // }}
-                                            />
-                                        ) : (
-                                            <span className="text-sm text-gray-400 italic">Sin imagen</span>
-                                        )}
-                                    </div>
-                                </TableCell>
-                                <TableCell className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex gap-3 items-center">
-                                        <EditProduct
-                                            product={item}
-                                            onProductUpdated={fetchData}
-                                        />
-                                        <button
-                                            className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
-                                            title="Eliminar"
-                                            onClick={() => deleteProductHandler(item.id)}
-                                            disabled={loadingDeleteId === item.id}
-                                        >
-                                            {loadingDeleteId === item.id ? (
-                                                <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {["ID", "NOMBRE", "SECCIÓN", "IMAGEN", "ACCIÓN"].map((head, i) => (
+                                <TableHead key={i} className="font-bold tracking-wide uppercase text-xs">
+                                    {head}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item) => (
+                                <TableRow key={item.id}>
+                                    <TableCell className="whitespace-nowrap text-teal-700">
+                                        #{item.id}
+                                    </TableCell>
+                                    <TableCell className="px-6 py-4 font-medium">{item.nombre}</TableCell>
+                                    <TableCell className="px-6 py-4">
+                                        <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
+                                            {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell className="px-6 py-4">
+                                        <div className="flex items-center">
+                                            {item.imagenes?.[0]?.url_imagen ? (
+                                                <img
+                                                    src={item.imagenes[0].url_imagen.startsWith("http")
+                                                        ? item.imagenes[0].url_imagen
+                                                        : `${getApiUrl}${item.imagenes[0].url_imagen}`}
+                                                    alt={item.nombre}
+                                                    className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
+                                                // onError={(e) => {
+                                                //     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
+                                                // }}
+                                                />
                                             ) : (
-                                                <FaTrash size={18} />
+                                                <span className="text-sm text-gray-400 italic">Sin imagen</span>
                                             )}
-                                        </button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))
-                    ) : (
-                        <EmptyState term={searchTerm} />
-                    )}
-                </TableBody>
-            </Table>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex gap-3 items-center">
+                                            <EditProduct
+                                                product={item}
+                                                onProductUpdated={fetchData}
+                                            />
+                                            <button
+                                                className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
+                                                title="Eliminar"
+                                                onClick={() => deleteProductHandler(item.id)}
+                                                disabled={loadingDeleteId === item.id}
+                                            >
+                                                {loadingDeleteId === item.id ? (
+                                                    <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                                                ) : (
+                                                    <FaTrash size={18} />
+                                                )}
+                                            </button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <EmptyState term={searchTerm} />
+                        )}
+                    </TableBody>
+                </Table>
 
-            {/* Paginación */}
-            {filteredProductos.length > 0 && (
-                <TablePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    setCurrentPage={setCurrentPage}
-                />
-            )}
+                {/* Paginación */}
+                {filteredProductos.length > 0 && (
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        setCurrentPage={setCurrentPage}
+                    />
+                )}
 
+            </div>
         </div>
-    </div>
-);
+    );
 };
 
 export default ProductosTabla;
