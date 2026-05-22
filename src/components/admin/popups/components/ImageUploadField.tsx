@@ -92,7 +92,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                     <input
                         type="file"
                         id={inputId}
-                        accept="image/*"
+                        accept=".webp"
                         onChange={(e) => onFileChange(e, fieldName)}
                         className="hidden"
                     />

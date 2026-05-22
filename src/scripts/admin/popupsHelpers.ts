@@ -31,9 +31,26 @@ export function handleImageUpload(
     callback: (url: string | ArrayBuffer | null | undefined) => void,
 ) {
     if (input && input.files && input.files[0]) {
+        const file = input.files[0];
+
+        // Validar formato webp
+        if (!file.type.includes('webp')) {
+            alert('❌ Solo se aceptan imágenes en formato WEBP.');
+            input.value = '';
+            return;
+        }
+
+        // Validar tamaño máximo 2MB
+        const maxSize = 2 * 1024 * 1024; // 2MB en bytes
+        if (file.size > maxSize) {
+            alert(`❌ El archivo no puede exceder 2MB. Tamaño actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            input.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => callback(e.target?.result);
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
     }
 }
 
