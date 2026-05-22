@@ -9,7 +9,7 @@ import type Product from "src/models/Product";
 import { IoMdCloseCircle } from "react-icons/io";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
-import type { ImagenForm } from "../../../models/Product";
+import type { ImagenForm, ImagenEditada } from "../../../models/Product";
 import imagenEstilo1 from "@images/popup/estilo1.webp";
 import imagenEstilo2 from "@images/popup/estilo2.webp";
 import imagenEstilo3 from "@images/popup/estilo3.webp";
@@ -20,21 +20,6 @@ interface EditProductProps {
     onProductUpdated: () => Promise<void> | void;
 }
 
-
-interface ImagenFormState {
-    id?: number;
-    url_imagen: string | File;
-    texto_alt_SEO: string;
-    isNew: boolean;
-    isDeleted?: boolean;
-
-}
-type ImagenForms = {
-    url_imagen: string | File
-    texto_alt_SEO?: string
-    cacheKey?: number
-
-}
 const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
 const descripcionesPopup = [
@@ -163,6 +148,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Validar formato webp
+        if (!file.type.includes('webp')) {
+            Swal.fire({
+                icon: "error",
+                title: "Formato inválido",
+                text: "❌ Solo se aceptan imágenes en formato WEBP.",
+            });
+            return;
+        }
+
+        // Validar tamaño máximo 2MB
+        const maxSize = 2 * 1024 * 1024; // 2MB en bytes
+        if (file.size > maxSize) {
+            Swal.fire({
+                icon: "error",
+                title: "Archivo demasiado grande",
+                text: `❌ El archivo no puede exceder 2MB. Tamaño actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+            });
+            return;
+        }
 
         setFormData((prev) => {
             const nuevasImagenes = [...prev.imagenes];
@@ -461,7 +467,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             const imagenesNuevasAlt: string[] = [];
 
             //  Array para imágenes que se reemplazan
-            const imagenesEditadas: { id: number; file: File; alt: string }[] = [];
+            const imagenesEditadas: ImagenEditada[] = [];
 
             const imagenesExistentesData: Array<{
                 url: string;
@@ -975,6 +981,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             placeholder="Título..."
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                         />
+                                        <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-3 py-2 mt-2">
+                                          ⚠️ <span className="font-semibold">El color del título cambiará a partir de la segunda palabra</span>
+                                        </p>
                                         {errors.titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.titulo}</p>}
                                     </div>
                                     <div className="form-input">
@@ -982,7 +991,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             <div className="flex flex-col gap-1 mb-4">
                                                 <div>
                                                     <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100">Estilo del título "Detalle Producto"</label>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
+                                                    <p className="text-xs text-white dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
                                                 </div>
                                             </div>
 
@@ -1000,6 +1009,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                         fontWeight: formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita" ? 800 : 600,
                                                         fontStyle: formData.etiqueta.titulo_detalle_producto_style === "cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" ? "italic" : "normal",
                                                         textDecoration: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "underline" : "none",
+                                                        textDecorationColor: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "white" : "transparent",
+                                                        textDecorationThickness: "2px",
+                                                        textUnderlineOffset: "4px"
                                                     }}
                                                 >
                                                     {(() => {
@@ -1022,19 +1034,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             </div>
 
                                             <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.3fr] gap-4 items-start">
-                                                <div className="opacity-50 cursor-not-allowed">
-                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Tamaño (px) <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
-                                                    <input
-                                                        type="number"
-                                                        min="12"
-                                                        max="48"
-                                                        value={formData.etiqueta.titulo_detalle_producto_size}
-                                                        disabled
-                                                        className="w-full cursor-not-allowed"
-                                                    />
+                                                <div>
+                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Tamaño</label>
+                                                    <select
+                                                        value={formData.etiqueta.titulo_detalle_producto_size || "80"}
+                                                        onChange={(e) => {
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                etiqueta: {
+                                                                    ...prev.etiqueta,
+                                                                    titulo_detalle_producto_size: e.target.value,
+                                                                },
+                                                            }));
+                                                        }}
+                                                        className="cursor-pointer w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                                    >
+                                                        <option value="20">Pequeño</option>
+                                                        <option value="80">Mediano</option>
+                                                        <option value="130">Grande</option>
+                                                    </select>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Color</label>
+                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Color</label>
                                                     <input
                                                         type="color"
                                                         value={formData.etiqueta.titulo_detalle_producto_color}
@@ -1047,37 +1068,51 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 },
                                                             }));
                                                         }}
-                                                        className="h-12 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-sm"
+                                                        className="cursor-pointer h-12 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-sm"
                                                     />
                                                 </div>
-                                                <div className="opacity-50 cursor-not-allowed">
-                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Estilo <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        {[
-                                                            { value: "normal", label: "Normal" },
-                                                            { value: "negrita", label: "Negrita" },
-                                                            { value: "cursiva", label: "Cursiva" },
-                                                            { value: "negrita_cursiva", label: "Negrita + cursiva" },
-                                                            { value: "subrayado", label: "Subrayado" },
-                                                        ].map((option) => {
-                                                            const isActive = formData.etiqueta.titulo_detalle_producto_style === option.value;
-                                                            return (
-                                                                <button
-                                                                    key={option.value}
-                                                                    type="button"
-                                                                    disabled
-                                                                    className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-not-allowed ${
-                                                                        isActive
-                                                                            ? "border-teal-500 bg-teal-600 text-white shadow-md"
-                                                                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 text-gray-700 dark:text-gray-200"
-                                                                    }`}
-                                                                >
-                                                                    {option.label}
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
+                                                
+                                                <div>
+    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">
+        Estilo
+    </label>
+
+    <div className="grid grid-cols-2 gap-2">
+        {[
+            { value: "normal", label: "Normal" },
+            { value: "negrita", label: "Negrita" },
+            { value: "cursiva", label: "Cursiva" },
+            { value: "negrita_cursiva", label: "Negrita + cursiva" },
+            { value: "subrayado", label: "Subrayado" },
+        ].map((option) => {
+            const isActive =
+                formData.etiqueta.titulo_detalle_producto_style === option.value;
+
+            return (
+                <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                        setFormData((prev) => ({
+                            ...prev,
+                            etiqueta: {
+                                ...prev.etiqueta,
+                                titulo_detalle_producto_style: option.value,
+                            },
+                        }));
+                    }}
+                    className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-pointer ${
+                        isActive
+                            ? "border-teal-500 bg-teal-600 text-white shadow-md"
+                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 text-gray-700 dark:text-gray-200 hover:border-teal-400"
+                    }`}
+                >
+                    {option.label}
+                </button>
+            );
+        })}
+    </div>
+</div>
                                             </div>
                                         </div>
                                     </div>
@@ -1329,7 +1364,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 Reemplazar
                                                                 <input
                                                                     type="file"
-                                                                    accept="image/*"
+                                                                    accept=".webp"
                                                                     className="hidden"
                                                                     onChange={(e) => handleImagesChange(e, index)}
                                                                 />
@@ -1338,7 +1373,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     ) : (
                                                         <input
                                                             type="file"
-                                                            accept="image/*"
+                                                            accept=".webp"
                                                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 ..."
                                                             onChange={(e) => handleImagesChange(e, index)}
                                                         />
