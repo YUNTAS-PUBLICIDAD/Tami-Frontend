@@ -149,6 +149,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Validar formato webp
+        if (!file.type.includes('webp')) {
+            Swal.fire({
+                icon: "error",
+                title: "Formato inválido",
+                text: "❌ Solo se aceptan imágenes en formato WEBP.",
+            });
+            return;
+        }
+
+        // Validar tamaño máximo 2MB
+        const maxSize = 2 * 1024 * 1024; // 2MB en bytes
+        if (file.size > maxSize) {
+            Swal.fire({
+                icon: "error",
+                title: "Archivo demasiado grande",
+                text: `❌ El archivo no puede exceder 2MB. Tamaño actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+            });
+            return;
+        }
+
         setFormData((prev) => {
             const nuevasImagenes = [...prev.imagenes];
             const imagenAnterior = nuevasImagenes[index];
@@ -960,6 +981,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             placeholder="Título..."
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"}`}
                                         />
+                                        <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-3 py-2 mt-2">
+                                          ⚠️ <span className="font-semibold">El color del título cambiará a partir de la segunda palabra</span>
+                                        </p>
                                         {errors.titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.titulo}</p>}
                                     </div>
                                     <div className="form-input">
@@ -967,7 +991,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             <div className="flex flex-col gap-1 mb-4">
                                                 <div>
                                                     <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100">Estilo del título "Detalle Producto"</label>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
+                                                    <p className="text-xs text-white dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
                                                 </div>
                                             </div>
 
@@ -1011,7 +1035,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
                                             <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.3fr] gap-4 items-start">
                                                 <div>
-                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Tamaño</label>
+                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Tamaño</label>
                                                     <select
                                                         value={formData.etiqueta.titulo_detalle_producto_size || "80"}
                                                         onChange={(e) => {
@@ -1031,7 +1055,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Color</label>
+                                                    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Color</label>
                                                     <input
                                                         type="color"
                                                         value={formData.etiqueta.titulo_detalle_producto_color}
@@ -1049,7 +1073,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 </div>
                                                 
                                                 <div>
-    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">
         Estilo
     </label>
 
@@ -1340,7 +1364,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                                 Reemplazar
                                                                 <input
                                                                     type="file"
-                                                                    accept="image/*"
+                                                                    accept=".webp"
                                                                     className="hidden"
                                                                     onChange={(e) => handleImagesChange(e, index)}
                                                                 />
@@ -1349,7 +1373,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     ) : (
                                                         <input
                                                             type="file"
-                                                            accept="image/*"
+                                                            accept=".webp"
                                                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 ..."
                                                             onChange={(e) => handleImagesChange(e, index)}
                                                         />
