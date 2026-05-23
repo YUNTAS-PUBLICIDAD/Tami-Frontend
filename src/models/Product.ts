@@ -89,6 +89,13 @@ export interface ImagenBack {
   detalle_titulo_estilo?: string;
 }
 
+
+export interface ImagenEditada {
+  id: number;
+  file: File;
+  alt: string;
+}
+
 // Usado para el formulario de creación/edición
 export interface ImagenForm {
   id?: number;

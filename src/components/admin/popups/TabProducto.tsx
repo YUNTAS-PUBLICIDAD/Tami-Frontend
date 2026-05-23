@@ -92,13 +92,48 @@ const TabProducto: React.FC = () => {
         hookClearImage(field);
     }, [hookClearImage]);
 
-    const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        // Validar WEBP
+        if (!file.type.includes("webp")) {
+            Swal.fire({
+                icon: "error",
+                title: "Formato inválido",
+                text: "Solo se aceptan imágenes en formato WEBP.",
+                confirmButtonColor: "#0f766e",
+            });
+
+            e.target.value = "";
+            return;
+        }
+
+        // Validar tamaño máximo 2MB
+        const maxSize = 2 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+            Swal.fire({
+                icon: "warning",
+                title: "Archivo demasiado grande",
+                text: `Máximo permitido: 2MB. Tamaño actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+                confirmButtonColor: "#0f766e",
+            });
+
+            e.target.value = "";
+            return;
+        }
+
         hookFileChange(e, field, (newData, overrides) => {
-            // Dispatch specific preview events for WhatsApp messages
             const url = overrides[field] as string;
+
             ProductSyncService.updateWhatsAppImagePreview(field, url);
         });
-    }, [hookFileChange]);
+    },
+    [hookFileChange]
+);
 
     // Wrapper for save with selectedProductId
     const handleSave = useCallback(async () => {
