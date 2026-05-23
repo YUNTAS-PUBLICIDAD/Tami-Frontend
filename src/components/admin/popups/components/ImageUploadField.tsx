@@ -51,7 +51,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                 </p>
             )}
 
-            <div className="flex flex-row gap-4 items-center">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
                 {/* Preview */}
                 <div className={`${previewWidth} ${previewHeight} bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0 shadow-inner group relative`}>
                     {hasImage ? (

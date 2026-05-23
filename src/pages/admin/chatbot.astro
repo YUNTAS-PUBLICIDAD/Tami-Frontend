@@ -1,0 +1,9 @@
+---
+import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
+import UsuariosTable from "../../components/admin/chatbot/chatbotTable";
+---
+<LayoutAdmin title="CHATBOT">
+    <h1 class = "text-2xl">PROXIMAMENTE</h1>
+    <chatbotTable/>
+    <UsuariosTable client:only="react"/>
+</LayoutAdmin>
