@@ -174,6 +174,7 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             if (isProductoTab) {
                 formData.append("product_popup_delay_minutes", productDelayValue);
                 window.dispatchEvent(new CustomEvent("request-save-product-popup"));
+                return; // Stop execution here, the React component handles the rest of the save process
             }
 
             const whatsappMessage = document.getElementById("whatsappMessage") as HTMLInputElement | null;

@@ -83,7 +83,7 @@ const ChatbotWidget: React.FC = () => {
     }
   });
 
-  const [showBubble, setShowBubble] = useState(false);
+  const [showBubble, setShowBubble] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState("");
@@ -94,8 +94,8 @@ const ChatbotWidget: React.FC = () => {
  
 
   const bubbleMessages = [
-    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
     "¿Tienes dudas sobre nuestros productos? ¡Pregúntame! 🌾",
+    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
     "¿Sabías que tenemos financiamiento disponible? 💳",
     "¿Necesitas repuestos? Puedo ayudarte a ubicarlos. ⚙️",
     "¿Buscas algo para tu negocio? 👨‍💼",
@@ -133,8 +133,8 @@ const ChatbotWidget: React.FC = () => {
     }
     let timeoutId: NodeJS.Timeout;
     const scheduleNextBubble = () => {
-      const min = isFirstBubble.current ? 30000 : 60000;
-      const max = isFirstBubble.current ? 50000 : 90000;
+      const min = isFirstBubble.current ? 0 : 60000;
+      const max = isFirstBubble.current ? 0 : 90000;
       const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
       timeoutId = setTimeout(() => {
         if (!isOpen) {
@@ -153,6 +153,26 @@ const ChatbotWidget: React.FC = () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [isOpen]);
+
+
+  // CONTROL DE LOS 3 PUNTITOS: Dura 3 segundos y luego cambia a la frase real
+  useEffect(() => {
+    // Creamos el cronómetro de 3 segundos
+    const introTimer = setTimeout(() => {
+      isFirstBubble.current = false; // Rompe la condición de los puntitos
+      setShowBubble(false);          // Cierra el globo de puntitos
+
+      // Espera un milisegundo extra para abrir la primera frase real limpiamente
+      setTimeout(() => {
+        setBubbleIndex(0);           // Carga la primera frase de la lista
+        setShowBubble(true);         // Abre la burbuja con el texto real
+      }, 100);
+
+    }, 3000); // <─── AQUÍ ESTÁN TUS 3 SEGUNDOS
+
+    return () => clearTimeout(introTimer);
+  }, []);
+
 
   const toggleChat = () => {
     setIsOpen((prev) => !prev);
