@@ -78,7 +78,7 @@ const ChatbotWidget: React.FC = () => {
     } catch { return false; }
   });
 
-  const [showBubble, setShowBubble] = useState(false);
+  const [showBubble, setShowBubble] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState('');
@@ -88,8 +88,8 @@ const ChatbotWidget: React.FC = () => {
   const isFirstBubble = useRef(true);
 
   const bubbleMessages = [
-    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
     "¿Tienes dudas sobre nuestros productos? ¡Pregúntame! 🌾",
+    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
     "¿Sabías que tenemos financiamiento disponible? 💳",
     "¿Necesitas repuestos? Puedo ayudarte a ubicarlos. ⚙️",
     "¿Buscas algo para tu negocio? 👨‍💼"
@@ -122,8 +122,8 @@ const ChatbotWidget: React.FC = () => {
     if (isOpen) { setShowBubble(false); return; }
     let timeoutId: NodeJS.Timeout;
     const scheduleNextBubble = () => {
-      const min = isFirstBubble.current ? 30000 : 60000;
-      const max = isFirstBubble.current ? 50000 : 90000;
+      const min = isFirstBubble.current ? 0 : 60000;
+      const max = isFirstBubble.current ? 0 : 90000;
       const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
       timeoutId = setTimeout(() => {
         if (!isOpen) {
@@ -140,6 +140,26 @@ const ChatbotWidget: React.FC = () => {
     scheduleNextBubble();
     return () => { if (timeoutId) clearTimeout(timeoutId); };
   }, [isOpen]);
+
+
+  // CONTROL DE LOS 3 PUNTITOS: Dura 3 segundos y luego cambia a la frase real
+  useEffect(() => {
+    // Creamos el cronómetro de 3 segundos
+    const introTimer = setTimeout(() => {
+      isFirstBubble.current = false; // Rompe la condición de los puntitos
+      setShowBubble(false);          // Cierra el globo de puntitos
+
+      // Espera un milisegundo extra para abrir la primera frase real limpiamente
+      setTimeout(() => {
+        setBubbleIndex(0);           // Carga la primera frase de la lista
+        setShowBubble(true);         // Abre la burbuja con el texto real
+      }, 100);
+
+    }, 3000); // <─── AQUÍ ESTÁN TUS 3 SEGUNDOS
+
+    return () => clearTimeout(introTimer);
+  }, []);
+
 
   const toggleChat = () => {
     setIsOpen(prev => !prev);
@@ -409,7 +429,18 @@ const ChatbotWidget: React.FC = () => {
                 <button onClick={handleCloseBubble} className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90">
                   <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">{bubbleMessages[bubbleIndex]}</p>
+                {/*  Muestra los 3 puntitos en la primera frase de arranque*/}
+                {isFirstBubble.current ? (
+                  <div className="flex items-center gap-1.5 py-1 px-2 justify-center bg-gray min-w-[60px]">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                  </div>
+                ) : (
+                  <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">
+                    {bubbleMessages[bubbleIndex]}
+                  </p>
+                )}
                 <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">Asistente Tami</span>
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
