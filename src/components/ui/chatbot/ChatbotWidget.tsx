@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import React, { useState, useEffect, useRef } from "react";
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
-import type { ApiProduct } from "./chatbotLogic";
-import { getLocalReply } from "./chatbotLogic";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply } from "./chatbotLogic";
 
