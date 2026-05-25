@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, useRef } from 'react';
-import { config } from "../../../../config.ts";
-import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
-import apiClient from 'src/services/apiClient.ts';
-import ChatbotIcon from './ChatbotIcon.tsx';
-=======
 import React, { useState, useEffect, useRef } from "react";
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply } from "./chatbotLogic";
->>>>>>> origin/pre-main
-
+import apiClient from "src/services/apiClient";
+import ChatbotIcon from "./ChatbotIcon";
+import { config } from "config";
 interface Opcion {
   label: string;
   valor: string;
@@ -110,7 +104,6 @@ const ChatbotWidget: React.FC = () => {
     "¿Buscas algo para tu negocio? 👨‍💼",
   ];
 
-<<<<<<< HEAD
   const fetchCurrentIcon = async () => {
     try {
       // apiClient ya cuenta con el baseURL pre-configurado internamente
@@ -132,9 +125,6 @@ const ChatbotWidget: React.FC = () => {
   }, []);
 
   // Persistir en localStorage cuando cambian 
-=======
-  // Persistir en localStorage cuando cambian
->>>>>>> origin/pre-main
   useEffect(() => {
     try {
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
@@ -640,18 +630,7 @@ const ChatbotWidget: React.FC = () => {
             aria-label="Abrir Chatbot"
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-<<<<<<< HEAD
             <ChatbotIcon/>
-=======
-            <img
-              src={robotIcon.src}
-              alt="Chatbot Avatar"
-              width="56"
-              height="56"
-              decoding="async"
-              className="h-14 w-14 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
-            />
->>>>>>> origin/pre-main
             <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">
