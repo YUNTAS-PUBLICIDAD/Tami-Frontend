@@ -242,8 +242,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             </div>
 
                             <div className="bg-gray-100  rounded-xl p-6 mb-8 border border-gray-200">
-                                <h3 className="mb-4 detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>Detalles del producto</h3>
-
+                               <h3 className="text-[#015f86] font-extrabold not-italic no-underline text-sm sm:text-base md:text-lg">Detalles del producto</h3>
                                 <h4 className="font-semibold text-lg text-gray-800 mb-2">Especificaciones técnicas:</h4>
                                 <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
                                     {producto.especificaciones?.map((spec, index) => (
