@@ -81,6 +81,31 @@ const WhatsappEditor = ({
       } else if (node.nodeType === 1) { // Element node
         const el = node as HTMLElement;
         const tag = el.tagName.toLowerCase();
+
+        if (tag === 'ul' || tag === 'ol') {
+          if (result !== '' && !endsWithNewline(result)) {
+            result += '\n';
+          }
+
+          const listItems = Array.from(el.children).filter((child) => child.tagName.toLowerCase() === 'li');
+          listItems.forEach((child, index) => {
+            if (index > 0 && !endsWithNewline(result)) {
+              result += '\n';
+            }
+
+            result += tag === 'ul' ? '• ' : `${index + 1}. `;
+
+            for (let i = 0; i < child.childNodes.length; i++) {
+              walk(child.childNodes[i]);
+            }
+
+            if (!endsWithNewline(result)) {
+              result += '\n';
+            }
+          });
+
+          return;
+        }
         
         // Define which tags should be treated as line breaks
         const isBlock = tag === 'div' || tag === 'p' || tag === 'li' || tag === 'br';
@@ -158,14 +183,76 @@ const WhatsappEditor = ({
     if (!text) return "";
     // Normalize any multiple consecutive newlines (2 or more, possibly with spaces) back to clean "\n\n"
     const normalized = text.replace(/\n([ \t]*\n)+/g, '\n\n');
-    let html = normalized
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\*(.*?)\*/g, "<strong>$1</strong>")
-      .replace(/_(.*?)_/g, "<em>$1</em>")
-      .replace(/~(.*?)~/g, "<del>$1</del>")
-      .replace(/\n/g, "<br>");
+
+    const formatInline = (value: string) => {
+      return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\*(.*?)\*/g, "<strong>$1</strong>")
+        .replace(/_(.*?)_/g, "<em>$1</em>")
+        .replace(/~(.*?)~/g, "<del>$1</del>");
+    };
+
+    const lines = normalized.split('\n');
+    let html = '';
+    let activeList: 'ul' | 'ol' | null = null;
+
+    const closeList = () => {
+      if (!activeList) return;
+      html += `</${activeList}>`;
+      activeList = null;
+    };
+
+    const appendBlockBreak = () => {
+      if (!html) return;
+      if (!html.endsWith('<br>') && !html.endsWith('</ul>') && !html.endsWith('</ol>')) {
+        html += '<br>';
+      }
+    };
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        closeList();
+        appendBlockBreak();
+        html += '<br>';
+        return;
+      }
+
+      const bulletMatch = trimmed.match(/^(?:•|\-|\*)\s+(.*)$/);
+      const orderedMatch = trimmed.match(/^\d+[.)]\s+(.*)$/);
+
+      if (bulletMatch) {
+        if (activeList !== 'ul') {
+          closeList();
+          appendBlockBreak();
+          html += '<ul>';
+          activeList = 'ul';
+        }
+        html += `<li>${formatInline(bulletMatch[1])}</li>`;
+        return;
+      }
+
+      if (orderedMatch) {
+        if (activeList !== 'ol') {
+          closeList();
+          appendBlockBreak();
+          html += '<ol>';
+          activeList = 'ol';
+        }
+        html += `<li>${formatInline(orderedMatch[1])}</li>`;
+        return;
+      }
+
+      closeList();
+      appendBlockBreak();
+      html += formatInline(trimmed);
+    });
+
+    closeList();
+
     return html;
   };
 
