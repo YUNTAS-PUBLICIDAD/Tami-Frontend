@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
-
+import type { ApiProduct } from "./chatbotLogic";
+import { getLocalReply } from "./chatbotLogic";
+import apiClient from "src/services/apiClient";
+import ChatbotIcon from "./ChatbotIcon";
+import { config } from "config";
 interface Opcion {
   label: string;
   valor: string;
@@ -78,22 +82,44 @@ const ChatbotWidget: React.FC = () => {
     } catch { return false; }
   });
 
-  const [showBubble, setShowBubble] = useState(true);
-  const [isPopping, setIsPopping] = useState(false);
-  const [bubbleIndex, setBubbleIndex] = useState(0);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const isFirstBubble = useRef(true);
+  const [showBubble, setShowBubble] = useState(true);
+  const [isPopping, setIsPopping] = useState(false);
+  const [bubbleIndex, setBubbleIndex] = useState(0);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [icono, setIcono] = useState(robotIcon)
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstBubble = useRef(true);
+ 
 
-  const bubbleMessages = [
-    "¿Tienes dudas sobre nuestros productos? ¡Pregúntame! 🌾",
-    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
-    "¿Sabías que tenemos financiamiento disponible? 💳",
-    "¿Necesitas repuestos? Puedo ayudarte a ubicarlos. ⚙️",
-    "¿Buscas algo para tu negocio? 👨‍💼"
-  ];
+  const bubbleMessages = [
+    "¿Tienes dudas sobre nuestros productos? ¡Pregúntame! 🌾",
+    "¡Hola! ¿Buscas alguna maquinaria en especial? 🚜",
+    "¿Sabías que tenemos financiamiento disponible? 💳",
+    "¿Necesitas repuestos? Puedo ayudarte a ubicarlos. ⚙️",
+    "¿Buscas algo para tu negocio? 👨‍💼",
+  ];
+
+  const fetchCurrentIcon = async () => {
+    try {
+      // apiClient ya cuenta con el baseURL pre-configurado internamente
+      const response = await apiClient.get(config.endpoints.chatbot.getIcon);
+      
+      // En apiClient (Axios), la respuesta del servidor se aloja directamente en .data
+      const data = response.data;
+      if (data && data.url_icono) {
+        setIcono(data.url_icono);
+      }
+    } catch (err) {
+      console.error("Error al obtener el ícono del chatbot:", err);
+    }
+  };
+
+  //Busqueda constante del Icono
+  useEffect(() => {
+    fetchCurrentIcon();
+  }, []);
 
   // Persistir en localStorage cuando cambian 
   useEffect(() => {
@@ -253,33 +279,30 @@ const ChatbotWidget: React.FC = () => {
     }
   };
 
-  return (
-    <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
-      {isOpen ? (
-        <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
-
-          {/* Header */}
-          <div className="bg-gradient-to-r from-[#2A938B] to-[#0D2D2B] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div className="flex items-center gap-2.5 relative z-10">
-              <div className="relative">
-                <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
-                  <img
-                    src={robotIcon.src}
-                    alt="Asistente Tami"
-                    className="absolute inset-0 w-full h-full object-cover object-center transform scale-125 origin-center"
-                  />
-                </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
-              </div>
-              <div>
-                <h3 className="font-bold text-base leading-tight tracking-tight">Asistente Tami</h3>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
-                  <p className="text-[12px] font-medium opacity-90">En línea</p>
-                </div>
-              </div>
-            </div>
+  return (
+    <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
+      {isOpen ? (
+        <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#2A938B] to-[#0D2D2B] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="flex items-center gap-2.5 relative z-10">
+              <div className="relative">
+                <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
+                  <ChatbotIcon/>
+                </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
+              </div>
+              <div>
+                <h3 className="font-bold text-base leading-tight tracking-tight">
+                  Asistente Tami
+                </h3>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
+                  <p className="text-[12px] font-medium opacity-90">En línea</p>
+                </div>
+              </div>
+            </div>
 
             {/* Botones header: reiniciar + cerrar */}
             <div className="flex items-center gap-2 relative z-10">
