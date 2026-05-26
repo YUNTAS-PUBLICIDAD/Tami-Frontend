@@ -24,8 +24,10 @@ export function initImages(updatePreview: (settings?: any, mode?: string | null)
                 // sync whatsapp preview via event
                 window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: sharedState.currentSelectedWaMessage || "1" }));
 
-                if (previewKey.startsWith("popup_")) {
-                    updatePreview({ [previewKey]: url as string }, sharedState.currentMode || null);
+                if (previewKey.startsWith("popup_mobile")) {
+                    updatePreview({ [previewKey]: url as string }, "mobile");
+                } else if (previewKey.startsWith("popup_")) {
+                    updatePreview({ [previewKey]: url as string }, "desktop");
                 }
 
                 clearBtn?.classList.remove("hidden");
@@ -43,8 +45,10 @@ export function initImages(updatePreview: (settings?: any, mode?: string | null)
 
             window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: sharedState.currentSelectedWaMessage || "1" }));
 
-            if (previewKey.startsWith("popup_")) {
-                updatePreview({ [previewKey]: null }, sharedState.currentMode || null);
+            if (previewKey.startsWith("popup_mobile")) {
+                updatePreview({ [previewKey]: null }, "mobile");
+            } else if (previewKey.startsWith("popup_")) {
+                updatePreview({ [previewKey]: null }, "desktop");
             }
 
             clearBtn?.classList.add("hidden");
