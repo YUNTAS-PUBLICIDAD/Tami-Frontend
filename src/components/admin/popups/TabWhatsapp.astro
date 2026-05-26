@@ -153,7 +153,7 @@ import TimePicker from "./TimePicker.tsx";
             <TimePicker 
                         id="whatsappTime2" 
                         name="whatsappTime2" 
-                        label="Tiempo de espera" 
+                        label="Tiempo de espera adicional" 
                         defaultValue={15} 
                         client:load 
                     />
@@ -217,12 +217,27 @@ import TimePicker from "./TimePicker.tsx";
             </div>
 
             <!-- Tiempo 3 -->
-                <TimePicker 
-                id="whatsappTime3" 
-                name="whatsappTime3" 
-                label="Tiempo de aparición" 
-                defaultValue={0} 
-                />
+            <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tiempo de espera (minutos)</label>
+                <select 
+                    id="whatsappTime3" 
+                    class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none cursor-pointer"
+                >
+                    <option value="-1">No enviar</option>
+                    <option value="0">Inmediato</option>
+                    <option value="1">1 minuto</option>
+                    <option value="2">2 minutos</option>
+                    <option value="3">3 minutos</option>
+                    <option value="4">4 minutos</option>
+                    <option value="5">5 minutos</option>
+                    <option value="10">10 minutos</option>
+                    <option value="15">15 minutos</option>
+                    <option value="20">20 minutos</option>
+                    <option value="30">30 minutos</option>
+                    <option value="60" selected>1 hora</option>
+                </select>
+                <p class="text-[10px] text-gray-500 italic">Tiempo después de haber enviado el segundo mensaje.</p>
+            </div>
         </div>
         </div>
     </div>

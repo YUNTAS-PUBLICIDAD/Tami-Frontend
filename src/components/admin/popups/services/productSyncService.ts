@@ -45,7 +45,7 @@ export class ProductSyncService {
       popup_image2_url: overrides.imagen_popup2 || previews.imagen_popup2 || data.imagen_popup2,
       button_bg_color: data.etiqueta?.popup_button_color || "#008B8B",
       button_text_color: data.etiqueta?.popup_text_color || "#000000",
-      button_text: data.etiqueta?.popup_button_text || "",
+      button_text: data.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
       popup_mobile_image_url: overrides.imagen_popup_mobile !== undefined 
         ? overrides.imagen_popup_mobile 
         : (previews.imagen_popup_mobile || data.imagen_popup_mobile),
@@ -131,10 +131,10 @@ export class ProductSyncService {
       body: (data as any)[mensajeKey] || "",
       title: (data as any)[asuntoKey] || "",
       image: emailImage instanceof File ? null : emailImage,
-      btnText: (data as any)[btnTextKey],
-      btnLink: (data as any)[btnLinkKey],
-      btnBgColor: (data as any)[btnBgKey],
-      btnTextColor: (data as any)[btnTextColorKey],
+      btnText: (data as any)[btnTextKey] || "Ver Productos",
+      btnLink: (data as any)[btnLinkKey] || "https://tami.com/productos",
+      btnBgColor: (data as any)[btnBgKey] || "#0b1c3c",
+      btnTextColor: (data as any)[btnTextColorKey] || "#ffffff",
       // Mark this payload as originating from the product editor to allow
       // listeners to ignore product updates when appropriate.
       source: "product"

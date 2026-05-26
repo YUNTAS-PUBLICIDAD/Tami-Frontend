@@ -349,6 +349,39 @@ export function initPopupManager() {
         updatePreview({}, "mobile");
     };
 
+    // Sync automático del modo preview
+    window.addEventListener("update-popup-preview", (e: any) => {
+        const mode = e.detail?.mode;
+
+        if (!mode || mode === currentMode) return;
+
+        currentMode = mode;
+
+        if (mode === "mobile") {
+            btnMobile.classList.remove(...inactiveModeClasses);
+            btnMobile.classList.add(...activeModeClasses);
+
+            btnDesktop.classList.remove(...activeModeClasses);
+            btnDesktop.classList.add(...inactiveModeClasses);
+
+            if (previewStage) {
+                previewStage.classList.add("is-mobile-view");
+            }
+        }
+
+        if (mode === "desktop") {
+            btnDesktop.classList.remove(...inactiveModeClasses);
+            btnDesktop.classList.add(...activeModeClasses);
+
+            btnMobile.classList.remove(...activeModeClasses);
+            btnMobile.classList.add(...inactiveModeClasses);
+
+            if (previewStage) {
+                previewStage.classList.remove("is-mobile-view");
+            }
+        }
+    });
+
     window.addEventListener("resize", () => {
         const isNowMobile = window.innerWidth < 1024;
         if (isNowMobile && currentMode !== "mobile") {

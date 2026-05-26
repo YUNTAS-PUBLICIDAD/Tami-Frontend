@@ -4,6 +4,7 @@ import { origenCliente } from "@data/origenCliente";
 import Swal from "sweetalert2";
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
+const POPUP_LAST_EMAIL_BY_PHONE_KEY = "popupLastEmailByPhone";
 
 export interface PopupSettings {
   popup_image_url?: string;
@@ -334,11 +335,19 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     if (!validateForm({ nombre: submittedNombre, telefono: submittedTelefono, correo: submittedCorreo })) return;
 
+    const lastEmailByPhoneKey = `${POPUP_LAST_EMAIL_BY_PHONE_KEY}:${submittedTelefono}`;
+    const lastEmailByPhone = typeof window !== "undefined"
+      ? window.localStorage.getItem(lastEmailByPhoneKey)
+      : null;
+    const shouldSendEmailFallback = Boolean(isProductDetail && lastEmailByPhone && lastEmailByPhone !== submittedCorreo);
+
     setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("name", submittedNombre);
       formData.append("email", submittedCorreo);
+      formData.append("correo", submittedCorreo);
+      formData.append("recipient_email", submittedCorreo);
       formData.append("celular", `+51${submittedTelefono}`);
       
       // Enviar origen y datos de producto si existen
@@ -357,6 +366,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
       const response = await fetch(getApiUrl(config.endpoints.popups.submit), {
         method: "POST",
+        cache: "no-store",
         body: formData,
       });
 
@@ -398,6 +408,52 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
         return;
       }
 
+      const responseJson = await response.json().catch(() => null);
+      const responseClient = responseJson?.data ?? responseJson;
+      const responseClientId = responseClient?.id;
+
+      if (responseClientId && responseClient?.email && responseClient.email !== submittedCorreo) {
+        try {
+          await fetch(getApiUrl(config.endpoints.clientes.update(responseClientId)), {
+            method: "PUT",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: submittedNombre,
+              celular: `+51${submittedTelefono}`,
+              email: submittedCorreo,
+              source_id: isProductDetail ? origenCliente.PRODUCTO_DETALLE : origenCliente.INICIO,
+            }),
+          });
+        } catch (updateError) {
+          console.warn("[usePopupLogic] Could not update popup client email.", updateError);
+        }
+      }
+
+      if (shouldSendEmailFallback) {
+        const fallbackResponse = await fetch(
+          getApiUrl(config.endpoints.email.sendEmailByProductLink),
+          {
+            method: "POST",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: submittedNombre,
+              phone: `+51${submittedTelefono}`,
+              celular: `+51${submittedTelefono}`,
+              telefono: `+51${submittedTelefono}`,
+              email: submittedCorreo,
+              link: window.location.href,
+            }),
+          },
+        );
+
+        if (!fallbackResponse.ok) {
+          console.warn("[usePopupLogic] Email fallback failed for changed contact email.");
+        }
+      }
+
+      window.localStorage.setItem(lastEmailByPhoneKey, submittedCorreo);
       setErrors({ general: "Información enviada con éxito" });
 
       Swal.fire({
