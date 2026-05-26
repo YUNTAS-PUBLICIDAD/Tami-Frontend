@@ -281,10 +281,5 @@ import TimePicker from "./TimePicker.tsx";
         return element?.value || 'No content';
     }
     
-    // Agregar botón para imprimir en consola
-    const printButton = document.createElement('button');
-    printButton.textContent = '📋 Ver datos en consola';
-    printButton.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-semibold hover:bg-gray-700';
-    printButton.onclick = printFormData;
-    document.body.appendChild(printButton);
+    // (Botón de depuración eliminado)
 </script>
