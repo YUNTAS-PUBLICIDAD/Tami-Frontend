@@ -50,15 +50,9 @@ const CONTEXT_KEY = 'tami_chat_context';
 const OPEN_KEY = 'tami_chat_open';
 
 const mensajeInicial: Message = {
-  role: 'bot',
-  tipo: 'opciones',
-  respuesta: '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio.\n\n¿Qué te gustaría hacer?',
-  opciones: [
-    { label: '🚀 Negocio', valor: 'negocio' },
-    { label: '⚙️ Maquinaria', valor: 'maquinaria' },
-    { label: '✨ Decoración', valor: 'decoracion' },
-    { label: '👨‍💼 Hablar con asesor', valor: 'asesor' },
-  ]
+  role: 'bot',
+  tipo: 'texto',
+  respuesta: '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.',
 };
 
 const ChatbotWidget: React.FC = () => {

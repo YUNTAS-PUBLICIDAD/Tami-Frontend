@@ -194,7 +194,7 @@ const SignIn: React.FC = () => {
                   type="text"
                   name="email"
                   className="w-full px-5 py-3.5 bg-white border border-[#8de7df] rounded-xl focus:bg-white focus:border-[#3bc0b3] focus:ring-4 focus:ring-[#3bc0b3]/20 transition-all outline-none text-[#08332f] font-bold placeholder-[#13665f]/50 backdrop-blur-sm shadow-sm"
-                  placeholder="ejemplo@yuntas.com"
+                  placeholder="ejemplo@tami.com"
                   required
                 />
               </div>
