@@ -5,10 +5,14 @@ interface TimePickerProps {
   name: string;
   label: string;
   defaultValue?: number;
+  value?: number;
+  onChange?: (value: number) => void;
 }
 
-export default function TimePicker({ id, name, label, defaultValue = 0 }: TimePickerProps) {
-  // Determinar el estado inicial basándonos en el defaultValue recibido de Astro
+export default function TimePicker({ id, name, label, defaultValue = 0, value, onChange }: TimePickerProps) {
+  const resolvedValue = value ?? defaultValue;
+
+  // Determinar el estado inicial basándonos en el valor recibido
   const getInitialMode = (val: number) => {
     if (val === -1) return 'nosend';
     if (val === 0) return 'immediate';
@@ -17,24 +21,24 @@ export default function TimePicker({ id, name, label, defaultValue = 0 }: TimePi
     return 'custom';
   };
 
-  const initialMode = getInitialMode(defaultValue);
+  const initialMode = getInitialMode(resolvedValue);
   
   // Estados reactivos internos del componente
   const [mode, setMode] = useState<string>(initialMode);
-  const [selectValue, setSelectValue] = useState<string>(initialMode === 'custom' ? 'custom' : defaultValue === -1 ? '-1' : '0');
-  const [hours, setHours] = useState<number>(initialMode === 'custom' ? Math.floor(defaultValue / 60) : 0);
-  const [minutes, setMinutes] = useState<number>(initialMode === 'custom' ? defaultValue % 60 : 10);
-  const [totalMinutes, setTotalMinutes] = useState<number>(defaultValue);
+  const [selectValue, setSelectValue] = useState<string>(initialMode === 'custom' ? 'custom' : resolvedValue === -1 ? '-1' : '0');
+  const [hours, setHours] = useState<number>(initialMode === 'custom' ? Math.floor(resolvedValue / 60) : 0);
+  const [minutes, setMinutes] = useState<number>(initialMode === 'custom' ? resolvedValue % 60 : 10);
+  const [totalMinutes, setTotalMinutes] = useState<number>(resolvedValue);
 
-  // 🔄 NUEVO: Escucha cambios externos en defaultValue para resetear el reloj entre correos
+  // Escucha cambios externos en el valor para mantener sincronizado el reloj
   useEffect(() => {
-    const newMode = getInitialMode(defaultValue);
+    const newMode = getInitialMode(resolvedValue);
     setMode(newMode);
-    setSelectValue(newMode === 'custom' ? 'custom' : defaultValue === -1 ? '-1' : '0');
-    setHours(newMode === 'custom' ? Math.floor(defaultValue / 60) : 0);
-    setMinutes(newMode === 'custom' ? defaultValue % 60 : 10);
-    setTotalMinutes(defaultValue);
-  }, [defaultValue]); // 👈 Vigila el valor inicial de forma activa
+    setSelectValue(newMode === 'custom' ? 'custom' : resolvedValue === -1 ? '-1' : '0');
+    setHours(newMode === 'custom' ? Math.floor(resolvedValue / 60) : 0);
+    setMinutes(newMode === 'custom' ? resolvedValue % 60 : 10);
+    setTotalMinutes(resolvedValue);
+  }, [resolvedValue, id, name]);
   
 
   // Cada vez que cambie el modo o las horas/minutos del reloj, recalculamos el total
@@ -48,6 +52,7 @@ export default function TimePicker({ id, name, label, defaultValue = 0 }: TimePi
       if (calculated === 0) calculated = 1; // Evita colisión con inmediato
     }
     setTotalMinutes(calculated);
+    onChange?.(calculated);
   }, [mode, hours, minutes]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
