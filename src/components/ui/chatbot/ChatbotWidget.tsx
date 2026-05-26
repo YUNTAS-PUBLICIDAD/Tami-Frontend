@@ -11,16 +11,18 @@ interface Opcion {
 }
 
 interface ChatContext {
-  paso: string;
-  flujo?: string;
-  producto?: string;
-  ciudad?: string;
-  uso?: string;
-  etapa?: string;
-  rubro?: string;
-  necesidad?: string;
-  tipo_negocio?: string;
-  [key: string]: string | undefined;
+  paso: string;
+  flujo?: string;
+  producto?: string;
+  ciudad?: string;
+  uso?: string;
+  nombre?: string;
+  telefono?: string;
+  etapa?: string;
+  rubro?: string;
+  necesidad?: string;
+  tipo_negocio?: string;
+  [key: string]: string | undefined;
 }
 
 interface Message {
@@ -239,13 +241,32 @@ const ChatbotWidget: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    try {
-      const apiUrl = import.meta.env.PUBLIC_API_URL || 'https://apitami.tamimaquinarias.com';
-      const response = await fetch(`${apiUrl}/api/v1/chat/responder`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ mensaje: valorEnviado, context })
-      });
+    try {
+      const localReply = await getLocalReply(valorEnviado, context, messages);
+      if (localReply) {
+        await new Promise((resolve) => setTimeout(resolve, 700));
+        const nextPaso = localReply.nextPaso;
+        if (nextPaso || localReply.contextPatch) {
+          setContext((prev) => ({
+            ...(prev || { paso: "menu_principal" }),
+            ...(localReply.contextPatch || {}),
+            ...(nextPaso ? { paso: nextPaso } : {}),
+          }));
+        }
+        setMessages((prev) => [...prev, localReply.message]);
+        return;
+      }
+
+      const apiUrl =
+        import.meta.env.PUBLIC_API_URL || "https://apitami.tamimaquinarias.com";
+      const response = await fetch(`${apiUrl}/api/v1/chat/responder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ mensaje: valorEnviado, context }),
+      });
 
       if (!response.ok) throw new Error('Network response was not ok');
 
@@ -419,71 +440,106 @@ const ChatbotWidget: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
-          <div className="bg-white p-4 border-t border-gray-100 shadow-[0_-15px_30px_rgba(0,0,0,0.03)] shrink-0">
-            <form onSubmit={sendMessage} className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={context?.paso?.includes('datos_contacto') ? 'Ej: Juan, 987654321' : 'Escribe un mensaje...'}
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
-                </svg>
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : (
-        /* Botón Flotante */
-        <div className="flex items-end gap-4 mb-8 pointer-events-auto">
-          {showBubble && (
-            <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? 'animate-balloon-pop' : 'animate-in slide-in-from-right-10 fade-in duration-500'}`}>
-              <div className="w-fit bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
-                onClick={() => { setIsOpen(true); setShowBubble(false); }}>
-                <button onClick={handleCloseBubble} className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90">
-                  <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-                {/*  Muestra los 3 puntitos en la primera frase de arranque*/}
-                {isFirstBubble.current ? (
-                  <div className="flex items-center gap-1.5 py-1 px-2 justify-center bg-gray min-w-[60px]">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
-                  </div>
-                ) : (
-                  <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">
-                    {bubbleMessages[bubbleIndex]}
-                  </p>
-                )}
-                <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">Asistente Tami</span>
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
-                </div>
-              </div>
-              <div className="absolute bottom-6 -right-2 w-5 h-5 bg-white/90 backdrop-blur-xl border-r border-b border-white/40 transform rotate-[-45deg] rounded-sm"></div>
-            </div>
-          )}
-          <button onClick={toggleChat} className="relative group w-16 h-16 rounded-[24px] bg-gradient-to-tr from-[#015f86] to-[#0d9488] text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 active:shadow-inner" aria-label="Abrir Chatbot">
-            <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-            <img src={robotIcon.src} alt="Chatbot Avatar" width="56" height="56" decoding="async" className="h-14 w-14 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500" />
-            <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">1</span>
-            </span>
-          </button>
-        </div>
-      )}
-    </div>
-  );
+          {/* Input Area */}
+          <div className="bg-white p-4 border-t border-gray-100 shadow-[0_-15px_30px_rgba(0,0,0,0.03)] shrink-0">
+            <form onSubmit={sendMessage} className="flex gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={
+                  context?.paso === "esperando_datos_producto_1"
+                    ? "Ej: negocio, Lima"
+                    : context?.paso === "esperando_datos_producto_2"
+                      ? "Ej: Adriano, 987654321"
+                      : context?.paso?.includes("datos_contacto")
+                        ? "Ej: Juan, 987654321"
+                    : "Escribe un mensaje..."
+                }
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : (
+        /* Botón Flotante */
+        <div className="flex items-end gap-4 mb-8 pointer-events-auto">
+          {showBubble && (
+            <div
+              className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? "animate-balloon-pop" : "animate-in slide-in-from-right-10 fade-in duration-500"}`}
+            >
+              <div
+                className="w-fit bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+                onClick={() => {
+                  setIsOpen(true);
+                  setShowBubble(false);
+                }}
+              >
+                <button
+                  onClick={handleCloseBubble}
+                  className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    className="sm:w-3.5 sm:h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+                <p className="text-[13px] sm:text-[14px] font-medium text-gray-800 leading-tight">
+                  {bubbleMessages[bubbleIndex]}
+                </p>
+                <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">
+                    Asistente Tami
+                  </span>
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
+                </div>
+              </div>
+              <div className="absolute bottom-6 -right-2 w-5 h-5 bg-white/90 backdrop-blur-xl border-r border-b border-white/40 transform rotate-[-45deg] rounded-sm"></div>
+            </div>
+          )}
+          <button
+            onClick={toggleChat}
+            className="relative group w-16 h-16 rounded-[24px] bg-gradient-to-tr from-[#015f86] to-[#0d9488] text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 active:shadow-inner"
+            aria-label="Abrir Chatbot"
+          >
+            <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+            <ChatbotIcon/>
+            <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">
+                1
+              </span>
+            </span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ChatbotWidget;
