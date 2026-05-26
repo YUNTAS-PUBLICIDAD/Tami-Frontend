@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply } from "./chatbotLogic";
-
+import apiClient from "src/services/apiClient";
+import ChatbotIcon from "./ChatbotIcon";
+import { config } from "config";
 interface Opcion {
   label: string;
   valor: string;
@@ -91,6 +93,7 @@ const ChatbotWidget: React.FC = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [icono, setIcono] = useState(robotIcon)
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstBubble = useRef(true);
  
@@ -103,7 +106,27 @@ const ChatbotWidget: React.FC = () => {
     "¿Buscas algo para tu negocio? 👨‍💼",
   ];
 
-  // Persistir en localStorage cuando cambian
+  const fetchCurrentIcon = async () => {
+    try {
+      // apiClient ya cuenta con el baseURL pre-configurado internamente
+      const response = await apiClient.get(config.endpoints.chatbot.getIcon);
+      
+      // En apiClient (Axios), la respuesta del servidor se aloja directamente en .data
+      const data = response.data;
+      if (data && data.url_icono) {
+        setIcono(data.url_icono);
+      }
+    } catch (err) {
+      console.error("Error al obtener el ícono del chatbot:", err);
+    }
+  };
+
+  //Busqueda constante del Icono
+  useEffect(() => {
+    fetchCurrentIcon();
+  }, []);
+
+  // Persistir en localStorage cuando cambian 
   useEffect(() => {
     try {
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
@@ -308,11 +331,7 @@ const ChatbotWidget: React.FC = () => {
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
                 <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
-                  <img
-                    src={robotIcon.src}
-                    alt="Asistente Tami"
-                    className="absolute inset-0 w-full h-full object-cover object-center transform scale-125 origin-center"
-                  />
+                  <ChatbotIcon/>
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
               </div>
@@ -621,14 +640,7 @@ const ChatbotWidget: React.FC = () => {
             aria-label="Abrir Chatbot"
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-            <img
-              src={robotIcon.src}
-              alt="Chatbot Avatar"
-              width="56"
-              height="56"
-              decoding="async"
-              className="h-14 w-14 relative z-10 object-contain drop-shadow-md animate-in fade-in zoom-in duration-500"
-            />
+            <ChatbotIcon/>
             <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">
