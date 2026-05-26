@@ -36,7 +36,7 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 80
 >
 
   <section
-    class="relative h-[30vh] sm:h-screen min-h-[32vh] pt-16 lg:pt-20 text-white overflow-hidden"
+    class="relative sm:h-screen min-h-[45vh] pt-16 lg:pt-20 text-white overflow-hidden"
   >
     <AboutHeroBackground client:load imageSrc={optimizedHero.src} />
 
@@ -65,13 +65,13 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 80
   {/* 🔹 Sección Identidad y CTA */}
   <section class="w-full px-0">
     <div
-      class="relative overflow-hidden flex items-end md:items-center justify-center md:justify-start md:h-[1000px]"
+      class="relative overflow-hidden flex items-center h-[60vh] sm:h-[80vh] md:items-center justify-center md:justify-start"
     >
       <!-- Fondo mobile -->
       <Image
         src={bg_card4_mobile}
         alt="Fondo Tami Mobile"
-        class="block md:hidden w-full h-auto object-contain object-center"
+        class="block md:hidden absolute inset-0 h-full object-cover w-full object-center md:object-cover"
         loading="eager"
         fetchpriority="high"
         widths={[390, 780]}
@@ -91,16 +91,16 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 80
 
       <!-- Contenido -->
       <div
-        class="absolute z-10 text-white text-center md:text-left w-full md:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 md:ml-8 lg:ml-16 pb-5 md:pb-0 md:py-8 flex flex-col justify-end md:justify-center"
+        class="z-10 text-white text-center md:text-left w-full md:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 md:ml-8 lg:ml-16 md:py-8 flex flex-col justify-center relative"
       >
         <h2
-          class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-8 leading-tight drop-shadow-md uppercase"
+          class="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-8 leading-tight drop-shadow-md uppercase"
         >
           ¿POR QUÉ ELEGIR TAMI?
         </h2>
 
         <p
-          class="text-sm sm:text-base md:text-lg font-light mb-5 md:mb-10 opacity-95 leading-relaxed text-center md:text-justify"
+          class="text-[12.5px]  sm:text-base md:text-lg font-light mb-5 md:mb-10 opacity-95 leading-relaxed text-center md:text-justify"
         >
           En <span class="font-bold">Tami</span> nos especializamos en soluciones
           de maquinaria y tecnología para empresas y emprendedores que buscan eficiencia,
