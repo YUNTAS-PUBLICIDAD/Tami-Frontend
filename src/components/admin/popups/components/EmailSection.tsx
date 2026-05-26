@@ -176,10 +176,10 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                             />
                             <div className="col-span-1 sm:col-span-2 mt-2">
                                 <TimePicker 
-                                    id="emailTime1" 
-                                    name="emailTime1" 
-                                    label="Tiempo de aparición" 
-                                    defaultValue={0} 
+                                            id="email_time_" 
+                                            name="email_time_" 
+                                            label="Tiempo de aparición" 
+                                            defaultValue={0} 
                                 />
                             </div>
                         </div>
