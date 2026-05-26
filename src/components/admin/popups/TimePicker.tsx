@@ -13,7 +13,7 @@ export default function TimePicker({ id, name, label, defaultValue = 0 }: TimePi
     if (val === -1) return 'nosend';
     if (val === 0) return 'immediate';
     // Si no es -1 ni 0, y coincide con opciones fijas del select anterior
-    if ([10, 15, 20, 30, 60].includes(val)) return 'static';
+    // if ([10, 15, 20, 30, 60].includes(val)) return 'static';
     return 'custom';
   };
 
@@ -21,23 +21,34 @@ export default function TimePicker({ id, name, label, defaultValue = 0 }: TimePi
   
   // Estados reactivos internos del componente
   const [mode, setMode] = useState<string>(initialMode);
-  const [selectValue, setSelectValue] = useState<string>(initialMode === 'custom' ? 'custom' : defaultValue.toString());
+  const [selectValue, setSelectValue] = useState<string>(initialMode === 'custom' ? 'custom' : defaultValue === -1 ? '-1' : '0');
   const [hours, setHours] = useState<number>(initialMode === 'custom' ? Math.floor(defaultValue / 60) : 0);
   const [minutes, setMinutes] = useState<number>(initialMode === 'custom' ? defaultValue % 60 : 10);
   const [totalMinutes, setTotalMinutes] = useState<number>(defaultValue);
+
+  // 🔄 NUEVO: Escucha cambios externos en defaultValue para resetear el reloj entre correos
+  useEffect(() => {
+    const newMode = getInitialMode(defaultValue);
+    setMode(newMode);
+    setSelectValue(newMode === 'custom' ? 'custom' : defaultValue === -1 ? '-1' : '0');
+    setHours(newMode === 'custom' ? Math.floor(defaultValue / 60) : 0);
+    setMinutes(newMode === 'custom' ? defaultValue % 60 : 10);
+    setTotalMinutes(defaultValue);
+  }, [defaultValue]); // 👈 Vigila el valor inicial de forma activa
+  
 
   // Cada vez que cambie el modo o las horas/minutos del reloj, recalculamos el total
   useEffect(() => {
     let calculated = 0;
     if (mode === 'nosend') calculated = -1;
     else if (mode === 'immediate') calculated = 0;
-    else if (mode === 'static') calculated = parseInt(selectValue);
+    // else if (mode === 'static') calculated = parseInt(selectValue);
     else if (mode === 'custom') {
       calculated = (hours * 60) + minutes;
       if (calculated === 0) calculated = 1; // Evita colisión con inmediato
     }
     setTotalMinutes(calculated);
-  }, [mode, selectValue, hours, minutes]);
+  }, [mode, hours, minutes]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
@@ -48,9 +59,7 @@ export default function TimePicker({ id, name, label, defaultValue = 0 }: TimePi
     } else if (val === '-1') {
       setMode('nosend');
     } else if (val === '0') {
-      setMode('immediate');
-    } else {
-      setMode('static');
+      setMode('immediate')
     }
   };
 

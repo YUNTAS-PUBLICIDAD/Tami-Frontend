@@ -518,8 +518,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
   return (
     <>
-      <button onClick={openModal} className="flex items-center gap-2 bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300 px-5 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <button onClick={openModal} className="relative flex items-center justify-center w-full bg-teal-600 text-white hover:bg-teal-700 px-12 y min-w-[160px] transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
         Agregar Producto
@@ -684,7 +684,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <button
                       type="button"
                       onClick={agregarKeyword}
-                      className="inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                      className="inline-flex items-center gap-1 bg-teal-50 hover:bg-teal-100 text-teal-700 px-12 py-2 px-12 y min-w-[160px] rounded-lg text-sm font-medium transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
