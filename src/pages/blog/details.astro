@@ -114,6 +114,18 @@ const productsUrl = config.endpoints.productos.list;
     >
       eval(showLoaderString);
       eval(removeLoaderString);
+      function getBlogImageUrl(imagePath) {
+        if (!imagePath) return "";
+        if (imagePath.startsWith("http") || imagePath.startsWith("//")) {
+          return imagePath;
+        }
+        const normalizedBase = String(getApiUrl || "").replace(/\/$/, "");
+        const normalizedPath = imagePath.startsWith("/")
+          ? imagePath
+          : `/${imagePath}`;
+        return `${normalizedBase}${normalizedPath}`;
+      }
+
       function removeLoaderSafe() {
         try {
           removeLoader();
@@ -174,8 +186,8 @@ const productsUrl = config.endpoints.productos.list;
 
           function generateBlogJsonLd(blog) {
             const images = [
-              blog.miniatura,
-              ...(blog.imagenes?.map((img) => img.ruta_imagen) || []),
+              getBlogImageUrl(blog.miniatura),
+              ...(blog.imagenes?.map((img) => getBlogImageUrl(img.ruta_imagen)) || []),
             ];
             const description =
               blog.subtitulo1 || blog.parrafos?.map((p) => p.parrafo).join(" ");
@@ -364,7 +376,7 @@ const productsUrl = config.endpoints.productos.list;
                 <!-- Imagen - Siempre debajo en mobile -->
                 <div class="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50 order-2 md:order-none">
                   <img 
-                    src="${getApiUrl}${imagen.ruta_imagen}" 
+                    src="${getBlogImageUrl(imagen.ruta_imagen)}" 
                     alt="${imagen.text_alt || "Imagen del blog"}"
                     title="${imagen.text_alt || "Imagen del blog"}"
                     class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
