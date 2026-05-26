@@ -12,6 +12,11 @@ interface CatalogMatch {
 
 export interface ChatContextMinimal {
   paso?: string;
+  producto?: string;
+  uso?: string;
+  ciudad?: string;
+  nombre?: string;
+  telefono?: string;
 }
 
 export interface MessageMinimal {
@@ -24,6 +29,9 @@ export interface MessageMinimal {
 
 export const DEFAULT_WHATSAPP =
   'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20informaci%C3%B3n%20para%20mi%20negocio.';
+
+const PRODUCT_CONTACT_STEP_1 = 'esperando_datos_producto_1';
+const PRODUCT_CONTACT_STEP_2 = 'esperando_datos_producto_2';
 
 export const buildProductLink = (link: string) => `/productos/${link}`;
 
@@ -50,6 +58,15 @@ export const normalizeText = (text: string) =>
 export const includesAny = (text: string, terms: string[]) =>
   terms.some((term) => text.includes(term));
 
+const collapseWhitespace = (text: string) => text.replace(/\s+/g, ' ').trim();
+
+const toDisplayCase = (text: string) =>
+  collapseWhitespace(text)
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
 const GREETING_REPLY =
   '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.';
 
@@ -58,6 +75,12 @@ interface ScriptedProductIntent {
   labels: string[];
   intro: string;
   fallbackSlug?: string;
+}
+
+interface LocalReplyResult {
+  message: MessageMinimal;
+  nextPaso?: string;
+  contextPatch?: Partial<ChatContextMinimal>;
 }
 
 const SCRIPTED_PRODUCT_INTENTS: ScriptedProductIntent[] = [
@@ -150,6 +173,86 @@ export const createProductPitch = async (
 
 const productLabel = (product: ApiProduct): string =>
   product.nombre?.trim() || product.titulo?.trim() || product.link?.trim() || 'Producto';
+
+const buildWhatsAppProductText = (context: ChatContextMinimal): string => {
+  const nombre = toDisplayCase(context.nombre || 'Cliente');
+  const producto = toDisplayCase(context.producto || 'el producto consultado');
+  const ciudad = toDisplayCase(context.ciudad || 'tu ciudad');
+  const uso = context.uso ? toDisplayCase(context.uso) : '';
+  const telefono = context.telefono ? collapseWhitespace(context.telefono) : '';
+
+  let text = `Hola, soy *${nombre}*. Estoy interesado en: *${producto}*. Ciudad: *${ciudad}*.`;
+  if (uso) text += `\nUso: *${uso}*.`;
+  if (telefono) text += `\nTeléfono: *${telefono}*.`;
+
+  return text;
+};
+
+const buildWhatsAppProductLink = (context: ChatContextMinimal): string =>
+  `https://wa.me/51978883199?text=${encodeURIComponent(buildWhatsAppProductText(context))}`;
+
+const extractUsage = (text: string): string | undefined => {
+  const normalized = normalizeText(text);
+  if (includesAny(normalized, ['negocio', 'empresa', 'emprendimiento', 'local'])) return 'negocio';
+  if (includesAny(normalized, ['personal', 'hogar', 'casa', 'particular'])) return 'uso personal';
+  return undefined;
+};
+
+const extractCity = (text: string): string | undefined => {
+  const raw = collapseWhitespace(text);
+  const explicit = raw.match(/(?:ciudad|envio|envío)\s*[:\-]?\s*(.+)$/i);
+  if (explicit?.[1]) return toDisplayCase(explicit[1].replace(/[.?!]+$/g, ''));
+
+  const segments = raw
+    .split(/[,;]|\by\b/i)
+    .map((segment) => collapseWhitespace(segment))
+    .filter(Boolean);
+
+  const candidate = segments.find((segment) => {
+    const normalized = normalizeText(segment);
+    return normalized && !includesAny(normalized, ['personal', 'negocio', 'empresa', 'emprendimiento', 'local']);
+  });
+
+  const fallback = candidate || raw.replace(/\b(uso|personal|negocio|empresa|emprendimiento|local|ciudad|envio|envío|para|de|la|el|un|una|en)\b/gi, ' ');
+  const city = collapseWhitespace(fallback);
+  return city ? toDisplayCase(city) : undefined;
+};
+
+const extractName = (text: string): string | undefined => {
+  const raw = collapseWhitespace(text);
+  const explicit = raw.match(/(?:mi nombre es|me llamo|soy)\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s'’-]{1,50})/i);
+  if (explicit?.[1]) return toDisplayCase(explicit[1]);
+
+  const withoutPhone = raw.replace(/\+?\d[\d\s()-]{6,}\d/g, ' ').trim();
+  const candidate = withoutPhone.split(/[,.;]/)[0]?.trim();
+  if (!candidate) return undefined;
+
+  const normalized = normalizeText(candidate);
+  if (includesAny(normalized, ['hola', 'buenas', 'buenos dias', 'buenas tardes', 'buenas noches'])) return undefined;
+
+  return toDisplayCase(candidate);
+};
+
+const extractPhone = (text: string): string | undefined => {
+  const explicit = text.match(/(?:telefono|tel|celular|cel)\s*[:\-]?\s*(\+?\d[\d\s()-]{6,}\d)/i);
+  if (explicit?.[1]) return collapseWhitespace(explicit[1]);
+
+  const generic = text.match(/\+?\d[\d\s()-]{6,}\d/);
+  return generic?.[0] ? collapseWhitespace(generic[0]) : undefined;
+};
+
+const buildProductContactReply = (match: CatalogMatch, intro?: string): LocalReplyResult => ({
+  message: {
+    role: 'bot',
+    tipo: 'texto',
+    respuesta: `${intro ? `${intro}\n\n` : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n`}Antes de enviarte al WhatsApp, cuéntame: ¿es para uso personal o negocio y en qué ciudad sería el envío?`,
+    link_producto: match.link,
+  },
+  nextPaso: PRODUCT_CONTACT_STEP_1,
+  contextPatch: {
+    producto: productLabel(match.product),
+  },
+});
 
 const productSearchText = (product: ApiProduct): string =>
   normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''}`);
@@ -355,7 +458,7 @@ const findProductsByPrefix = async (query: string): Promise<{ exact: CatalogMatc
 
 const resolveProductQuery = async (
   query: string
-): Promise<{ message: MessageMinimal; nextPaso?: string } | null> => {
+): Promise<LocalReplyResult | null> => {
   const normalizedQuery = extractCoreProductQuery(query);
   if (!normalizedQuery) return null;
 
@@ -373,17 +476,7 @@ const resolveProductQuery = async (
 
   if (exactCandidates.length === 1) {
     const match = exactCandidates[0];
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: scriptedIntent
-          ? `${scriptedIntent.intro}\n\n👉 Puedes ver los detalles aquí:`
-          : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n👉 Puedes ver los detalles aquí:`,
-        link_producto: match.link,
-        link_whatsapp: DEFAULT_WHATSAPP,
-      },
-    };
+    return buildProductContactReply(match, scriptedIntent?.intro);
   }
 
   if (exactCandidates.length > 1) {
@@ -398,17 +491,7 @@ const resolveProductQuery = async (
   }
 
   if (fallbackMatches.exact) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: scriptedIntent
-          ? `${scriptedIntent.intro}\n\n👉 Puedes ver los detalles aquí:`
-          : `¡Sí! Tenemos ${productLabel(fallbackMatches.exact.product)}.\n\n👉 Puedes ver los detalles aquí:`,
-        link_producto: fallbackMatches.exact.link,
-        link_whatsapp: DEFAULT_WHATSAPP,
-      },
-    };
+    return buildProductContactReply(fallbackMatches.exact, scriptedIntent?.intro);
   }
 
   if (uniqueCandidates.length > 1) {
@@ -424,17 +507,7 @@ const resolveProductQuery = async (
 
   if (uniqueCandidates.length === 1) {
     const match = uniqueCandidates[0];
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: scriptedIntent
-          ? `${scriptedIntent.intro}\n\n👉 Puedes ver los detalles aquí:`
-          : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n👉 Puedes ver los detalles aquí:`,
-        link_producto: match.link,
-        link_whatsapp: DEFAULT_WHATSAPP,
-      },
-    };
+    return buildProductContactReply(match, scriptedIntent?.intro);
   }
 
   if (fallbackMatches.related.length > 0) {
@@ -468,10 +541,83 @@ export const getLocalReply = async (
   text: string,
   context: ChatContextMinimal | null,
   messages: MessageMinimal[]
-): Promise<{ message: MessageMinimal; nextPaso?: string } | null> => {
+): Promise<LocalReplyResult | null> => {
   const normalized = normalizeText(text);
   const currentPaso = context?.paso || '';
   const lastBotMessage = [...messages].reverse().find((msg) => msg.role === 'bot');
+
+  if (currentPaso === PRODUCT_CONTACT_STEP_1) {
+    const usage = extractUsage(text);
+    const city = extractCity(text);
+
+    if (!usage || !city) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Respóndeme con el uso y la ciudad para el envío. Ejemplo: negocio, Lima.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_1,
+        contextPatch: {
+          uso: usage,
+          ciudad: city,
+        },
+      };
+    }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Perfecto. Ahora dime tu nombre y tu número de teléfono para continuar por WhatsApp.',
+      },
+      nextPaso: PRODUCT_CONTACT_STEP_2,
+      contextPatch: {
+        uso: usage,
+        ciudad: city,
+      },
+    };
+  }
+
+  if (currentPaso === PRODUCT_CONTACT_STEP_2) {
+    const nombre = extractName(text);
+    const telefono = extractPhone(text);
+
+    if (!nombre || !telefono) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Ahora envíame tu nombre y tu teléfono. Ejemplo: Adriano, 987654321.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_2,
+        contextPatch: {
+          nombre,
+          telefono,
+        },
+      };
+    }
+
+    const whatsappLink = buildWhatsAppProductLink({
+      ...context,
+      nombre,
+      telefono,
+    });
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Listo, ya tengo tus datos. Te dejo WhatsApp para seguir con tu atención.',
+        link_whatsapp: whatsappLink,
+      },
+      nextPaso: 'menu_principal',
+      contextPatch: {
+        nombre,
+        telefono,
+      },
+    };
+  }
 
   if (looksLikeGreeting(normalized)) {
     return {
