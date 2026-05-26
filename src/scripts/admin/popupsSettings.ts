@@ -256,6 +256,16 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             }
         }
     });
+
+    window.addEventListener("product-popup-save-finished", () => {
+        const btnGuardarPopupsEl = document.getElementById("btnGuardarPopups") as HTMLButtonElement | null;
+        if (btnGuardarPopupsEl) {
+            btnGuardarPopupsEl.innerText = btnGuardarPopupsEl.getAttribute('data-original-text') || 'Guardar Cambios';
+            btnGuardarPopupsEl.disabled = false;
+        }
+        setStatus("Configuración guardada.", "success");
+        setTimeout(() => setStatus(""), 3000);
+    });
 }
 
 export default initSettings;
