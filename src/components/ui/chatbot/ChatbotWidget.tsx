@@ -17,6 +17,8 @@ interface ChatContext {
   producto?: string;
   ciudad?: string;
   uso?: string;
+  nombre?: string;
+  telefono?: string;
   etapa?: string;
   rubro?: string;
   necesidad?: string;
@@ -259,8 +261,12 @@ const ChatbotWidget: React.FC = () => {
       if (localReply) {
         await new Promise((resolve) => setTimeout(resolve, 700));
         const nextPaso = localReply.nextPaso;
-        if (nextPaso) {
-          setContext((prev) => ({ ...(prev || { paso: "menu_principal" }), paso: nextPaso }));
+        if (nextPaso || localReply.contextPatch) {
+          setContext((prev) => ({
+            ...(prev || { paso: "menu_principal" }),
+            ...(localReply.contextPatch || {}),
+            ...(nextPaso ? { paso: nextPaso } : {}),
+          }));
         }
         setMessages((prev) => [...prev, localReply.message]);
         return;
@@ -554,8 +560,12 @@ const ChatbotWidget: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={
-                  context?.paso?.includes("datos_contacto")
-                    ? "Ej: Juan, 987654321"
+                  context?.paso === "esperando_datos_producto_1"
+                    ? "Ej: negocio, Lima"
+                    : context?.paso === "esperando_datos_producto_2"
+                      ? "Ej: Adriano, 987654321"
+                      : context?.paso?.includes("datos_contacto")
+                        ? "Ej: Juan, 987654321"
                     : "Escribe un mensaje..."
                 }
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
