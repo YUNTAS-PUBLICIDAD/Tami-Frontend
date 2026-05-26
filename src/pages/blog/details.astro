@@ -114,6 +114,18 @@ const productsUrl = config.endpoints.productos.list;
     >
       eval(showLoaderString);
       eval(removeLoaderString);
+      function getBlogImageUrl(imagePath) {
+        if (!imagePath) return "";
+        if (imagePath.startsWith("http") || imagePath.startsWith("//")) {
+          return imagePath;
+        }
+        const normalizedBase = String(getApiUrl || "").replace(/\/$/, "");
+        const normalizedPath = imagePath.startsWith("/")
+          ? imagePath
+          : `/${imagePath}`;
+        return `${normalizedBase}${normalizedPath}`;
+      }
+
       function removeLoaderSafe() {
         try {
           removeLoader();
@@ -174,8 +186,8 @@ const productsUrl = config.endpoints.productos.list;
 
           function generateBlogJsonLd(blog) {
             const images = [
-              blog.miniatura,
-              ...(blog.imagenes?.map((img) => img.ruta_imagen) || []),
+              getBlogImageUrl(blog.miniatura),
+              ...(blog.imagenes?.map((img) => getBlogImageUrl(img.ruta_imagen)) || []),
             ];
             const description =
               blog.subtitulo1 || blog.parrafos?.map((p) => p.parrafo).join(" ");
