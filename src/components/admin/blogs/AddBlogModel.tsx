@@ -1,9 +1,9 @@
 import { config } from "../../../../config.ts";
 import apiClient from "../../../services/apiClient";
 import { useEffect, useState } from "react";
+import { validateImage } from "../../../utils/imageValidation";
 import Swal from "sweetalert2";
 import { IoMdCloseCircle } from "react-icons/io";
-
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
@@ -51,19 +51,6 @@ const LENGTHS = {
   metaDescripcion: 160, // recomendado (no bloqueante)
 };
 
-const MAX_IMAGE_MB = 2;
-const ACCEPT_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-const ACCEPT_MINIATURA_TYPES = [
-  ...ACCEPT_IMAGE_TYPES,
-  "image/gif",
-];
-
 /* ===== utilidades ===== */
 const isValidUrl = (value: string) => {
   try {
@@ -73,8 +60,6 @@ const isValidUrl = (value: string) => {
     return false;
   }
 };
-
-const bytesToMB = (bytes: number) => bytes / (1024 * 1024);
 
 //asegurando 2 secciones para blog
 const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
@@ -280,25 +265,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const f = e.target.files?.[0];
+    const f = e.target.files?.[0];
 
     if (!f) return;
 
-    if (!ACCEPT_MINIATURA_TYPES.includes(f.type)) {
-      Swal.fire(
-        "Formato no válido",
-        "Solo JPG, JPEG, PNG, WEBP o GIF.",
-        "warning"
-      );
-      return;
-    }
-
-    if (bytesToMB(f.size) > MAX_IMAGE_MB) {
-      Swal.fire(
-        "Imagen muy pesada",
-        `Máximo ${MAX_IMAGE_MB} MB.`,
-        "warning"
-      );
+    if (!validateImage(f, "miniatura")) {
+      e.target.value = "";
       return;
     }
 
@@ -323,12 +295,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   ) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!ACCEPT_IMAGE_TYPES.includes(f.type)) {
-      Swal.fire("Formato no válido", "Solo JPG, JPEG, PNG o WEBP.", "warning");
-      return;
-    }
-    if (bytesToMB(f.size) > MAX_IMAGE_MB) {
-      Swal.fire("Imagen muy pesada", `Máximo ${MAX_IMAGE_MB} MB.`, "warning");
+    if (!validateImage(f, "webpOnly")) {
       return;
     }
     const nuevoArray = [...formData.imagenes];
@@ -1022,7 +989,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           </p>
 
                           <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
-                            <li>• Formatos: JPG, PNG, WEBP o GIF</li>
+                            <li>• Formatos: WEBP o GIF</li>
                             <li>• Tamaño ideal: 960x540 px</li>
                             <li>• Máximo: 2 MB</li>
                           </ul>
@@ -1201,7 +1168,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                               </p>
 
                               <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
-                                <li>• Formatos: JPG, PNG o WEBP</li>
+                                <li>• Formatos: WEBP</li>
                                 <li>• Tamaño ideal: 1200x800 px</li>
                                 <li>• Máximo: 2 MB</li>
                               </ul>
