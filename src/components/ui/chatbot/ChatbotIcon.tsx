@@ -5,9 +5,10 @@ import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 
 interface ChatbotIconProps {
   className?: string; // Permite inyectar clases de Tailwind o CSS personalizado
+  default?: boolean; 
 }
 
-const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12" }) => {
+const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12"}) => {
   const { iconUrl, isLoading } = useChatbotIcon();
   
   // Ícono por defecto por si falla la API o aún no hay nada configurado
@@ -15,7 +16,8 @@ const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12" }) =>
 
   if (isLoading) {
     // Puedes mostrar un skeleton o un spinner mientras carga
-    return <div className={`animate-pulse bg-gray-200 rounded-full ${className}`} />;
+    //return <div className={`animate-pulse bg-gray-200 rounded-full ${className}`} />;
+    return <img className={`object-cover rounded-full shadow-sm ${className}`} alt="Chatbot Icon" src={defaultIcon}  />;
   }
 
   return (
