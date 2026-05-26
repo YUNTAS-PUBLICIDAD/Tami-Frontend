@@ -2,6 +2,7 @@ import React from 'react';
 import WhatsappEditor from '../WhatsappEditor';
 import { ImageUploadField } from './ImageUploadField';
 import type { ProductFormData } from '../types/productTab.types';
+import TimePicker from '../TimePicker';
 
 interface WhatsAppSectionProps {
     formData: ProductFormData | null;
@@ -103,28 +104,12 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                             />
                         </div>
 
-                        <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/50">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Tiempo de aparición (minutos):</label>
-                            <select
-                                value={formData.whatsapp_time_1}
-                                onChange={(e) => onFieldChange("whatsapp_time_1", parseInt(e.target.value))}
-                                className="w-full p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm cursor-pointer"
-                            >
-                                <option value={-1}>No enviar</option>
-                                <option value={0}>Inmediato</option>
-                                <option value={1}>1 minuto</option>
-                                <option value={2}>2 minutos</option>
-                                <option value={3}>3 minutos</option>
-                                <option value={4}>4 minutos</option>
-                                <option value={5}>5 minutos</option>
-                                <option value={10}>10 minutos</option>
-                                <option value={15}>15 minutos</option>
-                                <option value={20}>20 minutos</option>
-                                <option value={30}>30 minutos</option>
-                                <option value={60}>1 hora</option>
-                            </select>
-                            <p className="text-[10px] text-gray-500 italic">Envío inmediato al suscribirse.</p>
-                        </div>
+                        <TimePicker 
+                            id="whatsappTime1" 
+                            name="whatsappTime1" 
+                            label="Tiempo de aparición" 
+                            defaultValue={0} 
+                            />
                     </div>
                 </div>
             )}
