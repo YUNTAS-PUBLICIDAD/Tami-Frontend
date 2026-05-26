@@ -176,6 +176,7 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                             />
                             <div className="col-span-1 sm:col-span-2 mt-2">
                                 <TimePicker 
+                                                key={selectedEmail}
                                             id={`email_time_${selectedEmail}`} 
                                             name={`email_time_${selectedEmail}`} 
                                             label="Tiempo de aparición" 

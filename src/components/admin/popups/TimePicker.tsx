@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface TimePickerProps {
   id: string;
@@ -11,6 +11,7 @@ interface TimePickerProps {
 
 export default function TimePicker({ id, name, label, defaultValue = 0, value, onChange }: TimePickerProps) {
   const resolvedValue = value ?? defaultValue;
+  const isExternalSyncRef = useRef(false);
 
   // Determinar el estado inicial basándonos en el valor recibido
   const getInitialMode = (val: number) => {
@@ -30,19 +31,47 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
   const [minutes, setMinutes] = useState<number>(initialMode === 'custom' ? resolvedValue % 60 : 10);
   const [totalMinutes, setTotalMinutes] = useState<number>(resolvedValue);
 
+  const applyValueToState = (nextValue: number) => {
+    const nextMode = getInitialMode(nextValue);
+
+    isExternalSyncRef.current = true;
+    setMode(nextMode);
+    setSelectValue(nextMode === 'custom' ? 'custom' : nextValue === -1 ? '-1' : '0');
+    setHours(nextMode === 'custom' ? Math.floor(nextValue / 60) : 0);
+    setMinutes(nextMode === 'custom' ? nextValue % 60 : 10);
+    setTotalMinutes(nextValue);
+  };
+
   // Escucha cambios externos en el valor para mantener sincronizado el reloj
   useEffect(() => {
-    const newMode = getInitialMode(resolvedValue);
-    setMode(newMode);
-    setSelectValue(newMode === 'custom' ? 'custom' : resolvedValue === -1 ? '-1' : '0');
-    setHours(newMode === 'custom' ? Math.floor(resolvedValue / 60) : 0);
-    setMinutes(newMode === 'custom' ? resolvedValue % 60 : 10);
-    setTotalMinutes(resolvedValue);
+    applyValueToState(resolvedValue);
   }, [resolvedValue, id, name]);
+
+  useEffect(() => {
+    const handleExternalSync = (event: Event) => {
+      const customEvent = event as CustomEvent<{ id?: string; value?: number }>;
+      if (!customEvent.detail || customEvent.detail.id !== id || typeof customEvent.detail.value !== 'number') {
+        return;
+      }
+
+      applyValueToState(customEvent.detail.value);
+    };
+
+    window.addEventListener('timepicker-sync', handleExternalSync as EventListener);
+
+    return () => {
+      window.removeEventListener('timepicker-sync', handleExternalSync as EventListener);
+    };
+  }, [id]);
   
 
   // Cada vez que cambie el modo o las horas/minutos del reloj, recalculamos el total
   useEffect(() => {
+    if (isExternalSyncRef.current) {
+      isExternalSyncRef.current = false;
+      return;
+    }
+
     let calculated = 0;
     if (mode === 'nosend') calculated = -1;
     else if (mode === 'immediate') calculated = 0;
@@ -53,6 +82,13 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
     }
     setTotalMinutes(calculated);
     onChange?.(calculated);
+
+    window.dispatchEvent(new CustomEvent('timepicker-change', {
+      detail: {
+        id,
+        value: calculated,
+      },
+    }));
   }, [mode, hours, minutes]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

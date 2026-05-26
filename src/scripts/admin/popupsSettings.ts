@@ -65,6 +65,16 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 if (whatsappTimeInput2) whatsappTimeInput2.value = whatsappTime2Value;
                 if (whatsappTimeInput3) whatsappTimeInput3.value = whatsappTime3Value;
 
+                window.dispatchEvent(new CustomEvent("timepicker-sync", {
+                    detail: { id: "whatsappTime1", value: Number(whatsappTime1Value) || 0 },
+                }));
+                window.dispatchEvent(new CustomEvent("timepicker-sync", {
+                    detail: { id: "whatsappTime2", value: Number(whatsappTime2Value) || 0 },
+                }));
+                window.dispatchEvent(new CustomEvent("timepicker-sync", {
+                    detail: { id: "whatsappTime3", value: Number(whatsappTime3Value) || 0 },
+                }));
+
                 whatsappData["1"] = { text: whatsappMessage1Value, image: currentInicioImages.whatsappImage };
                 whatsappData["2"] = { text: whatsappMessage2Value, image: currentInicioImages.whatsappImage2 };
                 whatsappData["3"] = { text: whatsappMessage3Value, image: currentInicioImages.whatsappImage3 };
