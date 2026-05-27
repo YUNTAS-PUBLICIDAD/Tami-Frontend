@@ -126,7 +126,7 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
         <div className="flex flex-col lg:flex-row gap-8 items-stretch">
           <div className="flex-grow w-full lg:w-0 px-4 md:px-8 order-2 lg:order-1">
             {relatedBlogs.length > 1 ? (
-              <div className="relative overflow-hidden">
+              <div className="relative overflow-visible pb-4">
                 <div
                   ref={emblaRef}
                   className="overflow-hidden touch-pan-y"
@@ -161,7 +161,7 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
                   <ChevronRight className="h-5 w-5 text-[#015f86]" />
                 </button>
 
-                <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+                <div className="absolute inset-x-0 bottom-1 flex justify-center gap-2">
                   {scrollSnaps.map((_, index) => (
                     <button
                       key={index}
