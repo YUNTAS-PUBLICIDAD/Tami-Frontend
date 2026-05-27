@@ -90,19 +90,18 @@ interface LocalReplyResult {
 }
 
 const SCRIPTED_PRODUCT_INTENTS: ScriptedProductIntent[] = [
-  { key: 'soldadora-spark-mig-250', labels: ['soldadora spark mig 250', 'spark mig 250', 'mig 250'], intro: '¡Excelente opción! ⚙️ La Spark MIG 250 te da un soldado más estable, preciso y profesional para trabajos exigentes.', fallbackSlug: 'soldadora-spark-mig-250' },
-  { key: 'maquina-selladora-bolsas-liquidos', labels: ['maquina selladora de bolsas para liquidos', 'selladora de bolsas para liquidos', 'selladora de liquidos', 'selladora liquidos'], intro: '¡Buenísima opción! 🧪 Sella bolsas de jugos, agua o salsas de forma rápida, higiénica y sin derrames.', fallbackSlug: 'maquina-selladora-bolsas-liquidos' },
-  { key: 'maquina-selladora-bolsas-solidos', labels: ['maquina selladora de bolsas para solidos', 'selladora de bolsas para solidos', 'selladora bolsas solidos', 'bolsas para solidos'], intro: '¡Excelente para empaque de sólidos! 📦 Te ayuda a sellar con rapidez y mantener mejor la calidad del producto.', fallbackSlug: 'maquina-selladora-bolsas-solidos' },
-  { key: 'maquina-embalaje-te', labels: ['maquina de embalaje de te', 'embalaje de te', 'maquina de te', 'maquina te', 'te en saquitos'], intro: '¡Excelente elección! 🍃 Automatiza el empaque en saquitos, ahorra tiempo y eleva tu producción.', fallbackSlug: 'maquina-de-embalaje-de-te' },
+  { key: 'maquina-embalaje-te', labels: ['maquina de te', 'maquina de embalaje de te', 'maquina te', 'embalaje de te', 'te en saquitos'], intro: '¡Excelente elección! Automatiza el empaque en saquitos, ahorra tiempo y eleva tu producción. 🚀', fallbackSlug: 'maquina-de-embalaje-de-te' },
+  { key: 'maquina-selladora-bolsas-liquidos', labels: ['maquina selladora de liquidos', 'maquina selladora de bolsas para liquidos', 'selladora de bolsas para liquidos', 'selladora de liquidos', 'selladora liquidos'], intro: '¡Buenísima opción! Sella bolsas de jugos, agua o salsas de forma rápida, higiénica y sin derrames. 🧪', fallbackSlug: 'maquina-selladora-bolsas-liquidos' },
+  { key: 'ventilador-holografico', labels: ['ventilador holografico', 'holografico', 'holograma'], intro: '¡Espectacular para llamar la atención! Proyecta tus productos en 3D flotante y atrae clientes a tu local. 👁️✨', fallbackSlug: 'ventilador-holografico' },
+  { key: 'soldadora-lingba', labels: ['selladora lingba', 'soldadora lingba', 'lingba'], intro: '¡Una de las más pedidas! Es súper resistente, ideal para sellar bolsas de plástico rápido y con acabado profesional. 📦', fallbackSlug: 'soldadora-lingba' },
+  { key: 'purificador-agua', labels: ['purificador de agua', 'purificador agua', 'purificador'], intro: '¡Excelente elección! 💧 Obtén agua más limpia y segura para tu negocio u hogar con un sistema práctico y eficiente.', fallbackSlug: 'purificador-de-agua' },
   { key: 'selladora-vaso-manual', labels: ['selladora de vaso manual', 'selladora de vasos manual', 'selladora de vasos', 'selladora de vaso'], intro: '¡Perfecta para emprender! 🧋 Sella vasos de manera rápida y profesional, ideal para bebidas como bubble tea, jugos y postres.', fallbackSlug: 'selladora-de-vasos' },
   { key: 'selladora-por-induccion', labels: ['selladora por induccion', 'selladora de induccion', 'induccion'], intro: '¡Muy buena opción! ⚡ Sella envases de forma hermética y segura, ayudando a conservar mejor tus productos y dar una presentación más profesional.', fallbackSlug: 'selladora-de-induccion' },
-  { key: 'soldadora-lingba', labels: ['soldadora lingba', 'selladora lingba', 'lingba'], intro: '¡Una de las más pedidas! 📦 Es súper resistente, ideal para sellar bolsas de plástico rápido y con acabado profesional.', fallbackSlug: 'soldadora-lingba' },
-  { key: 'ventilador-holografico', labels: ['ventilador holografico', 'holografico', 'holograma'], intro: '¡Espectacular para llamar la atención! 👁️✨ Proyecta tus productos en 3D flotante y atrae clientes a tu local.', fallbackSlug: 'ventilador-holografico' },
-  { key: 'sillas-cuadradas-o-de-cubo', labels: ['sillas cuadradas o de cubo', 'sillas de cubo', 'sillas cuadradas cubo', 'silla cuadrada de cubo'], intro: '¡Muy buena elección! ✨ Las sillas cuadradas o de cubo aportan un estilo moderno y práctico para tu espacio.', fallbackSlug: 'sillas-cuadradas-o-de-cubo' },
-  { key: 'silla-bar-led-alta', labels: ['silla bar led alta', 'silla led alta', 'silla bar alta led', 'silla alta led'], intro: '¡Genial! ✨ La silla bar LED alta da un look moderno y llamativo para bares, eventos o zonas lounge.', fallbackSlug: 'silla-bar-led-alta' },
-  { key: 'mesa-led-bar-alta-cuadrada', labels: ['mesa led bar alta cuadrada', 'mesa led alta cuadrada', 'mesa cuadrada led alta'], intro: '¡Genial! ✨ La mesa LED bar alta cuadrada es perfecta para bares o eventos con estilo moderno.', fallbackSlug: 'mesa-led-bar-alta-cuadrada' },
-  { key: 'mesa-led-bar-alta', labels: ['mesa led bar alta', 'mesa led alta'], intro: '¡Genial! ✨ Tenemos muebles LED y opciones modernas para bares o eventos. ¿Cuál te gustaría conocer? 😍', fallbackSlug: 'mesa-led-bar-alta' },
-  { key: 'purificador-agua', labels: ['purificador de agua', 'purificador agua', 'purificador'], intro: '¡Excelente elección! 💧 Obtén agua más limpia y segura para tu negocio u hogar con un sistema práctico y eficiente.', fallbackSlug: 'purificador-de-agua' },
+  { key: 'cubo-led', labels: ['cubo led', 'cubo de led', 'silla de cubo', 'sillas de cubo', 'sillas cuadradas o de cubo'], intro: '¡Increíble elección! ✨ Dale un estilo moderno y llamativo a tu negocio, evento o terraza con iluminación LED decorativa.', fallbackSlug: 'sillas-cuadradas-o-de-cubo' },
+  { key: 'silla-bar-led-alta', labels: ['silla bar alta', 'silla bar led alta', 'silla led alta', 'silla bar alta led', 'silla alta led'], intro: '¡Genial! ✨ La silla bar LED alta da un look moderno y llamativo para bares, eventos o zonas lounge.', fallbackSlug: 'silla-bar-led-alta' },
+  { key: 'mesa-led-bar-alta-cuadrada', labels: ['mesa led bar alta', 'mesa led bar alta cuadrada', 'mesa led alta cuadrada', 'mesa cuadrada led alta'], intro: '¡Genial! ✨ La mesa LED bar alta cuadrada es perfecta para bares o eventos con estilo moderno.', fallbackSlug: 'mesa-led-bar-alta-cuadrada' },
+  { key: 'maquina-selladora-bolsas-solidos', labels: ['maquina selladora de bolsas para solidos', 'selladora de bolsas para solidos', 'selladora bolsas solidos', 'bolsas para solidos'], intro: '¡Excelente para empaque de sólidos! 📦 Te ayuda a sellar con rapidez y mantener mejor la calidad del producto.', fallbackSlug: 'maquina-selladora-bolsas-solidos' },
+  { key: 'soldadora-spark-mig-250', labels: ['soldadora spark mig 250', 'spark mig 250', 'mig 250'], intro: '¡Excelente opción! ⚙️ La Spark MIG 250 te da un soldado más estable, preciso y profesional para trabajos exigentes.', fallbackSlug: 'soldadora-spark-mig-250' },
 ];
 
 const CATEGORY_KEYWORDS = {
@@ -124,7 +123,7 @@ const isProductInCategory = (product: ApiProduct, category: keyof typeof CATEGOR
 };
 
 const CATEGORY_REPLIES = {
-  negocio: 'Perfecto 💪 Tenemos equipos de soldadura y maquinaria para negocio e industria. Cuéntame qué necesitas producir y te ayudo a elegir.',
+  negocio: 'Perfecto 💪 Tenemos soldadora Lingba, maquina selladora de bolsas para solidos, ventilador holografico y más. Cuéntame qué necesitas producir y te ayudo a elegir.',
   maquinaria: '¡Genial! Vendemos purificador de agua, selladora de vasos manual, ventilador holografico y más. ¿En qué productos estás interesado?',
   decoracion: '¡Me encanta! Tenemos sillas cubo, mesas y sillas altas con luces LED. ¿Cuál te gustaría conocer? 😍',
 };
@@ -488,6 +487,43 @@ const getCategoryFromQuery = (normalized: string): keyof typeof CATEGORY_KEYWORD
   return null;
 };
 
+const getExplicitCategoryIntent = (normalized: string): keyof typeof CATEGORY_KEYWORDS | null => {
+  if (!normalized) return null;
+
+  if (
+    normalized === 'decoracion' ||
+    normalized === 'busco decoracion' ||
+    normalized === 'decorar' ||
+    normalized.startsWith('decoracion ') ||
+    normalized.startsWith('busco decoracion ')
+  ) {
+    return 'decoracion';
+  }
+
+  if (
+    normalized === 'maquinaria' ||
+    normalized === 'busco maquinaria' ||
+    normalized.startsWith('maquinaria ') ||
+    normalized.startsWith('busco maquinaria ')
+  ) {
+    return 'maquinaria';
+  }
+
+  if (
+    normalized === 'negocio' ||
+    normalized === 'busco negocio' ||
+    normalized.includes('para mi negocio') ||
+    normalized.includes('para mi local') ||
+    normalized.includes('para mi empresa') ||
+    normalized.startsWith('negocio ') ||
+    normalized.startsWith('busco negocio ')
+  ) {
+    return 'negocio';
+  }
+
+  return null;
+};
+
 const findScriptedIntent = (normalized: string): ScriptedProductIntent | null => {
   for (const intent of SCRIPTED_PRODUCT_INTENTS) {
     if (includesAny(normalized, intent.labels)) return intent;
@@ -703,7 +739,7 @@ const resolveProductQuery = async (
         message: {
           role: 'bot',
           tipo: 'texto',
-          respuesta: `No encontré "${displayQuery}" exacto todavía 😅. Te recomiendo estas opciones en ${guessedCategory}: ${productNames}. ¿Cuál te interesa?`,
+          respuesta: `No tenemos "${displayQuery}" 😅. Pero te recomiendo estos productos de ${guessedCategory}: ${productNames}. ¿Cuál te interesa?`,
           link_whatsapp: DEFAULT_WHATSAPP,
         },
         nextPaso: 'esperando_producto',
@@ -716,7 +752,7 @@ const resolveProductQuery = async (
       message: {
         role: 'bot',
         tipo: 'texto',
-        respuesta: `No logré ubicar "${displayQuery}" por ahora 😅, pero si me cuentas un poquito más de lo que necesitas, te recomiendo una opción ideal o te conecto por WhatsApp.`,
+        respuesta: `No tenemos "${displayQuery}" por ahora 😅, pero si me cuentas un poquito más de lo que necesitas, te recomiendo una opción ideal o te conecto por WhatsApp.`,
         link_whatsapp: DEFAULT_WHATSAPP,
       },
     };
@@ -729,7 +765,7 @@ const buildUnmatchedProductReply = (query: string): LocalReplyResult => ({
   message: {
     role: 'bot',
     tipo: 'texto',
-    respuesta: `No encontré "${query}" exacto todavía 😅. Si me dices el nombre completo o para qué lo necesitas, te ayudo a ubicar la mejor opción. También puedo pasarte a WhatsApp si prefieres.`,
+    respuesta: `No tenemos "${query}" por ahora 😅. Si me dices el nombre completo o para qué lo necesitas, te ayudo a ubicar la mejor opción. También puedo pasarte a WhatsApp si prefieres.`,
     link_whatsapp: DEFAULT_WHATSAPP,
   },
   nextPaso: 'esperando_producto',
@@ -961,6 +997,11 @@ export const getLocalReply = async (
     };
   }
 
+  const explicitCategory = getExplicitCategoryIntent(normalized);
+  if (explicitCategory && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
+    return buildCategoryReply(explicitCategory);
+  }
+
   if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
     const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
       ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
@@ -990,11 +1031,6 @@ export const getLocalReply = async (
       },
       nextPaso: 'menu_principal',
     };
-  }
-
-  const category = getCategoryFromQuery(normalized);
-  if (category && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
-    return buildCategoryReply(category);
   }
 
   if (currentPaso === 'local_esperando_datos_asesor') {
