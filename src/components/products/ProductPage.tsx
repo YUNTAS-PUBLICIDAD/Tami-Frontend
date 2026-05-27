@@ -147,7 +147,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     text-white overflow-hidden flex items-center
                     bg-gradient-to-r from-[#041119] to-[#003d56] 
                 ">
-                <div className="w-full px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div className="w-full pl-15 pr-13 md:pl-20 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
                     <div className="flex flex-col justify-center text-left">
                         <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>
