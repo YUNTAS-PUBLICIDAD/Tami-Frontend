@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply } from "./chatbotLogic";
@@ -6,10 +6,9 @@ import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
 interface Opcion {
-  label: string;
-  valor: string;
+  label: string;
+  valor: string;
 }
-
 
 interface ChatContext {
   paso: string;
@@ -27,65 +26,44 @@ interface ChatContext {
 }
 
 interface Message {
-  role: "bot" | "user";
-  tipo: "texto" | "producto" | "opciones" | "fin_flujo";
-  respuesta: string;
-  link_producto?: string;
-  opciones?: Opcion[];
-  productos?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  }[];
-  producto?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  };
-  link_whatsapp?: string;
+  role: 'bot' | 'user';
+  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
+  respuesta: string;
+  opciones?: Opcion[];
+  productos?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  }[];
+  producto?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  };
+  link_whatsapp?: string;
 }
 
-const MESSAGES_KEY = "tami_chat_messages";
-const CONTEXT_KEY = "tami_chat_context";
-const OPEN_KEY = "tami_chat_open";
- 
+const MESSAGES_KEY = 'tami_chat_messages';
+const CONTEXT_KEY = 'tami_chat_context';
+const OPEN_KEY = 'tami_chat_open';
 
 const mensajeInicial: Message = {
-  role: "bot",
-  tipo: "texto",
-  respuesta:
-    "¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊",
+  role: 'bot',
+  tipo: 'texto',
+  respuesta: '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.',
 };
 
 const ChatbotWidget: React.FC = () => {
-  // Estado persistente
-  const [messages, setMessages] = useState<Message[]>(() => {
-    try {
-      const saved = localStorage.getItem(MESSAGES_KEY);
-      return saved ? JSON.parse(saved) : [mensajeInicial];
-    } catch {
-      return [mensajeInicial];
-    }
-  });
 
-  const [context, setContext] = useState<ChatContext | null>(() => {
-    try {
-      const saved = localStorage.getItem(CONTEXT_KEY);
-      return saved ? JSON.parse(saved) : { paso: "menu_principal" };
-    } catch {
-      return { paso: "menu_principal" };
-    }
-  });
+  // Estado persistente 
+  const [messages, setMessages] = useState<Message[]>([mensajeInicial]);
 
-  const [isOpen, setIsOpen] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(OPEN_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   const [showBubble, setShowBubble] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
@@ -126,135 +104,149 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
-  // Persistir en localStorage cuando cambian 
   useEffect(() => {
     try {
-      localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
-    } catch {}
-  }, [messages]);
+      const savedMessages = localStorage.getItem(MESSAGES_KEY);
+      if (savedMessages) {
+        setMessages(JSON.parse(savedMessages));
+      }
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(CONTEXT_KEY, JSON.stringify(context));
-    } catch {}
-  }, [context]);
+      const savedContext = localStorage.getItem(CONTEXT_KEY);
+      if (savedContext) {
+        setContext(JSON.parse(savedContext));
+      }
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(OPEN_KEY, String(isOpen));
-    } catch {}
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      setIsOpen(localStorage.getItem(OPEN_KEY) === 'true');
+    } catch {
+      // Keep the SSR-safe defaults when storage is unavailable or invalid.
+    } finally {
+      setHasHydratedStorage(true);
     }
-  }, [messages, isOpen]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setShowBubble(false);
-      return;
-    }
-    let timeoutId: NodeJS.Timeout;
-    const scheduleNextBubble = () => {
-      const min = isFirstBubble.current ? 0 : 60000;
-      const max = isFirstBubble.current ? 0 : 90000;
-      const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
-      timeoutId = setTimeout(() => {
-        if (!isOpen) {
-          setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
-          setShowBubble(true);
-          setTimeout(() => {
-            setShowBubble(false);
-            isFirstBubble.current = false;
-            scheduleNextBubble();
-          }, 20000);
-        }
-      }, randomTime);
-    };
-    scheduleNextBubble();
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [isOpen]);
-
-
-  // CONTROL DE LOS 3 PUNTITOS: Dura 3 segundos y luego cambia a la frase real
-  useEffect(() => {
-    // Creamos el cronómetro de 3 segundos
-    const introTimer = setTimeout(() => {
-      isFirstBubble.current = false; // Rompe la condición de los puntitos
-      setShowBubble(false);          // Cierra el globo de puntitos
-
-      // Espera un milisegundo extra para abrir la primera frase real limpiamente
-      setTimeout(() => {
-        setBubbleIndex(0);           // Carga la primera frase de la lista
-        setShowBubble(true);         // Abre la burbuja con el texto real
-      }, 100);
-
-    }, 3000); // <─── AQUÍ ESTÁN TUS 3 SEGUNDOS
-
-    return () => clearTimeout(introTimer);
   }, []);
 
+  // Persistir en localStorage cuando cambian 
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
 
-  const toggleChat = () => {
-    setIsOpen((prev) => !prev);
-    if (!isOpen) {
-      setShowBubble(false);
-      setIsPopping(false);
-    }
-  };
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
+    catch { }
+  }, [messages, hasHydratedStorage]);
 
-  //Botón reiniciar chat
-  const reiniciarChat = () => {
-    if (isLoading || isResetting) return;
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
 
-    setIsResetting(true);
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
+    catch { }
+  }, [context, hasHydratedStorage]);
 
-    setTimeout(() => {
-      setMessages([mensajeInicial]);
-      setContext({ paso: "menu_principal" });
-      setInput("");
-      try {
-        localStorage.removeItem(MESSAGES_KEY);
-        localStorage.removeItem(CONTEXT_KEY);
-      } catch {}
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
 
-      setTimeout(() => {
-        setIsResetting(false);
-      }, 180);
-    }, 2000);
-  };
-
-  const handleCloseBubble = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setIsPopping(true);
-    setTimeout(() => {
-      setShowBubble(false);
-      setIsPopping(false);
-    }, 400);
-  };
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen, hasHydratedStorage]);
 
 
-  // ── Envío por formulario
-  const sendMessage = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!input.trim() || isLoading) return;
-    const texto = input.trim();
-    setInput("");
-    await enviarMensaje(texto, texto);
-  };
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
 
-  const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    const userMessage: Message = {
-      role: "user",
-      tipo: "texto",
-      respuesta: labelMostrado,
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
+  useEffect(() => {
+    if (isOpen) { setShowBubble(false); return; }
+    let timeoutId: NodeJS.Timeout;
+    const scheduleNextBubble = () => {
+      const min = isFirstBubble.current ? 0 : 60000;
+      const max = isFirstBubble.current ? 0 : 90000;
+      const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
+      timeoutId = setTimeout(() => {
+        if (!isOpen) {
+          setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
+          setShowBubble(true);
+          setTimeout(() => {
+            setShowBubble(false);
+            isFirstBubble.current = false;
+            scheduleNextBubble();
+          }, 20000);
+        }
+      }, randomTime);
+    };
+    scheduleNextBubble();
+    return () => { if (timeoutId) clearTimeout(timeoutId); };
+  }, [isOpen]);
+
+
+  // CONTROL DE LOS 3 PUNTITOS: Dura 3 segundos y luego cambia a la frase real
+  useEffect(() => {
+    // Creamos el cronómetro de 3 segundos
+    const introTimer = setTimeout(() => {
+      isFirstBubble.current = false; // Rompe la condición de los puntitos
+      setShowBubble(false);          // Cierra el globo de puntitos
+
+      // Espera un milisegundo extra para abrir la primera frase real limpiamente
+      setTimeout(() => {
+        setBubbleIndex(0);           // Carga la primera frase de la lista
+        setShowBubble(true);         // Abre la burbuja con el texto real
+      }, 100);
+
+    }, 3000); // <─── AQUÍ ESTÁN TUS 3 SEGUNDOS
+
+    return () => clearTimeout(introTimer);
+  }, []);
+
+
+  const toggleChat = () => {
+    setIsOpen(prev => !prev);
+    if (!isOpen) { setShowBubble(false); setIsPopping(false); }
+  };
+
+  //Botón reiniciar chat
+  const reiniciarChat = () => {
+    if (isLoading || isResetting) return;
+
+    setIsResetting(true);
+
+    setTimeout(() => {
+      setMessages([mensajeInicial]);
+      setContext({ paso: 'menu_principal' });
+      setInput('');
+      try {
+        localStorage.removeItem(MESSAGES_KEY);
+        localStorage.removeItem(CONTEXT_KEY);
+      } catch { }
+
+      setTimeout(() => {
+        setIsResetting(false);
+      }, 180);
+    }, 2000);
+  };
+
+
+  const handleCloseBubble = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsPopping(true);
+    setTimeout(() => { setShowBubble(false); setIsPopping(false); }, 400);
+  };
+
+  const handleOpcionClick = async (opcion: Opcion) => {
+    if (isLoading) return;
+    await enviarMensaje(opcion.label, opcion.valor);
+  };
+
+  // ── Envío por formulario 
+  const sendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    const texto = input.trim();
+    setInput('');
+    await enviarMensaje(texto, texto);
+  };
+
+  const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
+    const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
 
     try {
       const localReply = await getLocalReply(valorEnviado, context, messages);
@@ -283,43 +275,37 @@ const ChatbotWidget: React.FC = () => {
         body: JSON.stringify({ mensaje: valorEnviado, context }),
       });
 
-      if (!response.ok) throw new Error("Network response was not ok");
+      if (!response.ok) throw new Error('Network response was not ok');
 
-      const data = await response.json();
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const data = await response.json();
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (data.context !== undefined) setContext(data.context);
+      if (data.context !== undefined) setContext(data.context);
 
-      const botMessage: Message = {
-        role: "bot",
-        tipo: data.tipo,
-        respuesta: data.respuesta,
-        link_producto: data.link_producto,
-        opciones: data.opciones,
-        productos: data.productos,
-        producto: data.producto,
-        link_whatsapp: data.link_whatsapp,
-      };
+      const botMessage: Message = {
+        role: 'bot',
+        tipo: data.tipo,
+        respuesta: data.respuesta,
+        opciones: data.opciones,
+        productos: data.productos,
+        producto: data.producto,
+        link_whatsapp: data.link_whatsapp
+      };
 
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Error en Chatbot:", error);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          tipo: "texto",
-          respuesta:
-            "Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.",
-          link_whatsapp:
-            "https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error en Chatbot:", error);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setMessages(prev => [...prev, {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
+        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
@@ -346,211 +332,120 @@ const ChatbotWidget: React.FC = () => {
               </div>
             </div>
 
-            {/* Botones header: reiniciar + cerrar */}
-            <div className="flex items-center gap-2 relative z-10">
-              {/* Botón reiniciar */}
-              <button
-                onClick={reiniciarChat}
-                title="Reiniciar conversación"
-                disabled={isLoading || isResetting}
-                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-              </button>
-              {/* Botón cerrar */}
-              <button
-                onClick={toggleChat}
-                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
-                aria-label="Cerrar chat"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
+            {/* Botones header: reiniciar + cerrar */}
+            <div className="flex items-center gap-2 relative z-10">
+              {/* Botón reiniciar */}
+              <button
+                onClick={reiniciarChat}
+                title="Reiniciar conversación"
+                disabled={isLoading || isResetting}
+                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              {/* Botón cerrar */}
+              <button
+                onClick={toggleChat}
+                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
+                aria-label="Cerrar chat"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
 
-          {/* Área de Mensajes */}
-          <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-5 scrollbar-thin scrollbar-thumb-gray-200">
-            {isResetting ? (
-              <div className="flex flex-1 items-center justify-center py-10">
-                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
-                  <div
-                    className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.15s" }}
-                  ></div>
-                  <div
-                    className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.3s" }}
-                  ></div>
-                </div>
-              </div>
-            ) : (
-              messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-4 duration-500`}
-                >
-                  <div
-                    className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${
-                      msg.role === "user"
-                        ? "bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10"
-                        : "bg-white text-gray-800 rounded-bl-none border border-gray-100/50"
-                    }`}
-                  >
-                    <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
-                      {msg.respuesta}
-                    </p>
+          {/* Área de Mensajes */}
+          <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-5 scrollbar-thin scrollbar-thumb-gray-200">
+            {isResetting ? (
+              <div className="flex flex-1 items-center justify-center py-10">
+                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                </div>
+              </div>
+            ) : messages.map((msg, index) => (
+              <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
+                <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
+                  ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
+                  : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
+                  }`}>
+                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.respuesta}</p>
 
-                    {msg.link_producto && (
-                      <a
-                        href={msg.link_producto}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 flex items-center justify-center gap-2 w-full bg-[#015f86] hover:bg-[#0d9488] text-white text-[14px] font-semibold py-3 rounded-2xl transition-all duration-300"
-                      >
-                        Ver detalles del producto
-                      </a>
-                    )}
+                  {/* Botones de opciones */}
+                  {msg.tipo === 'opciones' && msg.opciones && msg.role === 'bot' && (
+                    <div className="mt-4 flex flex-col gap-2">
+                      {msg.opciones.map((op, oIdx) => (
+                        <button
+                          key={oIdx}
+                          onClick={() => handleOpcionClick(op)}
+                          disabled={isLoading || index !== messages.length - 1}
+                          className="w-full text-left px-4 py-3 rounded-2xl border-2 border-[#015f86]/20 bg-[#015f86]/5 hover:bg-[#015f86]/10 hover:border-[#015f86]/40 text-[#015f86] font-semibold text-[14px] transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          {op.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
-                    {/* Tarjetas de producto */}
-                    {msg.tipo === "producto" &&
-                      (msg.productos || msg.producto) && (
-                        <div className="mt-5 flex flex-col gap-4">
-                          {(msg.productos || [msg.producto]).map(
-                            (prod, pIdx) =>
-                              prod && (
-                                <div
-                                  key={pIdx}
-                                  className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group border-b-4 border-b-[#0d9488]/10"
-                                >
-                                  {prod.imagen && (
-                                    <div className="h-44 w-full bg-gray-50 flex items-center justify-center p-0 relative overflow-hidden">
-                                      <img
-                                        src={
-                                          prod.imagen.startsWith("http")
-                                            ? prod.imagen
-                                            : `${import.meta.env.PUBLIC_API_URL}${prod.imagen}`
-                                        }
-                                        alt={prod.nombre}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        loading="lazy"
-                                        onError={(e) => {
-                                          e.currentTarget.style.display =
-                                            "none";
-                                        }}
-                                      />
-                                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    </div>
-                                  )}
-                                  <div className="p-5">
-                                    <p className="font-bold text-base text-gray-900 leading-tight mb-2 uppercase tracking-wide">
-                                      {prod.nombre}
-                                    </p>
-                                    <p className="text-[13px] text-gray-500 leading-relaxed mb-5 line-clamp-2">
-                                      {prod.descripcion}
-                                    </p>
-                                    <a
-                                      href={prod.link_whatsapp}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#015f86] to-[#0d9488] hover:from-[#0d9488] hover:to-[#015f86] text-white text-[14px] font-bold py-3.5 rounded-2xl transition-all duration-500 shadow-md hover:shadow-xl active:scale-95"
-                                    >
-                                      <span>Consultar producto</span>
-                                      <svg
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      >
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                        <polyline points="15 3 21 3 21 9"></polyline>
-                                        <line
-                                          x1="10"
-                                          y1="14"
-                                          x2="21"
-                                          y2="3"
-                                        ></line>
-                                      </svg>
-                                    </a>
-                                  </div>
-                                </div>
-                              ),
-                          )}
-                        </div>
-                      )}
+                  {/* Tarjetas de producto */}
+                  {msg.tipo === 'producto' && (msg.productos || msg.producto) && (
+                    <div className="mt-5 flex flex-col gap-4">
+                      {(msg.productos || [msg.producto]).map((prod, pIdx) => prod && (
+                        <div key={pIdx} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group border-b-4 border-b-[#0d9488]/10">
+                          {prod.imagen && (
+                            <div className="h-44 w-full bg-gray-50 flex items-center justify-center p-0 relative overflow-hidden">
+                              <img
+                                src={prod.imagen.startsWith('http') ? prod.imagen : `${import.meta.env.PUBLIC_API_URL}${prod.imagen}`}
+                                alt={prod.nombre}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                loading="lazy"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            </div>
+                          )}
+                          <div className="p-5">
+                            <p className="font-bold text-base text-gray-900 leading-tight mb-2 uppercase tracking-wide">{prod.nombre}</p>
+                            <p className="text-[13px] text-gray-500 leading-relaxed mb-5 line-clamp-2">{prod.descripcion}</p>
+                            <a href={prod.link_whatsapp} target="_blank" rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#015f86] to-[#0d9488] hover:from-[#0d9488] hover:to-[#015f86] text-white text-[14px] font-bold py-3.5 rounded-2xl transition-all duration-500 shadow-md hover:shadow-xl active:scale-95">
+                              <span>Consultar producto</span>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-                    {/* Botón WhatsApp */}
-                    {(msg.tipo === "texto" || msg.tipo === "fin_flujo") &&
-                      msg.link_whatsapp && (
-                        <a
-                          href={msg.link_whatsapp}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-5 flex justify-center items-center gap-3 w-full text-center bg-[#25D366] hover:bg-[#20b858] text-white text-[15px] font-bold py-4 rounded-2xl transition-all duration-500 shadow-lg hover:shadow-[#25D366]/20 active:scale-95"
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            width="22"
-                            height="22"
-                            fill="currentColor"
-                          >
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-                          </svg>
-                          Hablar por WhatsApp
-                        </a>
-                      )}
-                  </div>
-                </div>
-              ))
-            )}
+                  {/* Botón WhatsApp */}
+                  {(msg.tipo === 'texto' || msg.tipo === 'fin_flujo') && msg.link_whatsapp && (
+                    <a href={msg.link_whatsapp} target="_blank" rel="noopener noreferrer"
+                      className="mt-5 flex justify-center items-center gap-3 w-full text-center bg-[#25D366] hover:bg-[#20b858] text-white text-[15px] font-bold py-4 rounded-2xl transition-all duration-500 shadow-lg hover:shadow-[#25D366]/20 active:scale-95">
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" /></svg>
+                      Hablar por WhatsApp
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
 
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
-                  <div
-                    className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.2s" }}
-                  ></div>
-                  <div
-                    className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.4s" }}
-                  ></div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
           {/* Input Area */}
           <div className="bg-white p-4 border-t border-gray-100 shadow-[0_-15px_30px_rgba(0,0,0,0.03)] shrink-0">

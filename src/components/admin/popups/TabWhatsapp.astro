@@ -153,7 +153,7 @@ import TimePicker from "./TimePicker.tsx";
             <TimePicker 
                         id="whatsappTime2" 
                         name="whatsappTime2" 
-                        label="Tiempo de espera" 
+                        label="Tiempo de espera adicional" 
                         defaultValue={15} 
                         client:load 
                     />
@@ -217,60 +217,19 @@ import TimePicker from "./TimePicker.tsx";
             </div>
 
             <!-- Tiempo 3 -->
+            <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
                 <TimePicker 
-                id="whatsappTime3" 
-                name="whatsappTime3" 
-                label="Tiempo de aparición" 
-                defaultValue={0} 
-                client:load
+                    id="whatsappTime3" 
+                    name="whatsappTime3" 
+                    label="Tiempo de espera" 
+                    defaultValue={60} 
+                    client:load 
                 />
+                <p class="text-[10px] text-gray-500 italic">Tiempo después de haber enviado el segundo mensaje.</p>
+            </div>
         </div>
         </div>
     </div>
 </div>
 </div>
 </form>
-<script>
-    // Función para recopilar todos los datos del formulario
-    function printFormData() {
-        const formData = {
-            // Configuración general
-            whatsappMessageSelector: document.getElementById('whatsappMessageSelector')?.value,
-            
-            // Mensaje 1
-            whatsappImage1: document.getElementById('whatsappImage')?.files[0]?.name || 'No file',
-            whatsappMessage1: getEditorContent('whatsappMessage'),
-            whatsappTime1: document.getElementById('whatsappTime1')?.value,
-            
-            // Mensaje 2
-            whatsappImage2: document.getElementById('whatsappImage2')?.files[0]?.name || 'No file',
-            whatsappMessage2: getEditorContent('whatsappMessage2'),
-            whatsappTime2: document.getElementById('whatsappTime2')?.value,
-            
-            // Mensaje 3
-            whatsappImage3: document.getElementById('whatsappImage3')?.files[0]?.name || 'No file',
-            whatsappMessage3: getEditorContent('whatsappMessage3'),
-            whatsappTime3: document.getElementById('whatsappTime3')?.value,
-        };
-        
-        console.log('=== FORMULARIO DATOS ===');
-        console.log(JSON.stringify(formData, null, 2));
-        console.table(formData);
-        
-        return formData;
-    }
-    
-    // Función auxiliar para obtener contenido del editor (si es necesario)
-    function getEditorContent(inputId) {
-        // Si usas un editor rich text, ajusta según tu implementación
-        const element = document.getElementById(inputId);
-        return element?.value || 'No content';
-    }
-    
-    // Agregar botón para imprimir en consola
-    const printButton = document.createElement('button');
-    printButton.textContent = '📋 Ver datos en consola';
-    printButton.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-semibold hover:bg-gray-700';
-    printButton.onclick = printFormData;
-    document.body.appendChild(printButton);
-</script>

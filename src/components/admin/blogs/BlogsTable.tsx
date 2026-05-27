@@ -379,15 +379,15 @@ const BlogsTable = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 items-center">
               {/* Dropdown Exportar */}
-              <div className="relative inline-block text-left" ref={exportMenuRef}>
+              <div className="relative w-full inline-block text-left" ref={exportMenuRef} >
                 <button
                   type="button"
                   onClick={() => setIsExportOpen(!isExportOpen)}
-                  className="flex items-center gap-2 bg-teal-50 dark:bg-white text-teal-700 dark:text-teal-600 hover:bg-teal-100 dark:hover:bg-teal-50 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 dark:border-white cursor-pointer"
+                  className="relative flex items-center px-12 min-w-[160px] sm:w-auto justify-center w-full bg-teal-50 dark:bg-white text-teal-700 dark:text-teal-600 hover:bg-teal-100 dark:hover:bg-teal-50 transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-sm border border-teal-200 dark:border-white cursor-pointer"
                 >
-                  <FaDownload className="h-4 w-4" />
+                  <FaDownload className="absolute left-5 h-4 w-4" />
                   <span>Exportar</span>
-                  <FaChevronDown className={`h-3 w-3 transition-transform ${isExportOpen ? "rotate-180" : ""}`} />
+                  <FaChevronDown className={`absolute right-5 h-3 w-3 transition-transform ${isExportOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {isExportOpen && (
@@ -420,13 +420,13 @@ const BlogsTable = () => {
               </div>
 
               {/* Botón Añadir Blog */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 relative w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={openAddModal}
-                  className="flex items-center gap-2 bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300 px-5 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer"
+                  className="relative flex px-12 min-w-[160px] items-center justify-center w-full bg-teal-600 text-white hover:bg-teal-700 transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                   Añadir Blog
