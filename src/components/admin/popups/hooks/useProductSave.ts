@@ -88,6 +88,7 @@ export const useProductSave = (): UseProductSaveReturn => {
           text: `❌ ${errorMessage}`,
         });
       } finally {
+        window.dispatchEvent(new CustomEvent("product-popup-save-finished"));
         setIsSaving(false);
       }
     },

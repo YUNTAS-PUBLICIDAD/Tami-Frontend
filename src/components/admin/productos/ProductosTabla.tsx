@@ -344,7 +344,7 @@ const ProductosTabla = () => {
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 w-full items-stretch sm:items-center [&_button]:!w-full [&_a]:!w-full [&_button]:py-3">
+                        <div className="flex flex-col sm:flex-row sm:w-auto gap-3 w-full items-stretch sm:items-center [&_button]:!w-full ">
 
                             <div className="w-full sm:w-auto flex flex-col [&_button]:flex [&_button]:items-center [&_button]:justify-between [&_button]:px-5">
                                 {/* Botón de Exportar */}
@@ -352,7 +352,7 @@ const ProductosTabla = () => {
                             </div>
 
                             {/* Botón de Agregar */}
-                            <div className="flex-shrink-0 w-full sm:w-auto flex flex-col [&_button]:!w-full [&_button]:flex [&_button]:flex-row [&_button]:items-center [&_button]:justify-center [&_button]:gap-2">
+                            <div className="flex-shrink-0 w-full sm:w-auto flex flex-col ">
                                 <AddProduct onProductAdded={fetchData} />
                             </div>
 

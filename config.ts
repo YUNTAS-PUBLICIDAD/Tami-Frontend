@@ -75,6 +75,10 @@ export const config = {
       getSettings: "/api/v1/popup-settings/public",
       submit: "/api/v1/whatsapp/popup-submission",
     },
+    chatbot: {
+      newIcon: "api/v1/chatbot/icon",
+      getIcon: "api/v1/chatbot/icon",
+    }
   },
   socket: {
     whatsapp: import.meta.env.PUBLIC_WHATSAPP_SOCKET_URL || "https://apitami.tamimaquinarias.com",

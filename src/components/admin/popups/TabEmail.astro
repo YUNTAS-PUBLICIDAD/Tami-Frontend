@@ -1,191 +1,311 @@
 ---
 import EmailEditor from "./EmailEditor.tsx";
+import TimePicker from "./TimePicker.tsx";
 ---
-<div
-    id="contentCorreo"
-    class="hidden space-y-6"
->
+
+<div id="contentCorreo" class="hidden space-y-6">
     <!-- Selector de Correo -->
-    <div class="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30 flex flex-col sm:flex-row items-center gap-4">
+    <div
+        class="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30 flex flex-col sm:flex-row items-center gap-4"
+    >
         <div class="flex items-center gap-3 shrink-0">
-             <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+            <div
+                class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm"
+            >
                 @
-             </div>
-             <span class="text-sm font-bold text-blue-900 dark:text-blue-100">Configuración:</span>
+            </div>
+            <span class="text-sm font-bold text-blue-900 dark:text-blue-100"
+                >Configuración:</span
+            >
         </div>
         <div class="relative flex-1 w-full">
-            <select 
-                id="emailSelector" 
+            <select
+                id="emailSelector"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none shadow-sm cursor-pointer transition-all appearance-none"
             >
                 <option value="1">📧 Correo 1</option>
                 <option value="2">📧 Correo 2</option>
                 <option value="3">📧 Correo 3</option>
             </select>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            <div
+                class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"></path>
                 </svg>
             </div>
         </div>
     </div>
 
-    <!-- Editar Mensaje de Correo -->
-    <div
-        class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm space-y-6"
-    >
-        <div class="flex items-start justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                </div>
-                <div>
-                    <h3 id="emailTitleDisplay" class="font-bold text-gray-900 dark:text-gray-100 text-lg">Correo Electrónico #1</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Configura el título, mensaje, Boton e imagen para los emails.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <div class="flex items-center gap-3">
-                <input type="hidden" name="delete_emailImage" id="delete_emailImage" value="0" />
-                <input type="file" id="emailImage" accept="image/*" class="hidden" />
-                <button
-                    type="button"
-                    onclick="document.getElementById('emailImage').click()"
-                    class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md group active:scale-95"
-                >
-                    Añadir Imagen Adjunta
-                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                    </svg>
-                </button>
-                <button
-                    type="button"
-                    id="clearEmailImage"
-                    class="hidden p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    title="Borrar Imagen Correo"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-xl">
-                <span class="font-medium">Recomendación para la imagen:</span> Usa formato <span class="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">webp, png o jpg</span> y un tamaño sugerido de <span class="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium">600x400px</span> o similar para un mejor diseño.
-            </div>
-
-            <div class="space-y-2">
-                <label for="emailTitle" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Título / Asunto</label>
-                <input
-                    type="text"
-                    id="emailTitle"
-                    class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
-                    placeholder="Ej: Información sobre Promoción Exclusiva"
-                    value="Solicitud de información - Popup Web"
-                />
-            </div>
-
-            <div class="space-y-2">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mensaje de Correo</label>
-                <EmailEditor client:only="react" />
-            </div>
-
-            <div class="space-y-4 pt-6 mt-4 border-t border-gray-100 dark:border-gray-700/50">
-                <h4 class="font-bold text-gray-800 dark:text-gray-100">Configuración del Botón</h4>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label for="emailBtnText" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Texto del Botón</label>
-                        <input
-                            type="text"
-                            id="emailBtnText"
-                            class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
-                            placeholder="Ej: Ver Productos"
-                            value="Ver Productos"
-                        />
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label for="emailBtnLink" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace del Botón</label>
-                        <input
-                            type="url"
-                            id="emailBtnLink"
-                            class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
-                            placeholder="Ej: https://tami.com/productos"
-                            value="https://tami.com/productos"
-                        />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                        <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color de Fondo</span>
-                        <div class="flex items-center gap-3">
-                            <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
-                                <input type="color" id="emailBtnBgColor" value="#0b1c3c" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
-                                <span class="text-xs text-gray-400">fondo</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                        <span class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">Color del Texto</span>
-                        <div class="flex items-center gap-3">
-                            <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform">
-                                <input type="color" id="emailBtnTextColor" value="#ffffff" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" />
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Seleccionar</span>
-                                <span class="text-xs text-gray-400">texto</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tiempo de Envío del Correo -->
-            <h2 class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-8 mb-4">
-                Tiempo de Envío
-            </h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                    <label for="emailSendDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2 w-full text-center sm:text-left">
-                        Retraso de Envío del Correo
-                    </label>
-                    <div class="relative w-full max-w-[200px]">
-                        <select
-                            id="emailSendDelay"
-                            class="w-full bg-white dark:bg-gray-700 border-none rounded-lg p-2.5 pr-10 text-sm font-medium focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer shadow-inner appearance-none"
+    <!-- Correo 1 -->
+    <div id="emailBlock1" class="email-message-block space-y-6">
+        <div
+            class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm space-y-6"
+        >
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
                         >
-                            <option value="-1">No enviar</option>
-                            <option value="0">Instantáneo</option>
-                            <option value="1">1 minuto</option>
-                            <option value="2">2 minutos</option>
-                            <option value="3">3 minutos</option>
-                            <option value="4">4 minutos</option>
-                            <option value="5" selected>5 minutos</option>
-                            <option value="10">10 minutos</option>
-                            <option value="15">15 minutos</option>
-                            <option value="20">20 minutos</option>
-                            <option value="30">30 minutos</option>
-                            <option value="60">1 hora</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 dark:text-gray-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            ></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3
+                            id="emailTitleDisplay"
+                            class="font-bold text-gray-900 dark:text-gray-100 text-lg"
+                        >
+                            Correo Electrónico #1
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Configura el título, mensaje, Boton e imagen para
+                            los emails.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <input
+                        type="hidden"
+                        name="delete_emailImage"
+                        id="delete_emailImage"
+                        value="0"
+                    />
+                    <input
+                        type="file"
+                        id="emailImage"
+                        accept="image/*"
+                        class="hidden"
+                    />
+                    <button
+                        type="button"
+                        onclick="document.getElementById('emailImage').click()"
+                        class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md group active:scale-95"
+                    >
+                        Añadir Imagen Adjunta
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                            ></path>
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        id="clearEmailImage"
+                        class="hidden p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        title="Borrar Imagen Correo"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div
+                    class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-xl"
+                >
+                    <span class="font-medium"
+                        >Recomendación para la imagen:</span
+                    > Usa formato <span
+                        class="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium"
+                        >webp, png o jpg</span
+                    > y un tamaño sugerido de <span
+                        class="bg-blue-100 dark:bg-blue-900/50 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-medium"
+                        >600x400px</span
+                    > o similar para un mejor diseño.
+                </div>
+
+                <div class="space-y-2">
+                    <label
+                        for="emailTitle"
+                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >Título / Asunto</label
+                    >
+                    <input
+                        type="text"
+                        id="emailTitle"
+                        class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                        placeholder="Ej: Información sobre Promoción Exclusiva"
+                        value="Solicitud de información - Popup Web"
+                    />
+                </div>
+
+                <div class="space-y-2">
+                    <label
+                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >Mensaje de Correo</label
+                    >
+                    <EmailEditor client:only="react" />
+                </div>
+
+                <div
+                    class="space-y-4 pt-6 mt-4 border-t border-gray-100 dark:border-gray-700/50"
+                >
+                    <h4 class="font-bold text-gray-800 dark:text-gray-100">
+                        Configuración del Botón
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label
+                                for="emailBtnText"
+                                class="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                                >Texto del Botón</label
+                            >
+                            <input
+                                type="text"
+                                id="emailBtnText"
+                                class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                                placeholder="Ej: Ver Productos"
+                                value="Ver Productos"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                for="emailBtnLink"
+                                class="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                                >Enlace del Botón</label
+                            >
+                            <input
+                                type="url"
+                                id="emailBtnLink"
+                                class="block w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                                placeholder="Ej: https://tami.com/productos"
+                                value="https://tami.com/productos"
+                            />
                         </div>
                     </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div
+                            class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start"
+                        >
+                            <span
+                                class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left"
+                                >Color de Fondo</span
+                            >
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform"
+                                >
+                                    <input
+                                        type="color"
+                                        id="emailBtnBgColor"
+                                        value="#0b1c3c"
+                                        class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                                    />
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-xs font-bold text-gray-500 dark:text-gray-400"
+                                        >Seleccionar</span
+                                    >
+                                    <span class="text-xs text-gray-400"
+                                        >fondo</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start"
+                        >
+                            <span
+                                class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left"
+                                >Color del Texto</span
+                            >
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform"
+                                >
+                                    <input
+                                        type="color"
+                                        id="emailBtnTextColor"
+                                        value="#ffffff"
+                                        class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                                    />
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-xs font-bold text-gray-500 dark:text-gray-400"
+                                        >Seleccionar</span
+                                    >
+                                    <span class="text-xs text-gray-400"
+                                        >texto</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tiempo de Envío del Correo -->
+                <h2
+                    class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-8 mb-4"
+                >
+                    Tiempo de Envío
+                </h2>
+
+                <div class="grid grid-cols-1 w-full gap-4">
+                    <TimePicker
+                        id="emailSendDelay"
+                        name="emailSendDelay"
+                        label="Tiempo de envío"
+                        defaultValue={0}
+                        client:load
+                    />
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Correo 2 (Oculto por defecto) -->
+    <!-- <div id="emailBlock2" class="email-message-block space-y-6 hidden"> ... duplicar contenido de arriba modificando los IDs (ej: id="EmailTime2") ... </div> -->
+
+    <!-- Correo 3 (Oculto por defecto) -->
+    <!-- <div id="emailBlock3" class="email-message-block space-y-6 hidden"> ... duplicar contenido de arriba modificando los IDs (ej: id="EmailTime3") ... </div> -->
 </div>

@@ -61,15 +61,21 @@ export class ProductFormBuilderService {
   ): FormData {
     const formDataToSend = new FormData();
 
+    const appendIfText = (key: string, value: unknown) => {
+      if (typeof value !== "string") return;
+      if (value.trim() === "") return;
+      formDataToSend.append(key, value);
+    };
+
     // Base product fields (required)
-    formDataToSend.append("nombre", formData.nombre || "");
-    formDataToSend.append("titulo", formData.titulo || "");
-    formDataToSend.append("subtitulo", formData.subtitulo || "");
-    // Enviamos una descripción limpia sin HTML para evitar bloqueos del Firewall (ModSecurity/WAF)
-    // El backend ignora esto cuando recibe only_popup = 1
-    formDataToSend.append("descripcion", "Actualización de configuración de popup");
-    formDataToSend.append("seccion", formData.seccion || "");
-    formDataToSend.append("link", formData.link || "");
+    appendIfText("nombre", formData.nombre);
+    appendIfText("titulo", formData.titulo);
+    appendIfText("subtitulo", formData.subtitulo);
+    // No forzar una descripción fija para evitar sobrescribir la del producto.
+    // Si el formulario ya trae una descripción válida, la preservamos.
+    appendIfText("descripcion", formData.descripcion);
+    appendIfText("seccion", formData.seccion);
+    appendIfText("link", formData.link);
     formDataToSend.append("stock", String(formData.stock ?? 0));
     formDataToSend.append("precio", String(formData.precio ?? 0));
 
@@ -96,24 +102,24 @@ export class ProductFormBuilderService {
 
     // Popup Images - Desktop
     this.appendImageField(formDataToSend, "imagen_popup", formData.imagen_popup);
-    formDataToSend.append("texto_alt_popup", formData.texto_alt_popup || "");
+    appendIfText("texto_alt_popup", formData.texto_alt_popup);
 
     this.appendImageField(formDataToSend, "imagen_popup2", formData.imagen_popup2);
-    formDataToSend.append("texto_alt_popup2", formData.texto_alt_popup2 || "");
-    formDataToSend.append("texto_alt_popup_2", formData.texto_alt_popup2 || ""); // Backend compat
+    appendIfText("texto_alt_popup2", formData.texto_alt_popup2);
+    appendIfText("texto_alt_popup_2", formData.texto_alt_popup2); // Backend compat
 
     // Popup Images - Mobile
     this.appendImageField(formDataToSend, "imagen_popup_mobile", formData.imagen_popup_mobile);
     if (formData.delete_imagen_popup_mobile === 1) {
       formDataToSend.append("delete_imagen_popup_mobile", "1");
     }
-    formDataToSend.append("texto_alt_popup_mobile", formData.texto_alt_popup_mobile || "");
+    appendIfText("texto_alt_popup_mobile", formData.texto_alt_popup_mobile);
 
     this.appendImageField(formDataToSend, "imagen_popup_mobile2", formData.imagen_popup_mobile2);
     if (formData.delete_imagen_popup_mobile2 === 1) {
       formDataToSend.append("delete_imagen_popup_mobile2", "1");
     }
-    formDataToSend.append("texto_alt_popup_mobile2", formData.texto_alt_popup_mobile2 || "");
+    appendIfText("texto_alt_popup_mobile2", formData.texto_alt_popup_mobile2);
 
     // Email Configuration
     // Email Configuration - support 3 email variants
@@ -124,12 +130,12 @@ export class ProductFormBuilderService {
       if ((formData as any)[deleteFlag] === 1) {
         formDataToSend.append(deleteFlag, "1");
       }
-      formDataToSend.append(`asunto_${i}`, (formData as any)[`asunto_${i}`] || "");
-      formDataToSend.append(`mensaje_email_${i}`, (formData as any)[`mensaje_email_${i}`] || "");
-      formDataToSend.append(`email_btn_text_${i}`, (formData as any)[`email_btn_text_${i}`] || "Ver Productos");
-      formDataToSend.append(`email_btn_link_${i}`, (formData as any)[`email_btn_link_${i}`] || "https://tami.com/productos");
-      formDataToSend.append(`email_btn_bg_color_${i}`, (formData as any)[`email_btn_bg_color_${i}`] || "#0b1c3c");
-      formDataToSend.append(`email_btn_text_color_${i}`, (formData as any)[`email_btn_text_color_${i}`] || "#ffffff");
+      appendIfText(`asunto_${i}`, (formData as any)[`asunto_${i}`]);
+      appendIfText(`mensaje_email_${i}`, (formData as any)[`mensaje_email_${i}`]);
+      appendIfText(`email_btn_text_${i}`, (formData as any)[`email_btn_text_${i}`]);
+      appendIfText(`email_btn_link_${i}`, (formData as any)[`email_btn_link_${i}`]);
+      appendIfText(`email_btn_bg_color_${i}`, (formData as any)[`email_btn_bg_color_${i}`]);
+      appendIfText(`email_btn_text_color_${i}`, (formData as any)[`email_btn_text_color_${i}`]);
       const currentEmailTime = (formData as any)[`email_time_${i}`];
       if (currentEmailTime !== undefined && currentEmailTime !== null) {
         formDataToSend.append(`email_time_${i}`, String(currentEmailTime));
@@ -145,22 +151,22 @@ export class ProductFormBuilderService {
     if (formData.delete_imagen_whatsapp === 1) {
       formDataToSend.append("delete_imagen_whatsapp", "1");
     }
-    formDataToSend.append("texto_alt_whatsapp", formData.texto_alt_whatsapp || "");
-    formDataToSend.append("mensaje_whatsapp", formData.texto_alt_whatsapp || "");
+    appendIfText("texto_alt_whatsapp", formData.texto_alt_whatsapp);
+    appendIfText("mensaje_whatsapp", formData.texto_alt_whatsapp);
 
     // WhatsApp Message 2
     this.appendImageField(formDataToSend, "imagen_whatsapp_2", formData.imagen_whatsapp_2);
     if (formData.delete_imagen_whatsapp_2 === 1) {
       formDataToSend.append("delete_imagen_whatsapp_2", "1");
     }
-    formDataToSend.append("mensaje_whatsapp_2", formData.mensaje_whatsapp_2 || "");
+    appendIfText("mensaje_whatsapp_2", formData.mensaje_whatsapp_2);
 
     // WhatsApp Message 3
     this.appendImageField(formDataToSend, "imagen_whatsapp_3", formData.imagen_whatsapp_3);
     if (formData.delete_imagen_whatsapp_3 === 1) {
       formDataToSend.append("delete_imagen_whatsapp_3", "1");
     }
-    formDataToSend.append("mensaje_whatsapp_3", formData.mensaje_whatsapp_3 || "");
+    appendIfText("mensaje_whatsapp_3", formData.mensaje_whatsapp_3);
 
     // WhatsApp Timing
     if (formData.whatsapp_time_1 !== undefined && formData.whatsapp_time_1 !== null) {
@@ -183,12 +189,12 @@ export class ProductFormBuilderService {
     }
 
     // Etiqueta fields
-    formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta?.meta_titulo || "");
-    formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta?.meta_descripcion || "");
-    formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta?.popup_estilo || "estilo1");
-    formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta?.popup_button_text || "¡COTIZA AHORA!");
-    formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
-    formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
+    appendIfText("etiqueta[meta_titulo]", formData.etiqueta?.meta_titulo);
+    appendIfText("etiqueta[meta_descripcion]", formData.etiqueta?.meta_descripcion);
+    appendIfText("etiqueta[popup_estilo]", formData.etiqueta?.popup_estilo || "estilo1");
+    appendIfText("etiqueta[popup_button_text]", formData.etiqueta?.popup_button_text || "¡COTIZA AHORA!");
+    appendIfText("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
+    appendIfText("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
 
     // API flags
     formDataToSend.append("_method", "PUT");
@@ -252,13 +258,41 @@ export class ProductFormBuilderService {
       }) as any | undefined;
     };
 
+    const pickText = (...values: Array<string | null | undefined>) => {
+      for (const value of values) {
+        if (typeof value === "string" && value.trim() !== "") {
+          return value;
+        }
+      }
+      return "";
+    };
+
     const getEmailTime = (image: any, fallbackField: string) => {
-      if (image?.delay_minutes !== undefined && image.delay_minutes !== null) return image.delay_minutes;
-      if (image?.email_time !== undefined && image.email_time !== null) return image.email_time;
       if (image?.email_time_1 !== undefined && image.email_time_1 !== null) return image.email_time_1;
       if (image?.email_time_2 !== undefined && image.email_time_2 !== null) return image.email_time_2;
       if (image?.email_time_3 !== undefined && image.email_time_3 !== null) return image.email_time_3;
+      if (image?.email_time !== undefined && image.email_time !== null) return image.email_time;
+      if (image?.delay_minutes !== undefined && image.delay_minutes !== null) return image.delay_minutes;
       return (product as any)[fallbackField] ?? 0;
+    };
+
+    const getWhatsappTime = (image: any, fallbackField: string) => {
+      const imageValue = image?.[fallbackField];
+      if (imageValue !== undefined && imageValue !== null) {
+        return Number(imageValue) || 0;
+      }
+
+      const productValue = (product as any)[fallbackField];
+      if (productValue !== undefined && productValue !== null) {
+        return Number(productValue) || 0;
+      }
+
+      const legacyValue = (product as any)[fallbackField.replace(/_/g, "")];
+      if (legacyValue !== undefined && legacyValue !== null) {
+        return Number(legacyValue) || 0;
+      }
+
+      return 0;
     };
 
     const imagenEmail = findEmailImage(["email", "email1", "email_1"]);
@@ -278,8 +312,14 @@ export class ProductFormBuilderService {
 
       // Map up to three email images/configs
       imagen_email_1: imagenEmail ? this.getFullImageUrl(imagenEmail.url_imagen, apiUrl) : fallbackImage("imagen_email_1"),
-      asunto_1: imagenEmail?.asunto || product.asunto || "",
-      mensaje_email_1: imagenEmail?.email_mensaje || product.mensaje_email || "",
+      asunto_1: pickText(imagenEmail?.asunto, product.asunto_1, product.asunto, product.email_subject, product.emailTitle),
+      mensaje_email_1: pickText(
+        imagenEmail?.email_mensaje,
+        product.mensaje_email_1,
+        product.mensaje_email,
+        product.email_mensaje,
+        product.email_body,
+      ),
       email_btn_text_1: imagenEmail?.email_btn_text || product.email_btn_text || "Ver Productos",
       email_btn_link_1: imagenEmail?.email_btn_link || product.email_btn_link || "https://tami.com/productos",
       email_btn_bg_color_1: imagenEmail?.email_btn_bg_color || product.email_btn_bg_color || "#0b1c3c",
@@ -287,8 +327,13 @@ export class ProductFormBuilderService {
       email_time_1: getEmailTime(imagenEmail, "email_time_1"),
 
       imagen_email_2: imagenEmail2 ? this.getFullImageUrl(imagenEmail2.url_imagen, apiUrl) : fallbackImage("imagen_email_2"),
-      asunto_2: imagenEmail2?.asunto || product.asunto_2 || "",
-      mensaje_email_2: imagenEmail2?.email_mensaje || product.mensaje_email_2 || "",
+      asunto_2: pickText(imagenEmail2?.asunto, product.asunto_2, product.email_subject_2, product.emailTitle_2),
+      mensaje_email_2: pickText(
+        imagenEmail2?.email_mensaje,
+        product.mensaje_email_2,
+        product.email_mensaje_2,
+        product.email_body_2,
+      ),
       email_btn_text_2: imagenEmail2?.email_btn_text || product.email_btn_text_2 || "Ver Productos",
       email_btn_link_2: imagenEmail2?.email_btn_link || product.email_btn_link_2 || "https://tami.com/productos",
       email_btn_bg_color_2: imagenEmail2?.email_btn_bg_color || product.email_btn_bg_color_2 || "#0b1c3c",
@@ -302,14 +347,24 @@ export class ProductFormBuilderService {
         const t = (img.tipo || "").toLowerCase();
         return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
       }) as any).url_imagen, apiUrl) : fallbackImage("imagen_email_3"),
-      asunto_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.asunto || product.asunto_3 || "",
-      mensaje_email_3: ((product.producto_imagenes || []).find((img: any) => {
-        const t = (img.tipo || "").toLowerCase();
-        return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
-      }) as any)?.email_mensaje || product.mensaje_email_3 || "",
+      asunto_3: pickText(
+        ((product.producto_imagenes || []).find((img: any) => {
+          const t = (img.tipo || "").toLowerCase();
+          return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
+        }) as any)?.asunto,
+        product.asunto_3,
+        product.email_subject_3,
+        product.emailTitle_3,
+      ),
+      mensaje_email_3: pickText(
+        ((product.producto_imagenes || []).find((img: any) => {
+          const t = (img.tipo || "").toLowerCase();
+          return t === "email3" || t === "email_3" || t === "email-3" || t === "email3";
+        }) as any)?.email_mensaje,
+        product.mensaje_email_3,
+        product.email_mensaje_3,
+        product.email_body_3,
+      ),
       email_btn_text_3: imagenEmail3?.email_btn_text || product.email_btn_text_3 || "Ver Productos",
       email_btn_link_3: imagenEmail3?.email_btn_link || product.email_btn_link_3 || "https://tami.com/productos",
       email_btn_bg_color_3: imagenEmail3?.email_btn_bg_color || product.email_btn_bg_color_3 || "#0b1c3c",
@@ -317,12 +372,12 @@ export class ProductFormBuilderService {
       email_time_3: getEmailTime(imagenEmail3, "email_time_3"),
 
       imagen_whatsapp: imagenWhatsapp ? this.getFullImageUrl(imagenWhatsapp.url_imagen, apiUrl) : fallbackImage("imagen_whatsapp"),
-      texto_alt_whatsapp: imagenWhatsapp?.whatsapp_mensaje || product.texto_alt_whatsapp || "",
-      mensaje_whatsapp_2: imagenWhatsapp?.whatsapp_mensaje_2 || product.mensaje_whatsapp_2 || "",
-      mensaje_whatsapp_3: imagenWhatsapp?.whatsapp_mensaje_3 || product.mensaje_whatsapp_3 || "",
-      whatsapp_time_1: imagenWhatsapp?.whatsapp_time_1 || product.whatsapp_time_1 || 0,
-      whatsapp_time_2: imagenWhatsapp?.whatsapp_time_2 || product.whatsapp_time_2 || 0,
-      whatsapp_time_3: imagenWhatsapp?.whatsapp_time_3 || product.whatsapp_time_3 || 0,
+      texto_alt_whatsapp: pickText(imagenWhatsapp?.whatsapp_mensaje, product.texto_alt_whatsapp, product.mensaje_whatsapp, product.whatsapp_mensaje),
+      mensaje_whatsapp_2: pickText(imagenWhatsapp?.whatsapp_mensaje_2, product.mensaje_whatsapp_2, product.whatsapp_mensaje_2),
+      mensaje_whatsapp_3: pickText(imagenWhatsapp?.whatsapp_mensaje_3, product.mensaje_whatsapp_3, product.whatsapp_mensaje_3),
+      whatsapp_time_1: getWhatsappTime(imagenWhatsapp, "whatsapp_time_1"),
+      whatsapp_time_2: getWhatsappTime(imagenWhatsapp, "whatsapp_time_2"),
+      whatsapp_time_3: getWhatsappTime(imagenWhatsapp, "whatsapp_time_3"),
       imagen_whatsapp_2: imagenWhatsapp?.whatsapp_image_url_2 ? this.getFullImageUrl(imagenWhatsapp.whatsapp_image_url_2, apiUrl) : fallbackImage("imagen_whatsapp_2"),
       imagen_whatsapp_3: imagenWhatsapp?.whatsapp_image_url_3 ? this.getFullImageUrl(imagenWhatsapp.whatsapp_image_url_3, apiUrl) : fallbackImage("imagen_whatsapp_3"),
 
