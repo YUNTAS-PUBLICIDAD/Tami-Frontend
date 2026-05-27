@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
-import { getLocalReply } from "./chatbotLogic";
+import { getLocalReply, GREETING_REPLY } from "./chatbotLogic";
 import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
@@ -50,15 +50,9 @@ const CONTEXT_KEY = 'tami_chat_context';
 const OPEN_KEY = 'tami_chat_open';
 
 const mensajeInicial: Message = {
-  role: 'bot',
-  tipo: 'opciones',
-  respuesta: '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio.\n\n¿Qué te gustaría hacer?',
-  opciones: [
-    { label: '🚀 Negocio', valor: 'negocio' },
-    { label: '⚙️ Maquinaria', valor: 'maquinaria' },
-    { label: '✨ Decoración', valor: 'decoracion' },
-    { label: '👨‍💼 Hablar con asesor', valor: 'asesor' },
-  ]
+  role: 'bot',
+  tipo: 'texto',
+  respuesta: GREETING_REPLY,
 };
 
 const ChatbotWidget: React.FC = () => {
@@ -93,6 +87,17 @@ const ChatbotWidget: React.FC = () => {
   const [icono, setIcono] = useState(robotIcon)
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstBubble = useRef(true);
+
+  // If we have only the greeting message shown and default context, move to expecting product
+  useEffect(() => {
+    try {
+      if (messages.length === 1 && messages[0].respuesta === GREETING_REPLY && context?.paso === 'menu_principal') {
+        setContext((prev) => ({ ...(prev || { paso: 'menu_principal' }), paso: 'esperando_producto' }));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
  
 
   const bubbleMessages = [

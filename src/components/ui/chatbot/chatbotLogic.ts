@@ -72,7 +72,7 @@ const toDisplayCase = (text: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
-const GREETING_REPLY =
+export const GREETING_REPLY =
   '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.';
 
 interface ScriptedProductIntent {
