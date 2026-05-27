@@ -58,25 +58,12 @@ const mensajeInicial: Message = {
 const ChatbotWidget: React.FC = () => {
 
   // Estado persistente 
-  const [messages, setMessages] = useState<Message[]>(() => {
-    try {
-      const saved = localStorage.getItem(MESSAGES_KEY);
-      return saved ? JSON.parse(saved) : [mensajeInicial];
-    } catch { return [mensajeInicial]; }
-  });
+  const [messages, setMessages] = useState<Message[]>([mensajeInicial]);
 
-  const [context, setContext] = useState<ChatContext | null>(() => {
-    try {
-      const saved = localStorage.getItem(CONTEXT_KEY);
-      return saved ? JSON.parse(saved) : { paso: 'menu_principal' };
-    } catch { return { paso: 'menu_principal' }; }
-  });
+  const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
 
-  const [isOpen, setIsOpen] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(OPEN_KEY) === 'true';
-    } catch { return false; }
-  });
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   const [showBubble, setShowBubble] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
@@ -117,21 +104,47 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem(MESSAGES_KEY);
+      if (savedMessages) {
+        setMessages(JSON.parse(savedMessages));
+      }
+
+      const savedContext = localStorage.getItem(CONTEXT_KEY);
+      if (savedContext) {
+        setContext(JSON.parse(savedContext));
+      }
+
+      setIsOpen(localStorage.getItem(OPEN_KEY) === 'true');
+    } catch {
+      // Keep the SSR-safe defaults when storage is unavailable or invalid.
+    } finally {
+      setHasHydratedStorage(true);
+    }
+  }, []);
+
   // Persistir en localStorage cuando cambian 
-  useEffect(() => {
-    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
-    catch { }
-  }, [messages]);
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
 
-  useEffect(() => {
-    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
-    catch { }
-  }, [context]);
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
+    catch { }
+  }, [messages, hasHydratedStorage]);
 
-  useEffect(() => {
-    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
-    catch { }
-  }, [isOpen]);
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
+
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
+    catch { }
+  }, [context, hasHydratedStorage]);
+
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
+
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen, hasHydratedStorage]);
 
 
   useEffect(() => {
