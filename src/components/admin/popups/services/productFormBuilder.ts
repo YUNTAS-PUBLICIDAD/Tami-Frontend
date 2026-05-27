@@ -268,12 +268,31 @@ export class ProductFormBuilderService {
     };
 
     const getEmailTime = (image: any, fallbackField: string) => {
-      if (image?.delay_minutes !== undefined && image.delay_minutes !== null) return image.delay_minutes;
-      if (image?.email_time !== undefined && image.email_time !== null) return image.email_time;
       if (image?.email_time_1 !== undefined && image.email_time_1 !== null) return image.email_time_1;
       if (image?.email_time_2 !== undefined && image.email_time_2 !== null) return image.email_time_2;
       if (image?.email_time_3 !== undefined && image.email_time_3 !== null) return image.email_time_3;
+      if (image?.email_time !== undefined && image.email_time !== null) return image.email_time;
+      if (image?.delay_minutes !== undefined && image.delay_minutes !== null) return image.delay_minutes;
       return (product as any)[fallbackField] ?? 0;
+    };
+
+    const getWhatsappTime = (image: any, fallbackField: string) => {
+      const imageValue = image?.[fallbackField];
+      if (imageValue !== undefined && imageValue !== null) {
+        return Number(imageValue) || 0;
+      }
+
+      const productValue = (product as any)[fallbackField];
+      if (productValue !== undefined && productValue !== null) {
+        return Number(productValue) || 0;
+      }
+
+      const legacyValue = (product as any)[fallbackField.replace(/_/g, "")];
+      if (legacyValue !== undefined && legacyValue !== null) {
+        return Number(legacyValue) || 0;
+      }
+
+      return 0;
     };
 
     const imagenEmail = findEmailImage(["email", "email1", "email_1"]);
@@ -356,9 +375,9 @@ export class ProductFormBuilderService {
       texto_alt_whatsapp: pickText(imagenWhatsapp?.whatsapp_mensaje, product.texto_alt_whatsapp, product.mensaje_whatsapp, product.whatsapp_mensaje),
       mensaje_whatsapp_2: pickText(imagenWhatsapp?.whatsapp_mensaje_2, product.mensaje_whatsapp_2, product.whatsapp_mensaje_2),
       mensaje_whatsapp_3: pickText(imagenWhatsapp?.whatsapp_mensaje_3, product.mensaje_whatsapp_3, product.whatsapp_mensaje_3),
-      whatsapp_time_1: imagenWhatsapp?.whatsapp_time_1 || product.whatsapp_time_1 || 0,
-      whatsapp_time_2: imagenWhatsapp?.whatsapp_time_2 || product.whatsapp_time_2 || 0,
-      whatsapp_time_3: imagenWhatsapp?.whatsapp_time_3 || product.whatsapp_time_3 || 0,
+      whatsapp_time_1: getWhatsappTime(imagenWhatsapp, "whatsapp_time_1"),
+      whatsapp_time_2: getWhatsappTime(imagenWhatsapp, "whatsapp_time_2"),
+      whatsapp_time_3: getWhatsappTime(imagenWhatsapp, "whatsapp_time_3"),
       imagen_whatsapp_2: imagenWhatsapp?.whatsapp_image_url_2 ? this.getFullImageUrl(imagenWhatsapp.whatsapp_image_url_2, apiUrl) : fallbackImage("imagen_whatsapp_2"),
       imagen_whatsapp_3: imagenWhatsapp?.whatsapp_image_url_3 ? this.getFullImageUrl(imagenWhatsapp.whatsapp_image_url_3, apiUrl) : fallbackImage("imagen_whatsapp_3"),
 

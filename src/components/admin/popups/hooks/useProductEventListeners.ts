@@ -52,15 +52,16 @@ export const useProductEventListeners = ({
   onExternalSave
 }: UseProductEventListenersProps): void => {
   /**
-   * Memoized handler for WhatsApp updates
+   * Memoized handler for WhatsApp updates.
+   * Each event name belongs to one message slot, so do not route by the current selector.
    */
-  const handleWhatsappUpdate = useCallback((e: any) => {
-    if (typeof e.detail === "string") {
-      if (whatsappSelected === 1) onWhatsappUpdate(1, e.detail);
-      else if (whatsappSelected === 2) onWhatsappUpdate(2, e.detail);
-      else if (whatsappSelected === 3) onWhatsappUpdate(3, e.detail);
-    }
-  }, [whatsappSelected, onWhatsappUpdate]);
+  const createWhatsappUpdateHandler = useCallback((messageNumber: 1 | 2 | 3) => {
+    return (e: any) => {
+      if (typeof e.detail === "string") {
+        onWhatsappUpdate(messageNumber, e.detail);
+      }
+    };
+  }, [onWhatsappUpdate]);
 
   /**
    * Memoized handler for Email updates
@@ -77,22 +78,26 @@ export const useProductEventListeners = ({
    * Consolidated event listeners - editor updates (WhatsApp, Email)
    */
   useEffect(() => {
-    window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate);
-    window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-    window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
+    const handleWhatsappUpdate1 = createWhatsappUpdateHandler(1);
+    const handleWhatsappUpdate2 = createWhatsappUpdateHandler(2);
+    const handleWhatsappUpdate3 = createWhatsappUpdateHandler(3);
+
+    window.addEventListener("update-whatsapp-preview", handleWhatsappUpdate1);
+    window.addEventListener("update-whatsapp-preview-2", handleWhatsappUpdate2);
+    window.addEventListener("update-whatsapp-preview-3", handleWhatsappUpdate3);
     window.addEventListener("update-email-preview-1", handleEmailUpdate(1));
     window.addEventListener("update-email-preview-2", handleEmailUpdate(2));
     window.addEventListener("update-email-preview-3", handleEmailUpdate(3));
 
     return () => {
-      window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate);
-      window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate);
-      window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate);
+      window.removeEventListener("update-whatsapp-preview", handleWhatsappUpdate1);
+      window.removeEventListener("update-whatsapp-preview-2", handleWhatsappUpdate2);
+      window.removeEventListener("update-whatsapp-preview-3", handleWhatsappUpdate3);
       window.removeEventListener("update-email-preview-1", handleEmailUpdate(1));
       window.removeEventListener("update-email-preview-2", handleEmailUpdate(2));
       window.removeEventListener("update-email-preview-3", handleEmailUpdate(3));
     };
-  }, [handleWhatsappUpdate, handleEmailUpdate]);
+  }, [createWhatsappUpdateHandler, handleEmailUpdate]);
 
   /**
    * Consolidated event listeners - reset and external save

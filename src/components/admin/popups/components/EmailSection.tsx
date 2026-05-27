@@ -176,10 +176,13 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                             />
                             <div className="col-span-1 sm:col-span-2 mt-2">
                                 <TimePicker 
-                                            id="email_time_" 
-                                            name="email_time_" 
+                                                key={selectedEmail}
+                                            id={`email_time_${selectedEmail}`} 
+                                            name={`email_time_${selectedEmail}`} 
                                             label="Tiempo de aparición" 
-                                            defaultValue={0} 
+                                            defaultValue={0}
+                                            value={(formData as any)[`email_time_${selectedEmail}`] ?? 0}
+                                            onChange={(minutes) => onFieldChange(`email_time_${selectedEmail}`, minutes)}
                                 />
                             </div>
                         </div>
