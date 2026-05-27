@@ -2,6 +2,7 @@ export interface ApiProduct {
   nombre?: string;
   titulo?: string;
   link?: string;
+  seccion?: string;
 }
 
 interface CatalogMatch {
@@ -12,11 +13,14 @@ interface CatalogMatch {
 
 export interface ChatContextMinimal {
   paso?: string;
+  categoria?: 'negocio' | 'maquinaria' | 'decoracion' | string;
   producto?: string;
   uso?: string;
   ciudad?: string;
   nombre?: string;
   telefono?: string;
+  pedido?: string;
+  referencia_pedido?: string;
 }
 
 export interface MessageMinimal {
@@ -30,8 +34,10 @@ export interface MessageMinimal {
 export const DEFAULT_WHATSAPP =
   'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20informaci%C3%B3n%20para%20mi%20negocio.';
 
-const PRODUCT_CONTACT_STEP_1 = 'esperando_datos_producto_1';
-const PRODUCT_CONTACT_STEP_2 = 'esperando_datos_producto_2';
+const PRODUCT_CONTACT_STEP_1 = 'esperando_uso_producto';
+const PRODUCT_CONTACT_STEP_2 = 'esperando_ciudad_producto';
+const PRODUCT_CONTACT_STEP_3 = 'esperando_nombre_producto';
+const PRODUCT_CONTACT_STEP_4 = 'esperando_telefono_producto';
 
 export const buildProductLink = (link: string) => `/productos/${link}`;
 
@@ -67,7 +73,7 @@ const toDisplayCase = (text: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
-const GREETING_REPLY =
+export const GREETING_REPLY =
   '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.';
 
 interface ScriptedProductIntent {
@@ -84,19 +90,18 @@ interface LocalReplyResult {
 }
 
 const SCRIPTED_PRODUCT_INTENTS: ScriptedProductIntent[] = [
-  { key: 'soldadora-spark-mig-250', labels: ['soldadora spark mig 250', 'spark mig 250', 'mig 250'], intro: '¡Excelente opción! ⚙️ La Spark MIG 250 te da un soldado más estable, preciso y profesional para trabajos exigentes.', fallbackSlug: 'soldadora-spark-mig-250' },
-  { key: 'maquina-selladora-bolsas-liquidos', labels: ['maquina selladora de bolsas para liquidos', 'selladora de bolsas para liquidos', 'selladora de liquidos', 'selladora liquidos'], intro: '¡Buenísima opción! 🧪 Sella bolsas de jugos, agua o salsas de forma rápida, higiénica y sin derrames.', fallbackSlug: 'maquina-selladora-bolsas-liquidos' },
-  { key: 'maquina-selladora-bolsas-solidos', labels: ['maquina selladora de bolsas para solidos', 'selladora de bolsas para solidos', 'selladora bolsas solidos', 'bolsas para solidos'], intro: '¡Excelente para empaque de sólidos! 📦 Te ayuda a sellar con rapidez y mantener mejor la calidad del producto.', fallbackSlug: 'maquina-selladora-bolsas-solidos' },
-  { key: 'maquina-embalaje-te', labels: ['maquina de embalaje de te', 'embalaje de te', 'maquina de te', 'maquina te', 'te en saquitos'], intro: '¡Excelente elección! 🍃 Automatiza el empaque en saquitos, ahorra tiempo y eleva tu producción.', fallbackSlug: 'maquina-de-embalaje-de-te' },
+  { key: 'maquina-embalaje-te', labels: ['maquina de te', 'maquina de embalaje de te', 'maquina te', 'embalaje de te', 'te en saquitos'], intro: '¡Excelente elección! Automatiza el empaque en saquitos, ahorra tiempo y eleva tu producción. 🚀', fallbackSlug: 'maquina-de-embalaje-de-te' },
+  { key: 'maquina-selladora-bolsas-liquidos', labels: ['maquina selladora de liquidos', 'maquina selladora de bolsas para liquidos', 'selladora de bolsas para liquidos', 'selladora de liquidos', 'selladora liquidos'], intro: '¡Buenísima opción! Sella bolsas de jugos, agua o salsas de forma rápida, higiénica y sin derrames. 🧪', fallbackSlug: 'maquina-selladora-bolsas-liquidos' },
+  { key: 'ventilador-holografico', labels: ['ventilador holografico', 'holografico', 'holograma'], intro: '¡Espectacular para llamar la atención! Proyecta tus productos en 3D flotante y atrae clientes a tu local. 👁️✨', fallbackSlug: 'ventilador-holografico' },
+  { key: 'soldadora-lingba', labels: ['selladora lingba', 'soldadora lingba', 'lingba'], intro: '¡Una de las más pedidas! Es súper resistente, ideal para sellar bolsas de plástico rápido y con acabado profesional. 📦', fallbackSlug: 'soldadora-lingba' },
+  { key: 'purificador-agua', labels: ['purificador de agua', 'purificador agua', 'purificador'], intro: '¡Excelente elección! 💧 Obtén agua más limpia y segura para tu negocio u hogar con un sistema práctico y eficiente.', fallbackSlug: 'purificador-de-agua' },
   { key: 'selladora-vaso-manual', labels: ['selladora de vaso manual', 'selladora de vasos manual', 'selladora de vasos', 'selladora de vaso'], intro: '¡Perfecta para emprender! 🧋 Sella vasos de manera rápida y profesional, ideal para bebidas como bubble tea, jugos y postres.', fallbackSlug: 'selladora-de-vasos' },
   { key: 'selladora-por-induccion', labels: ['selladora por induccion', 'selladora de induccion', 'induccion'], intro: '¡Muy buena opción! ⚡ Sella envases de forma hermética y segura, ayudando a conservar mejor tus productos y dar una presentación más profesional.', fallbackSlug: 'selladora-de-induccion' },
-  { key: 'soldadora-lingba', labels: ['soldadora lingba', 'selladora lingba', 'lingba'], intro: '¡Una de las más pedidas! 📦 Es súper resistente, ideal para sellar bolsas de plástico rápido y con acabado profesional.', fallbackSlug: 'soldadora-lingba' },
-  { key: 'ventilador-holografico', labels: ['ventilador holografico', 'holografico', 'holograma'], intro: '¡Espectacular para llamar la atención! 👁️✨ Proyecta tus productos en 3D flotante y atrae clientes a tu local.', fallbackSlug: 'ventilador-holografico' },
-  { key: 'sillas-cuadradas-o-de-cubo', labels: ['sillas cuadradas o de cubo', 'sillas de cubo', 'sillas cuadradas cubo', 'silla cuadrada de cubo'], intro: '¡Muy buena elección! ✨ Las sillas cuadradas o de cubo aportan un estilo moderno y práctico para tu espacio.', fallbackSlug: 'sillas-cuadradas-o-de-cubo' },
-  { key: 'silla-bar-led-alta', labels: ['silla bar led alta', 'silla led alta', 'silla bar alta led', 'silla alta led'], intro: '¡Genial! ✨ La silla bar LED alta da un look moderno y llamativo para bares, eventos o zonas lounge.', fallbackSlug: 'silla-bar-led-alta' },
-  { key: 'mesa-led-bar-alta-cuadrada', labels: ['mesa led bar alta cuadrada', 'mesa led alta cuadrada', 'mesa cuadrada led alta'], intro: '¡Genial! ✨ La mesa LED bar alta cuadrada es perfecta para bares o eventos con estilo moderno.', fallbackSlug: 'mesa-led-bar-alta-cuadrada' },
-  { key: 'mesa-led-bar-alta', labels: ['mesa led bar alta', 'mesa led alta'], intro: '¡Genial! ✨ Tenemos muebles LED y opciones modernas para bares o eventos. ¿Cuál te gustaría conocer? 😍', fallbackSlug: 'mesa-led-bar-alta' },
-  { key: 'purificador-agua', labels: ['purificador de agua', 'purificador agua', 'purificador'], intro: '¡Excelente elección! 💧 Obtén agua más limpia y segura para tu negocio u hogar con un sistema práctico y eficiente.', fallbackSlug: 'purificador-de-agua' },
+  { key: 'cubo-led', labels: ['cubo led', 'cubo de led', 'silla de cubo', 'sillas de cubo', 'sillas cuadradas o de cubo'], intro: '¡Increíble elección! ✨ Dale un estilo moderno y llamativo a tu negocio, evento o terraza con iluminación LED decorativa.', fallbackSlug: 'sillas-cuadradas-o-de-cubo' },
+  { key: 'silla-bar-led-alta', labels: ['silla bar alta', 'silla bar led alta', 'silla led alta', 'silla bar alta led', 'silla alta led'], intro: '¡Genial! ✨ La silla bar LED alta da un look moderno y llamativo para bares, eventos o zonas lounge.', fallbackSlug: 'silla-bar-led-alta' },
+  { key: 'mesa-led-bar-alta-cuadrada', labels: ['mesa led bar alta', 'mesa led bar alta cuadrada', 'mesa led alta cuadrada', 'mesa cuadrada led alta'], intro: '¡Genial! ✨ La mesa LED bar alta cuadrada es perfecta para bares o eventos con estilo moderno.', fallbackSlug: 'mesa-led-bar-alta-cuadrada' },
+  { key: 'maquina-selladora-bolsas-solidos', labels: ['maquina selladora de bolsas para solidos', 'selladora de bolsas para solidos', 'selladora bolsas solidos', 'bolsas para solidos'], intro: '¡Excelente para empaque de sólidos! 📦 Te ayuda a sellar con rapidez y mantener mejor la calidad del producto.', fallbackSlug: 'maquina-selladora-bolsas-solidos' },
+  { key: 'soldadora-spark-mig-250', labels: ['soldadora spark mig 250', 'spark mig 250', 'mig 250'], intro: '¡Excelente opción! ⚙️ La Spark MIG 250 te da un soldado más estable, preciso y profesional para trabajos exigentes.', fallbackSlug: 'soldadora-spark-mig-250' },
 ];
 
 const CATEGORY_KEYWORDS = {
@@ -105,11 +110,54 @@ const CATEGORY_KEYWORDS = {
   decoracion: ['decoracion', 'decorar', 'mueble', 'muebles', 'led'],
 };
 
-const CATEGORY_REPLIES = {
-  negocio: '¡Perfecto! Cuéntame qué estás pensando mejorar o implementar en tu negocio hoy. 😊\n\nClaro 😊 ¿Buscas algo para maquinaria, decoración o para tu negocio? Cuéntame un poco más y te ayudo a encontrar lo ideal.',
-  maquinaria: '¡Perfecto! 😊 Te ayudo con eso.\n\nTenemos máquinas para envasado, sellado y purificación de agua. Dime qué producto quieres trabajar y te recomiendo el ideal 👍',
-  decoracion: '¡Genial! ✨ Tenemos muebles LED y opciones modernas para bares o eventos. ¿Es para un local, evento o algo especial? 😊',
+const isProductInCategory = (product: ApiProduct, category: keyof typeof CATEGORY_KEYWORDS): boolean => {
+  const productText = normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''} ${product.seccion || ''}`);
+  if (!productText) return false;
+
+  // "negocio" in this chat flow usually means products for commerce; include machinery-related terms too.
+  if (category === 'negocio') {
+    return includesAny(productText, [...CATEGORY_KEYWORDS.negocio, ...CATEGORY_KEYWORDS.maquinaria]);
+  }
+
+  return includesAny(productText, CATEGORY_KEYWORDS[category]);
 };
+
+const CATEGORY_REPLIES = {
+  negocio: 'Perfecto 💪 Tenemos soldadora Lingba, maquina selladora de bolsas para solidos, ventilador holografico y más. Cuéntame qué necesitas producir y te ayudo a elegir.',
+  maquinaria: '¡Genial! Vendemos purificador de agua, selladora de vasos manual, ventilador holografico y más. ¿En qué productos estás interesado?',
+  decoracion: '¡Me encanta! Tenemos sillas cubo, mesas y sillas altas con luces LED. ¿Cuál te gustaría conocer? 😍',
+};
+
+const INFO_OR_COTIZACION_REPLY =
+  'Claro 😊 ¿Buscas algo para maquinaria, decoración o para tu negocio? Cuéntame un poco más y te ayudo a encontrar lo ideal.';
+
+const BROAD_CATEGORY_PHRASES = [
+  'busco maquinaria',
+  'busco decoracion',
+  'busco negocio',
+  'maquinaria',
+  'decoracion',
+  'negocio',
+  'para mi negocio',
+  'para mi local',
+  'para mi empresa',
+  'info',
+  'informacion',
+  'cotizacion',
+  'cotizar',
+];
+
+const ORDER_TRACKING_PHRASES = [
+  'pedido',
+  'seguimiento',
+  'rastrear',
+  'tracking',
+  'estado de mi pedido',
+  'numero de pedido',
+  'número de pedido',
+];
+
+const CATEGORY_PRODUCT_LIMIT = 3;
 
 let cachedCatalog: ApiProduct[] | null = null;
 export const getCatalog = async (): Promise<ApiProduct[]> => {
@@ -194,7 +242,7 @@ const buildWhatsAppProductLink = (context: ChatContextMinimal): string =>
 const extractUsage = (text: string): string | undefined => {
   const normalized = normalizeText(text);
   if (includesAny(normalized, ['negocio', 'empresa', 'emprendimiento', 'local'])) return 'negocio';
-  if (includesAny(normalized, ['personal', 'hogar', 'casa', 'particular'])) return 'uso personal';
+  if (includesAny(normalized, ['personal', 'hogar', 'casa', 'particular'])) return 'personal';
   return undefined;
 };
 
@@ -245,7 +293,7 @@ const buildProductContactReply = (match: CatalogMatch, intro?: string): LocalRep
   message: {
     role: 'bot',
     tipo: 'texto',
-    respuesta: `${intro ? `${intro}\n\n` : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n`}Antes de enviarte al WhatsApp, cuéntame: ¿es para uso personal o negocio y en qué ciudad sería el envío?`,
+    respuesta: `${intro ? `${intro}\n\n` : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n`}Antes de enviarte al WhatsApp, cuéntame: ¿es para uso personal o negocio?`,
     link_producto: match.link,
   },
   nextPaso: PRODUCT_CONTACT_STEP_1,
@@ -358,6 +406,39 @@ const findCatalogMatches = async (query: string): Promise<{ exact: CatalogMatch 
   };
 };
 
+const findProductsByKeywordOverlap = async (query: string): Promise<CatalogMatch[]> => {
+  const catalog = await getCatalog();
+  const normalizedQuery = extractCoreProductQuery(query);
+  if (!normalizedQuery) return [];
+
+  const tokens = normalizedQuery
+    .split(' ')
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3);
+
+  if (tokens.length === 0) return [];
+
+  const matches: CatalogMatch[] = [];
+
+  for (const product of catalog) {
+    const text = productSearchText(product);
+    const link = resolveProductLink(product.link);
+    if (!text || !link) continue;
+
+    const matchedTokens = tokens.filter((token) => text.includes(token));
+    if (matchedTokens.length === 0) continue;
+
+    // Weighted overlap score: more matched tokens + longer tokens = stronger match.
+    const tokenLengthScore = matchedTokens.reduce((acc, token) => acc + token.length, 0);
+    const coverageScore = (matchedTokens.length / tokens.length) * 100;
+    const score = Math.round(coverageScore + tokenLengthScore);
+
+    matches.push({ product, link, score });
+  }
+
+  return matches.sort((a, b) => b.score - a.score).slice(0, 5);
+};
+
 const looksLikeProductSearch = (normalized: string, lastBotMessage?: MessageMinimal): boolean => {
   const lastBotText = normalizeText(lastBotMessage?.respuesta || '');
   const userWasAskedForProduct = includesAny(lastBotText, [
@@ -406,12 +487,125 @@ const getCategoryFromQuery = (normalized: string): keyof typeof CATEGORY_KEYWORD
   return null;
 };
 
+const getExplicitCategoryIntent = (normalized: string): keyof typeof CATEGORY_KEYWORDS | null => {
+  if (!normalized) return null;
+
+  if (
+    normalized === 'decoracion' ||
+    normalized === 'busco decoracion' ||
+    normalized === 'decorar' ||
+    normalized.startsWith('decoracion ') ||
+    normalized.startsWith('busco decoracion ')
+  ) {
+    return 'decoracion';
+  }
+
+  if (
+    normalized === 'maquinaria' ||
+    normalized === 'busco maquinaria' ||
+    normalized.startsWith('maquinaria ') ||
+    normalized.startsWith('busco maquinaria ')
+  ) {
+    return 'maquinaria';
+  }
+
+  if (
+    normalized === 'negocio' ||
+    normalized === 'busco negocio' ||
+    normalized.includes('para mi negocio') ||
+    normalized.includes('para mi local') ||
+    normalized.includes('para mi empresa') ||
+    normalized.startsWith('negocio ') ||
+    normalized.startsWith('busco negocio ')
+  ) {
+    return 'negocio';
+  }
+
+  return null;
+};
+
 const findScriptedIntent = (normalized: string): ScriptedProductIntent | null => {
   for (const intent of SCRIPTED_PRODUCT_INTENTS) {
     if (includesAny(normalized, intent.labels)) return intent;
   }
   return null;
 };
+
+const getCategoryProducts = async (category: keyof typeof CATEGORY_KEYWORDS, limit = CATEGORY_PRODUCT_LIMIT): Promise<ApiProduct[]> => {
+  const catalog = await getCatalog();
+  const keywords = CATEGORY_KEYWORDS[category];
+
+  const matches = catalog.filter((product) => {
+    const haystack = normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''} ${product.seccion || ''}`);
+    const section = normalizeText(product.seccion || '');
+    return includesAny(haystack, keywords) || includesAny(section, keywords);
+  });
+
+  return matches.slice(0, limit);
+};
+
+const formatProductNames = (products: ApiProduct[]): string =>
+  products
+    .map((product) => product.nombre?.trim() || product.titulo?.trim() || product.link?.trim() || 'Producto')
+    .filter(Boolean)
+    .join(', ');
+
+const buildCategoryReply = async (category: keyof typeof CATEGORY_KEYWORDS): Promise<LocalReplyResult> => {
+  const products = await getCategoryProducts(category);
+  const productNames = formatProductNames(products);
+
+  if (category === 'decoracion') {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: productNames
+          ? `¡Me encanta! Tenemos ${productNames}. ¿Cuál te gustaría conocer? 😍`
+          : CATEGORY_REPLIES.decoracion,
+      },
+      nextPaso: 'esperando_producto',
+      contextPatch: {
+        categoria: category,
+      },
+    };
+  }
+
+  if (category === 'negocio') {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: productNames
+          ? `Perfecto 💪 Tenemos ${productNames} y más. Cuéntame qué necesitas producir y te ayudo a elegir.`
+          : CATEGORY_REPLIES.negocio,
+      },
+      nextPaso: 'esperando_producto',
+      contextPatch: {
+        categoria: category,
+      },
+    };
+  }
+
+  return {
+    message: {
+      role: 'bot',
+      tipo: 'texto',
+      respuesta: productNames
+        ? `¡Genial! Vendemos ${productNames} y más. ¿En qué productos estás interesado?`
+        : CATEGORY_REPLIES.maquinaria,
+    },
+    nextPaso: 'esperando_producto',
+    contextPatch: {
+      categoria: category,
+    },
+  };
+};
+
+const isBroadCategoryIntent = (normalized: string): boolean =>
+  includesAny(normalized, BROAD_CATEGORY_PHRASES);
+
+const looksLikeOrderTracking = (normalized: string): boolean =>
+  includesAny(normalized, ORDER_TRACKING_PHRASES);
 
 const extractPrefixedProductTokens = (query: string): string[] => {
   const normalized = extractCoreProductQuery(query);
@@ -457,7 +651,8 @@ const findProductsByPrefix = async (query: string): Promise<{ exact: CatalogMatc
 };
 
 const resolveProductQuery = async (
-  query: string
+  query: string,
+  preferredCategory?: keyof typeof CATEGORY_KEYWORDS | null
 ): Promise<LocalReplyResult | null> => {
   const normalizedQuery = extractCoreProductQuery(query);
   if (!normalizedQuery) return null;
@@ -465,14 +660,24 @@ const resolveProductQuery = async (
   const scriptedIntent = findScriptedIntent(normalizedQuery);
   const prefixMatches = await findProductsByPrefix(query);
   const fallbackMatches = await findCatalogMatches(query);
+  const keywordOverlapMatches = await findProductsByKeywordOverlap(query);
   const displayQuery = fallbackMatches.normalizedQuery || normalizedQuery;
 
   const exactCandidates = prefixMatches.exactCandidates;
   const uniqueCandidates = Array.from(
     new Map(
-      [...exactCandidates, ...prefixMatches.prefixed].map((item) => [item.link, item])
+      [...exactCandidates, ...prefixMatches.prefixed, ...keywordOverlapMatches].map((item) => [item.link, item])
     ).values()
   );
+
+  const rankedCandidates = preferredCategory
+    ? [...uniqueCandidates].sort((a, b) => {
+      const aInCategory = isProductInCategory(a.product, preferredCategory);
+      const bInCategory = isProductInCategory(b.product, preferredCategory);
+      if (aInCategory !== bInCategory) return aInCategory ? -1 : 1;
+      return b.score - a.score;
+    })
+    : uniqueCandidates;
 
   if (exactCandidates.length === 1) {
     const match = exactCandidates[0];
@@ -480,7 +685,7 @@ const resolveProductQuery = async (
   }
 
   if (exactCandidates.length > 1) {
-    const options = uniqueCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
+    const options = rankedCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
     return {
       message: {
         role: 'bot',
@@ -495,7 +700,7 @@ const resolveProductQuery = async (
   }
 
   if (uniqueCandidates.length > 1) {
-    const options = uniqueCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
+    const options = rankedCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
     return {
       message: {
         role: 'bot',
@@ -505,8 +710,8 @@ const resolveProductQuery = async (
     };
   }
 
-  if (uniqueCandidates.length === 1) {
-    const match = uniqueCandidates[0];
+  if (rankedCandidates.length === 1) {
+    const match = rankedCandidates[0];
     return buildProductContactReply(match, scriptedIntent?.intro);
   }
 
@@ -523,12 +728,31 @@ const resolveProductQuery = async (
     };
   }
 
+  // If we couldn't find an exact match, but we can detect a category from the query,
+  // recommend other products from that category so the user can pick an alternative.
+  const guessedCategory = preferredCategory || getCategoryFromQuery(normalizedQuery) || getCategoryFromQuery(normalizeText(query));
+  if (guessedCategory) {
+    const catProducts = await getCategoryProducts(guessedCategory);
+    const productNames = formatProductNames(catProducts);
+    if (productNames) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: `No tenemos "${displayQuery}" 😅. Pero te recomiendo estos productos de ${guessedCategory}: ${productNames}. ¿Cuál te interesa?`,
+          link_whatsapp: DEFAULT_WHATSAPP,
+        },
+        nextPaso: 'esperando_producto',
+      };
+    }
+  }
+
   if (scriptedIntent) {
     return {
       message: {
         role: 'bot',
         tipo: 'texto',
-        respuesta: `No logré ubicar "${displayQuery}" por ahora 😅, pero si me cuentas un poquito más de lo que necesitas, te recomiendo una opción ideal o te conecto por WhatsApp.`,
+        respuesta: `No tenemos "${displayQuery}" por ahora 😅, pero si me cuentas un poquito más de lo que necesitas, te recomiendo una opción ideal o te conecto por WhatsApp.`,
         link_whatsapp: DEFAULT_WHATSAPP,
       },
     };
@@ -536,6 +760,16 @@ const resolveProductQuery = async (
 
   return null;
 };
+
+const buildUnmatchedProductReply = (query: string): LocalReplyResult => ({
+  message: {
+    role: 'bot',
+    tipo: 'texto',
+    respuesta: `No tenemos "${query}" por ahora 😅. Si me dices el nombre completo o para qué lo necesitas, te ayudo a ubicar la mejor opción. También puedo pasarte a WhatsApp si prefieres.`,
+    link_whatsapp: DEFAULT_WHATSAPP,
+  },
+  nextPaso: 'esperando_producto',
+});
 
 export const getLocalReply = async (
   text: string,
@@ -548,19 +782,35 @@ export const getLocalReply = async (
 
   if (currentPaso === PRODUCT_CONTACT_STEP_1) {
     const usage = extractUsage(text);
-    const city = extractCity(text);
 
-    if (!usage || !city) {
+    if (!usage) {
       return {
         message: {
           role: 'bot',
           tipo: 'texto',
-          respuesta: 'Respóndeme con el uso y la ciudad para el envío. Ejemplo: negocio, Lima.',
+          respuesta: 'Respóndeme con el uso. Ejemplo: negocio o personal.',
         },
         nextPaso: PRODUCT_CONTACT_STEP_1,
         contextPatch: {
           uso: usage,
-          ciudad: city,
+        },
+      };
+    }
+
+    // If the user included the city in the same message (e.g., "personal, Lima"),
+    // extract it and skip the city question.
+    const cityInline = extractCity(text);
+    if (cityInline) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Perfecto. Ahora dime tu nombre.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_3,
+        contextPatch: {
+          uso: usage,
+          ciudad: cityInline,
         },
       };
     }
@@ -569,30 +819,111 @@ export const getLocalReply = async (
       message: {
         role: 'bot',
         tipo: 'texto',
-        respuesta: 'Perfecto. Ahora dime tu nombre y tu número de teléfono para continuar por WhatsApp.',
+        respuesta: 'Perfecto. Ahora dime en qué ciudad sería el envío.',
       },
       nextPaso: PRODUCT_CONTACT_STEP_2,
       contextPatch: {
         uso: usage,
-        ciudad: city,
       },
     };
   }
 
   if (currentPaso === PRODUCT_CONTACT_STEP_2) {
-    const nombre = extractName(text);
-    const telefono = extractPhone(text);
+    const city = extractCity(text);
 
-    if (!nombre || !telefono) {
+    if (!city) {
       return {
         message: {
           role: 'bot',
           tipo: 'texto',
-          respuesta: 'Ahora envíame tu nombre y tu teléfono. Ejemplo: Adriano, 987654321.',
+          respuesta: 'Dime la ciudad del envío. Ejemplo: Lima.',
         },
         nextPaso: PRODUCT_CONTACT_STEP_2,
         contextPatch: {
+          ciudad: undefined,
+        },
+      };
+    }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Perfecto. Ahora dime tu nombre.',
+      },
+      nextPaso: PRODUCT_CONTACT_STEP_3,
+      contextPatch: {
+        ciudad: city,
+      },
+    };
+  }
+
+  if (currentPaso === PRODUCT_CONTACT_STEP_3) {
+    const nombre = extractName(text);
+
+    if (!nombre) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Ahora dime tu nombre. Ejemplo: Adriano.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_3,
+        contextPatch: {
           nombre,
+        },
+      };
+    }
+
+    // If the user provided the phone together with the name, finish the flow now.
+    const telefonoInline = extractPhone(text);
+    if (telefonoInline) {
+      const whatsappLinkNow = buildWhatsAppProductLink({
+        ...context,
+        nombre,
+        telefono: telefonoInline,
+      });
+
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Listo, ya tengo tus datos. Te dejo WhatsApp para seguir con tu atención.',
+          link_whatsapp: whatsappLinkNow,
+        },
+        nextPaso: 'menu_principal',
+        contextPatch: {
+          nombre,
+          telefono: telefonoInline,
+        },
+      };
+    }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Perfecto. Ahora dime tu número de teléfono.',
+      },
+      nextPaso: PRODUCT_CONTACT_STEP_4,
+      contextPatch: {
+        nombre,
+      },
+    };
+  }
+
+  if (currentPaso === PRODUCT_CONTACT_STEP_4) {
+    const telefono = extractPhone(text);
+
+    if (!telefono) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Ahora envíame tu número de teléfono. Ejemplo: 940745374.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_4,
+        contextPatch: {
           telefono,
         },
       };
@@ -600,7 +931,6 @@ export const getLocalReply = async (
 
     const whatsappLink = buildWhatsAppProductLink({
       ...context,
-      nombre,
       telefono,
     });
 
@@ -613,7 +943,6 @@ export const getLocalReply = async (
       },
       nextPaso: 'menu_principal',
       contextPatch: {
-        nombre,
         telefono,
       },
     };
@@ -630,33 +959,78 @@ export const getLocalReply = async (
     };
   }
 
-  if (currentPaso === 'esperando_producto') {
-    const category = getCategoryFromQuery(normalized);
-    if (category) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: CATEGORY_REPLIES[category],
-        },
-      };
-    }
+  if (looksLikeOrderTracking(normalized)) {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: '¡Claro! Escríbeme tu número de pedido, nombre o el WhatsApp con el que hiciste la compra para buscarlo. 🔍',
+      },
+      nextPaso: 'esperando_datos_pedido',
+    };
+  }
 
-    const productReply = await resolveProductQuery(text);
+  if (currentPaso === 'menu_principal' && includesAny(normalized, ['info', 'informacion', 'cotizacion', 'cotizar'])) {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: INFO_OR_COTIZACION_REPLY,
+      },
+      nextPaso: 'menu_principal',
+    };
+  }
+
+  if (currentPaso === 'esperando_datos_pedido') {
+    const referenciaPedido = collapseWhitespace(text);
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Entendido, dame un segundo para verificar... 🔄',
+      },
+      nextPaso: 'menu_principal',
+      contextPatch: {
+        pedido: referenciaPedido,
+        referencia_pedido: referenciaPedido,
+      },
+    };
+  }
+
+  const explicitCategory = getExplicitCategoryIntent(normalized);
+  if (explicitCategory && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
+    return buildCategoryReply(explicitCategory);
+  }
+
+  if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
+    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
+      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
+      : null;
+    const productReply = await resolveProductQuery(text, preferredCategory);
+    return productReply || buildUnmatchedProductReply(text.trim());
+  }
+
+  if (currentPaso === 'esperando_producto') {
+    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
+      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
+      : null;
+    const productReply = await resolveProductQuery(text, preferredCategory);
     if (productReply) return productReply;
 
-    if (!looksLikeProductSearch(normalized, lastBotMessage)) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta:
-            'Para tener una mejor comunicación, mejor escríbeme por WhatsApp y te ayudo directamente con lo que necesites. 📲',
-          link_whatsapp: DEFAULT_WHATSAPP,
-        },
-        nextPaso: 'menu_principal',
-      };
+    if (looksLikeProductSearch(normalized, lastBotMessage)) {
+      return buildUnmatchedProductReply(text.trim());
     }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta:
+          'Para tener una mejor comunicación, mejor escríbeme por WhatsApp y te ayudo directamente con lo que necesites. 📲',
+        link_whatsapp: DEFAULT_WHATSAPP,
+      },
+      nextPaso: 'menu_principal',
+    };
   }
 
   if (currentPaso === 'local_esperando_datos_asesor') {
@@ -683,7 +1057,10 @@ export const getLocalReply = async (
   }
 
   if (looksLikeProductSearch(normalized, lastBotMessage)) {
-    const productReply = await resolveProductQuery(text);
+    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
+      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
+      : null;
+    const productReply = await resolveProductQuery(text, preferredCategory);
     if (productReply) return productReply;
   }
 
