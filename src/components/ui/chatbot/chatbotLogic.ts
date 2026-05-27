@@ -487,6 +487,43 @@ const getCategoryFromQuery = (normalized: string): keyof typeof CATEGORY_KEYWORD
   return null;
 };
 
+const getExplicitCategoryIntent = (normalized: string): keyof typeof CATEGORY_KEYWORDS | null => {
+  if (!normalized) return null;
+
+  if (
+    normalized === 'decoracion' ||
+    normalized === 'busco decoracion' ||
+    normalized === 'decorar' ||
+    normalized.startsWith('decoracion ') ||
+    normalized.startsWith('busco decoracion ')
+  ) {
+    return 'decoracion';
+  }
+
+  if (
+    normalized === 'maquinaria' ||
+    normalized === 'busco maquinaria' ||
+    normalized.startsWith('maquinaria ') ||
+    normalized.startsWith('busco maquinaria ')
+  ) {
+    return 'maquinaria';
+  }
+
+  if (
+    normalized === 'negocio' ||
+    normalized === 'busco negocio' ||
+    normalized.includes('para mi negocio') ||
+    normalized.includes('para mi local') ||
+    normalized.includes('para mi empresa') ||
+    normalized.startsWith('negocio ') ||
+    normalized.startsWith('busco negocio ')
+  ) {
+    return 'negocio';
+  }
+
+  return null;
+};
+
 const findScriptedIntent = (normalized: string): ScriptedProductIntent | null => {
   for (const intent of SCRIPTED_PRODUCT_INTENTS) {
     if (includesAny(normalized, intent.labels)) return intent;
@@ -960,9 +997,9 @@ export const getLocalReply = async (
     };
   }
 
-  const category = getCategoryFromQuery(normalized);
-  if (category && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
-    return buildCategoryReply(category);
+  const explicitCategory = getExplicitCategoryIntent(normalized);
+  if (explicitCategory && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
+    return buildCategoryReply(explicitCategory);
   }
 
   if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
