@@ -108,7 +108,9 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                         id="whatsapp_time_1" 
                         name="whatsapp_time_1" 
                         label="Tiempo de aparicion" 
-                        defaultValue={0} 
+                        defaultValue={0}
+                        value={(formData as any).whatsapp_time_1 ?? 0}
+                        onChange={(minutes) => onFieldChange("whatsapp_time_1", minutes)}
                         />
                     </div>
                 </div>
@@ -162,7 +164,9 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                         id="whatsapp_time_2" 
                         name="whatsapp_time_2" 
                         label="Tiempo despues del mensaje 1" 
-                        defaultValue={0} 
+                        defaultValue={0}
+                        value={(formData as any).whatsapp_time_2 ?? 0}
+                        onChange={(minutes) => onFieldChange("whatsapp_time_2", minutes)}
                         />
                     </div>
                 </div>
@@ -216,7 +220,9 @@ export const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({
                         id="whatsapp_time_3" 
                         name="whatsapp_time_3" 
                         label="Tiempo despues del mensaje 2" 
-                        defaultValue={0} 
+                        defaultValue={0}
+                        value={(formData as any).whatsapp_time_3 ?? 0}
+                        onChange={(minutes) => onFieldChange("whatsapp_time_3", minutes)}
                         />
                     </div>
                 </div>
