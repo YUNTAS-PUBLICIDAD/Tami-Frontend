@@ -373,7 +373,7 @@ const ChatbotWidget: React.FC = () => {
                   ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
                   : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
                   }`}>
-                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.respuesta}</p>
+                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.respuesta}</p>
 
                   {/* Botones de opciones */}
                   {msg.tipo === 'opciones' && msg.opciones && msg.role === 'bot' && (
