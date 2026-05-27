@@ -2,6 +2,7 @@ export interface ApiProduct {
   nombre?: string;
   titulo?: string;
   link?: string;
+  seccion?: string;
 }
 
 interface CatalogMatch {
@@ -17,6 +18,8 @@ export interface ChatContextMinimal {
   ciudad?: string;
   nombre?: string;
   telefono?: string;
+  pedido?: string;
+  referencia_pedido?: string;
 }
 
 export interface MessageMinimal {
@@ -30,8 +33,10 @@ export interface MessageMinimal {
 export const DEFAULT_WHATSAPP =
   'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20informaci%C3%B3n%20para%20mi%20negocio.';
 
-const PRODUCT_CONTACT_STEP_1 = 'esperando_datos_producto_1';
-const PRODUCT_CONTACT_STEP_2 = 'esperando_datos_producto_2';
+const PRODUCT_CONTACT_STEP_1 = 'esperando_uso_producto';
+const PRODUCT_CONTACT_STEP_2 = 'esperando_ciudad_producto';
+const PRODUCT_CONTACT_STEP_3 = 'esperando_nombre_producto';
+const PRODUCT_CONTACT_STEP_4 = 'esperando_telefono_producto';
 
 export const buildProductLink = (link: string) => `/productos/${link}`;
 
@@ -106,10 +111,41 @@ const CATEGORY_KEYWORDS = {
 };
 
 const CATEGORY_REPLIES = {
-  negocio: '¡Perfecto! Cuéntame qué estás pensando mejorar o implementar en tu negocio hoy. 😊\n\nClaro 😊 ¿Buscas algo para maquinaria, decoración o para tu negocio? Cuéntame un poco más y te ayudo a encontrar lo ideal.',
-  maquinaria: '¡Perfecto! 😊 Te ayudo con eso.\n\nTenemos máquinas para envasado, sellado y purificación de agua. Dime qué producto quieres trabajar y te recomiendo el ideal 👍',
-  decoracion: '¡Genial! ✨ Tenemos muebles LED y opciones modernas para bares o eventos. ¿Es para un local, evento o algo especial? 😊',
+  negocio: 'Perfecto 💪 Tenemos equipos de soldadura y maquinaria para negocio e industria. Cuéntame qué necesitas producir y te ayudo a elegir.',
+  maquinaria: '¡Genial! Vendemos purificador de agua, selladora de vasos manual, ventilador holografico y más. ¿En qué productos estás interesado?',
+  decoracion: '¡Me encanta! Tenemos sillas cubo, mesas y sillas altas con luces LED. ¿Cuál te gustaría conocer? 😍',
 };
+
+const INFO_OR_COTIZACION_REPLY =
+  'Claro 😊 ¿Buscas algo para maquinaria, decoración o para tu negocio? Cuéntame un poco más y te ayudo a encontrar lo ideal.';
+
+const BROAD_CATEGORY_PHRASES = [
+  'busco maquinaria',
+  'busco decoracion',
+  'busco negocio',
+  'maquinaria',
+  'decoracion',
+  'negocio',
+  'para mi negocio',
+  'para mi local',
+  'para mi empresa',
+  'info',
+  'informacion',
+  'cotizacion',
+  'cotizar',
+];
+
+const ORDER_TRACKING_PHRASES = [
+  'pedido',
+  'seguimiento',
+  'rastrear',
+  'tracking',
+  'estado de mi pedido',
+  'numero de pedido',
+  'número de pedido',
+];
+
+const CATEGORY_PRODUCT_LIMIT = 3;
 
 let cachedCatalog: ApiProduct[] | null = null;
 export const getCatalog = async (): Promise<ApiProduct[]> => {
@@ -245,7 +281,7 @@ const buildProductContactReply = (match: CatalogMatch, intro?: string): LocalRep
   message: {
     role: 'bot',
     tipo: 'texto',
-    respuesta: `${intro ? `${intro}\n\n` : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n`}Antes de enviarte al WhatsApp, cuéntame: ¿es para uso personal o negocio y en qué ciudad sería el envío?`,
+    respuesta: `${intro ? `${intro}\n\n` : `¡Sí! Tenemos ${productLabel(match.product)}.\n\n`}Antes de enviarte al WhatsApp, cuéntame: ¿es para uso personal o negocio?`,
     link_producto: match.link,
   },
   nextPaso: PRODUCT_CONTACT_STEP_1,
@@ -413,6 +449,73 @@ const findScriptedIntent = (normalized: string): ScriptedProductIntent | null =>
   return null;
 };
 
+const getCategoryProducts = async (category: keyof typeof CATEGORY_KEYWORDS, limit = CATEGORY_PRODUCT_LIMIT): Promise<ApiProduct[]> => {
+  const catalog = await getCatalog();
+  const keywords = CATEGORY_KEYWORDS[category];
+
+  const matches = catalog.filter((product) => {
+    const haystack = normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''} ${product.seccion || ''}`);
+    const section = normalizeText(product.seccion || '');
+    return includesAny(haystack, keywords) || includesAny(section, keywords);
+  });
+
+  return matches.slice(0, limit);
+};
+
+const formatProductNames = (products: ApiProduct[]): string =>
+  products
+    .map((product) => product.nombre?.trim() || product.titulo?.trim() || product.link?.trim() || 'Producto')
+    .filter(Boolean)
+    .join(', ');
+
+const buildCategoryReply = async (category: keyof typeof CATEGORY_KEYWORDS): Promise<LocalReplyResult> => {
+  const products = await getCategoryProducts(category);
+  const productNames = formatProductNames(products);
+
+  if (category === 'decoracion') {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: productNames
+          ? `¡Me encanta! Tenemos ${productNames}. ¿Cuál te gustaría conocer? 😍`
+          : CATEGORY_REPLIES.decoracion,
+      },
+      nextPaso: 'esperando_producto',
+    };
+  }
+
+  if (category === 'negocio') {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: productNames
+          ? `Perfecto 💪 Tenemos ${productNames} y más. Cuéntame qué necesitas producir y te ayudo a elegir.`
+          : CATEGORY_REPLIES.negocio,
+      },
+      nextPaso: 'esperando_producto',
+    };
+  }
+
+  return {
+    message: {
+      role: 'bot',
+      tipo: 'texto',
+      respuesta: productNames
+        ? `¡Genial! Vendemos ${productNames} y más. ¿En qué productos estás interesado?`
+        : CATEGORY_REPLIES.maquinaria,
+    },
+    nextPaso: 'esperando_producto',
+  };
+};
+
+const isBroadCategoryIntent = (normalized: string): boolean =>
+  includesAny(normalized, BROAD_CATEGORY_PHRASES);
+
+const looksLikeOrderTracking = (normalized: string): boolean =>
+  includesAny(normalized, ORDER_TRACKING_PHRASES);
+
 const extractPrefixedProductTokens = (query: string): string[] => {
   const normalized = extractCoreProductQuery(query);
   if (!normalized) return [];
@@ -537,6 +640,16 @@ const resolveProductQuery = async (
   return null;
 };
 
+const buildUnmatchedProductReply = (query: string): LocalReplyResult => ({
+  message: {
+    role: 'bot',
+    tipo: 'texto',
+    respuesta: `No encontré "${query}" exacto todavía 😅. Si me dices el nombre completo o para qué lo necesitas, te ayudo a ubicar la mejor opción. También puedo pasarte a WhatsApp si prefieres.`,
+    link_whatsapp: DEFAULT_WHATSAPP,
+  },
+  nextPaso: 'esperando_producto',
+});
+
 export const getLocalReply = async (
   text: string,
   context: ChatContextMinimal | null,
@@ -548,19 +661,17 @@ export const getLocalReply = async (
 
   if (currentPaso === PRODUCT_CONTACT_STEP_1) {
     const usage = extractUsage(text);
-    const city = extractCity(text);
 
-    if (!usage || !city) {
+    if (!usage) {
       return {
         message: {
           role: 'bot',
           tipo: 'texto',
-          respuesta: 'Respóndeme con el uso y la ciudad para el envío. Ejemplo: negocio, Lima.',
+          respuesta: 'Respóndeme con el uso. Ejemplo: negocio o personal.',
         },
         nextPaso: PRODUCT_CONTACT_STEP_1,
         contextPatch: {
           uso: usage,
-          ciudad: city,
         },
       };
     }
@@ -569,30 +680,87 @@ export const getLocalReply = async (
       message: {
         role: 'bot',
         tipo: 'texto',
-        respuesta: 'Perfecto. Ahora dime tu nombre y tu número de teléfono para continuar por WhatsApp.',
+        respuesta: 'Perfecto. Ahora dime en qué ciudad sería el envío.',
       },
       nextPaso: PRODUCT_CONTACT_STEP_2,
       contextPatch: {
         uso: usage,
-        ciudad: city,
       },
     };
   }
 
   if (currentPaso === PRODUCT_CONTACT_STEP_2) {
-    const nombre = extractName(text);
-    const telefono = extractPhone(text);
+    const city = extractCity(text);
 
-    if (!nombre || !telefono) {
+    if (!city) {
       return {
         message: {
           role: 'bot',
           tipo: 'texto',
-          respuesta: 'Ahora envíame tu nombre y tu teléfono. Ejemplo: Adriano, 987654321.',
+          respuesta: 'Dime la ciudad del envío. Ejemplo: Lima.',
         },
         nextPaso: PRODUCT_CONTACT_STEP_2,
         contextPatch: {
+          ciudad: undefined,
+        },
+      };
+    }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Perfecto. Ahora dime tu nombre.',
+      },
+      nextPaso: PRODUCT_CONTACT_STEP_3,
+      contextPatch: {
+        ciudad: city,
+      },
+    };
+  }
+
+  if (currentPaso === PRODUCT_CONTACT_STEP_3) {
+    const nombre = extractName(text);
+
+    if (!nombre) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Ahora dime tu nombre. Ejemplo: Adriano.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_3,
+        contextPatch: {
           nombre,
+        },
+      };
+    }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Perfecto. Ahora dime tu número de teléfono.',
+      },
+      nextPaso: PRODUCT_CONTACT_STEP_4,
+      contextPatch: {
+        nombre,
+      },
+    };
+  }
+
+  if (currentPaso === PRODUCT_CONTACT_STEP_4) {
+    const telefono = extractPhone(text);
+
+    if (!telefono) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Ahora envíame tu número de teléfono. Ejemplo: 940745374.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_4,
+        contextPatch: {
           telefono,
         },
       };
@@ -600,7 +768,6 @@ export const getLocalReply = async (
 
     const whatsappLink = buildWhatsAppProductLink({
       ...context,
-      nombre,
       telefono,
     });
 
@@ -613,7 +780,6 @@ export const getLocalReply = async (
       },
       nextPaso: 'menu_principal',
       contextPatch: {
-        nombre,
         telefono,
       },
     };
@@ -630,33 +796,72 @@ export const getLocalReply = async (
     };
   }
 
-  if (currentPaso === 'esperando_producto') {
-    const category = getCategoryFromQuery(normalized);
-    if (category) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: CATEGORY_REPLIES[category],
-        },
-      };
-    }
+  if (looksLikeOrderTracking(normalized)) {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: '¡Claro! Escríbeme tu número de pedido, nombre o el WhatsApp con el que hiciste la compra para buscarlo. 🔍',
+      },
+      nextPaso: 'esperando_datos_pedido',
+    };
+  }
 
+  if (currentPaso === 'menu_principal' && includesAny(normalized, ['info', 'informacion', 'cotizacion', 'cotizar'])) {
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: INFO_OR_COTIZACION_REPLY,
+      },
+      nextPaso: 'menu_principal',
+    };
+  }
+
+  if (currentPaso === 'esperando_datos_pedido') {
+    const referenciaPedido = collapseWhitespace(text);
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Entendido, dame un segundo para verificar... 🔄',
+      },
+      nextPaso: 'menu_principal',
+      contextPatch: {
+        pedido: referenciaPedido,
+        referencia_pedido: referenciaPedido,
+      },
+    };
+  }
+
+  const category = getCategoryFromQuery(normalized);
+  if (category && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
+    return buildCategoryReply(category);
+  }
+
+  if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
+    const productReply = await resolveProductQuery(text);
+    return productReply || buildUnmatchedProductReply(text.trim());
+  }
+
+  if (currentPaso === 'esperando_producto') {
     const productReply = await resolveProductQuery(text);
     if (productReply) return productReply;
 
-    if (!looksLikeProductSearch(normalized, lastBotMessage)) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta:
-            'Para tener una mejor comunicación, mejor escríbeme por WhatsApp y te ayudo directamente con lo que necesites. 📲',
-          link_whatsapp: DEFAULT_WHATSAPP,
-        },
-        nextPaso: 'menu_principal',
-      };
+    if (looksLikeProductSearch(normalized, lastBotMessage)) {
+      return buildUnmatchedProductReply(text.trim());
     }
+
+    return {
+      message: {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta:
+          'Para tener una mejor comunicación, mejor escríbeme por WhatsApp y te ayudo directamente con lo que necesites. 📲',
+        link_whatsapp: DEFAULT_WHATSAPP,
+      },
+      nextPaso: 'menu_principal',
+    };
   }
 
   if (currentPaso === 'local_esperando_datos_asesor') {
