@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
+import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply } from "./chatbotLogic";
 import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
+interface Opcion {
+  label: string;
+  valor: string;
+}
+
 interface ChatContext {
   paso: string;
   flujo?: string;
@@ -23,6 +29,7 @@ interface Message {
   role: 'bot' | 'user';
   tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
   respuesta: string;
+  opciones?: Opcion[];
   productos?: {
     nombre: string;
     descripcion: string;
@@ -43,20 +50,39 @@ const CONTEXT_KEY = 'tami_chat_context';
 const OPEN_KEY = 'tami_chat_open';
 
 const mensajeInicial: Message = {
-  role: 'bot',
-  tipo: 'texto',
-  respuesta: '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.',
+  role: 'bot',
+  tipo: 'opciones',
+  respuesta: '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio.\n\n¿Qué te gustaría hacer?',
+  opciones: [
+    { label: '🚀 Negocio', valor: 'negocio' },
+    { label: '⚙️ Maquinaria', valor: 'maquinaria' },
+    { label: '✨ Decoración', valor: 'decoracion' },
+    { label: '👨‍💼 Hablar con asesor', valor: 'asesor' },
+  ]
 };
 
 const ChatbotWidget: React.FC = () => {
 
   // Estado persistente 
-  const [messages, setMessages] = useState<Message[]>([mensajeInicial]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = localStorage.getItem(MESSAGES_KEY);
+      return saved ? JSON.parse(saved) : [mensajeInicial];
+    } catch { return [mensajeInicial]; }
+  });
 
-  const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
+  const [context, setContext] = useState<ChatContext | null>(() => {
+    try {
+      const saved = localStorage.getItem(CONTEXT_KEY);
+      return saved ? JSON.parse(saved) : { paso: 'menu_principal' };
+    } catch { return { paso: 'menu_principal' }; }
+  });
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(OPEN_KEY) === 'true';
+    } catch { return false; }
+  });
 
   const [showBubble, setShowBubble] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
@@ -97,47 +123,21 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
-  useEffect(() => {
-    try {
-      const savedMessages = localStorage.getItem(MESSAGES_KEY);
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
-
-      const savedContext = localStorage.getItem(CONTEXT_KEY);
-      if (savedContext) {
-        setContext(JSON.parse(savedContext));
-      }
-
-      setIsOpen(localStorage.getItem(OPEN_KEY) === 'true');
-    } catch {
-      // Keep the SSR-safe defaults when storage is unavailable or invalid.
-    } finally {
-      setHasHydratedStorage(true);
-    }
-  }, []);
-
   // Persistir en localStorage cuando cambian 
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
+  useEffect(() => {
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
+    catch { }
+  }, [messages]);
 
-    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
-    catch { }
-  }, [messages, hasHydratedStorage]);
+  useEffect(() => {
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
+    catch { }
+  }, [context]);
 
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
-
-    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
-    catch { }
-  }, [context, hasHydratedStorage]);
-
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
-
-    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
-    catch { }
-  }, [isOpen, hasHydratedStorage]);
+  useEffect(() => {
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen]);
 
 
   useEffect(() => {
@@ -222,6 +222,11 @@ const ChatbotWidget: React.FC = () => {
     setTimeout(() => { setShowBubble(false); setIsPopping(false); }, 400);
   };
 
+  const handleOpcionClick = async (opcion: Opcion) => {
+    if (isLoading) return;
+    await enviarMensaje(opcion.label, opcion.valor);
+  };
+
   // ── Envío por formulario 
   const sendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -270,15 +275,11 @@ const ChatbotWidget: React.FC = () => {
 
       if (data.context !== undefined) setContext(data.context);
 
-    const plainResponse =
-      data.tipo === 'opciones' && Array.isArray(data.opciones) && data.opciones.length > 0
-        ? `${data.respuesta}\n\n${data.opciones.map((op: { label?: string }) => `• ${op.label || 'Opción'}`).join('\n')}\n\nEscríbeme cuál de estas te interesa y te ayudo.`
-        : data.respuesta;
-
       const botMessage: Message = {
         role: 'bot',
-        tipo: data.tipo === 'opciones' ? 'texto' : data.tipo,
-        respuesta: plainResponse,
+        tipo: data.tipo,
+        respuesta: data.respuesta,
+        opciones: data.opciones,
         productos: data.productos,
         producto: data.producto,
         link_whatsapp: data.link_whatsapp
@@ -368,6 +369,22 @@ const ChatbotWidget: React.FC = () => {
                   }`}>
                   <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.respuesta}</p>
 
+                  {/* Botones de opciones */}
+                  {msg.tipo === 'opciones' && msg.opciones && msg.role === 'bot' && (
+                    <div className="mt-4 flex flex-col gap-2">
+                      {msg.opciones.map((op, oIdx) => (
+                        <button
+                          key={oIdx}
+                          onClick={() => handleOpcionClick(op)}
+                          disabled={isLoading || index !== messages.length - 1}
+                          className="w-full text-left px-4 py-3 rounded-2xl border-2 border-[#015f86]/20 bg-[#015f86]/5 hover:bg-[#015f86]/10 hover:border-[#015f86]/40 text-[#015f86] font-semibold text-[14px] transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          {op.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Tarjetas de producto */}
                   {msg.tipo === 'producto' && (msg.productos || msg.producto) && (
                     <div className="mt-5 flex flex-col gap-4">
@@ -431,15 +448,13 @@ const ChatbotWidget: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={
-                  context?.paso === "esperando_uso_producto"
-                    ? "Ej: negocio o personal"
-                    : context?.paso === "esperando_ciudad_producto"
-                      ? "Ej: Lima"
-                      : context?.paso === "esperando_nombre_producto"
-                        ? "Ej: Juan Pérez"
-                        : context?.paso === "esperando_telefono_producto"
-                          ? "Ej: 980563214"
-                          : "Escribe un mensaje..."
+                  context?.paso === "esperando_datos_producto_1"
+                    ? "Ej: negocio, Lima"
+                    : context?.paso === "esperando_datos_producto_2"
+                      ? "Ej: Adriano, 987654321"
+                      : context?.paso?.includes("datos_contacto")
+                        ? "Ej: Juan, 987654321"
+                    : "Escribe un mensaje..."
                 }
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
                 disabled={isLoading}
