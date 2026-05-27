@@ -12,6 +12,7 @@ interface Opcion {
 
 interface ChatContext {
   paso: string;
+  categoria?: string;
   flujo?: string;
   producto?: string;
   ciudad?: string;

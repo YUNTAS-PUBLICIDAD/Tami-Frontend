@@ -13,6 +13,7 @@ interface CatalogMatch {
 
 export interface ChatContextMinimal {
   paso?: string;
+  categoria?: 'negocio' | 'maquinaria' | 'decoracion' | string;
   producto?: string;
   uso?: string;
   ciudad?: string;
@@ -108,6 +109,18 @@ const CATEGORY_KEYWORDS = {
   negocio: ['negocio', 'empresa', 'emprendimiento'],
   maquinaria: ['maquinaria', 'maquina', 'selladora', 'purificador', 'ventilador', 'sierra', 'compresor', 'taladro', 'lijadora', 'aspiradora', 'impresora', 'embalaje', 'induccion'],
   decoracion: ['decoracion', 'decorar', 'mueble', 'muebles', 'led'],
+};
+
+const isProductInCategory = (product: ApiProduct, category: keyof typeof CATEGORY_KEYWORDS): boolean => {
+  const productText = normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''} ${product.seccion || ''}`);
+  if (!productText) return false;
+
+  // "negocio" in this chat flow usually means products for commerce; include machinery-related terms too.
+  if (category === 'negocio') {
+    return includesAny(productText, [...CATEGORY_KEYWORDS.negocio, ...CATEGORY_KEYWORDS.maquinaria]);
+  }
+
+  return includesAny(productText, CATEGORY_KEYWORDS[category]);
 };
 
 const CATEGORY_REPLIES = {
@@ -230,7 +243,7 @@ const buildWhatsAppProductLink = (context: ChatContextMinimal): string =>
 const extractUsage = (text: string): string | undefined => {
   const normalized = normalizeText(text);
   if (includesAny(normalized, ['negocio', 'empresa', 'emprendimiento', 'local'])) return 'negocio';
-  if (includesAny(normalized, ['personal', 'hogar', 'casa', 'particular'])) return 'uso personal';
+  if (includesAny(normalized, ['personal', 'hogar', 'casa', 'particular'])) return 'personal';
   return undefined;
 };
 
@@ -394,6 +407,39 @@ const findCatalogMatches = async (query: string): Promise<{ exact: CatalogMatch 
   };
 };
 
+const findProductsByKeywordOverlap = async (query: string): Promise<CatalogMatch[]> => {
+  const catalog = await getCatalog();
+  const normalizedQuery = extractCoreProductQuery(query);
+  if (!normalizedQuery) return [];
+
+  const tokens = normalizedQuery
+    .split(' ')
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3);
+
+  if (tokens.length === 0) return [];
+
+  const matches: CatalogMatch[] = [];
+
+  for (const product of catalog) {
+    const text = productSearchText(product);
+    const link = resolveProductLink(product.link);
+    if (!text || !link) continue;
+
+    const matchedTokens = tokens.filter((token) => text.includes(token));
+    if (matchedTokens.length === 0) continue;
+
+    // Weighted overlap score: more matched tokens + longer tokens = stronger match.
+    const tokenLengthScore = matchedTokens.reduce((acc, token) => acc + token.length, 0);
+    const coverageScore = (matchedTokens.length / tokens.length) * 100;
+    const score = Math.round(coverageScore + tokenLengthScore);
+
+    matches.push({ product, link, score });
+  }
+
+  return matches.sort((a, b) => b.score - a.score).slice(0, 5);
+};
+
 const looksLikeProductSearch = (normalized: string, lastBotMessage?: MessageMinimal): boolean => {
   const lastBotText = normalizeText(lastBotMessage?.respuesta || '');
   const userWasAskedForProduct = includesAny(lastBotText, [
@@ -482,6 +528,9 @@ const buildCategoryReply = async (category: keyof typeof CATEGORY_KEYWORDS): Pro
           : CATEGORY_REPLIES.decoracion,
       },
       nextPaso: 'esperando_producto',
+      contextPatch: {
+        categoria: category,
+      },
     };
   }
 
@@ -495,6 +544,9 @@ const buildCategoryReply = async (category: keyof typeof CATEGORY_KEYWORDS): Pro
           : CATEGORY_REPLIES.negocio,
       },
       nextPaso: 'esperando_producto',
+      contextPatch: {
+        categoria: category,
+      },
     };
   }
 
@@ -507,6 +559,9 @@ const buildCategoryReply = async (category: keyof typeof CATEGORY_KEYWORDS): Pro
         : CATEGORY_REPLIES.maquinaria,
     },
     nextPaso: 'esperando_producto',
+    contextPatch: {
+      categoria: category,
+    },
   };
 };
 
@@ -560,7 +615,8 @@ const findProductsByPrefix = async (query: string): Promise<{ exact: CatalogMatc
 };
 
 const resolveProductQuery = async (
-  query: string
+  query: string,
+  preferredCategory?: keyof typeof CATEGORY_KEYWORDS | null
 ): Promise<LocalReplyResult | null> => {
   const normalizedQuery = extractCoreProductQuery(query);
   if (!normalizedQuery) return null;
@@ -568,14 +624,24 @@ const resolveProductQuery = async (
   const scriptedIntent = findScriptedIntent(normalizedQuery);
   const prefixMatches = await findProductsByPrefix(query);
   const fallbackMatches = await findCatalogMatches(query);
+  const keywordOverlapMatches = await findProductsByKeywordOverlap(query);
   const displayQuery = fallbackMatches.normalizedQuery || normalizedQuery;
 
   const exactCandidates = prefixMatches.exactCandidates;
   const uniqueCandidates = Array.from(
     new Map(
-      [...exactCandidates, ...prefixMatches.prefixed].map((item) => [item.link, item])
+      [...exactCandidates, ...prefixMatches.prefixed, ...keywordOverlapMatches].map((item) => [item.link, item])
     ).values()
   );
+
+  const rankedCandidates = preferredCategory
+    ? [...uniqueCandidates].sort((a, b) => {
+      const aInCategory = isProductInCategory(a.product, preferredCategory);
+      const bInCategory = isProductInCategory(b.product, preferredCategory);
+      if (aInCategory !== bInCategory) return aInCategory ? -1 : 1;
+      return b.score - a.score;
+    })
+    : uniqueCandidates;
 
   if (exactCandidates.length === 1) {
     const match = exactCandidates[0];
@@ -583,7 +649,7 @@ const resolveProductQuery = async (
   }
 
   if (exactCandidates.length > 1) {
-    const options = uniqueCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
+    const options = rankedCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
     return {
       message: {
         role: 'bot',
@@ -598,7 +664,7 @@ const resolveProductQuery = async (
   }
 
   if (uniqueCandidates.length > 1) {
-    const options = uniqueCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
+    const options = rankedCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
     return {
       message: {
         role: 'bot',
@@ -608,8 +674,8 @@ const resolveProductQuery = async (
     };
   }
 
-  if (uniqueCandidates.length === 1) {
-    const match = uniqueCandidates[0];
+  if (rankedCandidates.length === 1) {
+    const match = rankedCandidates[0];
     return buildProductContactReply(match, scriptedIntent?.intro);
   }
 
@@ -624,6 +690,25 @@ const resolveProductQuery = async (
         link_whatsapp: DEFAULT_WHATSAPP,
       },
     };
+  }
+
+  // If we couldn't find an exact match, but we can detect a category from the query,
+  // recommend other products from that category so the user can pick an alternative.
+  const guessedCategory = preferredCategory || getCategoryFromQuery(normalizedQuery) || getCategoryFromQuery(normalizeText(query));
+  if (guessedCategory) {
+    const catProducts = await getCategoryProducts(guessedCategory);
+    const productNames = formatProductNames(catProducts);
+    if (productNames) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: `No encontré "${displayQuery}" exacto todavía 😅. Te recomiendo estas opciones en ${guessedCategory}: ${productNames}. ¿Cuál te interesa?`,
+          link_whatsapp: DEFAULT_WHATSAPP,
+        },
+        nextPaso: 'esperando_producto',
+      };
+    }
   }
 
   if (scriptedIntent) {
@@ -672,6 +757,24 @@ export const getLocalReply = async (
         nextPaso: PRODUCT_CONTACT_STEP_1,
         contextPatch: {
           uso: usage,
+        },
+      };
+    }
+
+    // If the user included the city in the same message (e.g., "personal, Lima"),
+    // extract it and skip the city question.
+    const cityInline = extractCity(text);
+    if (cityInline) {
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Perfecto. Ahora dime tu nombre.',
+        },
+        nextPaso: PRODUCT_CONTACT_STEP_3,
+        contextPatch: {
+          uso: usage,
+          ciudad: cityInline,
         },
       };
     }
@@ -732,6 +835,30 @@ export const getLocalReply = async (
         nextPaso: PRODUCT_CONTACT_STEP_3,
         contextPatch: {
           nombre,
+        },
+      };
+    }
+
+    // If the user provided the phone together with the name, finish the flow now.
+    const telefonoInline = extractPhone(text);
+    if (telefonoInline) {
+      const whatsappLinkNow = buildWhatsAppProductLink({
+        ...context,
+        nombre,
+        telefono: telefonoInline,
+      });
+
+      return {
+        message: {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: 'Listo, ya tengo tus datos. Te dejo WhatsApp para seguir con tu atención.',
+          link_whatsapp: whatsappLinkNow,
+        },
+        nextPaso: 'menu_principal',
+        contextPatch: {
+          nombre,
+          telefono: telefonoInline,
         },
       };
     }
@@ -834,18 +961,19 @@ export const getLocalReply = async (
     };
   }
 
-  const category = getCategoryFromQuery(normalized);
-  if (category && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
-    return buildCategoryReply(category);
-  }
-
   if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
-    const productReply = await resolveProductQuery(text);
+    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
+      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
+      : null;
+    const productReply = await resolveProductQuery(text, preferredCategory);
     return productReply || buildUnmatchedProductReply(text.trim());
   }
 
   if (currentPaso === 'esperando_producto') {
-    const productReply = await resolveProductQuery(text);
+    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
+      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
+      : null;
+    const productReply = await resolveProductQuery(text, preferredCategory);
     if (productReply) return productReply;
 
     if (looksLikeProductSearch(normalized, lastBotMessage)) {
@@ -862,6 +990,11 @@ export const getLocalReply = async (
       },
       nextPaso: 'menu_principal',
     };
+  }
+
+  const category = getCategoryFromQuery(normalized);
+  if (category && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
+    return buildCategoryReply(category);
   }
 
   if (currentPaso === 'local_esperando_datos_asesor') {
@@ -888,7 +1021,10 @@ export const getLocalReply = async (
   }
 
   if (looksLikeProductSearch(normalized, lastBotMessage)) {
-    const productReply = await resolveProductQuery(text);
+    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
+      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
+      : null;
+    const productReply = await resolveProductQuery(text, preferredCategory);
     if (productReply) return productReply;
   }
 
