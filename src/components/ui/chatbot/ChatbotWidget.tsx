@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
-import { getLocalReply } from "./chatbotLogic";
+import { getLocalReply, GREETING_REPLY } from "./chatbotLogic";
 import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
@@ -12,6 +12,7 @@ interface Opcion {
 
 interface ChatContext {
   paso: string;
+  categoria?: string;
   flujo?: string;
   producto?: string;
   ciudad?: string;
@@ -52,18 +53,31 @@ const OPEN_KEY = 'tami_chat_open';
 const mensajeInicial: Message = {
   role: 'bot',
   tipo: 'texto',
-  respuesta: '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.',
+  respuesta: GREETING_REPLY,
 };
 
 const ChatbotWidget: React.FC = () => {
 
   // Estado persistente 
-  const [messages, setMessages] = useState<Message[]>([mensajeInicial]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = localStorage.getItem(MESSAGES_KEY);
+      return saved ? JSON.parse(saved) : [mensajeInicial];
+    } catch { return [mensajeInicial]; }
+  });
 
-  const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
+  const [context, setContext] = useState<ChatContext | null>(() => {
+    try {
+      const saved = localStorage.getItem(CONTEXT_KEY);
+      return saved ? JSON.parse(saved) : { paso: 'menu_principal' };
+    } catch { return { paso: 'menu_principal' }; }
+  });
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(OPEN_KEY) === 'true';
+    } catch { return false; }
+  });
 
   const [showBubble, setShowBubble] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
@@ -74,6 +88,17 @@ const ChatbotWidget: React.FC = () => {
   const [icono, setIcono] = useState(robotIcon)
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstBubble = useRef(true);
+
+  // If we have only the greeting message shown and default context, move to expecting product
+  useEffect(() => {
+    try {
+      if (messages.length === 1 && messages[0].respuesta === GREETING_REPLY && context?.paso === 'menu_principal') {
+        setContext((prev) => ({ ...(prev || { paso: 'menu_principal' }), paso: 'esperando_producto' }));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
  
 
   const bubbleMessages = [
@@ -104,47 +129,21 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
-  useEffect(() => {
-    try {
-      const savedMessages = localStorage.getItem(MESSAGES_KEY);
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
-
-      const savedContext = localStorage.getItem(CONTEXT_KEY);
-      if (savedContext) {
-        setContext(JSON.parse(savedContext));
-      }
-
-      setIsOpen(localStorage.getItem(OPEN_KEY) === 'true');
-    } catch {
-      // Keep the SSR-safe defaults when storage is unavailable or invalid.
-    } finally {
-      setHasHydratedStorage(true);
-    }
-  }, []);
-
   // Persistir en localStorage cuando cambian 
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
+  useEffect(() => {
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
+    catch { }
+  }, [messages]);
 
-    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
-    catch { }
-  }, [messages, hasHydratedStorage]);
+  useEffect(() => {
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
+    catch { }
+  }, [context]);
 
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
-
-    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
-    catch { }
-  }, [context, hasHydratedStorage]);
-
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
-
-    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
-    catch { }
-  }, [isOpen, hasHydratedStorage]);
+  useEffect(() => {
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen]);
 
 
   useEffect(() => {
@@ -374,7 +373,7 @@ const ChatbotWidget: React.FC = () => {
                   ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
                   : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
                   }`}>
-                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.respuesta}</p>
+                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.respuesta}</p>
 
                   {/* Botones de opciones */}
                   {msg.tipo === 'opciones' && msg.opciones && msg.role === 'bot' && (
