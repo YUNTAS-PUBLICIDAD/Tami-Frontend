@@ -506,17 +506,15 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
 
         {/* MOBILE: layout horizontal exacto */}
         <div
-          className="flex w-full md:hidden min-h-[190px]"
-          style={{ height: "100%" }}
+          className="flex w-full md:hidden h-[150px] sm:h-[170px]"
         >
           {/* Imagen a la izquierda */}
           <div
-
-            className="flex items-center justify-center p-2 w-1/2 h-full"
-            style={{ height: "100%" }}
+            className="relative flex items-center justify-center w-[45%] sm:w-[40%] h-full bg-[#f8f8f8] overflow-hidden shrink-0"
+            style={{ borderRadius: `${CARD_RADIUS}px 0 0 ${CARD_RADIUS}px` }}
           >
             {!imageLoaded && (
-              <div className="bg-gray-300 animate-pulse w-full h-full rounded-l-xl" />
+              <div className="absolute inset-0 bg-gray-300 animate-pulse" />
             )}
             {hasIntersected && (
               <img
@@ -524,26 +522,21 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 alt={producto.nombre}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
-                className="object-contain w-full h-full rounded-l-xl"
-                style={{ background: "#f8f8f8" }}
+                className={`absolute inset-0 w-full h-full object-contain p-3 sm:p-4 transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               />
             )}
           </div>
 
           {/* Bloque azul a la derecha */}
           <div
-            className="flex flex-col justify-between w-1/2 h-full relative"
+            className="flex flex-col justify-between w-[55%] sm:w-[60%] h-full relative overflow-hidden"
             style={{
               background: categoriaColor,
-              borderRadius: "0 12px 12px 0",
-              height: "auto",
-              minHeight: "100%",
-              alignSelf: "stretch",
-              position: "relative"
+              borderRadius: `0 ${CARD_RADIUS}px ${CARD_RADIUS}px 0`,
             }}
           >
-            <div className="flex-1 flex items-start justify-start px-2 pt-3 pb-12 pr-4 overflow-hidden">
-              <h3 className="text-base font-bold uppercase text-white text-start break-all leading-tight [display:-webkit-box] [-webkit-line-clamp:4] [-webkit-box-orient:vertical] overflow-hidden">
+            <div className="flex-1 flex items-center justify-center px-3 pt-3 pb-12 overflow-hidden">
+              <h3 className="text-sm sm:text-base font-bold uppercase text-white text-center break-words leading-tight line-clamp-4">
                 {producto.nombre}
               </h3>
             </div>
@@ -585,8 +578,8 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
             )}
           </div>
           <div className="w-full absolute left-0 bottom-0 overflow-hidden" style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`, height: '80px', minHeight: '80px', position: 'absolute', left: 0, bottom: 0, width: '100%', display: 'flex', alignItems: 'center', margin: 0, padding: 0 }}>
-            <div className="w-full h-full flex items-center pl-4 pr-[130px] overflow-hidden" style={{ height: '100%' }}>
-              <h3 className="text-base font-bold uppercase text-white leading-tight break-all [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] overflow-hidden">
+            <div className="w-full h-full flex items-center pl-4 pr-[130px] py-1 overflow-hidden" style={{ height: '100%' }}>
+              <h3 className="text-[13px] xl:text-[15px] font-bold uppercase text-white leading-tight break-words line-clamp-3">
                   {producto.nombre}
               </h3>
             </div>
