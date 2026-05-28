@@ -4,7 +4,7 @@ const trackingId = "G-46BRFBSERE"; // Reemplaza con ID de seguimiento 46BRFBSERE
 
 <!-- Google tag (gtag.js) -->
 <script is:inline src={`https://www.googletagmanager.com/gtag/js?id=${trackingId}`}></script>
-<script is:inline>
+<script is:inline define:vars={{ trackingId }}>
   window.dataLayer = window.dataLayer || [];
   function gtag() {
     dataLayer.push(arguments);

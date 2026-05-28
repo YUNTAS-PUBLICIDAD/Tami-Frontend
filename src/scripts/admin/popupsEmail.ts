@@ -15,6 +15,18 @@ export function initEmail() {
 
     const emailSelector = document.getElementById("emailSelector") as HTMLSelectElement | null;
 
+    window.addEventListener("timepicker-change", (event: Event) => {
+        const customEvent = event as CustomEvent<{ id?: string; value?: number }>;
+        if (!customEvent.detail || customEvent.detail.id !== "emailSendDelay" || typeof customEvent.detail.value !== "number") {
+            return;
+        }
+
+        const currentState = emailsState[sharedState.currentEmailIdx];
+        if (currentState) {
+            currentState.delay = String(customEvent.detail.value);
+        }
+    });
+
     function syncUIFromEmailState(idx: string) {
         const state = emailsState[idx];
         if (emailTitleInput) emailTitleInput.value = state.title;
@@ -25,6 +37,13 @@ export function initEmail() {
 
         const emailSendDelayInput = document.getElementById("emailSendDelay") as HTMLSelectElement | null;
         if (emailSendDelayInput) emailSendDelayInput.value = state.delay;
+
+        window.dispatchEvent(new CustomEvent("timepicker-sync", {
+            detail: {
+                id: "emailSendDelay",
+                value: Number(state.delay) || 0,
+            },
+        }));
 
         const emailTitleDisplay = document.getElementById("emailTitleDisplay");
         if (emailTitleDisplay) emailTitleDisplay.textContent = `Correo Electrónico #${idx}`;
