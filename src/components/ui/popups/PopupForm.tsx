@@ -82,21 +82,40 @@ const PopupForm = ({
           <div
             className={`${isPreview ? (previewMode === "mobile" ? "flex" : "hidden") : "flex sm:hidden"} absolute inset-0 flex-col bg-white overflow-hidden`}
           >
-            <div className="h-[250px] w-full relative overflow-hidden">
-              <img
-                src={settings?.popup_mobile_image_url || asesoriaImg.src}
-                alt="Imagen Móvil 1"
-                className="w-full h-full object-cover select-none"
-              />
-            </div>
-
-            <div className="flex-1 w-full relative overflow-hidden -mt-1">
-              <img
-                src={settings?.popup_mobile_image2_url || asesoriaImg.src}
-                alt="Imagen Móvil 2"
-                className="w-full h-full object-cover select-none"
-              />
-            </div>
+            {(() => {
+              const showTwoImages = settings?.popup_mobile_image_count === 2 && !!settings?.popup_mobile_image_url && !!settings?.popup_mobile_image2_url;
+              if (showTwoImages) {
+                return (
+                  <>
+                    <div className="h-[250px] w-full relative overflow-hidden">
+                      <img
+                        src={settings?.popup_mobile_image_url}
+                        alt="Imagen Móvil 1"
+                        className="w-full h-full object-cover select-none"
+                      />
+                    </div>
+                    <div className="flex-1 w-full relative overflow-hidden -mt-1">
+                      <img
+                        src={settings?.popup_mobile_image2_url}
+                        alt="Imagen Móvil 2"
+                        className="w-full h-full object-cover select-none"
+                      />
+                    </div>
+                  </>
+                );
+              } else {
+                const singleImageSrc = settings?.popup_mobile_image_url || settings?.popup_mobile_image2_url || asesoriaImg.src;
+                return (
+                  <div className="h-full flex-1 w-full relative overflow-hidden">
+                    <img
+                      src={singleImageSrc}
+                      alt="Imagen Móvil"
+                      className="w-full h-full object-cover select-none"
+                    />
+                  </div>
+                );
+              }
+            })()}
           </div>
 
           {/* Form Content */}
