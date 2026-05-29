@@ -108,7 +108,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
             {/* Sección Móvil con Selector */}
             <MobileImageSelector
                 firstImageLabel="Imagen Móvil Principal"
-                firstImageDescription="Resolución: 448x320px. Máx 2MB (webp)."
+                firstImageDescription="Resolución: 420x320px. Máx 2MB (webp)."
                 firstImageFieldName="imagen_popup_mobile"
                 firstImagePreview={previews.imagen_popup_mobile}
                 firstImageValue={formData.imagen_popup_mobile}
@@ -116,7 +116,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                 firstImageAltFieldName="texto_alt_popup_mobile"
                 
                 secondImageLabel="Imagen Móvil Secundaria"
-                secondImageDescription="Resolución: 448x320px. Máx 2MB (webp)."
+                secondImageDescription="Resolución: 220x320px. Máx 2MB (webp)."
                 secondImageFieldName="imagen_popup_mobile2"
                 secondImagePreview={previews.imagen_popup_mobile2}
                 secondImageValue={formData.imagen_popup_mobile2}
