@@ -51,7 +51,8 @@ export class ProductSyncService {
         : (previews.imagen_popup_mobile || data.imagen_popup_mobile),
       popup_mobile_image2_url: overrides.imagen_popup_mobile2 !== undefined 
         ? overrides.imagen_popup_mobile2 
-        : (previews.imagen_popup_mobile2 || data.imagen_popup_mobile2)
+        : (previews.imagen_popup_mobile2 || data.imagen_popup_mobile2),
+      popup_mobile_image_count: 2
     };
 
     // Clean up File objects
