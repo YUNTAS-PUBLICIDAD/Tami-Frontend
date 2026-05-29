@@ -174,13 +174,13 @@ export const InicioMobileImageSelector: React.FC = () => {
 
             <MobileImageSelector
                 firstImageLabel="Imagen Móvil Principal"
-                firstImageDescription="Resolución: 448x320px. Máx 2MB (webp)."
+                firstImageDescription="Resolución: 420x320px. Máx 2MB (webp)."
                 firstImageFieldName="imagen_popup_mobile"
                 firstImagePreview={firstImagePreview}
                 firstImageValue={firstImageValue}
                 
                 secondImageLabel="Imagen Móvil Secundaria"
-                secondImageDescription="Resolución: 448x320px. Máx 2MB (webp)."
+                secondImageDescription="Resolución: 220x320px. Máx 2MB (webp)."
                 secondImageFieldName="imagen_popup_mobile2"
                 secondImagePreview={secondImagePreview}
                 secondImageValue={secondImageValue}
