@@ -94,7 +94,7 @@ const PopupForm = ({
                         className="w-full h-full object-cover select-none"
                       />
                     </div>
-                    <div className="h-[220px] w-full relative overflow-hidden -mt-1">
+                    <div className="h-[220px] w-full relative overflow-hidden">
                       <img
                         src={settings?.popup_mobile_image2_url}
                         alt="Imagen Móvil 2"
@@ -145,7 +145,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-6 max-w-[200px] translate-y-[100px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-6 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px] translate-y-[21px] sm:translate-y-0"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-6 max-w-[200px] translate-y-[21px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-6 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px] translate-y-[21px] sm:translate-y-0"} w-full mx-auto`}
               >
                 <div className="relative mb-1 sm:mb-3">
                   {errors.general_top && (
