@@ -145,9 +145,9 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-6 max-w-[200px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-6 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px]"} w-full mx-auto`}
+                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-6 max-w-[200px] translate-y-[100px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-6 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px] translate-y-[21px] sm:translate-y-0"} w-full mx-auto`}
               >
-                <div className="relative mb-2 sm:mb-3">
+                <div className="relative mb-1 sm:mb-3">
                   {errors.general_top && (
                     <p className="absolute bottom-full left-1/2 -translate-x-1/2 w-[250px] sm:w-full text-[10px] sm:text-sm font-bold text-[#FF0000] text-center mb-1 leading-tight">
                       {errors.general_top}
@@ -166,7 +166,7 @@ const PopupForm = ({
                   />
                 </div>
 
-                <div className="relative mb-2 sm:mb-3">
+                <div className="relative mb-1 sm:mb-3">
                   <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center scale-75 sm:scale-100`}>
                     <FaWhatsapp size={20} />
                   </div>
@@ -184,7 +184,7 @@ const PopupForm = ({
                   />
                 </div>
 
-                <div className="relative mb-2 sm:mb-3">
+                <div className="relative mb-0 sm:mb-3">
                   <div className={`absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-[#1B7C72] flex items-center justify-center scale-75 sm:scale-100`}>
                     <Mail size={20} />
                   </div>
@@ -203,7 +203,7 @@ const PopupForm = ({
                   )}
                 </div>
 
-                <div className="mt-2 flex justify-center w-full">
+                <div className="mt-1 flex justify-center w-full">
                   <button
                     type="submit"
                     disabled={isSubmitting}
