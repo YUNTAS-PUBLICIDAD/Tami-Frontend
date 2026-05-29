@@ -2,7 +2,7 @@ import React from 'react';
 import type { ProductFormData } from '../types/productTab.types';
 import { ImageUploadField } from './ImageUploadField';
 import { ColorPickerField } from './ColorPickerField';
-import { MobileImageSelector } from './MobileImageSelector';
+import { ProductMobileImageSelector } from './ProductMobileImageSelector';
 
 interface PopupSectionProps {
     formData: ProductFormData | null;
@@ -106,29 +106,26 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
             </div>
 
             {/* Sección Móvil con Selector */}
-            <MobileImageSelector
+            <ProductMobileImageSelector
                 firstImageLabel="Imagen Móvil Principal"
-                firstImageDescription="Resolución: 420x320px. Máx 2MB (webp)."
+                firstImageDescription="Resolución: 448x420px. Máx 2MB (webp)."
                 firstImageFieldName="imagen_popup_mobile"
                 firstImagePreview={previews.imagen_popup_mobile}
                 firstImageValue={formData.imagen_popup_mobile}
                 firstImageAltText={formData.texto_alt_popup_mobile}
                 firstImageAltFieldName="texto_alt_popup_mobile"
-                
+
                 secondImageLabel="Imagen Móvil Secundaria"
-                secondImageDescription="Resolución: 220x320px. Máx 2MB (webp)."
+                secondImageDescription="Resolución: 448x220px. Máx 2MB (webp)."
                 secondImageFieldName="imagen_popup_mobile2"
                 secondImagePreview={previews.imagen_popup_mobile2}
                 secondImageValue={formData.imagen_popup_mobile2}
                 secondImageAltText={formData.texto_alt_popup_mobile2}
                 secondImageAltFieldName="texto_alt_popup_mobile2"
-                
+
                 onFileChange={onFileChange}
                 onClearImage={onClearImage}
                 onFieldChange={onFieldChange}
-                section="producto"
-                initialCount={formData.etiqueta?.popup_mobile_image_count ? (parseInt(String(formData.etiqueta.popup_mobile_image_count)) as 1 | 2) : (previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2 ? 2 : 1)}
-                onImageCountChange={(count) => onFieldChange("popup_mobile_image_count", String(count), true)}
             />
 
             {/* Estilo y Botón */}
