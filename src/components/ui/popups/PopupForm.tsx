@@ -51,7 +51,7 @@ const PopupForm = ({
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col max-w-md w-[85%] h-[640px] rounded-2xl shadow-2xl" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[640px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col max-w-md w-[85%] h-[640px] rounded-2xl shadow-2xl" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row w-[320px] sm:w-[85%] sm:max-w-4xl h-[640px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -88,18 +88,20 @@ const PopupForm = ({
               if (showTwoImages) {
                 return (
                   <>
-                    <div className="h-[420px] w-full relative overflow-hidden">
+                    <div className="h-[420px] w-[320px] max-w-none relative overflow-hidden mx-auto">
                       <img
                         src={settings?.popup_mobile_image_url}
                         alt="Imagen Móvil 1"
-                        className="w-full h-full object-cover select-none"
+                        className="w-full h-full object-contain select-none"
+                        style={{ objectFit: "contain", objectPosition: "center", display: "block" }}
                       />
                     </div>
-                    <div className="h-[220px] w-full relative overflow-hidden">
+                    <div className="h-[220px] w-[320px] max-w-none relative overflow-hidden mx-auto">
                       <img
                         src={settings?.popup_mobile_image2_url}
                         alt="Imagen Móvil 2"
-                        className="w-full h-full object-cover select-none"
+                        className="w-full h-full object-contain select-none"
+                        style={{ objectFit: "contain", objectPosition: "center", display: "block" }}
                       />
                     </div>
                   </>
@@ -107,7 +109,7 @@ const PopupForm = ({
               } else {
                 const singleImageSrc = settings?.popup_mobile_image_url || settings?.popup_mobile_image2_url || asesoriaImg.src;
                 return (
-                  <div className="h-[640px] w-full relative overflow-hidden">
+                  <div className="h-[640px] w-[320px] max-w-none relative overflow-hidden mx-auto">
                     <img
                       src={singleImageSrc}
                       alt="Imagen Móvil"
