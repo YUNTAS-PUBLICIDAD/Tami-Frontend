@@ -380,7 +380,7 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
 <style is:global>
     /* Estilos para cuando la vista previa está en modo móvil */
     #previewStage.is-mobile-view {
-        min-height: 550px;
+        min-height: 720px;
         background-color: #f3f4f6;
     }
 
@@ -389,7 +389,10 @@ import ScrollModal from "../../ui/ScrollModal.tsx";
     }
 
     #previewStage.is-mobile-view #previewScrollModalContainer {
-        padding: 0;
+        min-height: 720px;
+        width: 100%;
+        max-width: 390px;
+        margin: 0 auto;
         transform: none;
     }
 

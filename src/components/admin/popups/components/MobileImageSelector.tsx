@@ -50,7 +50,7 @@ interface MobileImageSelectorProps {
  */
 export const MobileImageSelector: React.FC<MobileImageSelectorProps> = ({
     firstImageLabel = 'Imagen Móvil Principal',
-    firstImageDescription = 'Resolución: 448x320px. Máx 2MB (webp).',
+    firstImageDescription = 'Resolución: 420x320px. Máx 2MB (webp).',
     firstImageFieldName,
     firstImagePreview,
     firstImageValue,
@@ -58,7 +58,7 @@ export const MobileImageSelector: React.FC<MobileImageSelectorProps> = ({
     firstImageAltFieldName,
     
     secondImageLabel = 'Imagen Móvil Secundaria',
-    secondImageDescription = 'Resolución: 448x320px. Máx 2MB (webp).',
+    secondImageDescription = 'Resolución: 220x320px. Máx 2MB (webp).',
     secondImageFieldName,
     secondImagePreview,
     secondImageValue,
