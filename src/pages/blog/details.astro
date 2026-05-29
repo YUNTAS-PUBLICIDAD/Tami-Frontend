@@ -4,7 +4,7 @@ import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
-const getApiUrl = config.apiUrl;
+const getApiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
 const blogsUrl = config.endpoints.blogs;
 
 const productsUrl = config.endpoints.productos.list;
@@ -374,7 +374,7 @@ const productsUrl = config.endpoints.productos.list;
                 </div>
                 
                 <!-- Imagen - Siempre debajo en mobile -->
-                <div class="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50 order-2 md:order-none">
+                <div class="relative w-full md:w-1/2 h-auto max-w-xl md:max-w-none mx-auto overflow-hidden rounded-lg md:rounded-xl shadow-md order-2 md:order-none bg-gray-50">
                   <img 
                     src="${
                       imagen.ruta_imagen?.startsWith("http")
@@ -383,7 +383,7 @@ const productsUrl = config.endpoints.productos.list;
                     }"
                     alt="${imagen.text_alt || "Imagen del blog"}"
                     title="${imagen.text_alt || "Imagen del blog"}"
-                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    class="w-full h-auto block transition-transform duration-300 hover:scale-105" 
                   />
                 </div>
                 
