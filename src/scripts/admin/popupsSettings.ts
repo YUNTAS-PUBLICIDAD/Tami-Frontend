@@ -116,15 +116,28 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
 
                 restoreImg(settings.image1, "popup_image_url", "clearImage1");
                 restoreImg(settings.image2, "popup_image2_url", "clearImage2");
-                restoreImg(settings.imageMobile, "popup_mobile_image_url", "clearImageMobile");
-                restoreImg(settings.imageMobile2, "popup_mobile_image2_url", "clearImageMobile2");
+
+                // Inicializar imágenes móviles en el componente React puente
+                const initialMobileCount = settings.popup_mobile_image_count ? parseInt(settings.popup_mobile_image_count) : (settings.imageMobile2 ? 2 : 1);
+                window.dispatchEvent(new CustomEvent('inicio-mobile-settings-loaded', {
+                    detail: {
+                        imageMobile: settings.imageMobile || settings.popup_mobile_image_url || null,
+                        imageMobile2: settings.imageMobile2 || settings.popup_mobile_image2_url || null,
+                        count: initialMobileCount
+                    }
+                }));
 
                 updatePreview({
+                    popup_image_url: settings.image1 || settings.popup_image_url || null,
+                    popup_image2_url: settings.image2 || settings.popup_image2_url || null,
+                    popup_mobile_image_url: settings.imageMobile || settings.popup_mobile_image_url || null,
+                    popup_mobile_image2_url: settings.imageMobile2 || settings.popup_mobile_image2_url || null,
                     button_bg_color: settings.button_bg_color,
                     button_text_color: settings.button_text_color,
                     button_text: settings.button_text || "CONOCER MAS",
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
                     product_popup_delay_minutes: settings.product_popup_delay_minutes,
+                    popup_mobile_image_count: initialMobileCount,
                 });
             }
 
@@ -180,6 +193,10 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 formData.append("button_text", btnTextInput.value);
             }
             formData.append("popup_start_delay_minutes", delay.toString());
+
+            // Agregar contador de imágenes móviles de Inicio al guardar
+            const mobileCountValue = (document.getElementById("popupMobileImageCountValue") as HTMLInputElement | null)?.value || "2";
+            formData.append("popup_mobile_image_count", mobileCountValue);
 
             if (isProductoTab) {
                 formData.append("product_popup_delay_minutes", productDelayValue);
