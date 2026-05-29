@@ -50,7 +50,7 @@ const PopupForm = ({
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[500px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[500px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[320px] max-w-none h-[640px] rounded-[28px] shadow-none" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row max-w-md sm:max-w-4xl w-[85%] h-[640px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 bg-white ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -87,14 +87,14 @@ const PopupForm = ({
               if (showTwoImages) {
                 return (
                   <>
-                    <div className="h-[250px] w-full relative overflow-hidden">
+                    <div className="h-[420px] w-full relative overflow-hidden">
                       <img
                         src={settings?.popup_mobile_image_url}
                         alt="Imagen Móvil 1"
                         className="w-full h-full object-cover select-none"
                       />
                     </div>
-                    <div className="flex-1 w-full relative overflow-hidden -mt-1">
+                    <div className="h-[220px] w-full relative overflow-hidden -mt-1">
                       <img
                         src={settings?.popup_mobile_image2_url}
                         alt="Imagen Móvil 2"
