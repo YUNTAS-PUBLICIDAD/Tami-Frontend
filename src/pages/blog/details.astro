@@ -4,7 +4,7 @@ import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
-const getApiUrl = config.apiUrl;
+const getApiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
 const blogsUrl = config.endpoints.blogs;
 
 const productsUrl = config.endpoints.productos.list;
@@ -364,30 +364,28 @@ const productsUrl = config.endpoints.productos.list;
 
               section.innerHTML = `
               <!-- Texto primero en mobile, layout lateral en desktop -->
-              <div class="flex flex-col md:flex-row ${index % 2 === 1 ? "md:flex-row-reverse" : ""} gap-4 md:gap-8 items-center">
-                
-                <!-- Texto - Siempre arriba en mobile -->
-                <div class="w-full md:w-1/2 px-2 md:px-4 flex flex-col justify-center order-1 md:order-none">
-                  <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
-                    <p class="text-sm md:text-base whitespace-pre-line break-words">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
-                  </article>
-                </div>
-                
-                <!-- Imagen - Siempre debajo en mobile -->
-                <div class="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50 order-2 md:order-none">
-                  <img 
-                    src="${
-                      imagen.ruta_imagen?.startsWith("http")
-                        ? imagen.ruta_imagen
-                        : `${getApiUrl}${imagen.ruta_imagen}`
-                    }"
-                    alt="${imagen.text_alt || "Imagen del blog"}"
-                    title="${imagen.text_alt || "Imagen del blog"}"
-                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
-                
+            <div class="flex flex-col min-[930px]:flex-row ${index % 2 === 1 ? "min-[930px]:flex-row-reverse" : ""} gap-6 min-[930px]:gap-12 items-center">
+              
+              <div class="w-full min-[930px]:w-1/2 px-2 min-[930px]:px-4 flex flex-col justify-center">
+                <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
+                  <p class="text-sm md:text-base whitespace-pre-line break-words">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
+                </article>
               </div>
+              
+              <div class="relative w-full min-[930px]:w-1/2 h-auto max-w-xl min-[930px]:max-w-none mx-auto overflow-hidden rounded-lg md:rounded-xl shadow-md bg-gray-50">
+                <img 
+                  src="${
+                    imagen.ruta_imagen?.startsWith("http")
+                      ? imagen.ruta_imagen
+                      : `${getApiUrl}${imagen.ruta_imagen}`
+                  }"
+                  alt="${imagen.text_alt || "Imagen del blog"}"
+                  title="${imagen.text_alt || "Imagen del blog"}"
+                  class="w-full h-auto block transition-transform duration-300 hover:scale-105" 
+                />
+              </div>
+              
+            </div>
           
             `;
               blogSectionsElement.appendChild(section);
