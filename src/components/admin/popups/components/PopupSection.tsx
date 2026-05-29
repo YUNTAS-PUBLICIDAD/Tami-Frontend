@@ -2,6 +2,7 @@ import React from 'react';
 import type { ProductFormData } from '../types/productTab.types';
 import { ImageUploadField } from './ImageUploadField';
 import { ColorPickerField } from './ColorPickerField';
+import { MobileImageSelector } from './MobileImageSelector';
 
 interface PopupSectionProps {
     formData: ProductFormData | null;
@@ -104,77 +105,31 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                 </div>
             </div>
 
-            {/* Sección Móvil */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-700">
-                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-600 dark:text-indigo-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-                        Vistas de Móvil
-                    </h3>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6">
-                    {/* Imagen 3 - Móvil */}
-                    <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
-                        <ImageUploadField
-                            label="Imagen Móvil Principal"
-                            description="Resolución: 448x320px. Máx 2MB (webp)."
-                            fieldName="imagen_popup_mobile"
-                            preview={previews.imagen_popup_mobile}
-                            value={formData.imagen_popup_mobile}
-                            onFileChange={onFileChange}
-                            onClearImage={onClearImage}
-                            buttonLabel="Seleccionar"
-                            previewWidth="w-20"
-                            previewHeight="h-20"
-                        />
-                        <div className="pt-2">
-                            <label className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-widest">
-                                Texto ALT (SEO)
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.texto_alt_popup_mobile}
-                                onChange={(e) => onFieldChange("texto_alt_popup_mobile", e.target.value)}
-                                className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                                placeholder="Ej: Imagen móvil principal..."
-                            />
-                        </div>
-                    </div>
-
-                    {/* Imagen 4 - Móvil 2 */}
-                    <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
-                        <ImageUploadField
-                            label="Imagen Móvil Secundaria"
-                            description="Resolución: 448x320px. Máx 2MB (webp)."
-                            fieldName="imagen_popup_mobile2"
-                            preview={previews.imagen_popup_mobile2}
-                            value={formData.imagen_popup_mobile2}
-                            onFileChange={onFileChange}
-                            onClearImage={onClearImage}
-                            buttonLabel="Seleccionar"
-                            previewWidth="w-20"
-                            previewHeight="h-20"
-                        />
-                        <div className="pt-2">
-                            <label className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-widest">
-                                Texto ALT (SEO)
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.texto_alt_popup_mobile2}
-                                onChange={(e) => onFieldChange("texto_alt_popup_mobile2", e.target.value)}
-                                className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                                placeholder="Ej: Imagen móvil secundaria..."
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/* Sección Móvil con Selector */}
+            <MobileImageSelector
+                firstImageLabel="Imagen Móvil Principal"
+                firstImageDescription="Resolución: 420x320px. Máx 2MB (webp)."
+                firstImageFieldName="imagen_popup_mobile"
+                firstImagePreview={previews.imagen_popup_mobile}
+                firstImageValue={formData.imagen_popup_mobile}
+                firstImageAltText={formData.texto_alt_popup_mobile}
+                firstImageAltFieldName="texto_alt_popup_mobile"
+                
+                secondImageLabel="Imagen Móvil Secundaria"
+                secondImageDescription="Resolución: 220x320px. Máx 2MB (webp)."
+                secondImageFieldName="imagen_popup_mobile2"
+                secondImagePreview={previews.imagen_popup_mobile2}
+                secondImageValue={formData.imagen_popup_mobile2}
+                secondImageAltText={formData.texto_alt_popup_mobile2}
+                secondImageAltFieldName="texto_alt_popup_mobile2"
+                
+                onFileChange={onFileChange}
+                onClearImage={onClearImage}
+                onFieldChange={onFieldChange}
+                section="producto"
+                initialCount={formData.etiqueta?.popup_mobile_image_count ? (parseInt(String(formData.etiqueta.popup_mobile_image_count)) as 1 | 2) : (previews.imagen_popup_mobile2 || formData.imagen_popup_mobile2 ? 2 : 1)}
+                onImageCountChange={(count) => onFieldChange("popup_mobile_image_count", String(count), true)}
+            />
 
             {/* Estilo y Botón */}
             <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-3xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-6">

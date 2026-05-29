@@ -195,6 +195,9 @@ export class ProductFormBuilderService {
     appendIfText("etiqueta[popup_button_text]", formData.etiqueta?.popup_button_text || "¡COTIZA AHORA!");
     appendIfText("etiqueta[popup_button_color]", formData.etiqueta?.popup_button_color || "#008B8B");
     appendIfText("etiqueta[popup_text_color]", formData.etiqueta?.popup_text_color || "#000000");
+    if (formData.etiqueta?.popup_mobile_image_count !== undefined) {
+      formDataToSend.append("etiqueta[popup_mobile_image_count]", String(formData.etiqueta.popup_mobile_image_count));
+    }
 
     // API flags
     formDataToSend.append("_method", "PUT");

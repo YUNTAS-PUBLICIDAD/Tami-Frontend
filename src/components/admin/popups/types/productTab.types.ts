@@ -36,6 +36,7 @@ export interface ProductEtiqueta {
   popup_button_color?: string;
   popup_text_color?: string;
   keywords?: string | string[];
+  popup_mobile_image_count?: string | number;
 }
 
 export interface ProductDimensiones {
