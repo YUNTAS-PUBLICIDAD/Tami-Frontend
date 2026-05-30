@@ -7,8 +7,8 @@ import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
 
 interface Opcion {
-  label: string;
-  valor: string;
+  label: string;
+  valor: string;
 }
 
 interface ChatContext {
@@ -28,23 +28,23 @@ interface ChatContext {
 }
 
 interface Message {
-  role: 'bot' | 'user';
-  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
-  respuesta: string;
-  opciones?: Opcion[];
-  productos?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  }[];
-  producto?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  };
-  link_whatsapp?: string;
+  role: 'bot' | 'user';
+  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
+  respuesta: string;
+  opciones?: Opcion[];
+  productos?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  }[];
+  producto?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  };
+  link_whatsapp?: string;
 }
 
 const MESSAGES_KEY = 'tami_chat_messages';
@@ -66,18 +66,10 @@ const ChatbotWidget: React.FC = () => {
     } catch { return [mensajeInicial]; }
   });
 
-  const [context, setContext] = useState<ChatContext | null>(() => {
-    try {
-      const saved = localStorage.getItem(CONTEXT_KEY);
-      return saved ? JSON.parse(saved) : { paso: 'menu_principal' };
-    } catch { return { paso: 'menu_principal' }; }
-  });
+  const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
 
-  const [isOpen, setIsOpen] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(OPEN_KEY) === 'true';
-    } catch { return false; }
-  });
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   const [showBubble, setShowBubble] = useState(true);
   const [isTyping, setIsTyping] = useState(true); // 🚀 REPARADO: Estado maestro para los 3 puntitos
@@ -89,6 +81,7 @@ const ChatbotWidget: React.FC = () => {
   const [icono, setIcono] = useState(robotIcon);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstBubble = useRef(true);
+ 
 
   // If we have only the greeting message shown and default context, move to expecting product
   useEffect(() => {
@@ -136,16 +129,31 @@ const ChatbotWidget: React.FC = () => {
     catch { }
   }, [context]);
 
+  //Busqueda constante del Icono
   useEffect(() => {
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
     catch { }
   }, [isOpen]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    try {
+      const savedMessages = localStorage.getItem(MESSAGES_KEY);
+      if (savedMessages) {
+        setMessages(JSON.parse(savedMessages));
+      }
+
+      const savedContext = localStorage.getItem(CONTEXT_KEY);
+      if (savedContext) {
+        setContext(JSON.parse(savedContext));
+      }
+
+      setIsOpen(localStorage.getItem(OPEN_KEY) === 'true');
+    } catch {
+      // Keep the SSR-safe defaults when storage is unavailable or invalid.
+    } finally {
+      setHasHydratedStorage(true);
     }
-  }, [messages, isOpen]);
+  }, []);
 
   // 🚀 REPARADO Y UNIFICADO: Único useEffect para controlar burbujas flotantes y los 3 puntitos
   useEffect(() => {
@@ -246,10 +254,111 @@ const ChatbotWidget: React.FC = () => {
     await enviarMensaje(texto, texto);
   };
 
-  const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen, hasHydratedStorage]);
+
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) { setShowBubble(false); return; }
+    let timeoutId: NodeJS.Timeout;
+    const scheduleNextBubble = () => {
+      const min = isFirstBubble.current ? 0 : 60000;
+      const max = isFirstBubble.current ? 0 : 90000;
+      const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
+      timeoutId = setTimeout(() => {
+        if (!isOpen) {
+          setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
+          setShowBubble(true);
+          setTimeout(() => {
+            setShowBubble(false);
+            isFirstBubble.current = false;
+            scheduleNextBubble();
+          }, 20000);
+        }
+      }, randomTime);
+    };
+    scheduleNextBubble();
+    return () => { if (timeoutId) clearTimeout(timeoutId); };
+  }, [isOpen]);
+
+
+  // CONTROL DE LOS 3 PUNTITOS: Dura 3 segundos y luego cambia a la frase real
+  useEffect(() => {
+    // Creamos el cronómetro de 3 segundos
+    const introTimer = setTimeout(() => {
+      isFirstBubble.current = false; // Rompe la condición de los puntitos
+      setShowBubble(false);          // Cierra el globo de puntitos
+
+      // Espera un milisegundo extra para abrir la primera frase real limpiamente
+      setTimeout(() => {
+        setBubbleIndex(0);           // Carga la primera frase de la lista
+        setShowBubble(true);         // Abre la burbuja con el texto real
+      }, 100);
+
+    }, 3000); // <─── AQUÍ ESTÁN TUS 3 SEGUNDOS
+
+    return () => clearTimeout(introTimer);
+  }, []);
+
+
+  const toggleChat = () => {
+    setIsOpen(prev => !prev);
+    if (!isOpen) { setShowBubble(false); setIsPopping(false); }
+  };
+
+  //Botón reiniciar chat
+  const reiniciarChat = () => {
+    if (isLoading || isResetting) return;
+
+    setIsResetting(true);
+
+    setTimeout(() => {
+      setMessages([mensajeInicial]);
+      setContext({ paso: 'menu_principal' });
+      setInput('');
+      try {
+        localStorage.removeItem(MESSAGES_KEY);
+        localStorage.removeItem(CONTEXT_KEY);
+      } catch { }
+
+      setTimeout(() => {
+        setIsResetting(false);
+      }, 180);
+    }, 2000);
+  };
+
+
+  const handleCloseBubble = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsPopping(true);
+    setTimeout(() => { setShowBubble(false); setIsPopping(false); }, 400);
+  };
+
+  const handleOpcionClick = async (opcion: Opcion) => {
+    if (isLoading) return;
+    await enviarMensaje(opcion.label, opcion.valor);
+  };
+
+  // ── Envío por formulario 
+  const sendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    const texto = input.trim();
+    setInput('');
+    await enviarMensaje(texto, texto);
+  };
+
+  const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
+    const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
 
     try {
       const localReply = await getLocalReply(valorEnviado, context, messages);
@@ -277,37 +386,37 @@ const ChatbotWidget: React.FC = () => {
         body: JSON.stringify({ mensaje: valorEnviado, context }),
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error('Network response was not ok');
 
-      const data = await response.json();
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const data = await response.json();
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (data.context !== undefined) setContext(data.context);
+      if (data.context !== undefined) setContext(data.context);
 
-      const botMessage: Message = {
-        role: 'bot',
-        tipo: data.tipo,
-        respuesta: data.respuesta,
-        opciones: data.opciones,
-        productos: data.productos,
-        producto: data.producto,
-        link_whatsapp: data.link_whatsapp
-      };
+      const botMessage: Message = {
+        role: 'bot',
+        tipo: data.tipo,
+        respuesta: data.respuesta,
+        opciones: data.opciones,
+        productos: data.productos,
+        producto: data.producto,
+        link_whatsapp: data.link_whatsapp
+      };
 
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Error en Chatbot:", error);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMessages(prev => [...prev, {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
-        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error en Chatbot:", error);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setMessages(prev => [...prev, {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
+        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
@@ -324,7 +433,9 @@ const ChatbotWidget: React.FC = () => {
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
               </div>
               <div>
-                <h3 className="font-bold text-base leading-tight tracking-tight">Asistente Tami</h3>
+                <h3 className="font-bold text-base leading-tight tracking-tight">
+                  Asistente Tami
+                </h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
                   <p className="text-[12px] font-medium opacity-90">En línea</p>
@@ -465,7 +576,12 @@ const ChatbotWidget: React.FC = () => {
                 disabled={!input.trim() || isLoading}
                 className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
                   <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
                 </svg>
               </button>
