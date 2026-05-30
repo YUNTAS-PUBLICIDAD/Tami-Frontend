@@ -118,22 +118,23 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
-  // Persistir en localStorage cuando cambian 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
     catch { }
-  }, [messages]);
+  }, [messages, hasHydratedStorage]);
 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
     catch { }
-  }, [context]);
+  }, [context, hasHydratedStorage]);
 
-  //Busqueda constante del Icono
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
     catch { }
-  }, [isOpen]);
+  }, [isOpen, hasHydratedStorage]);
 
   useEffect(() => {
     if (!hasHydratedStorage) return;
@@ -168,7 +169,7 @@ const ChatbotWidget: React.FC = () => {
 
   useEffect(() => {
     if (isOpen) { setShowBubble(false); return; }
-    const activeTimeouts: NodeJS.Timeout[] = [];
+    const activeTimeouts: any[] = [];
     const scheduleNextBubble = () => {
       const min = isFirstBubble.current ? 3000 : 60000;
       const max = isFirstBubble.current ? 3000 : 90000;
