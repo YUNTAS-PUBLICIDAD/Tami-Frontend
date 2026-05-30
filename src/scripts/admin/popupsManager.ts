@@ -157,15 +157,12 @@ export function initPopupManager() {
         const waMsgHidden2 = document.getElementById("whatsappMessage2") as HTMLInputElement;
         const waMsgHidden3 = document.getElementById("whatsappMessage3") as HTMLInputElement;
 
-        const countInput = document.getElementById('popupMobileImageCountValue') as HTMLInputElement | null;
-        const mobileCount = countInput ? parseInt(countInput.value) : (sharedState.savedHomeSettings.popup_mobile_image_count ? parseInt(sharedState.savedHomeSettings.popup_mobile_image_count) : (currentInicioImages.popup_mobile_image2_url ? 2 : 1));
-
         updatePreview({
             popup_image_url: currentInicioImages.popup_image_url,
             popup_image2_url: currentInicioImages.popup_image2_url,
             popup_mobile_image_url: currentInicioImages.popup_mobile_image_url,
             popup_mobile_image2_url: currentInicioImages.popup_mobile_image2_url,
-            popup_mobile_image_count: mobileCount,
+            popup_mobile_image_count: 2,
             button_bg_color: btnBgColorInput ? btnBgColorInput.value : (sharedState.savedHomeSettings.button_bg_color || "#14b8a6"),
             button_text_color: btnTextColorInput ? btnTextColorInput.value : (sharedState.savedHomeSettings.button_text_color || "#ffffff"),
             button_text: btnTextInput ? btnTextInput.value : (sharedState.savedHomeSettings.button_text || sharedState.savedHomeSettings.btnText || "CONOCER MAS"),

@@ -76,6 +76,7 @@ export interface ProductFormData {
   texto_alt_popup_mobile: string;
   imagen_popup_mobile2: string | File | null;
   texto_alt_popup_mobile2: string;
+  popup_mobile_image_count?: string | number;
 
   // Email Configuration
   // Support three different email variants for product-level emails
@@ -150,6 +151,7 @@ export interface ProductPreviewSettings {
   button_text: string;
   popup_mobile_image_url: string | File | null;
   popup_mobile_image2_url: string | File | null;
+  popup_mobile_image_count?: number;
 }
 
 export interface WhatsAppPreviewData {

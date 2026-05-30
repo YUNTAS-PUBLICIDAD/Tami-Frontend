@@ -120,6 +120,7 @@ export class ProductFormBuilderService {
       formDataToSend.append("delete_imagen_popup_mobile2", "1");
     }
     appendIfText("texto_alt_popup_mobile2", formData.texto_alt_popup_mobile2);
+    formDataToSend.append("popup_mobile_image_count", "2");
 
     // Email Configuration
     // Email Configuration - support 3 email variants
@@ -242,8 +243,14 @@ export class ProductFormBuilderService {
       const tipo = (img.tipo || "").toLowerCase();
       return tipo === "popup2" || tipo === "popup_2";
     });
-    const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
-    const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
+    const imagenPopupMobile = product.producto_imagenes?.find((img: any) => {
+      const tipo = (img.tipo || "").toLowerCase();
+      return tipo === "popup_mobile" || tipo === "popupmobile" || tipo === "popup-mobile";
+    });
+    const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => {
+      const tipo = (img.tipo || "").toLowerCase();
+      return tipo === "popup_mobile2" || tipo === "popup_mobile_2" || tipo === "popupmobile2" || tipo === "popupmobile_2" || tipo === "popup-mobile-2";
+    });
     const imagenWhatsapp = product.producto_imagenes?.find((img: any) => img.tipo === "whatsapp");
 
     const fallbackImage = (field: string) => {
@@ -312,6 +319,7 @@ export class ProductFormBuilderService {
       texto_alt_popup_mobile: imagenPopupMobile?.texto_alt_SEO || product.texto_alt_popup_mobile || "",
       imagen_popup_mobile2: imagenPopupMobile2 ? this.getFullImageUrl(imagenPopupMobile2.url_imagen, apiUrl) : fallbackImage("imagen_popup_mobile2"),
       texto_alt_popup_mobile2: imagenPopupMobile2?.texto_alt_SEO || product.texto_alt_popup_mobile2 || "",
+      popup_mobile_image_count: 2,
 
       // Map up to three email images/configs
       imagen_email_1: imagenEmail ? this.getFullImageUrl(imagenEmail.url_imagen, apiUrl) : fallbackImage("imagen_email_1"),
