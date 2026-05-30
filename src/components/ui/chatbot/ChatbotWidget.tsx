@@ -118,98 +118,80 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
-  // Persistir en localStorage cuando cambian 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
     catch { }
-  }, [messages]);
+  }, [messages, hasHydratedStorage]);
 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
     catch { }
-  }, [context]);
+  }, [context, hasHydratedStorage]);
 
-  //Busqueda constante del Icono
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
     catch { }
-  }, [isOpen]);
+  }, [isOpen, hasHydratedStorage]);
 
   useEffect(() => {
     try {
       const savedMessages = localStorage.getItem(MESSAGES_KEY);
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
-
+      if (savedMessages) setMessages(JSON.parse(savedMessages));
       const savedContext = localStorage.getItem(CONTEXT_KEY);
-      if (savedContext) {
-        setContext(JSON.parse(savedContext));
-      }
-
+      if (savedContext) setContext(JSON.parse(savedContext));
       setIsOpen(localStorage.getItem(OPEN_KEY) === 'true');
     } catch {
-      // Keep the SSR-safe defaults when storage is unavailable or invalid.
     } finally {
       setHasHydratedStorage(true);
     }
   }, []);
 
-  // 🚀 REPARADO Y UNIFICADO: Único useEffect para controlar burbujas flotantes y los 3 puntitos
   useEffect(() => {
     if (isOpen) { setShowBubble(false); return; }
-    
     const activeTimeouts: NodeJS.Timeout[] = [];
-
     const scheduleNextBubble = () => {
-      // Si es el primer arranque esperamos 3s (para los puntitos). Si no, rotación normal aleatoria (60-90s)
       const min = isFirstBubble.current ? 3000 : 60000;
       const max = isFirstBubble.current ? 3000 : 90000;
       const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-
       const mainTimeout = setTimeout(() => {
         if (isOpen) return;
-
         if (isFirstBubble.current) {
-          // Finalizan los 3 segundos de puntitos iniciales
           setIsTyping(false);
           setBubbleIndex(0);
           isFirstBubble.current = false;
           setShowBubble(true);
-
-          // Mantener la primera frase 20 segundos fija
           const hideTimeout = setTimeout(() => {
             setShowBubble(false);
-            setIsTyping(true); // Dejamos listo el modo "typing" para la siguiente frase
+            setIsTyping(true);
             scheduleNextBubble();
           }, 20000);
-
           activeTimeouts.push(hideTimeout);
         } else {
-          // Flujo de rotación ordinario
           setIsTyping(false);
           setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
           setShowBubble(true);
-
           const hideRegularTimeout = setTimeout(() => {
             setShowBubble(false);
             setIsTyping(true);
             scheduleNextBubble();
           }, 20000);
-
           activeTimeouts.push(hideRegularTimeout);
         }
       }, delay);
-
       activeTimeouts.push(mainTimeout);
     };
-
     scheduleNextBubble();
-
-    return () => {
-      activeTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
-    };
+    return () => { activeTimeouts.forEach((timeoutId) => clearTimeout(timeoutId)); };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
 
   const toggleChat = () => {
     setIsOpen(prev => !prev);
@@ -219,7 +201,6 @@ const ChatbotWidget: React.FC = () => {
   const reiniciarChat = () => {
     if (isLoading || isResetting) return;
     setIsResetting(true);
-
     setTimeout(() => {
       setMessages([mensajeInicial]);
       setContext({ paso: 'menu_principal' });
@@ -228,10 +209,7 @@ const ChatbotWidget: React.FC = () => {
         localStorage.removeItem(MESSAGES_KEY);
         localStorage.removeItem(CONTEXT_KEY);
       } catch { }
-
-      setTimeout(() => {
-        setIsResetting(false);
-      }, 180);
+      setTimeout(() => { setIsResetting(false); }, 180);
     }, 2000);
   };
 
@@ -254,111 +232,10 @@ const ChatbotWidget: React.FC = () => {
     await enviarMensaje(texto, texto);
   };
 
-    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
-    catch { }
-  }, [isOpen, hasHydratedStorage];
-
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isOpen]);
-
-  useEffect(() => {
-    if (isOpen) { setShowBubble(false); return; }
-    let timeoutId: NodeJS.Timeout;
-    const scheduleNextBubble = () => {
-      const min = isFirstBubble.current ? 0 : 60000;
-      const max = isFirstBubble.current ? 0 : 90000;
-      const randomTime = Math.floor(Math.random() * (max - min + 1)) + min;
-      timeoutId = setTimeout(() => {
-        if (!isOpen) {
-          setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
-          setShowBubble(true);
-          setTimeout(() => {
-            setShowBubble(false);
-            isFirstBubble.current = false;
-            scheduleNextBubble();
-          }, 20000);
-        }
-      }, randomTime);
-    };
-    scheduleNextBubble();
-    return () => { if (timeoutId) clearTimeout(timeoutId); };
-  }, [isOpen]);
-
-
-  // CONTROL DE LOS 3 PUNTITOS: Dura 3 segundos y luego cambia a la frase real
-  useEffect(() => {
-    // Creamos el cronómetro de 3 segundos
-    const introTimer = setTimeout(() => {
-      isFirstBubble.current = false; // Rompe la condición de los puntitos
-      setShowBubble(false);          // Cierra el globo de puntitos
-
-      // Espera un milisegundo extra para abrir la primera frase real limpiamente
-      setTimeout(() => {
-        setBubbleIndex(0);           // Carga la primera frase de la lista
-        setShowBubble(true);         // Abre la burbuja con el texto real
-      }, 100);
-
-    }, 3000); // <─── AQUÍ ESTÁN TUS 3 SEGUNDOS
-
-    return () => clearTimeout(introTimer);
-  }, []);
-
-
-  const toggleChat = () => {
-    setIsOpen(prev => !prev);
-    if (!isOpen) { setShowBubble(false); setIsPopping(false); }
-  };
-
-  //Botón reiniciar chat
-  const reiniciarChat = () => {
-    if (isLoading || isResetting) return;
-
-    setIsResetting(true);
-
-    setTimeout(() => {
-      setMessages([mensajeInicial]);
-      setContext({ paso: 'menu_principal' });
-      setInput('');
-      try {
-        localStorage.removeItem(MESSAGES_KEY);
-        localStorage.removeItem(CONTEXT_KEY);
-      } catch { }
-
-      setTimeout(() => {
-        setIsResetting(false);
-      }, 180);
-    }, 2000);
-  };
-
-
-  const handleCloseBubble = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setIsPopping(true);
-    setTimeout(() => { setShowBubble(false); setIsPopping(false); }, 400);
-  };
-
-  const handleOpcionClick = async (opcion: Opcion) => {
-    if (isLoading) return;
-    await enviarMensaje(opcion.label, opcion.valor);
-  };
-
-  // ── Envío por formulario 
-  const sendMessage = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!input.trim() || isLoading) return;
-    const texto = input.trim();
-    setInput('');
-    await enviarMensaje(texto, texto);
-  };
-
-  const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
+  const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
+    const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
 
     try {
       const localReply = await getLocalReply(valorEnviado, context, messages);
@@ -386,37 +263,37 @@ const ChatbotWidget: React.FC = () => {
         body: JSON.stringify({ mensaje: valorEnviado, context }),
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error('Network response was not ok');
 
-      const data = await response.json();
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const data = await response.json();
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (data.context !== undefined) setContext(data.context);
+      if (data.context !== undefined) setContext(data.context);
 
-      const botMessage: Message = {
-        role: 'bot',
-        tipo: data.tipo,
-        respuesta: data.respuesta,
-        opciones: data.opciones,
-        productos: data.productos,
-        producto: data.producto,
-        link_whatsapp: data.link_whatsapp
-      };
+      const botMessage: Message = {
+        role: 'bot',
+        tipo: data.tipo,
+        respuesta: data.respuesta,
+        opciones: data.opciones,
+        productos: data.productos,
+        producto: data.producto,
+        link_whatsapp: data.link_whatsapp
+      };
 
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Error en Chatbot:", error);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMessages(prev => [...prev, {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
-        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error en Chatbot:", error);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setMessages(prev => [...prev, {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
+        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
