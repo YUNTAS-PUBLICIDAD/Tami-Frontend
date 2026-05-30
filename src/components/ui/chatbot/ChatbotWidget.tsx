@@ -256,7 +256,7 @@ const ChatbotWidget: React.FC = () => {
 
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
     catch { }
-  }, [isOpen, hasHydratedStorage]);
+  }, [isOpen, hasHydratedStorage];
 
 
   useEffect(() => {
