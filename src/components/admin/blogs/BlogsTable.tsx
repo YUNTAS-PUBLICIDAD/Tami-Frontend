@@ -312,15 +312,20 @@ const BlogsTable = () => {
                         </div>
 
                         {blog.imagenes?.[i]?.ruta_imagen && (
-                          <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
-                            <img
-                              src={`${getApiUrl("")}${blog.imagenes[i].ruta_imagen}`}
-                              alt={blog.titulo}
-                              loading="lazy"
-                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                            />
-                          </div>
-                        )}
+                        <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
+                          <img
+                            src={
+                              blog.imagenes[i].ruta_imagen.startsWith("http") || blog.imagenes[i].ruta_imagen.startsWith("//")
+                                ? blog.imagenes[i].ruta_imagen
+                                : `${getApiUrl(blog.imagenes[i].ruta_imagen.startsWith("/") ? blog.imagenes[i].ruta_imagen : `/${blog.imagenes[i].ruta_imagen}`)}`
+                            }
+                            alt={blog.titulo}
+                            loading="lazy"
+                            // Cambiado object-cover por object-contain para que no se recorte
+                            className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+                          />
+                        </div>
+                      )}
                       </div>
                     </section>
                   ))}

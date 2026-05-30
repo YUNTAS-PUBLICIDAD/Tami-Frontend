@@ -1,99 +1,98 @@
 import React, { useState } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/Table'
 import { Button } from 'src/components/ui/button'
 import IconUploader from './IconUploader'
 import GenericModal from '../ui/GenericModal'
-import ChatbotIcon from 'src/components/ui/chatbot/ChatbotIcon'
+import ChatbotScreen from 'src/components/ui/chatbot/ChatbotScreen'
+import ColorPickerField from '../popups/components/ColorPickerField'
 
-const chatbotTable = () => {
-  const [iconModalVisible, setIconModalVisible]=useState(false);
-
+const ChatbotTable = () => {
+  const [iconModalVisible, setIconModalVisible] = useState(false)
+  const [colorPickerVisible, setColorPickerVisible]= useState(false)
   return (
+    <div className="container mx-auto max-w-6xl">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
 
-        <div className="container mx-auto max-w-6xl">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-
-            <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                <div>
-                  <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M6 20n 4-4V6a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2z" />
-                    </svg>
-                    <span>Gestión de Chatbot</span>
-                  </h2>
-                  <p className="text-teal-50 mt-2 text-base md:text-lg">
-                    Configura el comportamiento del chatbot
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                  <ChatbotIcon/>
-                  <button onClick={()=>setIconModalVisible(true) } className="bg-teal-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md hover:bg-teal-800 flex items-center justify-center gap-2 text-sm transition-all">
-                    <span className="text-lg leading-none">+</span> Cambiar Logo
-                  </button>
-                </div>
-              </div>
+        {/* Header */}
+        <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6">
+          <div className="flex items-center gap-3">
+            <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+            </svg>
+            <div>
+              <h2 className="text-2xl font-extrabold text-white">Gestión de Chatbot</h2>
+              <p className="text-teal-50 text-sm mt-0.5">Configura el comportamiento del chatbot</p>
             </div>
-
-
-            <div className="overflow-x-auto">
-              <Table className="w-full text-left border-collapse">
-                <TableHeader>
-                  <TableRow className="border-b border-gray-200 bg-gray-50">
-                    <TableHead className="p-4 pl-8 font-bold tracking-wide uppercase text-xs text-gray-500">Col1</TableHead>
-                    <TableHead className="p-4 font-bold tracking-wide uppercase text-xs text-gray-500">Col2</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="divide-y divide-gray-100">
-                  
-                  <TableRow className="hover:bg-gray-50/70 transition-colors">
-                    <TableCell className="p-4 font-semibold  ">SELLADORA DE BOTELLAS</TableCell>
-                    <TableCell className="p-4">
-                      <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs font-semibold capitalize">
-                        Trabajo
-                      </span>
-                    </TableCell>
-
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell className="p-4 font-semibold  ">MÁQUINA DE EMBALAJE</TableCell>
-                    <TableCell className="p-4">
-                      <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs font-semibold capitalize">
-                        Trabajo
-                      </span>
-                    </TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell className="p-4 font-semibold  ">SELLADORA DE BOLSAS</TableCell>
-                    <TableCell className="p-4">
-                      <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs font-semibold capitalize">
-                        Trabajo
-                      </span>
-                    </TableCell>
-                  </TableRow>
-
-                  <TableRow className="hover:bg-gray-50/70 transition-colors">
-                    <TableCell className="p-4 font-semibold  ">SELLADORA DE BOLSAS DE CHIFLES</TableCell>
-                    <TableCell className="p-4">
-                      <span className="bg-cyan-100 text-cyan-800 py-1 px-3 rounded-full text-xs font-semibold capitalize">
-                        Decoracion
-                      </span>
-                    </TableCell>
-                  </TableRow>
-
-                </TableBody>
-              </Table>
-            </div>
-            <GenericModal isOpen={iconModalVisible} title='Icono de Chatbot' onClose={()=>setIconModalVisible(false)}>
-              <IconUploader/>
-            </GenericModal>
           </div>
         </div>
-      
+
+        {/* Two-column body */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
+
+          {/* RIGHT: Edit options */}
+          <div className="md:col-span-2 p-8 space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-5">Opciones de configuración</p>
+
+            {/* Active button */}
+            <button
+              onClick={() => setIconModalVisible(true)}
+              className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-teal-400 hover:shadow-md dark:hover:border-teal-500 transition-all group text-left"
+            >
+              <div className="w-9 h-9 rounded-lg bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Cambiar Logo</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Sube una imagen personalizada para el ícono del chatbot</p>
+              </div>
+              <svg className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-teal-500 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* Disabled placeholder buttons */}
+            {[
+              { icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z", label: "Color de Cabecera", desc: "Color de Header de pantalla de Chat", func: ()=> {console.log('Probando') ;setColorPickerVisible(!colorPickerVisible)}  },
+              { icon: "M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4", label: "Configuración avanzada", desc: "Ajusta parámetros de comportamiento", func: ()=>console.log('Probando')  },
+            ].map((item, i) => (
+              <button
+                key={i}
+                className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-700 text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 shrink-0">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{item.label}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{item.desc}</p>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 dark:text-gray-600 shrink-0">Próximamente</span>
+              </button>
+            ))}
+          </div>
+          {/* LEFT: Preview */}
+          <div className="md:col-span-1 flex flex-col items-center justify-center gap-4 p-8 bg-gray-50 dark:bg-gray-900/40">
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Vista Previa</p>
+
+                <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+                  <ChatbotScreen/>
+  
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center">Vista actual del chatbot</p>
+          </div>
+        </div>
+
+      </div>
+
+      <GenericModal isOpen={iconModalVisible} title="Icono de Chatbot" onClose={() => setIconModalVisible(false)}>
+        <IconUploader />
+      </GenericModal>
+      <GenericModal isOpen={colorPickerVisible} title="Color Pantalla de Chat" onClose={() => setColorPickerVisible(false)}>
+        <ColorPickerField label='Hola' color='emerald' onChange={()=>{}} />
+      </GenericModal>    </div>
   )
 }
 
-export default chatbotTable
+export default ChatbotTable

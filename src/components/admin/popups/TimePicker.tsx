@@ -22,7 +22,7 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
     return 'custom';
   };
 
-  const initialMode = getInitialMode(resolvedValue);
+  const initialMode = getInitialMode(defaultValue);
   
   // Estados reactivos internos del componente
   const [mode, setMode] = useState<string>(initialMode);
@@ -75,7 +75,7 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
     let calculated = 0;
     if (mode === 'nosend') calculated = -1;
     else if (mode === 'immediate') calculated = 0;
-    // else if (mode === 'static') calculated = parseInt(selectValue);
+    else if (mode === 'static') calculated = parseInt(selectValue);
     else if (mode === 'custom') {
       calculated = (hours * 60) + minutes;
       if (calculated === 0) calculated = 1; // Evita colisión con inmediato
