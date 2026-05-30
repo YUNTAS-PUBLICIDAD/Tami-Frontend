@@ -118,6 +118,23 @@ const ChatbotWidget: React.FC = () => {
     fetchCurrentIcon();
   }, []);
 
+  // Persistir en localStorage cuando cambian 
+  useEffect(() => {
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
+    catch { }
+  }, [messages]);
+
+  useEffect(() => {
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
+    catch { }
+  }, [context]);
+
+  //Busqueda constante del Icono
+  useEffect(() => {
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen]);
+
   useEffect(() => {
     if (!hasHydratedStorage) return;
     try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
@@ -134,7 +151,7 @@ const ChatbotWidget: React.FC = () => {
     if (!hasHydratedStorage) return;
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
     catch { }
-  }, [isOpen, hasHydratedStorage]);
+  }, [isOpen, hasHydratedStorage];
 
   useEffect(() => {
     try {
