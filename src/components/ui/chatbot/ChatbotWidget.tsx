@@ -151,7 +151,7 @@ const ChatbotWidget: React.FC = () => {
 
   useEffect(() => {
     if (isOpen) { setShowBubble(false); return; }
-    const activeTimeouts: NodeJS.Timeout[] = [];
+    const activeTimeouts: any[] = [];
     const scheduleNextBubble = () => {
       const min = isFirstBubble.current ? 3000 : 60000;
       const max = isFirstBubble.current ? 3000 : 90000;
