@@ -162,6 +162,7 @@ export function initPopupManager() {
             popup_image2_url: currentInicioImages.popup_image2_url,
             popup_mobile_image_url: currentInicioImages.popup_mobile_image_url,
             popup_mobile_image2_url: currentInicioImages.popup_mobile_image2_url,
+            popup_mobile_image_count: 2,
             button_bg_color: btnBgColorInput ? btnBgColorInput.value : (sharedState.savedHomeSettings.button_bg_color || "#14b8a6"),
             button_text_color: btnTextColorInput ? btnTextColorInput.value : (sharedState.savedHomeSettings.button_text_color || "#ffffff"),
             button_text: btnTextInput ? btnTextInput.value : (sharedState.savedHomeSettings.button_text || sharedState.savedHomeSettings.btnText || "CONOCER MAS"),

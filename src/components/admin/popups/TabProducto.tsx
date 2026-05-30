@@ -144,10 +144,15 @@ const TabProducto: React.FC = () => {
         hookFileChange(e, field, (newData, overrides) => {
             const url = overrides[field] as string;
 
+            if (field.startsWith("imagen_popup")) {
+                ProductSyncService.syncPopupPreview(newData, { ...previews, ...overrides }, overrides);
+                return;
+            }
+
             ProductSyncService.updateWhatsAppImagePreview(field, url);
         });
     },
-    [hookFileChange]
+    [hookFileChange, previews]
 );
 
     // Wrapper for save with selectedProductId
