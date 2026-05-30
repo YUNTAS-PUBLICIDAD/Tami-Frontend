@@ -137,6 +137,24 @@ const ChatbotWidget: React.FC = () => {
   }, [isOpen, hasHydratedStorage]);
 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
+    catch { }
+  }, [messages, hasHydratedStorage]);
+
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
+    catch { }
+  }, [context, hasHydratedStorage]);
+
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
+    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
+    catch { }
+  }, [isOpen, hasHydratedStorage];
+
+  useEffect(() => {
     try {
       const savedMessages = localStorage.getItem(MESSAGES_KEY);
       if (savedMessages) setMessages(JSON.parse(savedMessages));
