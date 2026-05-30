@@ -51,7 +51,8 @@ const PopupForm = ({
       className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[448px] max-w-none h-[640px] rounded-2xl shadow-2xl" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row w-[448px] max-w-none sm:w-[85%] sm:max-w-4xl h-[640px] sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 ${!isPreview ? "bg-[#0f172a]" : "bg-white"} ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[448px] max-w-none rounded-2xl shadow-2xl" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row w-[448px] max-w-none sm:w-[85%] sm:max-w-4xl sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 ${!isPreview ? "bg-[#0f172a]" : "bg-white"} ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        style={isPreview && previewMode === "mobile" ? { height: "640px" } : (!isPreview ? { height: "640px" } : {})}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -81,27 +82,26 @@ const PopupForm = ({
 
           {/* MOBILE View Background */}
           <div
-            className={`${isPreview ? (previewMode === "mobile" ? "flex" : "hidden") : "flex sm:hidden"} absolute inset-0 flex-col bg-[#0f172a] overflow-hidden gap-0 leading-none`}
+            className={`${isPreview ? (previewMode === "mobile" ? "block" : "hidden") : "block sm:hidden"} bg-[#0f172a] overflow-hidden`}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "640px" }}
           >
             {(() => {
               const showTwoImages = settings?.popup_mobile_image_count === 2 && !!settings?.popup_mobile_image_url && !!settings?.popup_mobile_image2_url;
               if (showTwoImages) {
                 return (
                   <>
-                    <div className="h-[420px] w-full max-w-none flex-none relative overflow-hidden bg-[#0f172a]">
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "420px", overflow: "hidden", background: "#0f172a" }}>
                       <img
                         src={settings?.popup_mobile_image_url}
                         alt="Imagen Móvil 1"
-                        className="block w-full h-full object-cover select-none"
-                        style={{ objectFit: "cover", objectPosition: "center", display: "block" }}
+                        style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
                       />
                     </div>
-                    <div className="h-[220px] w-full max-w-none flex-none relative overflow-hidden bg-[#0f172a]">
+                    <div style={{ position: "absolute", top: "420px", left: 0, right: 0, height: "220px", overflow: "hidden", background: "#0f172a" }}>
                       <img
                         src={settings?.popup_mobile_image2_url}
                         alt="Imagen Móvil 2"
-                        className="block w-full h-full object-cover select-none"
-                        style={{ objectFit: "cover", objectPosition: "center", display: "block" }}
+                        style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
                       />
                     </div>
                   </>
@@ -109,12 +109,11 @@ const PopupForm = ({
               }
 
               return (
-                <div className="h-[640px] w-full max-w-none relative overflow-hidden bg-[#0f172a]">
+                <div style={{ width: "100%", height: "640px", overflow: "hidden", background: "#0f172a" }}>
                   <img
                     src={settings?.popup_mobile_image_url || settings?.popup_mobile_image2_url || asesoriaImg.src}
                     alt="Imagen Móvil"
-                    className="block w-full h-full object-contain select-none"
-                    style={{ objectFit: "contain", objectPosition: "center" }}
+                    style={{ display: "block", width: "100%", height: "100%", objectFit: "contain", objectPosition: "center" }}
                   />
                 </div>
               );
