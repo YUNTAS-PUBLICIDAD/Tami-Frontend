@@ -24,8 +24,10 @@ export function initImages(updatePreview: (settings?: any, mode?: string | null)
                 // sync whatsapp preview via event
                 window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: sharedState.currentSelectedWaMessage || "1" }));
 
-                if (previewKey.startsWith("popup_")) {
-                    updatePreview({ [previewKey]: url as string }, sharedState.currentMode || null);
+                if (previewKey.startsWith("popup_mobile")) {
+                    updatePreview({ [previewKey]: url as string }, "mobile");
+                } else if (previewKey.startsWith("popup_")) {
+                    updatePreview({ [previewKey]: url as string }, "desktop");
                 }
 
                 clearBtn?.classList.remove("hidden");
@@ -43,8 +45,10 @@ export function initImages(updatePreview: (settings?: any, mode?: string | null)
 
             window.dispatchEvent(new CustomEvent("sync-whatsapp-selector", { detail: sharedState.currentSelectedWaMessage || "1" }));
 
-            if (previewKey.startsWith("popup_")) {
-                updatePreview({ [previewKey]: null }, sharedState.currentMode || null);
+            if (previewKey.startsWith("popup_mobile")) {
+                updatePreview({ [previewKey]: null }, "mobile");
+            } else if (previewKey.startsWith("popup_")) {
+                updatePreview({ [previewKey]: null }, "desktop");
             }
 
             clearBtn?.classList.add("hidden");
@@ -54,8 +58,9 @@ export function initImages(updatePreview: (settings?: any, mode?: string | null)
 
     bindImageEvents("popupImage1", "clearImage1", "popup_image_url", "popupImage", "delete_popupImage1");
     bindImageEvents("popupImage2", "clearImage2", "popup_image2_url", "popupImage2", "delete_popupImage2");
-    bindImageEvents("popupImageMobile", "clearImageMobile", "popup_mobile_image_url", "popupImageMobile", "delete_popupImageMobile");
-    bindImageEvents("popupImageMobile2", "clearImageMobile2", "popup_mobile_image2_url", "popupImageMobile2", "delete_popupImageMobile2");
+    // Las imágenes móviles de Inicio ahora son manejadas por el puente de React (InicioMobileImageSelector.tsx)
+    // bindImageEvents("popupImageMobile", "clearImageMobile", "popup_mobile_image_url", "popupImageMobile", "delete_popupImageMobile");
+    // bindImageEvents("popupImageMobile2", "clearImageMobile2", "popup_mobile_image2_url", "popupImageMobile2", "delete_popupImageMobile2");
     bindImageEvents("whatsappImage", "clearWhatsappImage", "whatsappImage", "whatsappImage", "delete_whatsappImage");
     bindImageEvents("whatsappImage2", "clearWhatsappImage2", "whatsappImage2", "whatsappImage2", "delete_whatsappImage2");
     bindImageEvents("whatsappImage3", "clearWhatsappImage3", "whatsappImage3", "whatsappImage3", "delete_whatsappImage3");

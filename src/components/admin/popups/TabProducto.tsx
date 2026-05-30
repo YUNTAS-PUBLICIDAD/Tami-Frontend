@@ -126,13 +126,33 @@ const TabProducto: React.FC = () => {
             return;
         }
 
+          // AUTO SWITCH PREVIEW MODE
+        if (field.includes("mobile")) {
+            window.dispatchEvent(
+                new CustomEvent("update-popup-preview", {
+                    detail: { mode: "mobile" },
+                })
+            );
+        } else {
+            window.dispatchEvent(
+                new CustomEvent("update-popup-preview", {
+                    detail: { mode: "desktop" },
+                })
+            );
+        }
+
         hookFileChange(e, field, (newData, overrides) => {
             const url = overrides[field] as string;
+
+            if (field.startsWith("imagen_popup")) {
+                ProductSyncService.syncPopupPreview(newData, { ...previews, ...overrides }, overrides);
+                return;
+            }
 
             ProductSyncService.updateWhatsAppImagePreview(field, url);
         });
     },
-    [hookFileChange]
+    [hookFileChange, previews]
 );
 
     // Wrapper for save with selectedProductId

@@ -4,12 +4,14 @@ import { origenCliente } from "@data/origenCliente";
 import Swal from "sweetalert2";
 const MODAL_STORAGE_KEY = "catalogModalLastClosed";
 const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
+const POPUP_LAST_EMAIL_BY_PHONE_KEY = "popupLastEmailByPhone";
 
 export interface PopupSettings {
   popup_image_url?: string;
   popup_image2_url?: string;
   popup_mobile_image_url?: string;
   popup_mobile_image2_url?: string;
+  popup_mobile_image_count?: number;
   button_bg_color?: string;
   button_text_color?: string;
   button_text?: string;
@@ -96,6 +98,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
           popup_image2_url: globalData.image2 || globalData.popup_image2_url,
           popup_mobile_image_url: globalData.imageMobile || globalData.popup_mobile_image_url,
           popup_mobile_image2_url: globalData.imageMobile2 || globalData.popup_mobile_image2_url,
+          popup_mobile_image_count: 2,
           button_text: globalData.button_text || globalData.btnText || "CONOCER MAS",
           popup_start_delay_minutes: globalData.popup_start_delay_minutes || globalData.popupInicioDelay || 60,
         };
@@ -130,6 +133,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
                   popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
                   popup_mobile_image_url: imagenPopupMobile ? `${config.apiUrl}${imagenPopupMobile.url_imagen}` : (imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url),
                   popup_mobile_image2_url: imagenPopupMobile2 ? `${config.apiUrl}${imagenPopupMobile2.url_imagen}` : (imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url),
+                  popup_mobile_image_count: 2,
                   button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
                   button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
                   button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
@@ -334,11 +338,19 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     if (!validateForm({ nombre: submittedNombre, telefono: submittedTelefono, correo: submittedCorreo })) return;
 
+    const lastEmailByPhoneKey = `${POPUP_LAST_EMAIL_BY_PHONE_KEY}:${submittedTelefono}`;
+    const lastEmailByPhone = typeof window !== "undefined"
+      ? window.localStorage.getItem(lastEmailByPhoneKey)
+      : null;
+    const shouldSendEmailFallback = Boolean(isProductDetail && lastEmailByPhone && lastEmailByPhone !== submittedCorreo);
+
     setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("name", submittedNombre);
       formData.append("email", submittedCorreo);
+      formData.append("correo", submittedCorreo);
+      formData.append("recipient_email", submittedCorreo);
       formData.append("celular", `+51${submittedTelefono}`);
       
       // Enviar origen y datos de producto si existen
@@ -357,6 +369,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
       const response = await fetch(getApiUrl(config.endpoints.popups.submit), {
         method: "POST",
+        cache: "no-store",
         body: formData,
       });
 
@@ -398,6 +411,52 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
         return;
       }
 
+      const responseJson = await response.json().catch(() => null);
+      const responseClient = responseJson?.data ?? responseJson;
+      const responseClientId = responseClient?.id;
+
+      if (responseClientId && responseClient?.email && responseClient.email !== submittedCorreo) {
+        try {
+          await fetch(getApiUrl(config.endpoints.clientes.update(responseClientId)), {
+            method: "PUT",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: submittedNombre,
+              celular: `+51${submittedTelefono}`,
+              email: submittedCorreo,
+              source_id: isProductDetail ? origenCliente.PRODUCTO_DETALLE : origenCliente.INICIO,
+            }),
+          });
+        } catch (updateError) {
+          console.warn("[usePopupLogic] Could not update popup client email.", updateError);
+        }
+      }
+
+      if (shouldSendEmailFallback) {
+        const fallbackResponse = await fetch(
+          getApiUrl(config.endpoints.email.sendEmailByProductLink),
+          {
+            method: "POST",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: submittedNombre,
+              phone: `+51${submittedTelefono}`,
+              celular: `+51${submittedTelefono}`,
+              telefono: `+51${submittedTelefono}`,
+              email: submittedCorreo,
+              link: window.location.href,
+            }),
+          },
+        );
+
+        if (!fallbackResponse.ok) {
+          console.warn("[usePopupLogic] Email fallback failed for changed contact email.");
+        }
+      }
+
+      window.localStorage.setItem(lastEmailByPhoneKey, submittedCorreo);
       setErrors({ general: "Información enviada con éxito" });
 
       Swal.fire({

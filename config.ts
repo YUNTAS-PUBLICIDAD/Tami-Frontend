@@ -75,6 +75,10 @@ export const config = {
       getSettings: "/api/v1/popup-settings/public",
       submit: "/api/v1/whatsapp/popup-submission",
     },
+    chatbot: {
+      newIcon: "api/v1/chatbot/icon",
+      getIcon: "api/v1/chatbot/icon",
+    }
   },
   socket: {
     whatsapp: import.meta.env.PUBLIC_WHATSAPP_SOCKET_URL || "https://apitami.tamimaquinarias.com",
@@ -82,7 +86,7 @@ export const config = {
 };
 
 export const getApiUrl = (endpoint: string) => {
-  const baseUrl = config.apiUrl ? String(config.apiUrl).replace(/\/$/, "") : "";
+  const baseUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";  
   const url = baseUrl ? `${baseUrl}${endpoint}` : endpoint;
   if (config.environment !== "production") {
     console.debug(`[${config.environment}] Requesting:`, url);

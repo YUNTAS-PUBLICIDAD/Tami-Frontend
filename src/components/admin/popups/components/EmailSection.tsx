@@ -4,6 +4,7 @@ import { ImageUploadField } from './ImageUploadField';
 import { ColorPickerField } from './ColorPickerField';
 import type { ProductFormData } from '../types/productTab.types';
 import { ProductSyncService } from '../services/productSyncService';
+import TimePicker from '../TimePicker';
 
 interface EmailSectionProps {
     formData: ProductFormData | null;
@@ -174,34 +175,15 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                                 isNested={true}
                             />
                             <div className="col-span-1 sm:col-span-2 mt-2">
-                                <div className="rounded-3xl border border-blue-100 dark:border-blue-800/30 bg-blue-50/70 dark:bg-blue-950/20 p-4">
-                                    <label className="block text-sm font-bold text-blue-900 dark:text-blue-100 mb-3">Temporizador de envío</label>
-                                    <div className="relative max-w-xs">
-                                        <select
+                                <TimePicker 
+                                                key={selectedEmail}
+                                            id={`email_time_${selectedEmail}`} 
+                                            name={`email_time_${selectedEmail}`} 
+                                            label="Tiempo de aparición" 
+                                            defaultValue={0}
                                             value={(formData as any)[`email_time_${selectedEmail}`] ?? 0}
-                                            onChange={(e) => onFieldChange(`email_time_${selectedEmail}`, Number(e.target.value))}
-                                            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 pr-10 text-sm font-semibold text-gray-800 dark:text-gray-100 shadow-sm outline-none transition focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 cursor-pointer appearance-none"
-                                        >
-                                            <option value={-1}>No enviar</option>
-                                            <option value={0}>Instantáneo</option>
-                                            <option value={1}>1 minuto</option>
-                                            <option value={2}>2 minutos</option>
-                                            <option value={3}>3 minutos</option>
-                                            <option value={4}>4 minutos</option>
-                                            <option value={5}>5 minutos</option>
-                                            <option value={10}>10 minutos</option>
-                                            <option value={15}>15 minutos</option>
-                                            <option value={20}>20 minutos</option>
-                                            <option value={30}>30 minutos</option>
-                                            <option value={60}>1 hora</option>
-                                        </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400 dark:text-gray-400">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
+                                            onChange={(minutes) => onFieldChange(`email_time_${selectedEmail}`, minutes)}
+                                />
                             </div>
                         </div>
                     </div>

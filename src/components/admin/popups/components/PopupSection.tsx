@@ -107,7 +107,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
             {/* Sección Móvil */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-700">
-                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-600 dark:text-indigo-400">
+                    <div className="p-2 bg-teal-100 dark:bg-teal-900/40 rounded-lg text-teal-600 dark:text-teal-400">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
@@ -118,11 +118,11 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                    {/* Imagen 3 - Móvil */}
+                    {/* Imagen Móvil Principal */}
                     <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
                         <ImageUploadField
                             label="Imagen Móvil Principal"
-                            description="Resolución: 448x320px. Máx 2MB (webp)."
+                            description="Resolución: 448x420px. Máx 2MB (webp)."
                             fieldName="imagen_popup_mobile"
                             preview={previews.imagen_popup_mobile}
                             value={formData.imagen_popup_mobile}
@@ -146,11 +146,11 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                         </div>
                     </div>
 
-                    {/* Imagen 4 - Móvil 2 */}
+                    {/* Imagen Móvil Secundaria */}
                     <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
                         <ImageUploadField
                             label="Imagen Móvil Secundaria"
-                            description="Resolución: 448x320px. Máx 2MB (webp)."
+                            description="Resolución: 448x220px. Máx 2MB (webp)."
                             fieldName="imagen_popup_mobile2"
                             preview={previews.imagen_popup_mobile2}
                             value={formData.imagen_popup_mobile2}

@@ -162,6 +162,7 @@ export function initPopupManager() {
             popup_image2_url: currentInicioImages.popup_image2_url,
             popup_mobile_image_url: currentInicioImages.popup_mobile_image_url,
             popup_mobile_image2_url: currentInicioImages.popup_mobile_image2_url,
+            popup_mobile_image_count: 2,
             button_bg_color: btnBgColorInput ? btnBgColorInput.value : (sharedState.savedHomeSettings.button_bg_color || "#14b8a6"),
             button_text_color: btnTextColorInput ? btnTextColorInput.value : (sharedState.savedHomeSettings.button_text_color || "#ffffff"),
             button_text: btnTextInput ? btnTextInput.value : (sharedState.savedHomeSettings.button_text || sharedState.savedHomeSettings.btnText || "CONOCER MAS"),
@@ -348,6 +349,39 @@ export function initPopupManager() {
         if (previewStage) previewStage.classList.add("is-mobile-view");
         updatePreview({}, "mobile");
     };
+
+    // Sync automático del modo preview
+    window.addEventListener("update-popup-preview", (e: any) => {
+        const mode = e.detail?.mode;
+
+        if (!mode || mode === currentMode) return;
+
+        currentMode = mode;
+
+        if (mode === "mobile") {
+            btnMobile.classList.remove(...inactiveModeClasses);
+            btnMobile.classList.add(...activeModeClasses);
+
+            btnDesktop.classList.remove(...activeModeClasses);
+            btnDesktop.classList.add(...inactiveModeClasses);
+
+            if (previewStage) {
+                previewStage.classList.add("is-mobile-view");
+            }
+        }
+
+        if (mode === "desktop") {
+            btnDesktop.classList.remove(...inactiveModeClasses);
+            btnDesktop.classList.add(...activeModeClasses);
+
+            btnMobile.classList.remove(...activeModeClasses);
+            btnMobile.classList.add(...inactiveModeClasses);
+
+            if (previewStage) {
+                previewStage.classList.remove("is-mobile-view");
+            }
+        }
+    });
 
     window.addEventListener("resize", () => {
         const isNowMobile = window.innerWidth < 1024;
