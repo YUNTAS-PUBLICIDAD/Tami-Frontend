@@ -134,14 +134,24 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
               type="number"
               min="0"
               max="23"
-              value={hours}
-              onChange={(e) => setHours(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
+              // Si el estado es NaN, mostramos string vacío para que el usuario no vea nada
+              value={isNaN(hours) ? "" : hours} 
+              onChange={(e) => {
+                const val = e.target.value;
+                // Si borra, guardamos NaN (sigue siendo un number válido para TypeScript)
+                setHours(val === "" ? NaN : (Math.min(23, Math.max(0, parseInt(val) || 0))));
+              }}
+              onBlur={() => {
+                // Al salir, restauramos el 0 obligatorio
+                if (isNaN(hours)) setHours(0 );
+              }}
               className="w-16 p-2 text-center text-2xl font-black bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+
             />
           </div>
-          
+
           <span className="text-2xl font-black text-gray-400 dark:text-gray-600 pt-4 select-none">:</span>
-          
+
           {/* Minutos */}
           <div className="flex flex-col items-center gap-1">
             <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Minutos</span>
@@ -149,11 +159,20 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
               type="number"
               min="0"
               max="59"
-              value={minutes}
-              onChange={(e) => setMinutes(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+              value={isNaN(minutes) ? "" : minutes} 
+              onChange={(e) => {
+                const val = e.target.value;
+                // Si borra, guardamos NaN (sigue siendo un number válido para TypeScript)
+                setMinutes(val === "" ? NaN : (Math.min(23, Math.max(0, parseInt(val) || 0)) ));
+              }}
+              onBlur={() => {
+                // Al salir, restauramos el 0 obligatorio
+                if (isNaN(minutes)) setMinutes(0 );
+              }}
               className="w-16 p-2 text-center text-2xl font-black bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
+
         </div>
       )}
     </div>
