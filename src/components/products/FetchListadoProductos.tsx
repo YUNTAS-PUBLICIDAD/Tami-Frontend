@@ -40,6 +40,7 @@ const setCachedData = (data: Producto[]) => {
 const ApiUrl = config.apiUrl;
 
 export default function ListadoDeProductos() {
+  const [openCategorias, setOpenCategorias] = useState(false);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -285,26 +286,27 @@ export default function ListadoDeProductos() {
             style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
           />
           <div className="flex gap-2 mb-2">
-            <button
-              type="button"
-              className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
-              onClick={() => setMostrarCategorias((prev) => !prev)}
-            >
-              CATEGORIAS
-            </button>
-            <button
-              type="button"
-              className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
-              onClick={() => {
-                setFiltroNombre("");
-                setFiltroCategoria(null);
-                setOrden("");
-              }}
-            >
-              LIMPIAR FILTRO
-            </button>
-          </div>
-          {mostrarCategorias && (
+  <button
+    type="button"
+    onClick={() => setOpenCategorias(prev => !prev)}
+    className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
+  >
+    CATEGORÍAS {openCategorias ? "✕" : "☰"}
+  </button>
+
+  <button
+    type="button"
+    className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
+    onClick={() => {
+      setFiltroNombre("");
+      setFiltroCategoria(null);
+      setOrden("");
+    }}
+  >
+    LIMPIAR
+  </button>
+</div>
+          {openCategorias && (
             <div className="flex flex-col gap-3 mt-2">
               <button
                 type="button"

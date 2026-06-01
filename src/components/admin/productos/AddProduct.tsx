@@ -7,15 +7,10 @@ import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
-import imagenEstilo1 from "@images/popup/estilo1.webp";
-import imagenEstilo2 from "@images/popup/estilo2.webp";
-import imagenEstilo3 from "@images/popup/estilo3.webp";
-import EmailEditor from "../popups/EmailEditor";
 
 type Props = {
   onProductAdded?: () => void;
 };
-const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
 const AddProduct = ({ onProductAdded }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +20,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
     return `${config.apiUrl}${url}`;
+  };
+
+  const getImagePreview = (image: File | string | null): string => {
+    if (!image) return "";
+    if (typeof image === "string") {
+      return getFullImageUrl(image);
+    }
+    // Si es un File, crear una URL blob
+    return URL.createObjectURL(image);
   };
   const [formPage, setFormPage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
@@ -377,13 +381,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
     if (
       !formData.etiqueta.meta_descripcion.trim() ||
-      formData.etiqueta.meta_descripcion.length < 50 ||
+      formData.etiqueta.meta_descripcion.length < 40 ||
       formData.etiqueta.meta_descripcion.length > 200
     ) {
       Swal.fire({
         icon: "warning",
         title: "Meta descripción inválida",
-        text: "⚠️ La meta descripción debe tener entre 50 y 200 caracteres.",
+        text: "⚠️ La meta descripción debe tener entre 40 y 200 caracteres.",
       });
       setIsLoading(false);
       return;
@@ -446,12 +450,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
       const response = await apiClient.post(
         config.endpoints.productos.create,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formDataToSend
       );
 
       const data = response.data;
@@ -1005,6 +1004,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             onChange={(e) => handleImagesChange(e, index)}
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                           />
+                          {img.url_imagen && (
+                            <div className="mt-3 rounded-lg overflow-hidden">
+                              <img
+                                src={getImagePreview(img.url_imagen)}
+                                alt={`Previa ${index + 1}`}
+                                className="w-full h-auto max-h-[200px] object-cover"
+                              />
+                            </div>
+                          )}
                         </div>
                         <label className="mt-2 block text-sm">Texto SEO Imagen {index + 1}:</label>
                         <input
