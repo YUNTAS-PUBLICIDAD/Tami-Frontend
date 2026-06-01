@@ -147,7 +147,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-6 max-w-[185px] translate-y-[21px]" : "mt-40 mb-4 max-w-[280px]") : "mt-auto mb-6 sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px] translate-y-[21px] sm:translate-y-0"} w-full mx-auto`}
+                className={`flex flex-col gap-0.5 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[185px]" : "mt-32 mb-[40px] max-w-[280px]") : "mt-auto mb-[18px] sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px] sm:translate-y-0"} w-full mx-auto`}
               >
                 <div className={`relative ${isMobilePreview ? "mb-1" : "mb-1 sm:mb-3"}`}>
                   {errors.general_top && (
@@ -164,7 +164,7 @@ const PopupForm = ({
                     placeholder="Tu nombre"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-10 pr-4 text-[10px]" : "h-[28px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[36px] pl-10 pr-4 text-[10px]" : "h-[33px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
                   />
                 </div>
 
@@ -182,7 +182,7 @@ const PopupForm = ({
                       const val = e.target.value.replace(/\D/g, "");
                       setTelefono(val);
                     }}
-                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-10 pr-4 text-[10px]" : "h-[28px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-10 pr-4 text-[10px]" : "h-[33px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
                   />
                 </div>
 
@@ -196,7 +196,7 @@ const PopupForm = ({
                     placeholder="Tu correo"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
-                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-10 pr-4 text-[10px]" : "h-[28px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
+                    className={`w-full rounded-full bg-white border border-[#d5d5d5] outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder:text-gray-400 shadow-sm text-gray-600 ${isPreview && previewMode === "mobile" ? "h-[28px] pl-10 pr-4 text-[10px]" : "h-[33px] sm:h-11 pl-10 sm:pl-12 pr-4 sm:px-6 text-[10px] sm:text-sm"}`}
                   />
                   {errors.general && !errors.general_top && (
                     <p className={`absolute left-0 right-0 top-10 text-[10px] text-center mb-0 mt-0.5 leading-none ${errors.general.includes("success") || errors.general.includes("éxito") ? "text-green-100" : "text-red-500"}`}>
@@ -205,7 +205,7 @@ const PopupForm = ({
                   )}
                 </div>
 
-                <div className="mt-1 flex justify-center w-full">
+                <div className="mt-1 flex justify-center w-full h-[33px]">
                   <button
                     type="submit"
                     disabled={isSubmitting}
