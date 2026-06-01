@@ -344,7 +344,7 @@ export default function ListadoDeProductos() {
 
           {/* Dropdown de Ordenamiento */}
           <div className="relative group">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col min-[400px]:flex-row items-center gap-2">
               <label htmlFor="ordenar" className="text-gray-600 font-medium text-sm whitespace-nowrap">
                 Ordenar por:
               </label>
@@ -432,7 +432,7 @@ const Seccion = React.memo(function Seccion({
 
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6 ">
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center ">
       {productCards}
     </div>
   );
@@ -500,18 +500,18 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
 
       <div
         ref={targetRef}
-        className="group flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-[340px] bg-white rounded-xl shadow-md border relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
+        className="group flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-auto bg-white rounded-xl shadow-md border relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
         style={{ borderColor: categoriaColor, borderRadius: CARD_RADIUS }}
       >
 
         {/* MOBILE: layout horizontal exacto */}
         <div
-          className="flex w-full md:hidden h-[150px] sm:h-[170px]"
+          className="flex-col w-full md:hidden h-auto"
         >
-          {/* Imagen a la izquierda */}
+          {/* Imagen arriba*/}
           <div
-            className="relative flex items-center justify-center w-[45%] sm:w-[40%] h-full bg-[#f8f8f8] overflow-hidden shrink-0"
-            style={{ borderRadius: `${CARD_RADIUS}px 0 0 ${CARD_RADIUS}px` }}
+            className="relative flex items-center justify-center w-full h-[180px] bg-[#f8f8f8] overflow-hidden shrink-0"
+            style={{ borderRadius: `${CARD_RADIUS}px ${CARD_RADIUS}px 0 0` }}
           >
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gray-300 animate-pulse" />
@@ -522,36 +522,29 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 alt={producto.nombre}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
-                className={`absolute inset-0 w-full h-full object-contain p-3 sm:p-4 transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               />
             )}
           </div>
 
-          {/* Bloque azul a la derecha */}
+          {/* Bloque azul abajo*/}
           <div
-            className="flex flex-col justify-between w-[55%] sm:w-[60%] h-full relative overflow-hidden"
+            className="flex flex-col items-center justify-between w-full h-auto py-2 px-1 relative overflow-hidden"
             style={{
               background: categoriaColor,
-              borderRadius: `0 ${CARD_RADIUS}px ${CARD_RADIUS}px 0`,
+              borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`,
             }}
           >
-            <div className="flex-1 flex items-center justify-center px-3 pt-3 pb-12 overflow-hidden">
-              <h3 className="text-sm sm:text-base font-bold uppercase text-white text-center break-words leading-tight line-clamp-4">
+            {/* Contenedor del Texto con pr-24 para no chocar con el botón */}
+            <div className="flex-1 flex items-center justify-center px-2 pt-2 pb-2 pr-24 overflow-hidden">
+              <h3 className="text-sm sm:text-base w-full font-bold uppercase text-white text-center break-words leading-tight line-clamp-4">
                 {producto.nombre}
               </h3>
             </div>
+
+            {/* Botón Comprar para Mobile */}
             <button
-              className="bg-white font-bold text-lg text-[#0374A2] px-5 py-2 shadow border-none"
-              style={{
-                minWidth: "90px",
-                minHeight: "40px",
-                borderRadius: "16px 0 16px 0",
-                position: "absolute",
-                right: 0,
-                bottom: 0,
-                margin: 0,
-                padding: 0,
-              }}
+              className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform"
             >
               Comprar
             </button>
@@ -561,10 +554,10 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
         {/* DESKTOP: layout vertical */}
         <div className="hidden w-full h-full md:flex md:flex-col">
           <div
-            className="w-full h-[250px] flex items-center justify-center pt-2 pb-2"
+            className="relative w-full h-[280px] flex items-center justify-center overflow-hidden"
           >
             {!imageLoaded && (
-              <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center rounded-xl" />
+              <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center" />
             )}
             {hasIntersected && (
               <img
@@ -572,29 +565,27 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 alt={producto.nombre}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
-                className={`object-contain w-[95%] h-[95%] transition-all duration-500 ease-out group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-                style={{ background: "#f8f8f8", borderRadius: '12px' }}
+                className={`block object-cover w-full h-full transition-all bg-[#f8f8f8] duration-500 ease-out group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               />
             )}
           </div>
-          <div className="w-full absolute left-0 bottom-0 overflow-hidden" style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`, height: '80px', minHeight: '80px', position: 'absolute', left: 0, bottom: 0, width: '100%', display: 'flex', alignItems: 'center', margin: 0, padding: 0 }}>
-            <div className="w-full h-full flex items-center pl-4 pr-[130px] py-1 overflow-hidden" style={{ height: '100%' }}>
-              <h3 className="text-[13px] xl:text-[15px] font-bold uppercase text-white leading-tight break-words line-clamp-3">
-                  {producto.nombre}
+          <div
+            className="relative w-full h-12 min-h-12 flex items-center m-0 p-0 overflow-hidden"
+            style={{
+              background: categoriaColor,
+              borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`
+            }}
+          >
+            {/* Contenedor del título con pr-20 de seguridad */}
+            <div className="w-full h-full flex items-center pl-4 pr-20 py-1 overflow-hidden">
+              <h3 className="text-[13px] xl:text-[14px] font-medium uppercase text-white leading-tight break-words line-clamp-2">
+                {producto.nombre}
               </h3>
             </div>
+
+            {/* Botón Comprar para Desktop */}
             <button
-              className="bg-white font-bold text-lg text-[#0374A2] px-5 py-2 shadow-sm border-none transition-all duration-300 group-hover:bg-gray-50 group-hover:shadow-md group-hover:text-[#00B6FF]"
-              style={{
-                minWidth: '120px',
-                minHeight: '48px',
-                borderRadius: '16px 0 16px 0',
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                margin: 0,
-                padding: 0,
-              }}
+              className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform"
             >
               Comprar
             </button>
