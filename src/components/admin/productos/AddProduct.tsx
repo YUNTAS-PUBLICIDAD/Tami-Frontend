@@ -422,7 +422,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("detalle_titulo_tamano", formData.etiqueta.titulo_detalle_producto_size || "24");
       formDataToSend.append("detalle_titulo_color", formData.etiqueta.titulo_detalle_producto_color || "#015f86");
       formDataToSend.append("detalle_titulo_estilo", formData.etiqueta.titulo_detalle_producto_style || "negrita");
-      formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo);
+      formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo || "estilo1");
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
       formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
       formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "¡COTIZA AHORA!");
@@ -447,6 +447,16 @@ const AddProduct = ({ onProductAdded }: Props) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
 
+      // Mostrar en consola los datos que se enviarán
+      console.log("--- SOLICITUD A ENVIAR (POST /productos) ---");
+      for (const [key, value] of formDataToSend.entries()) {
+        if (value instanceof File) {
+          console.log(`[File] ${key}:`, value.name, `(${value.size} bytes)`);
+        } else {
+          console.log(`${key}:`, value);
+        }
+      }
+      console.log("---------------------------------------------");
 
       const response = await apiClient.post(
         config.endpoints.productos.create,
@@ -476,6 +486,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
     } catch (error: any) {
       console.error("Error al enviar los datos:", error);
+      if (error.response) {
+        console.error("Respuesta de error completa del servidor (error.response):", error.response);
+        console.error("Detalles del cuerpo del error (error.response.data):", error.response.data);
+      } else if (error.request) {
+        console.error("No se recibió respuesta del servidor (error.request):", error.request);
+      } else {
+        console.error("Error al configurar la solicitud:", error.message);
+      }
 
       let errorMessage = "Ocurrió un error al procesar la solicitud.";
 
