@@ -93,8 +93,11 @@ const TabProducto: React.FC = () => {
     }, [hookClearImage]);
 
     const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-        const file = e.target.files?.[0];
+  (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+
+    const file = e.target.files?.[0];
+
+    console.log("FILE", file);
 
         if (!file) return;
 

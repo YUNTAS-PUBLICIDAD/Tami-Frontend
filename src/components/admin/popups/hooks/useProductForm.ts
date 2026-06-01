@@ -13,7 +13,7 @@
  * const { formData, handleFieldChange, handleFileChange } = useProductForm();
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { ProductFormData } from "../types/productTab.types";
 
 /**
@@ -42,6 +42,23 @@ export const useProductForm = (): UseProductFormReturn => {
   const [formData, setFormData] = useState<ProductFormData | null>(null);
   const [previews, setPreviews] = useState<Record<string, string | File | null>>({});
 
+  useEffect(() => {
+  const handler = (e: any) => {
+    const { field, value } = e.detail;
+
+    setFormData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
+  };
+
+  window.addEventListener("product-field-change", handler);
+
+  return () => window.removeEventListener("product-field-change", handler);
+}, []);
   /**
    * Update a form field with optional preview sync
    */
