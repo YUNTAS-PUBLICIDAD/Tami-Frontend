@@ -7,6 +7,7 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
 import SocialSidebar from "../components/ui/SocialSidebar.astro";
 import Toast from "../components/ui/Toast.astro";
 import ChatbotWidget from "../components/ui/chatbot/ChatbotWidget.tsx";
+import SocialWidget from "src/components/ui/SocialWidget.astro";
 
 interface Props {
   title: string;
@@ -147,7 +148,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
       });
       observer.observe(document.body, { childList: true, subtree: true });
     </script>
-    <SocialSidebar />
+    <SocialWidget />
     <ChatbotWidget client:idle />
     <Toast />
   </body>

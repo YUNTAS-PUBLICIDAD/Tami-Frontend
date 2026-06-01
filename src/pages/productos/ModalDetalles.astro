@@ -17,7 +17,7 @@ const { link = "" } = Astro.props as ModalProps;
   class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4 hidden"
 >
   <div
-    class="relative flex flex-col sm:flex-row w-[85%] max-w-md sm:max-w-4xl h-[560px] sm:h-auto max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
+    class="relative flex flex-col sm:flex-row w-[85%] max-w-md sm:max-w-4xl h-auto pb-6 sm:pb-0 sm:h-auto max-h-[90vh] sm:max-h-none rounded-2xl overflow-hidden shadow-2xl animate-slideIn"
   >
     <button
       id="close-modal-cotizacion"
@@ -57,7 +57,7 @@ const { link = "" } = Astro.props as ModalProps;
     <!-- Formulario dinámico -->
     <div
       id="modal-form-container"
-      class="w-full h-1/2 sm:w-1/2 py-4 px-6 sm:p-12 text-white flex flex-col justify-center sm:justify-center relative z-30 overflow-y-auto sm:overflow-visible"
+      class="w-full h-auto sm:h-auto py-2 px-4 sm:p-12 text-white flex flex-col justify-center relative z-30 overflow-y-auto sm:overflow-visible"
       data-product-link={link}
       data-seccion={Astro.props.seccion}
       data-whatsapp={numeroWhatsApp}
@@ -69,7 +69,7 @@ const { link = "" } = Astro.props as ModalProps;
         class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
       />
       <div
-        class="relative z-20 p-8 sm:py-10 sm:mx-8 min-h-[480px] flex flex-col justify-center"
+        class="relative z-20 pt-4 px-4 pb-8 sm:py-10 sm:mx-8 min-h-0 sm:min-h-[480px] flex flex-col justify-center"
       >
         <!-- TÍTULO DINÁMICO (ESTILO 1) -->
         <h2
@@ -835,7 +835,7 @@ const { link = "" } = Astro.props as ModalProps;
     if (btn) {
       // Resetear clases de botón completamente para evitar conflictos de Tailwind
       btn.className =
-        "mt-4 py-2 rounded-lg text-white transition-all duration-300 shadow-lg font-bold";
+        "mt-4 py-2 rounded-lg text-white transition-all duration-300 shadow-lg font-bold mb-6 sm:mb-0";
 
       // Aplicar las clases específicas de la sección
       const extraClasses = sectionConfig.btn.split(" ");
@@ -913,6 +913,9 @@ const { link = "" } = Astro.props as ModalProps;
     configurarBotonesCotizacion();
     programarPopupAutomatico();
   });
+
+  
+
 </script>
 
 <style>
