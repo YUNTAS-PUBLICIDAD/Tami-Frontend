@@ -402,7 +402,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const before = parrafoActual.substring(0, start);
     const after = parrafoActual.substring(end);
 
-    const productUrl = `/productos/detalle?link=${productoSeleccionado.link}`;
+    //const productUrl = `/productos/detalle?link=${productoSeleccionado.link}`;
+    const productUrl = `/productos/${productoSeleccionado.link}`;
     const linkedProductText = `<a href="${productUrl}" style="font-weight: bold;" title="${productoSeleccionado.link}">${selectedText}</a>`;
     const newValue = before + linkedProductText + after;
 
@@ -1371,8 +1372,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         </div>
       )}
 
-      {/* Modal para insertar enlace manual */}
-      {isModalOpen && (
+{/* Modal para insertar enlace manual */}
+{isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
           <div className="bg-white p-6 rounded-xl w-96">
             <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
@@ -1391,8 +1392,36 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           </div>
         </div>
       )}
-        </>
-      );
+
+      {/*  MODAL  Para insertar enlace de producto */}
+      {isProductLinkModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96 text-gray-900">
+            <h3 className="text-xl font-bold mb-3 text-purple-600">Vincular Producto</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              ¿Deseas convertir el texto "<strong>{selectedText}</strong>" en un enlace directo al producto seleccionado en la Información General?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button 
+                type="button"
+                onClick={() => setIsProductLinkModalOpen(false)} 
+                className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded transition-colors"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="button"
+                onClick={handleAddProduct} 
+                className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
+              >
+                Confirmar Enlace
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
-      export default AddBlogModal;
+export default AddBlogModal;
