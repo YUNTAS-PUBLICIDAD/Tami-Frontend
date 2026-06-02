@@ -52,6 +52,14 @@ export default function ListadoDeProductos() {
   const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
   const [mostrarCategorias, setMostrarCategorias] = useState(true);
   const [orden, setOrden] = useState<"asc" | "desc" | "">("");
+useEffect(() => {
+  console.log("productos:", productos.length);
+
+  console.log(
+    "secciones únicas:",
+    [...new Set(productos.map((p) => String(p.seccion)))]
+  );
+}, [productos]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -109,7 +117,7 @@ export default function ListadoDeProductos() {
           : [],
         stock: producto.stock,
         precio: parseFloat(producto.precio),
-        seccion: producto.seccion,
+        seccion: normalize(producto.seccion),
         createdAt: producto.created_at,
       }));
 
@@ -132,40 +140,64 @@ export default function ListadoDeProductos() {
   }, [obtenerDatos]);
 
   const procesarSecciones = useCallback(
-    (productos: Producto[]) => {
-      const secciones = ["Negocio", "Decoración", "Maquinaria"];
-      return secciones.map((nombreSeccion) => ({
-        productosDeLaSeccion: productos.filter((p) => p.seccion === nombreSeccion),
-      }));
-    },
-    []
-  );
+  (productos: Producto[]) => {
+    const secciones = ["Negocio", "Decoracion", "Maquinaria"];
+
+    return secciones.map((nombreSeccion) => ({
+      productosDeLaSeccion: productos.filter(
+        (p) => normalize(p.seccion) === normalize(nombreSeccion)
+      ),
+    }));
+  },
+  []
+);
 
   /* -------------------- FILTROS Y ORDENAMIENTO -------------------- */
+const normalize = (text: string) =>
+  text
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim();
   const productosFiltrados = useMemo(() => {
-    let filtrados = [...productos];
+  let filtrados = [...productos];
 
-    // Filtro por Nombre
-    if (filtroNombre.trim()) {
-      filtrados = filtrados.filter((p) =>
-        p.nombre.toLowerCase().includes(filtroNombre.toLowerCase())
-      );
-    }
+  console.log("filtroCategoria:", filtroCategoria);
 
-    // Filtro por Categoría
-    if (filtroCategoria) {
-      filtrados = filtrados.filter((p) => p.seccion === filtroCategoria);
-    }
+  // Filtro por nombre
+  if (filtroNombre.trim()) {
+    filtrados = filtrados.filter((p) =>
+      p.nombre.toLowerCase().includes(filtroNombre.toLowerCase())
+    );
+  }
 
-    // Ordenamiento
-    if (orden === "asc") {
-      filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
-    } else if (orden === "desc") {
-      filtrados.sort((a, b) => b.nombre.localeCompare(a.nombre));
-    }
+  // Filtro por categoría
+  if (filtroCategoria) {
+  filtrados = filtrados.filter(
+    (p) => normalize(p.seccion) === normalize(filtroCategoria)
+  );
+  console.log(
+    "productos filtrados:",
+    filtrados.map((p) => ({
+      nombre: p.nombre,
+      seccion: p.seccion
+    }))
+  );
+}
 
-    return filtrados;
-  }, [productos, filtroNombre, filtroCategoria, orden]);
+  // Ordenamiento
+  if (orden === "asc") {
+    filtrados = [...filtrados].sort((a, b) =>
+      a.nombre.localeCompare(b.nombre)
+    );
+  } else if (orden === "desc") {
+    filtrados = [...filtrados].sort((a, b) =>
+      b.nombre.localeCompare(a.nombre)
+    );
+  }
+
+  return filtrados;
+}, [productos, filtroNombre, filtroCategoria, orden]);
 
   const seccionesArray = useMemo(
     () => procesarSecciones(productosFiltrados),
@@ -243,11 +275,11 @@ export default function ListadoDeProductos() {
               </button>
               <button
                 type="button"
-                onClick={() => setFiltroCategoria(filtroCategoria === 'Decoración' ? null : 'Decoración')}
-                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'Decoración' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
+                onClick={() => setFiltroCategoria(filtroCategoria === 'decoracion' ? null : 'decoracion')}
+                className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'decoracion' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
                 style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 4px 12px rgba(93,57,251,0.2)' }}
               >
-                DECORACIÓN
+                decoracion
               </button>
             </div>
           </div>
@@ -310,11 +342,11 @@ export default function ListadoDeProductos() {
             <div className="flex flex-col gap-3 mt-2">
               <button
                 type="button"
-                onClick={() => setFiltroCategoria(filtroCategoria === 'Decoración' ? null : 'Decoración')}
-                className={`py-3 rounded-xl text-base font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Decoración' ? 'ring-2 ring-white' : ''}`}
+                onClick={() => setFiltroCategoria(filtroCategoria === 'decoracion' ? null : 'decoracion')}
+                className={`py-3 rounded-xl text-base font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'decoracion' ? 'ring-2 ring-white' : ''}`}
                 style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
               >
-                DECORACIÓN
+                decoracion
               </button>
               <button
                 type="button"
@@ -466,7 +498,7 @@ function useIntersectionObserver(options = {}) {
 const getCategoriaColor = (categoria: string) => {
   switch (categoria) {
     case 'Negocio': return '#00B6FF';
-    case 'Decoración': return '#5D39FB';
+    case 'decoracion': return '#5D39FB';
     case 'Maquinaria': return '#04B088';
     default: return '#0374A2';
   }
