@@ -447,17 +447,6 @@ const AddProduct = ({ onProductAdded }: Props) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
 
-      // Mostrar en consola los datos que se enviarán
-      console.log("--- SOLICITUD A ENVIAR (POST /productos) ---");
-      for (const [key, value] of formDataToSend.entries()) {
-        if (value instanceof File) {
-          console.log(`[File] ${key}:`, value.name, `(${value.size} bytes)`);
-        } else {
-          console.log(`${key}:`, value);
-        }
-      }
-      console.log("---------------------------------------------");
-
       const response = await apiClient.post(
         config.endpoints.productos.create,
         formDataToSend
@@ -727,8 +716,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <div className="rounded-2xl border border-slate-700/40 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-4 shadow-xl">
                       <div className="flex flex-col gap-1 mb-4">
                         <div>
-                          <label className="block text-sm font-semibold text-gray-800">Estilo del título "Detalle Producto"</label>
-                          <p className="text-xs text-gray-500">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
+                          <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100">Estilo del título "Detalle Producto"</label>
+                          <p className="text-xs text-white dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
                         </div>
                       </div>
 
@@ -746,6 +735,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             fontWeight: formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita" ? 800 : 600,
                             fontStyle: formData.etiqueta.titulo_detalle_producto_style === "cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" ? "italic" : "normal",
                             textDecoration: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "underline" : "none",
+                            textDecorationColor: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "white" : "transparent",
+                            textDecorationThickness: "2px",
+                            textUnderlineOffset: "4px"
                           }}
                         >
                           {(() => {
@@ -768,19 +760,28 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       </div>
 
                       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.3fr] gap-4 items-start">
-                        <div className="opacity-50 cursor-not-allowed">
-                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Tamaño (px) <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
-                          <input
-                            type="number"
-                            min="12"
-                            max="48"
-                            value={formData.etiqueta.titulo_detalle_producto_size}
-                            disabled
-                            className="w-full cursor-not-allowed"
-                          />
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Tamaño</label>
+                          <select
+                            value={formData.etiqueta.titulo_detalle_producto_size || "80"}
+                            onChange={(e) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                etiqueta: {
+                                  ...prev.etiqueta,
+                                  titulo_detalle_producto_size: e.target.value,
+                                },
+                              }));
+                            }}
+                            className="cursor-pointer w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          >
+                            <option value="20">Pequeño</option>
+                            <option value="80">Mediano</option>
+                            <option value="130">Grande</option>
+                          </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Color</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Color</label>
                           <input
                             type="color"
                             value={formData.etiqueta.titulo_detalle_producto_color}
@@ -793,11 +794,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                 },
                               }));
                             }}
-                            className="h-12 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-sm"
+                            className="cursor-pointer h-12 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-sm"
                           />
                         </div>
-                        <div className="opacity-50 cursor-not-allowed">
-                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Estilo <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Estilo</label>
                           <div className="grid grid-cols-2 gap-2">
                             {[
                               { value: "normal", label: "Normal" },
@@ -811,11 +812,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                 <button
                                   key={option.value}
                                   type="button"
-                                  disabled
-                                  className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-not-allowed ${
+                                  onClick={() => {
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      etiqueta: {
+                                        ...prev.etiqueta,
+                                        titulo_detalle_producto_style: option.value,
+                                      },
+                                    }));
+                                  }}
+                                  className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-pointer ${
                                     isActive
-                                      ? "border-teal-600 bg-teal-600 text-white shadow-md"
-                                      : "border-gray-200 bg-white text-gray-700"
+                                      ? "border-teal-500 bg-teal-600 text-white shadow-md"
+                                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 text-gray-700 dark:text-gray-200 hover:border-teal-400"
                                   }`}
                                 >
                                   {option.label}
