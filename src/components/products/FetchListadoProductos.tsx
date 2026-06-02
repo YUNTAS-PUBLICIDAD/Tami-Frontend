@@ -133,7 +133,7 @@ export default function ListadoDeProductos() {
 
   const procesarSecciones = useCallback(
     (productos: Producto[]) => {
-      const secciones = ["Negocio", "Decoración", "Maquinaria"];
+      const secciones = ["Negocio", "Decoracion", "Maquinaria"];
       return secciones.map((nombreSeccion) => ({
         productosDeLaSeccion: productos.filter((p) => p.seccion === nombreSeccion),
       }));
