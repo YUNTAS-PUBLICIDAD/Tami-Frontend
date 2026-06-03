@@ -129,23 +129,9 @@ const TabProducto: React.FC = () => {
             return;
         }
 
-          // AUTO SWITCH PREVIEW MODE
-        if (field.includes("mobile")) {
-            window.dispatchEvent(
-                new CustomEvent("update-popup-preview", {
-                    detail: { mode: "mobile" },
-                })
-            );
-        } else {
-            window.dispatchEvent(
-                new CustomEvent("update-popup-preview", {
-                    detail: { mode: "desktop" },
-                })
-            );
-        }
-
         hookFileChange(e, field, (newData, overrides) => {
             const url = overrides[field] as string;
+            console.log("🔵 [onSync] field:", field, "url?", !!url, "overrides keys:", Object.keys(overrides));
 
             if (field.startsWith("imagen_popup")) {
                 ProductSyncService.syncPopupPreview(newData, { ...previews, ...overrides }, overrides);
