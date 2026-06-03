@@ -80,6 +80,7 @@ const ChatbotWidget: React.FC = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [icono, setIcono] = useState(robotIcon);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const isFirstBubble = useRef(true);
  
 
@@ -293,6 +294,9 @@ const ChatbotWidget: React.FC = () => {
       }]);
     } finally {
       setIsLoading(false);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 60);
     }
   };
 
@@ -435,6 +439,7 @@ const ChatbotWidget: React.FC = () => {
             <form onSubmit={sendMessage} className="flex gap-2">
               <input
                 type="text"
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={
