@@ -61,9 +61,19 @@ export class ProductSyncService {
     if (previewSettings.popup_mobile_image_url instanceof File) previewSettings.popup_mobile_image_url = null;
     if (previewSettings.popup_mobile_image2_url instanceof File) previewSettings.popup_mobile_image2_url = null;
 
+    // Detect if mobile images exist to auto-switch preview mode
+    const hasMobileImages = !!previewSettings.popup_mobile_image_url || !!previewSettings.popup_mobile_image2_url;
+    
+    console.log("🔍 [syncPopupPreview] mobileUrl:", previewSettings.popup_mobile_image_url?.substring(0, 50));
+    console.log("🔍 [syncPopupPreview] hasMobileImages:", hasMobileImages);
+    console.log("🔍 [syncPopupPreview] mode:", hasMobileImages ? "mobile" : "desktop");
+
     window.dispatchEvent(
       new CustomEvent("update-popup-preview", {
-        detail: { settings: previewSettings },
+        detail: { 
+          settings: previewSettings,
+          mode: hasMobileImages ? "mobile" : "desktop"
+        },
       })
     );
   }

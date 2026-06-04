@@ -126,6 +126,9 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                     }
                 }));
 
+                // Detectar si hay imágenes móviles para auto-cambiar a modo mobile
+                const hasMobileImages = !!(settings.imageMobile || settings.popup_mobile_image_url || settings.imageMobile2 || settings.popup_mobile_image2_url);
+
                 updatePreview({
                     popup_image_url: settings.image1 || settings.popup_image_url || null,
                     popup_image2_url: settings.image2 || settings.popup_image2_url || null,
@@ -137,7 +140,7 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
                     product_popup_delay_minutes: settings.product_popup_delay_minutes,
                     popup_mobile_image_count: 2,
-                });
+                }, hasMobileImages ? "mobile" : null);
             }
 
             setStatus("Configuración cargada.", "idle");
