@@ -884,13 +884,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   >
                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Especificaciones</h5>
 
-                    <div className="flex items-center gap-2 form-input">
+                    <div className="flex flex-col items-center gap-2 w-full">
                       <input
                         type="text"
                         value={nuevaEspecificacion}
                         onChange={(e) => setNuevaEspecificacion(e.target.value)}
                         placeholder="Nueva especificación..."
-                        className="flex-1 "
+                        className="w-full border border-gray-300 rounded-lg p-2 text-sm"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewSpecification())}
                       />
                       <button
