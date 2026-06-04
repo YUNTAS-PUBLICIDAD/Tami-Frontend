@@ -1,26 +1,64 @@
 ---
 import Layout from "src/layouts/Layout.astro";
-import { config } from "config";
+import { config, getApiUrl } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
-const getApiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
-const blogsUrl = config.endpoints.blogs;
+export async function getStaticPaths() {
+  const apiUrlBlogs = getApiUrl(config.endpoints.blogs.list);
+  try {
+    const res = await fetch(apiUrlBlogs);
+    if (!res.ok) {
+      console.error("Error fetching blogs for static paths:", res.status);
+      return [];
+    }
+    const data = await res.json();
+    const blogs = Array.isArray(data) ? data : data.data || [];
+    return blogs.map((blog: any) => ({
+      params: { link: blog.link },
+    }));
+  } catch (err) {
+    console.error("Failed to fetch blogs in getStaticPaths:", err);
+    return [];
+  }
+}
 
+const { link } = Astro.params;
+
+const getApiUrlBase = config.apiUrl
+  ? String(config.apiUrl).replace(/\/+$/, "")
+  : "";
+const blogsUrl = config.endpoints.blogs;
 const productsUrl = config.endpoints.productos.list;
 ---
 
 <Layout
   title="Blog Details"
   description="Descripcion por defecto"
-  canonicalUrl="https://tamimaquinarias.com/blog"
+  canonicalUrl={`https://tamimaquinarias.com/blog/${link}`}
 >
   <header
     class="relative w-full h-[30vh] sm:h-screen min-h-[200px] flex items-center justify-center overflow-hidden pt-16 sm:pt-20"
   >
+  <style>
+    #blog-img {
+      animation: panHorizontal 10s ease-in-out infinite alternate;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    @keyframes panHorizontal {
+      0% {
+        transform: scale(1.1) translateX(3%);
+      }
+      100% {
+        transform: scale(1.1) translateX(-3%);
+      }
+    }
+  </style>
     <img
       id="blog-img"
-      src={blogHeroImage.src}
+      src="/fallback.webp"
       width={blogHeroImage.width}
       height={blogHeroImage.height}
       alt="Fondo Hero"
@@ -105,7 +143,8 @@ const productsUrl = config.endpoints.productos.list;
     <!-- 🔒 SCRIPTS -->
     <script
       define:vars={{
-        getApiUrl,
+        link,
+        getApiUrl: getApiUrlBase,
         blogsUrl,
         productsUrl,
         showLoaderString,
@@ -144,14 +183,13 @@ const productsUrl = config.endpoints.productos.list;
             typeof window.setDynamicSEO,
             typeof window.insertJsonLdBlog,
           );
-          const params = new URLSearchParams(window.location.search);
-          const idBlog = params.get("id")?.trim();
-          if (!idBlog) {
+          const linkBlog = link?.trim();
+          if (!linkBlog) {
             clearTimeout(safetyTimeout);
             removeLoaderSafe();
             return;
           }
-          const fullUrl = `${getApiUrl}${blogsUrl.list}/${idBlog}`;
+          const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${linkBlog}`;
           if (!fullUrl.startsWith("http"))
             throw new Error(`URL inválida: ${fullUrl}`);
           const response = await fetch(fullUrl);
@@ -163,8 +201,7 @@ const productsUrl = config.endpoints.productos.list;
           const blog = data.data;
 
           function setDynamicSEO(blog) {
-            document.title =
-              blog.etiqueta?.meta_titulo || "Título para blogs por defecto";
+            document.title = blog.etiqueta?.meta_titulo || blog.titulo;
             let metaDescription = document.querySelector(
               'meta[name="description"]',
             );
@@ -187,7 +224,9 @@ const productsUrl = config.endpoints.productos.list;
           function generateBlogJsonLd(blog) {
             const images = [
               getBlogImageUrl(blog.miniatura),
-              ...(blog.imagenes?.map((img) => getBlogImageUrl(img.ruta_imagen)) || []),
+              ...(blog.imagenes?.map((img) =>
+                getBlogImageUrl(img.ruta_imagen),
+              ) || []),
             ];
             const description =
               blog.subtitulo1 || blog.parrafos?.map((p) => p.parrafo).join(" ");
@@ -214,8 +253,8 @@ const productsUrl = config.endpoints.productos.list;
               blogPost: [
                 {
                   "@type": "BlogPosting",
-                  "@id": `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
-                  mainEntityOfPage: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                  "@id": `https://tamimaquinarias.com/blog/${blog.link}`,
+                  mainEntityOfPage: `https://tamimaquinarias.com/blog/${blog.link}`,
                   headline: blog.nombre_producto,
                   name: blog.nombre_producto,
                   description: description,
@@ -233,7 +272,7 @@ const productsUrl = config.endpoints.productos.list;
                     height: "800",
                     width: "1200",
                   },
-                  url: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                  url: `https://tamimaquinarias.com/blog/${blog.link}`,
                   keywords: ["LED", "Marketing Visual"],
                 },
               ],
@@ -257,6 +296,11 @@ const productsUrl = config.endpoints.productos.list;
           const blogTitleDesktopElement =
             document.getElementById("blog-title-desktop");
           const blogImgElement = document.getElementById("blog-img");
+          if (blogImgElement) {
+            blogImgElement.src = blog.hero_image
+              ? getBlogImageUrl(blog.hero_image)
+              : blogImgElement.src; // mantiene fallback
+          }
           const blogDateElement = document.getElementById("blog-date");
           const blogContentSubtitleElement = document.getElementById(
             "blog-content-subtitle",
@@ -337,14 +381,14 @@ const productsUrl = config.endpoints.productos.list;
                 btnVerProducto.style.setProperty(
                   "background-color",
                   blog.etiqueta.popup_button_color,
-                  "important"
+                  "important",
                 );
               }
               if (blog.etiqueta?.popup_text_color) {
                 btnVerProducto.style.setProperty(
                   "color",
                   blog.etiqueta.popup_text_color,
-                  "important"
+                  "important",
                 );
               }
               btnVerProducto.classList.remove("hidden");
@@ -442,5 +486,5 @@ const productsUrl = config.endpoints.productos.list;
         if (event.error?.message?.includes("classList")) removeLoaderSafe();
       });
     </script>
-  </main></Layout
->
+  </main>
+</Layout>

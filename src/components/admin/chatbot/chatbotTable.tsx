@@ -6,14 +6,50 @@ import GenericModal from '../ui/GenericModal'
 import ChatbotScreen from 'src/components/ui/chatbot/ChatbotScreen'
 import ColorPickerField from '../popups/components/ColorPickerField'
 import GradientPickerField from './gradientPickerField';
+import apiClient from 'src/services/apiClient';
+import { config } from 'config';
 const defaultColor="#2A938B";
 
 const ChatbotTable = () => {
   const [iconModalVisible, setIconModalVisible] = useState(false)
   const [colorPickerVisible, setColorPickerVisible]= useState(false)
   const [headerColor, setHeaderColor] = useState(defaultColor)
+  const [salute, setSalute] = useState<string>("");
+  const [loadingSaludo, setLoadingSaludo] = useState<boolean>(true);
+  const [isSavingSaludo, setIsSavingSaludo] = useState<boolean>(false);
 
+  const handleSaveSaludo = async () => {
+    if (!salute.trim()) return;
 
+    try {
+      setIsSavingSaludo(true);
+
+      // Enviamos el mensaje al backend. 
+      // Nota: Usamos .post para enviar datos de forma segura en el cuerpo (body) de la petición.
+      const response = await apiClient.post(config.endpoints.chatbot.newSalute, {
+        salute: salute
+      });
+
+      if (response.data && response.data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "¡Guardado!",
+          text: "El saludo inicial se ha actualizado correctamente.",
+          confirmButtonColor: "#0f766e",
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar el saludo:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un problema al intentar guardar el saludo.",
+        confirmButtonColor: "#0f766e",
+      });
+    } finally {
+      setIsSavingSaludo(false);
+    }
+  };
 
 return (
   <div className="container mx-auto max-w-6xl">
@@ -92,8 +128,38 @@ return (
               </svg>
             </button>
           ))}
-        </div>
+          <div className="pt-6 border-t border-gray-100 dark:border-gray-700 space-y-3">
+              <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">
+                          Mensaje de Saludo Inicial
+              </label>
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+              Escribe el primer mensaje automático que verá el usuario cuando abra la ventana del chat.
+              </p>
+                        
+              <textarea
+                  value={salute}
+                  onChange={(e) => setSalute(e.target.value)}
+                  disabled={loadingSaludo || isSavingSaludo}
+                  rows={4}
+                  placeholder={loadingSaludo ? "Cargando saludo actual..." : "Ej: ¡Hola! ¿En qué te puedo ayudar hoy?"}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all outline-none text-sm resize-none disabled:opacity-60"
+              />
 
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={handleSaveSaludo}
+                            disabled={isSavingSaludo || loadingSaludo || !salute.trim()}
+                            className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                          >
+                            {isSavingSaludo ? "Guardando..." : "Guardar Saludo"}
+                          </button>
+                        </div>
+          </div>
+
+
+        </div>
+        
         {/* LEFT: Preview */}
         <div className="md:col-span-1 flex flex-col items-center justify-center gap-4 p-8 bg-gray-50 dark:bg-gray-900/40">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Vista Previa</p>

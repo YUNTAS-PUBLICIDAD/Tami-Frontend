@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import apiClient from 'src/services/apiClient'; // Importación nativa de tu cliente estructurado
+import ChatbotIcon from 'src/components/ui/chatbot/ChatbotIcon.tsx';
 import { config } from "../../../../config.ts";
 
 interface UploaderContentProps {
