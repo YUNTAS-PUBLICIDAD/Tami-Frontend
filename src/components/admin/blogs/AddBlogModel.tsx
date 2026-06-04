@@ -23,6 +23,7 @@ interface BlogPOST {
   producto_id: number | string;
   created_at: string;
   miniatura: File | null;
+  hero_image: File | string | null;
   imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
   etiqueta: {
     meta_titulo: string; // sugerido <= 60
@@ -111,6 +112,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
   const [previewMiniatura, setPreviewMiniatura] = useState<string>("");
+  const [previewHero, setPreviewHero] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
@@ -122,6 +124,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     producto_id: "",
     created_at: new Date().toISOString().split('T')[0],
     miniatura: null,
+    hero_image: null,
     imagenes: [
       { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
       { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
@@ -177,6 +180,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         producto_id: productoIdEdit ? String(productoIdEdit) : "",
         created_at: blogToEdit.created_at ? blogToEdit.created_at.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
         miniatura: blogToEdit.miniatura || null,
+        hero_image: blogToEdit.hero_image || null,
         imagenes: normalizeImagenes(blogToEdit.imagenes || [], blogToEdit),
         etiqueta: {
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
@@ -186,6 +190,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           popup_text_color: blogToEdit.etiqueta?.popup_text_color || "#ffffff",
         },
       });
+      setPreviewHero(
+        blogToEdit.hero_image
+          ? blogToEdit.hero_image.startsWith("http")
+            ? blogToEdit.hero_image
+            : `${config.apiUrl}${blogToEdit.hero_image}`
+          : null
+      );
     } else {
       setFormData({
         titulo: "",
@@ -197,6 +208,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         producto_id: "",
         created_at: new Date().toISOString().split('T')[0],
         miniatura: null,
+        hero_image: null,
         imagenes: [
           { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
           { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
@@ -209,6 +221,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           popup_text_color: "#ffffff",
         },
       });
+      setPreviewHero(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, blogToEdit]);
@@ -593,24 +606,34 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         : config.endpoints.blogs.create;
 
       const formDataToSend = new FormData();
+      
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
       formDataToSend.append("subtitulo2", formData.subtitulo2);
+
       formDataToSend.append("video_url", formData.video_url || "");
       formDataToSend.append("video_titulo", formData.video_titulo || "");
+
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
       formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
+
       formDataToSend.append("producto_id", formData.producto_id.toString());
+
       formDataToSend.append("popup_button_text", formData.etiqueta.popup_button_text || "");
       formDataToSend.append("popup_button_color", formData.etiqueta.popup_button_color || "#47ce36");
       formDataToSend.append("popup_text_color", formData.etiqueta.popup_text_color || "#ffffff");
+      
       if (formData.created_at) {
         formDataToSend.append("created_at", formData.created_at);
       }
 
       if (formData.miniatura instanceof File) {
         formDataToSend.append("miniatura", formData.miniatura);
+      }
+
+      if (formData.hero_image instanceof File) {
+        formDataToSend.append("hero_image", formData.hero_image);
       }
 
       formData.imagenes.forEach((item, index) => {
@@ -905,6 +928,99 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   Multimedia
                 </h3>
+                {/* FONDO DINÁMICO POR BLOG */}
+                <div className="form-input md:col-span-2 mt-4">
+                  <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">
+                    Hero Image del Blog*
+                  </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+
+                        if (!file) return;
+
+                        if (!validateImage(file, "miniatura")) {
+                          e.target.value = "";
+                          return;
+                        }
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          hero_image: file,
+                        }));
+
+                        setPreviewHero(URL.createObjectURL(file));
+                      }}
+                      className="hidden"
+                      id="hero-image-upload"/>
+                  <label htmlFor="hero-image-upload" className="cursor-pointer border-2 border-dashed border-purple-300 dark:border-purple-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors">
+                    {formData.hero_image ? (
+                      <div className="relative flex flex-col items-center justify-center gap-3 group">
+                        <img
+                          src={
+                            previewHero
+                              ? previewHero
+                              : typeof formData.hero_image === "string"
+                                ? formData.hero_image.startsWith("http")
+                                  ? formData.hero_image
+                                  : `${config.apiUrl}${formData.hero_image}`
+                                : ""
+                          }
+                          alt="Hero preview"
+                          className="h-40 object-cover rounded shadow-md"
+                        />
+
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="bg-purple-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                            Cambiar imagen
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+
+                            setFormData((prev) => ({
+                              ...prev,
+                              hero_image: null,
+                            }));
+
+                            setPreviewHero(null);
+                          }}
+                          className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
+                        >
+                          ×
+                        </button>
+
+                        <span className="text-purple-600 font-medium text-sm">
+                          Cambiar Hero Image
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <span className="font-medium">
+                            Click aquí para subir Hero image del Blog
+                          </span>
+
+                        {/* RECOMENDACIONES */}
+                        <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                          <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                          💡 Recomendación:
+                          </p>
+
+                          <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                            <li>• Formatos: WEBP o GIF</li>
+                            <li>• Tamaño ideal: 960x540 px</li>
+                            <li>• Máximo: 2 MB</li>
+                          </ul>
+                          </div>
+                      </div>
+                    )}
+                  </label>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="form-input md:col-span-2">
                     <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">Miniatura del Blog*</label>
@@ -935,7 +1051,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           alt="Vista previa miniatura"
                           className="h-40 object-cover rounded shadow-md"
                         />
-
                         {/* OVERLAY */}
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
                           <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
