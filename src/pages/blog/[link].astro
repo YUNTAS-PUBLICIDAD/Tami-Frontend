@@ -1,21 +1,41 @@
 ---
 import Layout from "src/layouts/Layout.astro";
-import { config } from "config";
+import { config, getApiUrl } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
-const getApiUrl = config.apiUrl
+export async function getStaticPaths() {
+  const apiUrlBlogs = getApiUrl(config.endpoints.blogs.list);
+  try {
+    const res = await fetch(apiUrlBlogs);
+    if (!res.ok) {
+      console.error("Error fetching blogs for static paths:", res.status);
+      return [];
+    }
+    const data = await res.json();
+    const blogs = Array.isArray(data) ? data : data.data || [];
+    return blogs.map((blog: any) => ({
+      params: { link: blog.link },
+    }));
+  } catch (err) {
+    console.error("Failed to fetch blogs in getStaticPaths:", err);
+    return [];
+  }
+}
+
+const { link } = Astro.params;
+
+const getApiUrlBase = config.apiUrl
   ? String(config.apiUrl).replace(/\/+$/, "")
   : "";
 const blogsUrl = config.endpoints.blogs;
-
 const productsUrl = config.endpoints.productos.list;
 ---
 
 <Layout
   title="Blog Details"
   description="Descripcion por defecto"
-  canonicalUrl="https://tamimaquinarias.com/blog"
+  canonicalUrl={`https://tamimaquinarias.com/blog/${link}`}
 >
   <header
     class="relative w-full h-[30vh] sm:h-screen min-h-[200px] flex items-center justify-center overflow-hidden pt-16 sm:pt-20"
@@ -44,22 +64,6 @@ const productsUrl = config.endpoints.productos.list;
       </div>
     </div>
   </header>
-  <style>
-    #blog-img {
-      animation: panHorizontal 10s ease-in-out infinite alternate;
-      transform-origin: center;
-      will-change: transform;
-    }
-
-    @keyframes panHorizontal {
-      0% {
-        transform: scale(1.1) translateX(3%);
-      }
-      100% {
-        transform: scale(1.1) translateX(-3%);
-      }
-    }
-  </style>
   <main
     class="py-8 md:py-20 px-4 md:px-20 bg-gradient-to-b from-[#041019] to-[#003E56]"
   >
@@ -123,7 +127,8 @@ const productsUrl = config.endpoints.productos.list;
     <!-- 🔒 SCRIPTS -->
     <script
       define:vars={{
-        getApiUrl,
+        link,
+        getApiUrl: getApiUrlBase,
         blogsUrl,
         productsUrl,
         showLoaderString,
@@ -162,8 +167,7 @@ const productsUrl = config.endpoints.productos.list;
             typeof window.setDynamicSEO,
             typeof window.insertJsonLdBlog,
           );
-          const params = new URLSearchParams(window.location.search);
-          const linkBlog = params.get("link")?.trim();
+          const linkBlog = link?.trim();
           if (!linkBlog) {
             clearTimeout(safetyTimeout);
             removeLoaderSafe();
@@ -461,5 +465,5 @@ const productsUrl = config.endpoints.productos.list;
         if (event.error?.message?.includes("classList")) removeLoaderSafe();
       });
     </script>
-  </main></Layout
->
+  </main>
+</Layout>
