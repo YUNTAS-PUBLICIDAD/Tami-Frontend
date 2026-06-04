@@ -40,9 +40,25 @@ const productsUrl = config.endpoints.productos.list;
   <header
     class="relative w-full h-[30vh] sm:h-screen min-h-[200px] flex items-center justify-center overflow-hidden pt-16 sm:pt-20"
   >
+  <style>
+    #blog-img {
+      animation: panHorizontal 10s ease-in-out infinite alternate;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    @keyframes panHorizontal {
+      0% {
+        transform: scale(1.1) translateX(3%);
+      }
+      100% {
+        transform: scale(1.1) translateX(-3%);
+      }
+    }
+  </style>
     <img
       id="blog-img"
-      src={blogHeroImage.src}
+      src="/fallback.webp"
       width={blogHeroImage.width}
       height={blogHeroImage.height}
       alt="Fondo Hero"
@@ -280,6 +296,11 @@ const productsUrl = config.endpoints.productos.list;
           const blogTitleDesktopElement =
             document.getElementById("blog-title-desktop");
           const blogImgElement = document.getElementById("blog-img");
+          if (blogImgElement) {
+            blogImgElement.src = blog.hero_image
+              ? getBlogImageUrl(blog.hero_image)
+              : blogImgElement.src; // mantiene fallback
+          }
           const blogDateElement = document.getElementById("blog-date");
           const blogContentSubtitleElement = document.getElementById(
             "blog-content-subtitle",
