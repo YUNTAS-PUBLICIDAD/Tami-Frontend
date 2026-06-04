@@ -114,7 +114,7 @@ function NavBar() {
         ${isScrolled ? "bg-[#07625b] shadow-lg" : "bg-transparent"} 
       `}
     >
-      <div className="max-w-[1834px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1834px] mx-auto px-4 md:py-6 sm:px-6 lg:px-8 lg:py-6">
         <div className="flex items-center justify-between h-24">
 
           {/* Logo */}
@@ -126,7 +126,7 @@ function NavBar() {
                 title="Logo de Tami"
                 width="64"
                 height="74"
-                className="h-16 w-auto object-contain"
+                className="h-18 md:h-25 w-auto object-contain"
                 fetchPriority="high"
                 loading="eager"
                 decoding="async"
