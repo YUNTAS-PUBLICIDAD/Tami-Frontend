@@ -44,6 +44,22 @@ const productsUrl = config.endpoints.productos.list;
       </div>
     </div>
   </header>
+  <style>
+    #blog-img {
+      animation: panHorizontal 10s ease-in-out infinite alternate;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    @keyframes panHorizontal {
+      0% {
+        transform: scale(1.1) translateX(3%);
+      }
+      100% {
+        transform: scale(1.1) translateX(-3%);
+      }
+    }
+  </style>
   <main
     class="py-8 md:py-20 px-4 md:px-20 bg-gradient-to-b from-[#041019] to-[#003E56]"
   >
