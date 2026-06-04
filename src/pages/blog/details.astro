@@ -4,7 +4,9 @@ import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
-const getApiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
+const getApiUrl = config.apiUrl
+  ? String(config.apiUrl).replace(/\/+$/, "")
+  : "";
 const blogsUrl = config.endpoints.blogs;
 
 const productsUrl = config.endpoints.productos.list;
@@ -42,6 +44,22 @@ const productsUrl = config.endpoints.productos.list;
       </div>
     </div>
   </header>
+  <style>
+    #blog-img {
+      animation: panHorizontal 10s ease-in-out infinite alternate;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    @keyframes panHorizontal {
+      0% {
+        transform: scale(1.1) translateX(3%);
+      }
+      100% {
+        transform: scale(1.1) translateX(-3%);
+      }
+    }
+  </style>
   <main
     class="py-8 md:py-20 px-4 md:px-20 bg-gradient-to-b from-[#041019] to-[#003E56]"
   >
@@ -187,7 +205,9 @@ const productsUrl = config.endpoints.productos.list;
           function generateBlogJsonLd(blog) {
             const images = [
               getBlogImageUrl(blog.miniatura),
-              ...(blog.imagenes?.map((img) => getBlogImageUrl(img.ruta_imagen)) || []),
+              ...(blog.imagenes?.map((img) =>
+                getBlogImageUrl(img.ruta_imagen),
+              ) || []),
             ];
             const description =
               blog.subtitulo1 || blog.parrafos?.map((p) => p.parrafo).join(" ");
@@ -337,14 +357,14 @@ const productsUrl = config.endpoints.productos.list;
                 btnVerProducto.style.setProperty(
                   "background-color",
                   blog.etiqueta.popup_button_color,
-                  "important"
+                  "important",
                 );
               }
               if (blog.etiqueta?.popup_text_color) {
                 btnVerProducto.style.setProperty(
                   "color",
                   blog.etiqueta.popup_text_color,
-                  "important"
+                  "important",
                 );
               }
               btnVerProducto.classList.remove("hidden");
