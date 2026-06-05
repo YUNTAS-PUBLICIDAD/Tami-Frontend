@@ -23,6 +23,10 @@ const navLinks = [
     url: "/blog",
     texto: "BLOGS",
     title: "Ir a la sección de blogs"
+  },{
+    url: "/contacto",
+    texto: "CONTACTO",
+    title: "Ir a la sección de Contacto"
   }
 ];
 export default navLinks;
