@@ -22,7 +22,7 @@ interface BlogPOST {
   video_url: string; // 255
   producto_id: number | string;
   created_at: string;
-  miniatura: File | null;
+  miniatura: File | string | null;
   hero_image: File | string | null;
   imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
   etiqueta: {
@@ -256,9 +256,16 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     // Enforce max lengths on write for text fields
     const next: Partial<BlogPOST> = {};
     switch (name) {
-      case "titulo":
-        next.titulo = value.slice(0, LENGTHS.titulo);
+      case "titulo": {
+        const slicedTitulo = value.slice(0, LENGTHS.titulo);
+        next.titulo = slicedTitulo;
+        next.link = slicedTitulo
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replaceAll(" ", "-");
         break;
+      }
       case "subtitulo1":
         next.subtitulo1 = value.slice(0, LENGTHS.parrafo);
         break;
@@ -481,11 +488,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       producto_id: "",
       created_at: new Date().toISOString().split('T')[0],
       miniatura: null,
+      hero_image: null,
       imagenes: [
-      { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
-      { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
+        { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
+        { imagen: null, parrafo: "", text_alt: "", previewUrl: undefined },
       ],
-      etiqueta: { meta_titulo: "", meta_descripcion: "",popup_button_text: "", popup_button_color: "#47ce36", popup_text_color: "#ffffff", },
+      etiqueta: {
+        meta_titulo: "",
+        meta_descripcion: "",
+        popup_button_text: "",
+        popup_button_color: "#47ce36",
+        popup_text_color: "#ffffff",
+      },
     });
   };
 
@@ -854,6 +868,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
                       required
+                      disabled
                     />
                   </div>
                   <div className="form-input">
