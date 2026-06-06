@@ -63,13 +63,14 @@ const ReclamacionesTable = () => {
   const handleStatusChange = async (newStatusId: number) => {
     if (!selectedReclamacion) return;
     const baseUrl = import.meta.env.PUBLIC_API_URL;
-
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${baseUrl}/api/v1/admin/claims/${selectedReclamacion.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({ status_id: newStatusId })
       });

@@ -209,6 +209,7 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
+  import Swal from "sweetalert2";
   // Definición de interfaces
   interface APIItem {
     id: string | number;
@@ -300,14 +301,32 @@ import Layout from "../layouts/Layout.astro";
         const data = await res.json();
 
         if (res.ok) {
-          alert("Reclamo enviado correctamente ✅");
+          Swal.fire({
+            title: "Registrado",
+            text: "Registrado Correctamente",
+            icon: "success",
+            confirmButtonColor: "#14b8a6",
+          });
+           setTimeout(() => {
+            window.location.href = "/";
+          }, 2500);
           form.reset();
           document.getElementById("product-preview")?.classList.add("hidden");
         } else {
-          alert("Error: " + JSON.stringify(data.errors || data.message));
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: data.message || "No se pudo registrar el reclamo.",
+            confirmButtonText: "Aceptar",
+          });
         }
       } catch (err) {
-        alert("Hubo un error al conectar con el servidor.");
+        Swal.fire({
+          icon: "error",
+          title: "Error de conexión",
+          text: "Hubo un error al conectar con el servidor.",
+          confirmButtonText: "Aceptar",
+        });
       } finally {
         if (btn) btn.disabled = false;
       }
