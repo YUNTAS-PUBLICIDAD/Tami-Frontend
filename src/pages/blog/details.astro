@@ -157,17 +157,8 @@ const productsUrl = config.endpoints.productos.list;
         showLoader();
         const safetyTimeout = setTimeout(removeLoaderSafe, 10000);
         try {
-          console.log(
-            "[DEBUG] DOMContentLoaded, blog-seo-utils.js:",
-            typeof window.setDynamicSEO,
-            typeof window.insertJsonLdBlog,
-          );
           const params = new URLSearchParams(window.location.search);
           const linkBlog = params.get("link")?.trim();
-          console.log("URL actual:", window.location.href);
-console.log("linkBlog:", linkBlog);
-console.log("getApiUrl:", getApiUrl);
-console.log("blogsUrl:", blogsUrl);
           if (!linkBlog) {
             clearTimeout(safetyTimeout);
             removeLoaderSafe();
@@ -175,20 +166,15 @@ console.log("blogsUrl:", blogsUrl);
           }
           const encodedLink = encodeURIComponent(linkBlog);
           const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${encodedLink}`;
-
-console.log("URL API:", fullUrl);
           if (!fullUrl.startsWith("http"))
             throw new Error(`URL inválida: ${fullUrl}`);
           const response = await fetch(fullUrl);
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-          console.log("STATUS:", response.status);
-console.log("OK:", response.ok);
           const data = await response.json();
           if (!data || !data.data)
             throw new Error("No se encontraron datos del blog");
           const blog = data.data;
-          console.log("BLOG COMPLETO:", blog);
           function setDynamicSEO(blog) {
             document.title = blog.etiqueta?.meta_titulo || blog.titulo;
             let metaDescription = document.querySelector(
@@ -343,9 +329,6 @@ console.log("OK:", response.ok);
             // Intento 3: Fetch adicional al API de productos
             else {
               try {
-                console.log(
-                  `Buscando link amigable para producto ID: ${blog.producto_id}...`,
-                );
                 // Usamos productsUrl que pasamos en define:vars
                 const prodRes = await fetch(
                   `${getApiUrl}${productsUrl}/${blog.producto_id}`,
