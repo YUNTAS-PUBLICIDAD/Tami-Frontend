@@ -194,6 +194,7 @@ console.log("POPUPSECTION onFileChange", onFileChange);
                     onChange={(e) => onFieldChange("popup_button_text", e.target.value, true)}
                     className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
                     placeholder="!REGISTRARME!"
+                    maxLength={20}
                 />
             </div>
 

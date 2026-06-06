@@ -4,7 +4,9 @@ import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
 
-const getApiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
+const getApiUrl = config.apiUrl
+  ? String(config.apiUrl).replace(/\/+$/, "")
+  : "";
 const blogsUrl = config.endpoints.blogs;
 
 const productsUrl = config.endpoints.productos.list;
@@ -20,7 +22,7 @@ const productsUrl = config.endpoints.productos.list;
   >
     <img
       id="blog-img"
-      src={blogHeroImage.src}
+      src="/fallback.webp"
       width={blogHeroImage.width}
       height={blogHeroImage.height}
       alt="Fondo Hero"
@@ -42,6 +44,22 @@ const productsUrl = config.endpoints.productos.list;
       </div>
     </div>
   </header>
+  <style>
+    #blog-img {
+      animation: panHorizontal 10s ease-in-out infinite alternate;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    @keyframes panHorizontal {
+      0% {
+        transform: scale(1.1) translateX(3%);
+      }
+      100% {
+        transform: scale(1.1) translateX(-3%);
+      }
+    }
+  </style>
   <main
     class="py-8 md:py-20 px-4 md:px-20 bg-gradient-to-b from-[#041019] to-[#003E56]"
   >
@@ -145,13 +163,13 @@ const productsUrl = config.endpoints.productos.list;
             typeof window.insertJsonLdBlog,
           );
           const params = new URLSearchParams(window.location.search);
-          const idBlog = params.get("id")?.trim();
-          if (!idBlog) {
+          const linkBlog = params.get("link")?.trim();
+          if (!linkBlog) {
             clearTimeout(safetyTimeout);
             removeLoaderSafe();
             return;
           }
-          const fullUrl = `${getApiUrl}${blogsUrl.list}/${idBlog}`;
+          const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${linkBlog}`;
           if (!fullUrl.startsWith("http"))
             throw new Error(`URL inválida: ${fullUrl}`);
           const response = await fetch(fullUrl);
@@ -161,10 +179,9 @@ const productsUrl = config.endpoints.productos.list;
           if (!data || !data.data)
             throw new Error("No se encontraron datos del blog");
           const blog = data.data;
-
+          console.log("BLOG COMPLETO:", blog);
           function setDynamicSEO(blog) {
-            document.title =
-              blog.etiqueta?.meta_titulo || "Título para blogs por defecto";
+            document.title = blog.etiqueta?.meta_titulo || blog.titulo;
             let metaDescription = document.querySelector(
               'meta[name="description"]',
             );
@@ -187,7 +204,9 @@ const productsUrl = config.endpoints.productos.list;
           function generateBlogJsonLd(blog) {
             const images = [
               getBlogImageUrl(blog.miniatura),
-              ...(blog.imagenes?.map((img) => getBlogImageUrl(img.ruta_imagen)) || []),
+              ...(blog.imagenes?.map((img) =>
+                getBlogImageUrl(img.ruta_imagen),
+              ) || []),
             ];
             const description =
               blog.subtitulo1 || blog.parrafos?.map((p) => p.parrafo).join(" ");
@@ -214,8 +233,8 @@ const productsUrl = config.endpoints.productos.list;
               blogPost: [
                 {
                   "@type": "BlogPosting",
-                  "@id": `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
-                  mainEntityOfPage: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                  "@id": `https://tamimaquinarias.com/blog/${blog.link}`,
+                  mainEntityOfPage: `https://tamimaquinarias.com/blog/${blog.link}`,
                   headline: blog.nombre_producto,
                   name: blog.nombre_producto,
                   description: description,
@@ -233,7 +252,7 @@ const productsUrl = config.endpoints.productos.list;
                     height: "800",
                     width: "1200",
                   },
-                  url: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+                  url: `https://tamimaquinarias.com/blog/${blog.link}`,
                   keywords: ["LED", "Marketing Visual"],
                 },
               ],
@@ -268,6 +287,9 @@ const productsUrl = config.endpoints.productos.list;
           const blogVideoSectionElement =
             document.getElementById("blog-video-section");
           const titulo = blog.titulo.toUpperCase();
+          if (blogImgElement) {
+          blogImgElement.src = getBlogImageUrl(blog.hero_image || blog.miniatura || "/images/fallback.webp");
+          }
 
           if (blogTitleElement) blogTitleElement.innerHTML = titulo;
           if (blogTitleMobileElement) blogTitleMobileElement.innerHTML = titulo;
@@ -278,7 +300,9 @@ const productsUrl = config.endpoints.productos.list;
               blog.subtitulo1.toUpperCase();
           if (blogContentSubtitle2Element)
             blogContentSubtitle2Element.innerHTML = blog.subtitulo2;
-          if (blogImgElement) blogImgElement.alt = blog.titulo;
+          if (blogImgElement) {
+          blogImgElement.alt = blog.titulo;
+          }
 
           if (blogDateElement) {
             const dateStr = blog.created_at || blog.updated_at;
@@ -337,14 +361,14 @@ const productsUrl = config.endpoints.productos.list;
                 btnVerProducto.style.setProperty(
                   "background-color",
                   blog.etiqueta.popup_button_color,
-                  "important"
+                  "important",
                 );
               }
               if (blog.etiqueta?.popup_text_color) {
                 btnVerProducto.style.setProperty(
                   "color",
                   blog.etiqueta.popup_text_color,
-                  "important"
+                  "important",
                 );
               }
               btnVerProducto.classList.remove("hidden");
