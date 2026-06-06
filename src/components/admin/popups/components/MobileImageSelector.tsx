@@ -62,7 +62,9 @@ export const MobileImageSelector: React.FC<MobileImageSelectorProps> = ({
                     fieldName={firstImageFieldName}
                     preview={firstImagePreview}
                     value={firstImageValue}
-                    onFileChange={onFileChange}
+                    onFileChange={(e, fieldName) => {
+                    onFileChange(e, fieldName);
+                    }}
                     onClearImage={onClearImage}
                     buttonLabel="Seleccionar"
                     previewWidth="w-20"
@@ -91,7 +93,9 @@ export const MobileImageSelector: React.FC<MobileImageSelectorProps> = ({
                     fieldName={secondImageFieldName}
                     preview={secondImagePreview}
                     value={secondImageValue}
-                    onFileChange={onFileChange}
+                    onFileChange={(e, fieldName) => {
+                    onFileChange(e, fieldName);
+                    }}
                     onClearImage={onClearImage}
                     buttonLabel="Seleccionar"
                     previewWidth="w-20"

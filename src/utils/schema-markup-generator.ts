@@ -237,8 +237,8 @@ export function generateBlogJsonLd(blog: any) {
     blogPost: [
       {
         "@type": "BlogPosting",
-        "@id": `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
-        mainEntityOfPage: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+        "@id": `https://tamimaquinarias.com/blog/${blog.link}`,
+        mainEntityOfPage: `https://tamimaquinarias.com/blog/${blog.link}`,
         headline: blog.nombre_producto,
         name: blog.nombre_producto,
         description: description,
@@ -256,7 +256,7 @@ export function generateBlogJsonLd(blog: any) {
           height: "800",
           width: "1200"
         },
-        url: `https://tamimaquinarias.com/blog/detail/?id=${blog.id}`,
+        url: `https://tamimaquinarias.com/blog/${blog.link}`,
         keywords: [
           "LED",
           "Marketing Visual"

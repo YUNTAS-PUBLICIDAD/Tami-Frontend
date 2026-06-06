@@ -16,7 +16,7 @@
  * @example
  * useProductPreviewSync(formData, previews, activeTab, whatsappSelected);
  */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ProductSyncService } from "../services/productSyncService";
 import type { ProductFormData, TabType } from "../types/productTab.types";
 export const useProductPreviewSync = (
@@ -26,9 +26,17 @@ export const useProductPreviewSync = (
     whatsappSelected: number,
     emailSelected: number = 1
 ) => {
+    // Time-gate para evitar doble sincronización en menos de 100ms
+    // (ej: cuando el callback de FileReader y el useEffect se ejecutan casi al mismo tiempo)
+    const lastSyncRef = useRef(0);
+
     useEffect(() => {
         if (formData) {
-            ProductSyncService.syncPreview(formData, previews, activeTab, whatsappSelected, emailSelected);
+            const now = Date.now();
+            if (now - lastSyncRef.current > 100) {
+                ProductSyncService.syncPreview(formData, previews, activeTab, whatsappSelected, emailSelected);
+                lastSyncRef.current = now;
+            }
         }
     }, [formData, activeTab, whatsappSelected, previews, emailSelected]);
 };

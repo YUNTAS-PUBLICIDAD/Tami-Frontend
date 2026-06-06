@@ -43,7 +43,8 @@ export const useProductSave = (): UseProductSaveReturn => {
 
       setIsSaving(true);
       try {
-        // Build FormData using service
+        
+    // Build FormData using service
         const formDataToSend = ProductFormBuilderService.buildProductFormData(
           formData,
           selectedProductId

@@ -29,7 +29,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
     onClearImage
 }) => {
     if (!formData) return null;
-
+console.log("POPUPSECTION onFileChange", onFileChange);
     return (
         <div className="space-y-8 animate-fadeIn">
             {/* Sección Desktop */}
@@ -126,7 +126,10 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                             fieldName="imagen_popup_mobile"
                             preview={previews.imagen_popup_mobile}
                             value={formData.imagen_popup_mobile}
-                            onFileChange={onFileChange}
+                             onFileChange={(e, field) => {
+        console.log("POPUPSECTION MOBILE", field);
+        onFileChange(e, field);
+    }}
                             onClearImage={onClearImage}
                             buttonLabel="Seleccionar"
                             previewWidth="w-20"
@@ -191,6 +194,7 @@ export const PopupSection: React.FC<PopupSectionProps> = ({
                     onChange={(e) => onFieldChange("popup_button_text", e.target.value, true)}
                     className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white transition-all shadow-inner"
                     placeholder="!REGISTRARME!"
+                    maxLength={20}
                 />
             </div>
 

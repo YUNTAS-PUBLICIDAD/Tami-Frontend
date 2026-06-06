@@ -58,6 +58,14 @@ export const InicioMobileImageSelector: React.FC = () => {
         if (fieldName === 'imagen_popup_mobile') {
             setFirstImagePreview(url);
             setFirstImageValue(file);
+            window.dispatchEvent(
+  new CustomEvent("product-field-change", {
+    detail: {
+      field: fieldName,
+      value: file
+    }
+  })
+);
             setFirstImageDeleted(false);
             currentInicioImages.popup_mobile_image_url = url;
 
@@ -67,6 +75,11 @@ export const InicioMobileImageSelector: React.FC = () => {
                 const dt = new DataTransfer();
                 dt.items.add(file);
                 fileInput.files = dt.files;
+                console.log(
+  "INPUT REAL popupImageMobile",
+  fileInput.files?.length,
+  fileInput.files?.[0]
+);
             }
             const deleteInput = document.getElementById('delete_popupImageMobile') as HTMLInputElement | null;
             if (deleteInput) deleteInput.value = '0';
@@ -77,6 +90,11 @@ export const InicioMobileImageSelector: React.FC = () => {
         } else if (fieldName === 'imagen_popup_mobile2') {
             setSecondImagePreview(url);
             setSecondImageValue(file);
+            window.dispatchEvent(
+  new CustomEvent("product-field-change", {
+    detail: { field: "imagen_popup_mobile2", value: file }
+  })
+);
             setSecondImageDeleted(false);
             currentInicioImages.popup_mobile_image2_url = url;
 
@@ -85,6 +103,11 @@ export const InicioMobileImageSelector: React.FC = () => {
                 const dt = new DataTransfer();
                 dt.items.add(file);
                 fileInput.files = dt.files;
+                console.log(
+  "INPUT REAL popupImageMobile2",
+  fileInput.files?.length,
+  fileInput.files?.[0]
+);
             }
             const deleteInput = document.getElementById('delete_popupImageMobile2') as HTMLInputElement | null;
             if (deleteInput) deleteInput.value = '0';

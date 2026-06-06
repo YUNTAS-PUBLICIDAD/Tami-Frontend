@@ -7,15 +7,10 @@ import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
-import imagenEstilo1 from "@images/popup/estilo1.webp";
-import imagenEstilo2 from "@images/popup/estilo2.webp";
-import imagenEstilo3 from "@images/popup/estilo3.webp";
-import EmailEditor from "../popups/EmailEditor";
 
 type Props = {
   onProductAdded?: () => void;
 };
-const imagenEstilos = [imagenEstilo1.src, imagenEstilo2.src, imagenEstilo3.src];
 
 const AddProduct = ({ onProductAdded }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +20,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
     return `${config.apiUrl}${url}`;
+  };
+
+  const getImagePreview = (image: File | string | null): string => {
+    if (!image) return "";
+    if (typeof image === "string") {
+      return getFullImageUrl(image);
+    }
+    // Si es un File, crear una URL blob
+    return URL.createObjectURL(image);
   };
   const [formPage, setFormPage] = useState(1);
   const [isExiting, setIsExiting] = useState(false);
@@ -377,13 +381,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
     if (
       !formData.etiqueta.meta_descripcion.trim() ||
-      formData.etiqueta.meta_descripcion.length < 50 ||
+      formData.etiqueta.meta_descripcion.length < 40 ||
       formData.etiqueta.meta_descripcion.length > 200
     ) {
       Swal.fire({
         icon: "warning",
         title: "Meta descripción inválida",
-        text: "⚠️ La meta descripción debe tener entre 50 y 200 caracteres.",
+        text: "⚠️ La meta descripción debe tener entre 40 y 200 caracteres.",
       });
       setIsLoading(false);
       return;
@@ -418,7 +422,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("detalle_titulo_tamano", formData.etiqueta.titulo_detalle_producto_size || "24");
       formDataToSend.append("detalle_titulo_color", formData.etiqueta.titulo_detalle_producto_color || "#015f86");
       formDataToSend.append("detalle_titulo_estilo", formData.etiqueta.titulo_detalle_producto_style || "negrita");
-      formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo);
+      formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo || "estilo1");
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
       formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
       formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "¡COTIZA AHORA!");
@@ -443,15 +447,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
 
-
       const response = await apiClient.post(
         config.endpoints.productos.create,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formDataToSend
       );
 
       const data = response.data;
@@ -477,6 +475,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
       }
     } catch (error: any) {
       console.error("Error al enviar los datos:", error);
+      if (error.response) {
+        console.error("Respuesta de error completa del servidor (error.response):", error.response);
+        console.error("Detalles del cuerpo del error (error.response.data):", error.response.data);
+      } else if (error.request) {
+        console.error("No se recibió respuesta del servidor (error.request):", error.request);
+      } else {
+        console.error("Error al configurar la solicitud:", error.message);
+      }
 
       let errorMessage = "Ocurrió un error al procesar la solicitud.";
 
@@ -710,8 +716,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <div className="rounded-2xl border border-slate-700/40 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-4 shadow-xl">
                       <div className="flex flex-col gap-1 mb-4">
                         <div>
-                          <label className="block text-sm font-semibold text-gray-800">Estilo del título "Detalle Producto"</label>
-                          <p className="text-xs text-gray-500">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
+                          <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100">Estilo del título "Detalle Producto"</label>
+                          <p className="text-xs text-white dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
                         </div>
                       </div>
 
@@ -729,6 +735,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             fontWeight: formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita" ? 800 : 600,
                             fontStyle: formData.etiqueta.titulo_detalle_producto_style === "cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" ? "italic" : "normal",
                             textDecoration: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "underline" : "none",
+                            textDecorationColor: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "white" : "transparent",
+                            textDecorationThickness: "2px",
+                            textUnderlineOffset: "4px"
                           }}
                         >
                           {(() => {
@@ -751,19 +760,28 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       </div>
 
                       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.3fr] gap-4 items-start">
-                        <div className="opacity-50 cursor-not-allowed">
-                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Tamaño (px) <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
-                          <input
-                            type="number"
-                            min="12"
-                            max="48"
-                            value={formData.etiqueta.titulo_detalle_producto_size}
-                            disabled
-                            className="w-full cursor-not-allowed"
-                          />
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Tamaño</label>
+                          <select
+                            value={formData.etiqueta.titulo_detalle_producto_size || "80"}
+                            onChange={(e) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                etiqueta: {
+                                  ...prev.etiqueta,
+                                  titulo_detalle_producto_size: e.target.value,
+                                },
+                              }));
+                            }}
+                            className="cursor-pointer w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          >
+                            <option value="20">Pequeño</option>
+                            <option value="80">Mediano</option>
+                            <option value="130">Grande</option>
+                          </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Color</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Color</label>
                           <input
                             type="color"
                             value={formData.etiqueta.titulo_detalle_producto_color}
@@ -776,11 +794,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                 },
                               }));
                             }}
-                            className="h-12 w-full rounded-xl border border-gray-200 bg-white p-1 shadow-sm"
+                            className="cursor-pointer h-12 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-sm"
                           />
                         </div>
-                        <div className="opacity-50 cursor-not-allowed">
-                          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Estilo <span className="text-[10px] text-teal-500 lowercase">(Próximamente)</span></label>
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Estilo</label>
                           <div className="grid grid-cols-2 gap-2">
                             {[
                               { value: "normal", label: "Normal" },
@@ -794,11 +812,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                 <button
                                   key={option.value}
                                   type="button"
-                                  disabled
-                                  className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-not-allowed ${
+                                  onClick={() => {
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      etiqueta: {
+                                        ...prev.etiqueta,
+                                        titulo_detalle_producto_style: option.value,
+                                      },
+                                    }));
+                                  }}
+                                  className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-pointer ${
                                     isActive
-                                      ? "border-teal-600 bg-teal-600 text-white shadow-md"
-                                      : "border-gray-200 bg-white text-gray-700"
+                                      ? "border-teal-500 bg-teal-600 text-white shadow-md"
+                                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 text-gray-700 dark:text-gray-200 hover:border-teal-400"
                                   }`}
                                 >
                                   {option.label}
@@ -858,13 +884,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
                   >
                     <h5 className="font-medium text-gray-700 dark:text-gray-400 mb-3">Especificaciones</h5>
 
-                    <div className="flex items-center gap-2 form-input">
+                    <div className="flex flex-col items-center gap-2 w-full">
                       <input
                         type="text"
                         value={nuevaEspecificacion}
                         onChange={(e) => setNuevaEspecificacion(e.target.value)}
                         placeholder="Nueva especificación..."
-                        className="flex-1 "
+                        className="w-full border border-gray-300 rounded-lg p-2 text-sm"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewSpecification())}
                       />
                       <button
@@ -1005,6 +1031,15 @@ const AddProduct = ({ onProductAdded }: Props) => {
                             onChange={(e) => handleImagesChange(e, index)}
                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                           />
+                          {img.url_imagen && (
+                            <div className="mt-3 rounded-lg overflow-hidden">
+                              <img
+                                src={getImagePreview(img.url_imagen)}
+                                alt={`Previa ${index + 1}`}
+                                className="w-full h-auto max-h-[200px] object-cover"
+                              />
+                            </div>
+                          )}
                         </div>
                         <label className="mt-2 block text-sm">Texto SEO Imagen {index + 1}:</label>
                         <input

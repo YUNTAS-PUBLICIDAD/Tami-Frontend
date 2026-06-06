@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { getImageUrl } from '../utils/imageUrl';
 
 interface ImageUploadFieldProps {
@@ -37,8 +37,12 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     previewHeight = 'h-32',
     buttonLabel
 }) => {
-    const inputId = `input_${fieldName}`;
+    const inputRef = useRef<HTMLInputElement>(null);
     const hasImage = preview || value;
+
+    const handleButtonClick = () => {
+        inputRef.current?.click();
+    };
 
     return (
         <div className="w-full">
@@ -64,7 +68,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <button
                                     type="button"
-                                    onClick={() => document.getElementById(inputId)?.click()}
+                                    onClick={handleButtonClick}
                                     className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-sm transition-all"
                                     title="Cambiar imagen"
                                 >
@@ -77,7 +81,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                     ) : (
                         <div 
                             className="flex flex-col items-center gap-1 cursor-pointer w-full h-full justify-center"
-                            onClick={() => document.getElementById(inputId)?.click()}
+                            onClick={handleButtonClick}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -91,9 +95,11 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                 <div className="flex-1 min-w-0">
                     <input
                         type="file"
-                        id={inputId}
+                        ref={inputRef}
                         accept=".webp"
-                        onChange={(e) => onFileChange(e, fieldName)}
+                        onChange={(e) => {
+                        onFileChange(e, fieldName);
+                    }}
                         className="hidden"
                     />
 
@@ -101,7 +107,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                         {!hasImage ? (
                             <button
                                 type="button"
-                                onClick={() => document.getElementById(inputId)?.click()}
+                                onClick={handleButtonClick}
                                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 whitespace-nowrap w-full sm:w-auto"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +119,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                             <div className="flex flex-wrap gap-2 w-full">
                                 <button
                                     type="button"
-                                    onClick={() => document.getElementById(inputId)?.click()}
+                                    onClick={handleButtonClick}
                                     className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 text-white text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 uppercase tracking-wide flex-1 min-w-[120px]"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
