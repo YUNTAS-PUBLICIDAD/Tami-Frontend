@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from 'src/components/ui/button'
 import Swal from 'sweetalert2';
 import IconUploader from './IconUploader'
@@ -17,6 +17,41 @@ const ChatbotTable = () => {
   const [salute, setSalute] = useState<string>("");
   const [loadingSaludo, setLoadingSaludo] = useState<boolean>(true);
   const [isSavingSaludo, setIsSavingSaludo] = useState<boolean>(false);
+  // --- 🔥 NUEVO ESTADO PARA LA POSICIÓN ---
+  const [isLeft, setIsLeft] = useState<boolean>(false);
+  const [isSavingPosicion, setIsSavingPosicion] = useState<boolean>(false);
+
+  // --- 🔥 EFECTO INICIAL (CARGA SALUDO Y POSICIÓN) ---
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoadingSaludo(true);
+        
+        // 1. Cargar saludo
+        const resSaludo = await apiClient.get(config.endpoints.chatbot.getSalute);
+        if (resSaludo.data && resSaludo.data.success) {
+          setSalute(resSaludo.data.salute ?? "");
+        }
+
+        // 2. Cargar posición
+        const resPosicion = await apiClient.get(config.endpoints.chatbot.getPosition);
+        if (resPosicion.data && resPosicion.data.success) {
+          setIsLeft(!!resPosicion.data.is_left);
+        }
+
+      } catch (error) {
+        console.error("Error al cargar configuración inicial del chatbot:", error);
+      } finally {
+        setLoadingSaludo(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+
 
   const handleSaveSaludo = async () => {
     if (!salute.trim()) return;
@@ -48,6 +83,34 @@ const ChatbotTable = () => {
       });
     } finally {
       setIsSavingSaludo(false);
+    }
+  };
+
+  const handleSavePosicion = async (positionLeft: boolean) => {
+    try {
+      setIsSavingPosicion(true);
+      // Actualizamos el estado local inmediatamente para feedback visual rápido
+      setIsLeft(positionLeft);
+
+      const response = await apiClient.post(config.endpoints.chatbot.newPosition, { is_left: positionLeft });
+      
+      if (response.data && response.data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Posición Actualizada",
+          text: `El widget del chatbot ahora aparecerá en la esquina ${positionLeft ? 'izquierda' : 'derecha'}.`,
+          confirmButtonColor: "#0f766e",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          showConfirmButton: false
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar posición:", error);
+      Swal.fire({ icon: "error", title: "Error", text: "No se pudo cambiar la posición.", confirmButtonColor: "#0f766e" });
+    } finally {
+      setIsSavingPosicion(false);
     }
   };
 
@@ -128,6 +191,42 @@ return (
               </svg>
             </button>
           ))}
+
+          {/* --- 🟢 NUEVA SECCIÓN: UBICACIÓN DEL WIDGET --- */}
+          <div className="pt-5 pb-2 border-t border-gray-100 dark:border-gray-700 space-y-2">
+                  <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">
+                  Ubicación del Botón Flotante (Widget)
+                  </label>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  Elige en qué esquina inferior de la pantalla de tu tienda se cargará el chatbot.
+                  </p>
+                        
+                  <div className="grid grid-cols-2 gap-3 max-w-xs pt-1">
+                    <button
+                      type="button"
+                      disabled={isSavingPosicion}
+                      onClick={() => handleSavePosicion(true)}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${
+                      isLeft 
+                      ? "bg-teal-500 border-teal-500 text-white shadow-md font-extrabold" 
+                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:border-teal-400"
+                      }`}
+                      >
+                        Esquina Izquierda
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isSavingPosicion}
+                        onClick={() => handleSavePosicion(false)}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${
+                        !isLeft 
+                        ? "bg-teal-500 border-teal-500 text-white shadow-md font-extrabold" 
+                        : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:border-teal-400"
+                        }`}>
+                            Esquina Derecha
+                        </button>
+                      </div>
+                    </div>
           <div className="pt-6 border-t border-gray-100 dark:border-gray-700 space-y-3">
               <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">
                           Mensaje de Saludo Inicial
