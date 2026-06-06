@@ -164,17 +164,26 @@ const productsUrl = config.endpoints.productos.list;
           );
           const params = new URLSearchParams(window.location.search);
           const linkBlog = params.get("link")?.trim();
+          console.log("URL actual:", window.location.href);
+console.log("linkBlog:", linkBlog);
+console.log("getApiUrl:", getApiUrl);
+console.log("blogsUrl:", blogsUrl);
           if (!linkBlog) {
             clearTimeout(safetyTimeout);
             removeLoaderSafe();
             return;
           }
-          const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${linkBlog}`;
+          const encodedLink = encodeURIComponent(linkBlog);
+          const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${encodedLink}`;
+
+console.log("URL API:", fullUrl);
           if (!fullUrl.startsWith("http"))
             throw new Error(`URL inválida: ${fullUrl}`);
           const response = await fetch(fullUrl);
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
+          console.log("STATUS:", response.status);
+console.log("OK:", response.ok);
           const data = await response.json();
           if (!data || !data.data)
             throw new Error("No se encontraron datos del blog");
