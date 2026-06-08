@@ -58,8 +58,7 @@ const mensajeInicial: Message = {
   respuesta: GREETING_REPLY,
 };
 
-// 1. Creamos un fallback por si la API tarda en responder o falla
-const FALLBACK_SALUDO = "...";
+
 
 const ChatbotWidget: React.FC = () => {
   // Estado persistente 
