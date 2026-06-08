@@ -1,0 +1,29 @@
+---
+import Layout from "src/layouts/Layout.astro";
+import contactoBg from "@images/contacto/contactoBackground.webp";
+import AboutHeroBackground from "src/components/about/AboutHeroBackground";
+import { getImage } from "astro:assets";
+import HeroSubtitle from "../components/contacto/HeroSubtitle";
+const optimizedHero = await getImage({ src: contactoBg, format: 'webp', width: 800 });
+---
+
+<Layout 
+  title="Productos de Tami Maquinarias | Equipos para Negocios"
+  description="Contacto Tami Maquinarias"
+  canonicalUrl="https://tamimaquinarias.com/productos/"
+>
+ <section
+    class="relative flex items-center justify-center text-white h-[30vh] sm:h-screen min-h-[47vh] px-4 overflow-hidden"
+  >
+   <AboutHeroBackground client:load imageSrc={optimizedHero.src} />
+   <div
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
+      bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+    >
+      <h2
+        class="text-xl sm:text-5xl lg:text-7xl font-extrabold mb-2 leading-tight"
+      >CONTACTO</h2>
+      <HeroSubtitle client:load />
+    </div>
+ </section>
+</Layout>
