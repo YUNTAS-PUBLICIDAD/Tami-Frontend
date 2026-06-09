@@ -114,7 +114,6 @@ const isProductInCategory = (product: ApiProduct, category: keyof typeof CATEGOR
   const productText = normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''} ${product.seccion || ''}`);
   if (!productText) return false;
 
-  // "negocio" in this chat flow usually means products for commerce; include machinery-related terms too.
   if (category === 'negocio') {
     return includesAny(productText, [...CATEGORY_KEYWORDS.negocio, ...CATEGORY_KEYWORDS.maquinaria]);
   }
@@ -306,48 +305,13 @@ const productSearchText = (product: ApiProduct): string =>
   normalizeText(`${product.nombre || ''} ${product.titulo || ''} ${product.link || ''}`);
 
 const SEARCH_STOPWORDS = new Set([
-  'busco',
-  'buscar',
-  'necesito',
-  'quiero',
-  'deseo',
-  'tienen',
-  'tienes',
-  'hay',
-  'alguna',
-  'alguno',
-  'un',
-  'una',
-  'el',
-  'la',
-  'los',
-  'las',
-  'de',
-  'del',
-  'para',
-  'por',
-  'favor',
-  'cotizar',
-  'cotizacion',
-  'info',
-  'informacion',
-  'sobre',
-  'producto',
-  'productos',
-  'maquinaria',
+  'busco', 'buscar', 'necesito', 'quiero', 'deseo', 'tienen', 'tienes', 'hay', 'alguna', 'alguno',
+  'un', 'una', 'el', 'la', 'los', 'las', 'de', 'del', 'para', 'por', 'favor', 'cotizar',
+  'cotizacion', 'info', 'informacion', 'sobre', 'producto', 'productos', 'maquinaria',
 ]);
 
 const GREETING_WORDS = [
-  'hola',
-  'buenas',
-  'buenos dias',
-  'buenas tardes',
-  'buenas noches',
-  'alo',
-  'hello',
-  'hi',
-  'ey',
-  'que tal',
+  'hola', 'buenas', 'buenos dias', 'buenas tardes', 'buenas noches', 'alo', 'hello', 'hi', 'ey', 'que tal',
 ];
 
 const extractCoreProductQuery = (query: string): string => {
@@ -428,7 +392,6 @@ const findProductsByKeywordOverlap = async (query: string): Promise<CatalogMatch
     const matchedTokens = tokens.filter((token) => text.includes(token));
     if (matchedTokens.length === 0) continue;
 
-    // Weighted overlap score: more matched tokens + longer tokens = stronger match.
     const tokenLengthScore = matchedTokens.reduce((acc, token) => acc + token.length, 0);
     const coverageScore = (matchedTokens.length / tokens.length) * 100;
     const score = Math.round(coverageScore + tokenLengthScore);
@@ -451,25 +414,9 @@ const looksLikeProductSearch = (normalized: string, lastBotMessage?: MessageMini
   const shortDirectQuery = tokens.length > 0 && tokens.length <= 3 && !includesAny(normalized, ['asesor', 'whatsapp', 'precio']);
 
   const hasProductHint = includesAny(normalized, [
-    'busco',
-    'quiero',
-    'necesito',
-    'tienen',
-    'producto',
-    'maquina',
-    'maquinaria',
-    'selladora',
-    'purificador',
-    'ventilador',
-    'soldadora',
-    'taladro',
-    'sierra',
-    'lijadora',
-    'compresor',
-    'aspiradora',
-    'impresora',
-    'embalaje',
-    'induccion',
+    'busco', 'quiero', 'necesito', 'tienen', 'producto', 'maquina', 'maquinaria', 'selladora',
+    'purificador', 'ventilador', 'soldadora', 'taladro', 'sierra', 'lijadora', 'compresor',
+    'aspiradora', 'impresora', 'embalaje', 'induccion',
   ]);
 
   return userWasAskedForProduct || hasProductHint || shortDirectQuery;
@@ -577,7 +524,7 @@ const buildCategoryReply = async (category: keyof typeof CATEGORY_KEYWORDS): Pro
         tipo: 'texto',
         respuesta: productNames
           ? `Perfecto 💪 Tenemos ${productNames} y más. Cuéntame qué necesitas producir y te ayudo a elegir.`
-          : CATEGORY_REPLIES.negocio,
+          : CATEGIES_REPLIES.negocio,
       },
       nextPaso: 'esperando_producto',
       contextPatch: {
@@ -606,12 +553,6 @@ const isBroadCategoryIntent = (normalized: string): boolean =>
 
 const looksLikeOrderTracking = (normalized: string): boolean =>
   includesAny(normalized, ORDER_TRACKING_PHRASES);
-
-const extractPrefixedProductTokens = (query: string): string[] => {
-  const normalized = extractCoreProductQuery(query);
-  if (!normalized) return [];
-  return normalized.split(' ').filter(Boolean);
-};
 
 const findProductsByPrefix = async (query: string): Promise<{ exact: CatalogMatch | null; exactCandidates: CatalogMatch[]; prefixed: CatalogMatch[] }> => {
   const catalog = await getCatalog();
@@ -650,127 +591,6 @@ const findProductsByPrefix = async (query: string): Promise<{ exact: CatalogMatc
   };
 };
 
-const resolveProductQuery = async (
-  query: string,
-  preferredCategory?: keyof typeof CATEGORY_KEYWORDS | null
-): Promise<LocalReplyResult | null> => {
-  const normalizedQuery = extractCoreProductQuery(query);
-  if (!normalizedQuery) return null;
-
-  const scriptedIntent = findScriptedIntent(normalizedQuery);
-  const prefixMatches = await findProductsByPrefix(query);
-  const fallbackMatches = await findCatalogMatches(query);
-  const keywordOverlapMatches = await findProductsByKeywordOverlap(query);
-  const displayQuery = fallbackMatches.normalizedQuery || normalizedQuery;
-
-  const exactCandidates = prefixMatches.exactCandidates;
-  const uniqueCandidates = Array.from(
-    new Map(
-      [...exactCandidates, ...prefixMatches.prefixed, ...keywordOverlapMatches].map((item) => [item.link, item])
-    ).values()
-  );
-
-  const rankedCandidates = preferredCategory
-    ? [...uniqueCandidates].sort((a, b) => {
-      const aInCategory = isProductInCategory(a.product, preferredCategory);
-      const bInCategory = isProductInCategory(b.product, preferredCategory);
-      if (aInCategory !== bInCategory) return aInCategory ? -1 : 1;
-      return b.score - a.score;
-    })
-    : uniqueCandidates;
-
-  if (exactCandidates.length === 1) {
-    const match = exactCandidates[0];
-    return buildProductContactReply(match, scriptedIntent?.intro);
-  }
-
-  if (exactCandidates.length > 1) {
-    const options = rankedCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: `Encontré varias opciones para "${displayQuery}". ¿Cuál de estas buscas?\n${options}`,
-      },
-    };
-  }
-
-  if (fallbackMatches.exact) {
-    return buildProductContactReply(fallbackMatches.exact, scriptedIntent?.intro);
-  }
-
-  if (uniqueCandidates.length > 1) {
-    const options = rankedCandidates.slice(0, 4).map((item) => `• ${productLabel(item.product)}`).join('\n');
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: `Encontré varias opciones parecidas para "${displayQuery}". ¿Cuál te interesa exactamente?\n${options}`,
-      },
-    };
-  }
-
-  if (rankedCandidates.length === 1) {
-    const match = rankedCandidates[0];
-    return buildProductContactReply(match, scriptedIntent?.intro);
-  }
-
-  if (fallbackMatches.related.length > 0) {
-    const relatedLines = fallbackMatches.related.map((item) => `• ${productLabel(item.product)}`).join('\n');
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: `No vi exactamente "${displayQuery}", pero sí tengo opciones parecidas que te pueden servir:\n${relatedLines}\n\n👉 Te dejo una opción relacionada aquí:`,
-        link_producto: fallbackMatches.related[0].link,
-        link_whatsapp: DEFAULT_WHATSAPP,
-      },
-    };
-  }
-
-  // If we couldn't find an exact match, but we can detect a category from the query,
-  // recommend other products from that category so the user can pick an alternative.
-  const guessedCategory = preferredCategory || getCategoryFromQuery(normalizedQuery) || getCategoryFromQuery(normalizeText(query));
-  if (guessedCategory) {
-    const catProducts = await getCategoryProducts(guessedCategory);
-    const productNames = formatProductNames(catProducts);
-    if (productNames) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: `No tenemos "${displayQuery}" 😅. Pero te recomiendo estos productos de ${guessedCategory}: ${productNames}. ¿Cuál te interesa?`,
-          link_whatsapp: DEFAULT_WHATSAPP,
-        },
-        nextPaso: 'esperando_producto',
-      };
-    }
-  }
-
-  if (scriptedIntent) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: `No tenemos "${displayQuery}" por ahora 😅, pero si me cuentas un poquito más de lo que necesitas, te recomiendo una opción ideal o te conecto por WhatsApp.`,
-        link_whatsapp: DEFAULT_WHATSAPP,
-      },
-    };
-  }
-
-  return null;
-};
-
-const buildUnmatchedProductReply = (query: string): LocalReplyResult => ({
-  message: {
-    role: 'bot',
-    tipo: 'texto',
-    respuesta: `No tenemos "${query}" por ahora 😅. Si me dices el nombre completo o para qué lo necesitas, te ayudo a ubicar la mejor opción. También puedo pasarte a WhatsApp si prefieres.`,
-    link_whatsapp: DEFAULT_WHATSAPP,
-  },
-  nextPaso: 'esperando_producto',
-});
-
 export const getLocalReply = async (
   text: string,
   context: ChatContextMinimal | null,
@@ -779,14 +599,13 @@ export const getLocalReply = async (
   const normalized = normalizeText(text);
   const currentPaso = context?.paso || '';
   const lastBotMessage = [...messages].reverse().find((msg) => msg.role === 'bot');
+
   if (currentPaso === 'local_esperando_datos_asesor') {
     const datosIngresados = collapseWhitespace(text);
 
-    // 1. Estructuramos el mensaje plano usando negritas de WhatsApp para el asesor
     const textoWhatsApp = `Hola Tami Maquinarias, solicito un asesor experto.\n\n` +
       `• *Información del cliente:* ${datosIngresados}`;
 
-    // 2. Aplicamos encodeURIComponent para que los espacios y saltos de línea viajen seguros
     const linkDinamicoAsesor = `https://wa.me/51978883199?text=${encodeURIComponent(textoWhatsApp)}`;
 
     return {
@@ -798,11 +617,10 @@ export const getLocalReply = async (
       },
       nextPaso: 'menu_principal',
       contextPatch: {
-        rubro: datosIngresados, // Guardamos la metadata limpia en el contexto de React
+        rubro: datosIngresados,
       },
     };
   }
-
 
   if (currentPaso === 'menu_principal' && includesAny(normalized, ['info', 'informacion', 'cotizacion', 'cotizar'])) {
     return {
@@ -833,47 +651,15 @@ export const getLocalReply = async (
 
   const explicitCategory = getExplicitCategoryIntent(normalized);
   if (explicitCategory && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
-    //return buildCategoryReply(explicitCategory);
-  }
-
-  if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
-    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
-      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
-      : null;
-    // const productReply = await resolveProductQuery(text, preferredCategory);
-    // return productReply || buildUnmatchedProductReply(text.trim());
+    // Para control local o bypass
   }
 
   if (currentPaso === 'esperando_producto') {
-    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
-      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
-      : null;
-
-    //const productReply = await resolveProductQuery(text, preferredCategory);
-    //if (productReply) return productReply;
-
-    //if (looksLikeProductSearch(normalized, lastBotMessage)) {
-    //return buildUnmatchedProductReply(text.trim());
-    //}
-
     return {
       message: {
         role: 'bot',
         tipo: 'texto',
-        respuesta:
-          'Para tener una mejor comunicación, mejor escríbeme por WhatsApp y te ayudo directamente con lo que necesites. 📲',
-        link_whatsapp: DEFAULT_WHATSAPP,
-      },
-      nextPaso: 'menu_principal',
-    };
-  }
-
-  if (currentPaso === 'local_esperando_datos_asesor') {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'fin_flujo',
-        respuesta: '¡Buenísimo! Ya te conecto con el asesor experto en tu rubro. Te escribirá en un par de minutos por WhatsApp. 📲',
+        respuesta: 'Para tener una mejor comunicación, mejor escríbeme por WhatsApp y te ayudo directamente con lo que necesites. 📲',
         link_whatsapp: DEFAULT_WHATSAPP,
       },
       nextPaso: 'menu_principal',
@@ -891,23 +677,6 @@ export const getLocalReply = async (
     };
   }
 
-  /*if (looksLikeProductSearch(normalized, lastBotMessage)) {
-    const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
-      ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
-      : null;
-    const productReply = await resolveProductQuery(text, preferredCategory);
-    if (productReply) return productReply;
-  }*/
-
-  if (includesAny(normalized, ['busco maquinaria', 'maquinaria', 'maquina', 'selladora', 'embalaje', 'negocio'])) {
-    //return {
-    //  message: {
-    //    role: 'bot',
-    //    tipo: 'texto',
-    //    respuesta: '¡Genial! Vendemos purificador de agua, selladora de vasos manual, ventilador holográfico y más. ¿En qué productos estás interesado?',
-    //  },
-    //  };
-  }
   return null;
 };
 
@@ -916,7 +685,6 @@ export const getLocalReply = async (
  */
 export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinimal> => {
   try {
-    // Jalamos la URL base desde tu variable de entorno configurada
     const baseUrl = import.meta.env.PUBLIC_API_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
     const url = `${baseUrl}/api/v1/chatbot/sandbox-ia`;
 
@@ -937,7 +705,6 @@ export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinim
 
     const data = await response.json();
 
-    // Mapeamos la respuesta al formato MessageMinimal que maneja tu frontend
     return {
       role: 'bot',
       tipo: 'texto',
