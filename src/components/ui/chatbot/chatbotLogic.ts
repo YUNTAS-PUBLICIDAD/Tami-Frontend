@@ -779,196 +779,30 @@ export const getLocalReply = async (
   const normalized = normalizeText(text);
   const currentPaso = context?.paso || '';
   const lastBotMessage = [...messages].reverse().find((msg) => msg.role === 'bot');
+  if (currentPaso === 'local_esperando_datos_asesor') {
+    const datosIngresados = collapseWhitespace(text);
 
-  if (currentPaso === PRODUCT_CONTACT_STEP_1) {
-    const usage = extractUsage(text);
+    // 1. Estructuramos el mensaje plano usando negritas de WhatsApp para el asesor
+    const textoWhatsApp = `Hola Tami Maquinarias, solicito un asesor experto.\n\n` +
+      `• *Información del cliente:* ${datosIngresados}`;
 
-    if (!usage) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: 'Respóndeme con el uso. Ejemplo: negocio o personal.',
-        },
-        nextPaso: PRODUCT_CONTACT_STEP_1,
-        contextPatch: {
-          uso: usage,
-        },
-      };
-    }
-
-    // If the user included the city in the same message (e.g., "personal, Lima"),
-    // extract it and skip the city question.
-    const cityInline = extractCity(text);
-    if (cityInline) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: 'Perfecto. Ahora dime tu nombre.',
-        },
-        nextPaso: PRODUCT_CONTACT_STEP_3,
-        contextPatch: {
-          uso: usage,
-          ciudad: cityInline,
-        },
-      };
-    }
+    // 2. Aplicamos encodeURIComponent para que los espacios y saltos de línea viajen seguros
+    const linkDinamicoAsesor = `https://wa.me/51978883199?text=${encodeURIComponent(textoWhatsApp)}`;
 
     return {
       message: {
         role: 'bot',
-        tipo: 'texto',
-        respuesta: 'Perfecto. Ahora dime en qué ciudad sería el envío.',
-      },
-      nextPaso: PRODUCT_CONTACT_STEP_2,
-      contextPatch: {
-        uso: usage,
-      },
-    };
-  }
-
-  if (currentPaso === PRODUCT_CONTACT_STEP_2) {
-    const city = extractCity(text);
-
-    if (!city) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: 'Dime la ciudad del envío. Ejemplo: Lima.',
-        },
-        nextPaso: PRODUCT_CONTACT_STEP_2,
-        contextPatch: {
-          ciudad: undefined,
-        },
-      };
-    }
-
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: 'Perfecto. Ahora dime tu nombre.',
-      },
-      nextPaso: PRODUCT_CONTACT_STEP_3,
-      contextPatch: {
-        ciudad: city,
-      },
-    };
-  }
-
-  if (currentPaso === PRODUCT_CONTACT_STEP_3) {
-    const nombre = extractName(text);
-
-    if (!nombre) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: 'Ahora dime tu nombre. Ejemplo: Adriano.',
-        },
-        nextPaso: PRODUCT_CONTACT_STEP_3,
-        contextPatch: {
-          nombre,
-        },
-      };
-    }
-
-    // If the user provided the phone together with the name, finish the flow now.
-    const telefonoInline = extractPhone(text);
-    if (telefonoInline) {
-      const whatsappLinkNow = buildWhatsAppProductLink({
-        ...context,
-        nombre,
-        telefono: telefonoInline,
-      });
-
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: 'Listo, ya tengo tus datos. Te dejo WhatsApp para seguir con tu atención.',
-          link_whatsapp: whatsappLinkNow,
-        },
-        nextPaso: 'menu_principal',
-        contextPatch: {
-          nombre,
-          telefono: telefonoInline,
-        },
-      };
-    }
-
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: 'Perfecto. Ahora dime tu número de teléfono.',
-      },
-      nextPaso: PRODUCT_CONTACT_STEP_4,
-      contextPatch: {
-        nombre,
-      },
-    };
-  }
-
-  if (currentPaso === PRODUCT_CONTACT_STEP_4) {
-    const telefono = extractPhone(text);
-
-    if (!telefono) {
-      return {
-        message: {
-          role: 'bot',
-          tipo: 'texto',
-          respuesta: 'Ahora envíame tu número de teléfono. Ejemplo: 940745374.',
-        },
-        nextPaso: PRODUCT_CONTACT_STEP_4,
-        contextPatch: {
-          telefono,
-        },
-      };
-    }
-
-    const whatsappLink = buildWhatsAppProductLink({
-      ...context,
-      telefono,
-    });
-
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: 'Listo, ya tengo tus datos. Te dejo WhatsApp para seguir con tu atención.',
-        link_whatsapp: whatsappLink,
+        tipo: 'fin_flujo',
+        respuesta: '¡Buenísimo! Ya te conecto con el asesor experto en tu rubro. Te escribirá en un par de minutos por WhatsApp. 📲',
+        link_whatsapp: linkDinamicoAsesor,
       },
       nextPaso: 'menu_principal',
       contextPatch: {
-        telefono,
+        rubro: datosIngresados, // Guardamos la metadata limpia en el contexto de React
       },
     };
   }
 
-  if (looksLikeGreeting(normalized)) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: GREETING_REPLY,
-      },
-      nextPaso: 'esperando_producto',
-    };
-  }
-
-  if (looksLikeOrderTracking(normalized)) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: '¡Claro! Escríbeme tu número de pedido, nombre o el WhatsApp con el que hiciste la compra para buscarlo. 🔍',
-      },
-      nextPaso: 'esperando_datos_pedido',
-    };
-  }
 
   if (currentPaso === 'menu_principal' && includesAny(normalized, ['info', 'informacion', 'cotizacion', 'cotizar'])) {
     return {
@@ -999,27 +833,28 @@ export const getLocalReply = async (
 
   const explicitCategory = getExplicitCategoryIntent(normalized);
   if (explicitCategory && (currentPaso === 'menu_principal' || currentPaso === 'esperando_producto')) {
-    return buildCategoryReply(explicitCategory);
+    //return buildCategoryReply(explicitCategory);
   }
 
   if (currentPaso === 'menu_principal' && looksLikeProductSearch(normalized, lastBotMessage) && !isBroadCategoryIntent(normalized)) {
     const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
       ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
       : null;
-    const productReply = await resolveProductQuery(text, preferredCategory);
-    return productReply || buildUnmatchedProductReply(text.trim());
+    // const productReply = await resolveProductQuery(text, preferredCategory);
+    // return productReply || buildUnmatchedProductReply(text.trim());
   }
 
   if (currentPaso === 'esperando_producto') {
     const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
       ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
       : null;
-    const productReply = await resolveProductQuery(text, preferredCategory);
-    if (productReply) return productReply;
 
-    if (looksLikeProductSearch(normalized, lastBotMessage)) {
-      return buildUnmatchedProductReply(text.trim());
-    }
+    //const productReply = await resolveProductQuery(text, preferredCategory);
+    //if (productReply) return productReply;
+
+    //if (looksLikeProductSearch(normalized, lastBotMessage)) {
+    //return buildUnmatchedProductReply(text.trim());
+    //}
 
     return {
       message: {
@@ -1056,23 +891,66 @@ export const getLocalReply = async (
     };
   }
 
-  if (looksLikeProductSearch(normalized, lastBotMessage)) {
+  /*if (looksLikeProductSearch(normalized, lastBotMessage)) {
     const preferredCategory = (context?.categoria && ['negocio', 'maquinaria', 'decoracion'].includes(context.categoria))
       ? (context.categoria as keyof typeof CATEGORY_KEYWORDS)
       : null;
     const productReply = await resolveProductQuery(text, preferredCategory);
     if (productReply) return productReply;
-  }
+  }*/
 
   if (includesAny(normalized, ['busco maquinaria', 'maquinaria', 'maquina', 'selladora', 'embalaje', 'negocio'])) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: '¡Genial! Vendemos purificador de agua, selladora de vasos manual, ventilador holográfico y más. ¿En qué productos estás interesado?',
+    //return {
+    //  message: {
+    //    role: 'bot',
+    //    tipo: 'texto',
+    //    respuesta: '¡Genial! Vendemos purificador de agua, selladora de vasos manual, ventilador holográfico y más. ¿En qué productos estás interesado?',
+    //  },
+    //  };
+  }
+  return null;
+};
+
+/**
+ * Envía el mensaje al servidor Laravel para ser procesado por la IA de Groq (Llama 3)
+ */
+export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinimal> => {
+  try {
+    // Jalamos la URL base desde tu variable de entorno configurada
+    const baseUrl = import.meta.env.PUBLIC_API_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+    const url = `${baseUrl}/api/v1/chatbot/sandbox-ia`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      body: JSON.stringify({
+        mensaje: mensajeUsuario,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error en servidor: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Mapeamos la respuesta al formato MessageMinimal que maneja tu frontend
+    return {
+      role: 'bot',
+      tipo: 'texto',
+      respuesta: data.asistente_ia || 'Lo siento, no pude procesar tu solicitud.',
+      link_whatsapp: 'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n.',
+    };
+
+  } catch (error) {
+    console.error('Error al conectar con la IA de Groq:', error);
+    return {
+      role: 'bot',
+      tipo: 'texto',
+      respuesta: 'Hola, en este momento tengo problemas técnicos para responderte. Por favor, vuelve a intentarlo en unos instantes.',
     };
   }
-
-  return null;
 };

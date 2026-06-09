@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
-import { getLocalReply, GREETING_REPLY } from "./chatbotLogic";
+import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
 import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
 
 interface Opcion {
-  label: string;
-  valor: string;
+  label: string;
+  valor: string;
 }
 
 interface ChatContext {
@@ -28,23 +28,23 @@ interface ChatContext {
 }
 
 interface Message {
-  role: 'bot' | 'user';
-  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
-  respuesta: string;
-  opciones?: Opcion[];
-  productos?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  }[];
-  producto?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  };
-  link_whatsapp?: string;
+  role: 'bot' | 'user';
+  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
+  respuesta: string;
+  opciones?: Opcion[];
+  productos?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  }[];
+  producto?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  };
+  link_whatsapp?: string;
 }
 
 const MESSAGES_KEY = 'tami_chat_messages';
@@ -82,7 +82,7 @@ const ChatbotWidget: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isFirstBubble = useRef(true);
- 
+
 
   // If we have only the greeting message shown and default context, move to expecting product
   useEffect(() => {
@@ -240,6 +240,58 @@ const ChatbotWidget: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // 1. Evaluamos si el chatbot local basado en reglas sabe qué responder
+      const localReply = await getLocalReply(valorEnviado, context, messages);
+
+      if (localReply) {
+        await new Promise((resolve) => setTimeout(resolve, 700));
+        const nextPaso = localReply.nextPaso;
+        if (nextPaso || localReply.contextPatch) {
+          setContext((prev) => ({
+            ...(prev || { paso: "menu_principal" }),
+            ...(localReply.contextPatch || {}),
+            ...(nextPaso ? { paso: nextPaso } : {}),
+          }));
+        }
+        setMessages((prev) => [...prev, localReply.message]);
+        return;
+      }
+
+      // 2. 🚀 FALLBACK INTELIGENTE: Si el bot viejo da null, entra a tallar tu IA de Groq en local
+      // Llamamos a la función fetchIaReply que creamos en chatbotLogic.ts
+      const botMessage = await fetchIaReply(valorEnviado);
+
+      // Simulamos un retraso natural de escritura (1.2 segundos) para que se sienta humano
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      // Pintamos la respuesta de Llama 3 en la pantalla
+      setMessages(prev => [...prev, botMessage]);
+
+    } catch (error) {
+      console.error("Error en Chatbot Fallback:", error);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setMessages(prev => [...prev, {
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
+        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
+      }]);
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 60);
+    }
+  };
+
+
+
+  /*const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
+    const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
       const localReply = await getLocalReply(valorEnviado, context, messages);
       if (localReply) {
         await new Promise((resolve) => setTimeout(resolve, 700));
@@ -298,7 +350,7 @@ const ChatbotWidget: React.FC = () => {
         inputRef.current?.focus();
       }, 60);
     }
-  };
+  };*/
 
   return (
     <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
@@ -310,7 +362,7 @@ const ChatbotWidget: React.FC = () => {
             <div className="flex items-center gap-2.5 relative z-10">
               <div className="relative">
                 <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
-                  <ChatbotIcon/>
+                  <ChatbotIcon />
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
               </div>
@@ -522,7 +574,7 @@ const ChatbotWidget: React.FC = () => {
             aria-label="Abrir Chatbot"
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-            <ChatbotIcon/>
+            <ChatbotIcon />
             <span className="absolute -top-1.5 -right-1.5 flex h-7 w-7">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-7 w-7 bg-red-500 border-4 border-white shadow-md items-center justify-center text-[10px] font-extrabold text-white">
