@@ -1,11 +1,12 @@
 import React from 'react';
 import type { RefObject } from 'react';
 import ChatbotIcon from './ChatbotIcon';
-
+import { useChatbotIcon } from 'src/hooks/useChatbotConfig';
 interface Opcion {
   label: string;
   valor: string;
 }
+
 
 interface Message {
   role: 'bot' | 'user';
@@ -50,7 +51,7 @@ const defaultMessages: Message[] = [
   {
     role: 'bot',
     tipo: 'texto',
-    respuesta: '¡Hola! 👋 Soy Tami Bot. ¿En qué puedo ayudarte?',
+    respuesta: '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?',
   },
 ];
 
@@ -69,13 +70,16 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   onSendMessage = noop,
   onOpcionClick = noop,
 }) => {
+  const { colorInicial, colorFinal } = useChatbotIcon();
   const isInteractive = !!messagesEndRef;  
   return (
     <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#2A938B] to-[#0D2D2B] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+      <div
+        style={{ background: `linear-gradient(to right, ${colorInicial}, ${colorFinal})` }}
+        className="px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0"
+      >        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
         <div className="flex items-center gap-2.5 relative z-10">
           <div className="relative">
             <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">

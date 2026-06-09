@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import apiClient from 'src/services/apiClient'; // Importación nativa de tu cliente estructurado
+import ChatbotIcon from 'src/components/ui/chatbot/ChatbotIcon.tsx';
 import { config } from "../../../../config.ts";
+
+interface UploaderContentProps {
+  onClose: () => void; // Función para indicarle al Swal que se cierre desde adentro
+}
 
 export default function IconModal() {
   const placeholderSRC = robotIcon.src;
@@ -90,7 +95,9 @@ export default function IconModal() {
       }
     }finally {
       setIsUploading(false);
+      //onClose();
     }
+
   };
 
   // Cancela la operación y destruye la vista previa temporal
@@ -126,6 +133,8 @@ export default function IconModal() {
     // Si es un string normal, opera de forma idéntica a antes
     return iconUrl.startsWith("http") ? iconUrl : `${config.apiUrl}${iconUrl}`;
   };
+
+  
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm w-64">
