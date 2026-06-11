@@ -78,6 +78,12 @@ export const config = {
     chatbot: {
       newIcon: "api/v1/chatbot/icon",
       getIcon: "api/v1/chatbot/icon",
+      newHeadColor:"api/v1/chatbot/head-color",
+      getHeadColor:"api/v1/chatbot/head-color",
+      newSalute:"api/v1/chatbot/salute",
+      getSalute:"api/v1/chatbot/salute",
+      newPosition: "api/v1/chatbot/posicion",
+      getPosition: "api/v1/chatbot/posicion",
     }
   },
   socket: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useChatbotIcon } from 'src/hooks/useChatbotIcon';
+import { useChatbotIcon } from 'src/hooks/useChatbotConfig';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 
 
