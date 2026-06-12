@@ -20,6 +20,7 @@ export interface ChatContextMinimal {
   nombre?: string;
   telefono?: string;
   pedido?: string;
+  rubro?: string,
   referencia_pedido?: string;
 }
 
