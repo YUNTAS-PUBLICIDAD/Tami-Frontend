@@ -2,7 +2,7 @@ name: Deploy Astro Static Site
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "pre-main"]
   workflow_dispatch:
   repository_dispatch:
     types: [rebuild-frontend]
