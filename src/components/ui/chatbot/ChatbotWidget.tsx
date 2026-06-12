@@ -520,7 +520,7 @@ const ChatbotWidget: React.FC = () => {
           )}
           <button
             onClick={toggleChat}
-            className="relative group w-16 h-16 rounded-[24px] bg-gradient-to-tr from-[#015f86] to-[#0d9488] text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 active:shadow-inner"
+            className="relative group w-16 h-16 rounded-[24px] bg-gradient-to-tr from-[#015f86]/0 to-[#0d9488]/0 text-white shadow-[0_15px_35px_rgba(1,95,134,0.3)] flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-110 hover:-translate-y-1 active:scale-95 active:shadow-inner"
             aria-label="Abrir Chatbot"
           >
             <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
