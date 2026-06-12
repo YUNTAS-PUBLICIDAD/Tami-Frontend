@@ -20,6 +20,7 @@ export interface ChatContextMinimal {
   nombre?: string;
   telefono?: string;
   pedido?: string;
+  rubro?: string,
   referencia_pedido?: string;
 }
 
@@ -30,6 +31,11 @@ export interface MessageMinimal {
   link_producto?: string;
   link_whatsapp?: string;
 }
+
+const SEARCH_STOPWORDS = new Set([
+  'a', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'desde', 'durante', 'en',
+  'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'segun', 'sin', 'so',
+])
 
 export const DEFAULT_WHATSAPP =
   'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20informaci%C3%B3n%20para%20mi%20negocio.';
