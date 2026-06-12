@@ -48,11 +48,11 @@ const PopupForm = ({
   return (
     <div
       id="catalog-modal"
-      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+      className={`${isPreview ? "absolute inset-0 z-10" : "fixed inset-0 bg-black/60 backdrop-blur-sm z-50"} flex items-center justify-center ${isPreview && previewMode === "desktop" ? "" : "px-4"} modal-overlay ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
       <div
-        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[448px] max-w-none rounded-2xl shadow-2xl" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row w-[448px] max-w-none sm:w-[85%] sm:max-w-4xl sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 ${!isPreview ? "bg-[#0f172a]" : "bg-white"} ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
-        style={isPreview && previewMode === "mobile" ? { height: "640px" } : (!isPreview ? { height: "640px" } : {})}
+        className={`flex ${isPreview ? (previewMode === "mobile" ? "flex-col w-[448px] max-w-none rounded-2xl shadow-2xl" : "flex-row w-[896px] max-w-none h-[550px] rounded-2xl shadow-lg border-none translate-y-0") : "flex-col sm:flex-row w-[448px] max-w-none h-[640px] sm:w-[85%] sm:max-w-4xl sm:h-[550px] rounded-2xl shadow-2xl"} overflow-hidden relative transition-all duration-500 ${!isPreview ? "bg-[#0f172a]" : "bg-white"} ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}`}
+        style={isPreview && previewMode === "mobile" ? { height: "640px" } : {}}
       >
         {/* DESKTOP Image 1 */}
         <div
@@ -61,7 +61,7 @@ const PopupForm = ({
           <img
             src={settings?.popup_image_url || asesoriaImg.src}
             alt="Imagen Izquierda"
-            className={`absolute inset-0 w-full h-full object-cover select-none ${isPreview && previewMode === "desktop" ? "scale-100" : "scale-105"}`}
+            className={`absolute inset-0 w-full h-full object-cover object-center select-none scale-100`}
           />
         </div>
 
@@ -147,7 +147,7 @@ const PopupForm = ({
 
               <form
                 onSubmit={handleSubmit}
-                className={`flex flex-col gap-0.5 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[185px]" : "mt-32 mb-[40px] max-w-[280px]") : "mt-auto mb-[18px] sm:mb-4 sm:mt-40 max-w-[185px] sm:max-w-[280px] sm:translate-y-0"} w-full mx-auto`}
+                className={`flex flex-col gap-0.5 animate-fadeInUp ${isPreview ? (previewMode === "mobile" ? "mt-auto mb-2 max-w-[185px]" : "mt-35 mb-[40px] max-w-[280px]") : "mt-auto mb-[18px] sm:mb-4 sm:mt-35 max-w-[185px] sm:max-w-[280px] sm:translate-y-0"} w-full mx-auto`}
               >
                 <div className={`relative ${isMobilePreview ? "mb-1" : "mb-1 sm:mb-3"}`}>
                   {errors.general_top && (
