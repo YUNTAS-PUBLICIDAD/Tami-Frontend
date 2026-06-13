@@ -123,6 +123,9 @@ const EmailEditor = ({
   return (
     <div className="email-editor-wrapper border rounded-md border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm flex flex-col">
       <style>{`
+        .email-editor-content {
+           text-align: justify;
+        }
         .email-editor-content ul {
            list-style-type: disc;
            padding-left: 24px;
