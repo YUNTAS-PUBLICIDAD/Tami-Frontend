@@ -2,7 +2,7 @@ name: Deploy Astro Static Site
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "pre-main"]
   workflow_dispatch:
   repository_dispatch:
     types: [rebuild-frontend]
@@ -55,7 +55,16 @@ jobs:
           echo "❌ No se pudo establecer conexión SSH después de 3 intentos"
           exit 1
 
-      # ✅ MEJORADO: Deploy con reintentos automáticos
+      # ✅ NUEVO: Determinar la ruta de destino según la rama
+      - name: Set Target Path
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/pre-main" ]]; then
+            echo "DEST_PATH=~/domains/staging.tamimaquinarias.com/public_html/" >> $GITHUB_ENV
+          else
+            echo "DEST_PATH=~/domains/tamimaquinarias.com/public_html/" >> $GITHUB_ENV
+          fi
+
+      # ✅ MEJORADO: Deploy dinámico según la rama
       - name: Deploy with Rsync
         uses: nick-fields/retry@v3   # modificacion del nombre y version para que funcione el deploy , de cambio a V3 por que pronto github dejara obsoleto la version v2 pq era la que manejaba node 16
         with:
@@ -63,6 +72,8 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 30
           command: |
+            echo "🚀 Desplegando a: ${{ env.DEST_PATH }}"
+
             rsync -avz --delete \
               --timeout=300 \
               --exclude='.git/' \
@@ -72,7 +83,7 @@ jobs:
               --exclude='node_modules/' \
               -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o ServerAliveInterval=30 -o ServerAliveCountMax=3" \
               ./dist/ \
-              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/domains/tamimaquinarias.com/public_html/
+              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ env.DEST_PATH }}
 
       - name: Verify deployment
         run: |
@@ -80,7 +91,7 @@ jobs:
           ssh -p ${{ secrets.SERVER_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'ls -la ~/domains/tamimaquinarias.com/public_html/ | head -10'
+            'ls -la ${{ env.DEST_PATH }} | head -10'
 
       - name: Notify completion
         run: echo "🚀 Deploy Astro completado con éxito"

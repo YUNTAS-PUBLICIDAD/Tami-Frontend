@@ -1,5 +1,5 @@
 import React from 'react';
-import { useChatbotIcon } from 'src/hooks/useChatbotIcon';
+import { useChatbotIcon } from 'src/hooks/useChatbotConfig';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 
 
@@ -24,6 +24,8 @@ const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12"}) => 
     <img 
       src={iconUrl || defaultIcon} 
       alt="Chatbot Icon" 
+      width={469}
+      height={469}
       className={`object-cover rounded-full shadow-sm ${className}`}
       // Si la URL falla al cargar en el navegador, cae en el icono por defecto
       onError={(e) => {
