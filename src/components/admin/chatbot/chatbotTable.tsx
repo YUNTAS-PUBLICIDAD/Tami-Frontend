@@ -4,7 +4,6 @@ import Swal from 'sweetalert2';
 import IconUploader from './IconUploader'
 import GenericModal from '../ui/GenericModal'
 import ChatbotScreen from 'src/components/ui/chatbot/ChatbotScreen'
-import ColorPickerField from '../popups/components/ColorPickerField'
 import GradientPickerField from './gradientPickerField';
 import apiClient from 'src/services/apiClient';
 import { config } from 'config';

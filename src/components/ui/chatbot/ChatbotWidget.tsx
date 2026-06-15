@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
-import { getLocalReply, GREETING_REPLY } from "./chatbotLogic";
+import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
 import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
 import ChatbotScreen from './ChatbotScreen';
 
 interface Opcion {
-  label: string;
-  valor: string;
+  label: string;
+  valor: string;
 }
 
 interface ChatContext {
@@ -29,23 +29,23 @@ interface ChatContext {
 }
 
 interface Message {
-  role: 'bot' | 'user';
-  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
-  respuesta: string;
-  opciones?: Opcion[];
-  productos?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  }[];
-  producto?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  };
-  link_whatsapp?: string;
+  role: 'bot' | 'user';
+  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
+  respuesta: string;
+  opciones?: Opcion[];
+  productos?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  }[];
+  producto?: {
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    link_whatsapp: string;
+  };
+  link_whatsapp?: string;
 }
 
 const MESSAGES_KEY = 'tami_chat_messages';
@@ -254,12 +254,34 @@ const ChatbotWidget: React.FC = () => {
   };
 
   const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
+    // 🛡️ ESCUDO ANTI-ABUSO: Filtramos textos malintencionados o kilométricos antes de procesar nada
+    if (valorEnviado.trim().length > 300) {
+      setMessages(prev => [
+        ...prev,
+        { role: 'user', tipo: 'texto', respuesta: labelMostrado },
+        {
+          role: 'bot',
+          tipo: 'texto',
+          respuesta: '⚠️ Tu mensaje es demasiado largo. Por favor, escribe una consulta más breve y directa para poder ayudarte mejor. 😊'
+        }
+      ]);
+
+      // Enfocamos de nuevo el input para que el usuario pueda corregir su texto
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 60);
+      return; // 🔥 Frenamos en seco: No gasta procesamiento, no activa carga ni llama a la IA
+    }
+
+    // --- Flujo normal del Chatbot ---
     const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
+      // 1. Evaluamos si el chatbot local basado en reglas sabe qué responder
       const localReply = await getLocalReply(valorEnviado, context, messages);
+
       if (localReply) {
         await new Promise((resolve) => setTimeout(resolve, 700));
         const nextPaso = localReply.nextPaso;
@@ -274,36 +296,16 @@ const ChatbotWidget: React.FC = () => {
         return;
       }
 
-      const apiUrl = import.meta.env.PUBLIC_API_URL || "https://apitami.tamimaquinarias.com";
-      const response = await fetch(`${apiUrl}/api/v1/chat/responder`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ mensaje: valorEnviado, context }),
-      });
+      // Llamamos a la función fetchIaReply que creamos en chatbotLogic.ts
+      const botMessage = await fetchIaReply(valorEnviado);
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      await new Promise(resolve => setTimeout(resolve, 1200));
 
-      const data = await response.json();
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      if (data.context !== undefined) setContext(data.context);
-
-      const botMessage: Message = {
-        role: 'bot',
-        tipo: data.tipo,
-        respuesta: data.respuesta,
-        opciones: data.opciones,
-        productos: data.productos,
-        producto: data.producto,
-        link_whatsapp: data.link_whatsapp
-      };
-
+      // Pintamos la respuesta de Llama 3 en la pantalla
       setMessages(prev => [...prev, botMessage]);
+
     } catch (error) {
-      console.error("Error en Chatbot:", error);
+      console.error("Error en Chatbot Fallback:", error);
       await new Promise(resolve => setTimeout(resolve, 1000));
       setMessages(prev => [...prev, {
         role: 'bot',
