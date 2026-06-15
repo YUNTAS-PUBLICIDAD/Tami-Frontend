@@ -4,6 +4,7 @@ import contactoBg from "@images/contacto/contactoBackground.webp";
 import AboutHeroBackground from "src/components/about/AboutHeroBackground";
 import { getImage } from "astro:assets";
 import HeroSubtitle from "../components/contacto/HeroSubtitle";
+import FormularioContacto from "../components/contacto/FormularioContacto";
 import UbicacionContacto from "../components/contacto/UbicacionContacto";
 import { CONTACT_DATA } from "src/constants";
 
@@ -30,6 +31,9 @@ const optimizedHero = await getImage({ src: contactoBg, format: 'webp', width: 8
     </div>
  </section>
 
+  <FormularioContacto client:load contact={CONTACT_DATA} />
+
   <UbicacionContacto contact={CONTACT_DATA} />
 
 </Layout>
+
