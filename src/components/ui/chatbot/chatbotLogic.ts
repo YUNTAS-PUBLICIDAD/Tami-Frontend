@@ -169,17 +169,18 @@ export const getLocalReply = async (
     };
   }
 
-  // 🚀 CUALQUIER OTRA COSA (Productos, precios, dudas): Retorna null y le da el pase libre a la IA de Groq
   return null;
 };
 
 /**
  * Envía el mensaje al servidor Laravel para ser procesado por la IA de Groq (Llama 3)
- */
-export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinimal> => {
+ */export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinimal> => {
   try {
     const baseUrl = import.meta.env.PUBLIC_API_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-    const url = `${baseUrl}/api/v1/chatbot/sandbox-ia`;
+    const url = `${baseUrl}/api/v1/chat/responder`;
+
+    const sessionId = localStorage.getItem('chatSessionId') || crypto.randomUUID();
+    localStorage.setItem('chatSessionId', sessionId);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -188,29 +189,33 @@ export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinim
         'Accept': 'application/json',
       },
       body: JSON.stringify({
+        chatbotTami: mensajeUsuario,
         mensaje: mensajeUsuario,
+        sessionId,
       }),
     });
+
+    const data = await response.json();
+    console.log('Respuesta Laravel:', data);
 
     if (!response.ok) {
       throw new Error(`Error en servidor: ${response.status}`);
     }
 
-    const data = await response.json();
-
     return {
       role: 'bot',
       tipo: 'texto',
-      respuesta: data.asistente_ia || 'Lo siento, no pude procesar tu solicitud.',
-      link_whatsapp: 'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n.',
+      respuesta: data.response || data.output || data.respuesta || 'Sin respuesta del servidor.',
+      link_whatsapp: data.link_whatsapp,
     };
 
   } catch (error) {
-    console.error('Error al conectar con la IA de Groq:', error);
+    console.error('Error frontend chatbot:', error);
     return {
       role: 'bot',
       tipo: 'texto',
-      respuesta: 'Hola, en este momento tengo problemas técnicos para responderte. Por favor, vuelve a intentarlo en unos instantes.',
+      respuesta: 'No pude conectar con el servidor del chatbot.',
     };
   }
+
 };
