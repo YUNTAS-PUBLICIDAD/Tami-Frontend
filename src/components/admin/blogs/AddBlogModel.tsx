@@ -113,6 +113,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
   const [previewMiniatura, setPreviewMiniatura] = useState<string>("");
   const [previewHero, setPreviewHero] = useState<string | null>(null);
+  const [isLinkEdited, setIsLinkEdited] = useState(false);
 
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
@@ -190,6 +191,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           popup_text_color: blogToEdit.etiqueta?.popup_text_color || "#ffffff",
         },
       });
+      setIsLinkEdited(!!blogToEdit.link);
       setPreviewHero(
         blogToEdit.hero_image
           ? blogToEdit.hero_image.startsWith("http")
@@ -240,6 +242,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         .toLowerCase()
         .replaceAll(" ", "-");
       setFormData((prev) => ({ ...prev, link: sanitized }));
+      setIsLinkEdited(true);
       return;
     }
 
@@ -259,11 +262,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       case "titulo": {
         const slicedTitulo = value.slice(0, LENGTHS.titulo);
         next.titulo = slicedTitulo;
-        next.link = slicedTitulo
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .replaceAll(" ", "-");
+        if (!isLinkEdited) {
+          next.link = slicedTitulo
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replaceAll(" ", "-");
+        }
         break;
       }
       case "subtitulo1":
@@ -868,7 +873,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
                       required
-                      disabled
                     />
                   </div>
                   <div className="form-input">
