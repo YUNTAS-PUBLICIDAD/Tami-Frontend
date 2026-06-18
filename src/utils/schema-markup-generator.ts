@@ -46,11 +46,11 @@ export function generateProductJsonLd(product: Producto) {
       logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
       url: "https://tamimaquinarias.com/",
     },
-    url: `https://tamimaquinarias.com/productos/${encodeURIComponent(product.link)}`,
+    url: `https://tamimaquinarias.com/catalogo-maquinarias/${encodeURIComponent(product.link)}`,
     category: product.seccion,
     /* offers: {
       "@type": "Offer",
-      url: `https://tamimaquinarias.com/productos/detalle/?link=${encodeURIComponent(product.link)}`,
+      url: `https://tamimaquinarias.com/catalogo-maquinarias/detalle/?link=${encodeURIComponent(product.link)}`,
       price: 50.00,
       priceCurrency: "PEN",
       priceValidUntil: "2025-09-19",
