@@ -9,7 +9,11 @@ import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 import ActiveLink from "./ActiveLink";
 
-function NavBar() {
+interface NavBarProps {
+  forceSolid?: boolean;
+}
+
+function NavBar({ forceSolid = false }: NavBarProps) {
   const apiUrl = import.meta.env.PUBLIC_API_URL || "";
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -100,7 +104,7 @@ function NavBar() {
   const handleSuggestionClick = (producto: Producto) => {
     setShowSuggestions(false);
     setSearch("");
-    window.location.href = `/productos/detalle/?link=${encodeURIComponent(
+    window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(
       producto.link
     )}`;
   };
@@ -111,7 +115,7 @@ function NavBar() {
     <header
       className={`
         fixed w-full top-0 z-50 transition-colors duration-300
-        ${isScrolled ? "bg-[#07625b] shadow-lg" : "bg-transparent"} 
+        ${isScrolled || forceSolid ? "bg-[#07625b] shadow-lg" : "bg-transparent"} 
       `}
     >
       <div className="max-w-[1834px] mx-auto px-4 md:py-6 sm:px-6 lg:px-8 lg:py-6">
