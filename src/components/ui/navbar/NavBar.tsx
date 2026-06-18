@@ -104,7 +104,7 @@ function NavBar({ forceSolid = false }: NavBarProps) {
   const handleSuggestionClick = (producto: Producto) => {
     setShowSuggestions(false);
     setSearch("");
-    window.location.href = `/productos/detalle/?link=${encodeURIComponent(
+    window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(
       producto.link
     )}`;
   };

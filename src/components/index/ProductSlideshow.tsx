@@ -192,7 +192,7 @@ const ProductSlideshow = () => {
   };
 
   const getLinkHref = (item: Producto) =>
-    `/productos/${item.link ?? slugify(String(item.titulo))}`;
+    `/catalogo-maquinarias/${item.link ?? slugify(String(item.titulo))}`;
 
   if (isLoading) {
     return (

@@ -123,7 +123,7 @@ const { title, description, canonicalUrl, keywords, forceSolidNav = false } = As
      * (the modal itself also checks allowedRoutes, but excluding
      * it here avoids mounting it entirely).
      */}
-    {!(Astro.url.pathname === "/productos") && (
+    {!(Astro.url.pathname === "/catalogo-maquinarias") && (
       <ScrollModal client:idle />
     )}
     {/* Activado con el atributo `client:idle`.*/}
