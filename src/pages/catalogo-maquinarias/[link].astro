@@ -2,13 +2,13 @@
 import type Producto from "src/models/Product";
 import Layout from "../../layouts/Layout.astro";
 import { ProductoService } from "src/services/producto.service";
-import ModalDetalles from "src/pages/productos/ModalDetalles.astro";
+import ModalDetalles from "src/pages/catalogo-maquinarias/ModalDetalles.astro";
 import boxSize from "@icons/box-size.svg";
 import ArrowProducts from "../../assets/icons/flecha-product.svg";
 import { config } from "config";
 import ProductPage from "src/components/products/ProductPage";
-import ModalDetalles2 from "src/pages/productos/ModalDetalles2.astro";
-import ModalDetalles3 from "src/pages/productos/ModalDetalles3.astro";
+import ModalDetalles2 from "src/pages/catalogo-maquinarias/ModalDetalles2.astro";
+import ModalDetalles3 from "src/pages/catalogo-maquinarias/ModalDetalles3.astro";
 
 const getApiUrl = config.apiUrl;
 const productosUrl = config.endpoints.productos;
@@ -37,7 +37,7 @@ if (!producto) {
   title={producto.etiqueta?.meta_titulo || producto.titulo}
   description={producto.etiqueta?.meta_descripcion || producto.descripcion}
   keywords={producto.etiqueta?.keywords || ""}
-  canonicalUrl={`${Astro.site}productos/${producto.link}`}
+  canonicalUrl={`${Astro.site}catalogo-maquinarias/${producto.link}`}
 >
   <ProductPage 
   producto={producto} client:idle 

@@ -55,13 +55,13 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
   const allowedRoutes = [
     "/",
-    "/sobre-nosotros",
-    "/productos",
-    "/politicas-de-envio",
+    "/nosotros",
+    "/catalogo-maquinarias",
+    "/politicas-envio",
     "/blog",
   ];
 
-  const isProductDetail = pathname.startsWith("/productos/") && pathname !== "/productos";
+  const isProductDetail = pathname.startsWith("/catalogo-maquinarias/") && pathname !== "/catalogo-maquinarias";
 
   useEffect(() => {
     if (typeof window === "undefined") return;

@@ -28,7 +28,7 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+          PUBLIC_API_URL: ${{ github.ref == 'refs/heads/pre-main' && secrets.PUBLIC_API_URL_STAGING || secrets.PUBLIC_API_URL }}
           PUBLIC_WHATSAPP_SOCKET_URL: ${{ secrets.PUBLIC_WHATSAPP_SOCKET_URL }}
 
       - name: Install SSH key

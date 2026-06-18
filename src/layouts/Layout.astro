@@ -13,8 +13,9 @@ interface Props {
   description?: string;
   canonicalUrl?: string;
   keywords?: string;
+  forceSolidNav?: boolean;
 }
-const { title, description, canonicalUrl, keywords } = Astro.props;
+const { title, description, canonicalUrl, keywords, forceSolidNav = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -112,7 +113,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
   </head>
 
   <body class="font-montserrat w-full">
-    <NavBar client:idle />
+    <NavBar client:idle forceSolid={forceSolidNav} />
     <main>
       <slot />
     </main>
@@ -122,7 +123,7 @@ const { title, description, canonicalUrl, keywords } = Astro.props;
      * (the modal itself also checks allowedRoutes, but excluding
      * it here avoids mounting it entirely).
      */}
-    {!(Astro.url.pathname === "/productos") && (
+    {!(Astro.url.pathname === "/catalogo-maquinarias") && (
       <ScrollModal client:idle />
     )}
     {/* Activado con el atributo `client:idle`.*/}
