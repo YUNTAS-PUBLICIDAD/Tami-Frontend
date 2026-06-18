@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import type Blog from '../../models/Blog';
-import { config } from '../../../config';
+import { config, getApiUrl } from '../../../config';
 import CardBlog from '../blog/CardBlog';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -32,7 +32,7 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
     const fetchAndFilterBlogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${config.apiUrl}${config.endpoints.blogs.list}`);
+        const response = await fetch(getApiUrl(config.endpoints.blogs.list));        
         const result = await response.json();
         const allBlogs: Blog[] = result.data || result || [];
         const filtered = allBlogs
