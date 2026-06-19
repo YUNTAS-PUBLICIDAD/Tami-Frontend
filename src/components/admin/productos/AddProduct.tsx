@@ -416,7 +416,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
-      formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords.filter(tag => tag.trim() !== '')));
+      formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       formDataToSend.append("detalle_titulo_tamano", formData.etiqueta.titulo_detalle_producto_size || "24");
