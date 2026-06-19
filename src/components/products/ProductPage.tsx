@@ -255,28 +255,83 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     <div className="w-24 md:w-32 flex-shrink-0">
                                         <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
                                     </div>
-                                    <ul className="space-y-3">
-                                        {producto.dimensiones?.alto && (
-                                            <li className="flex items-center gap-3 text-gray-700 text-lg break-words">
-                                                <span className={`w-8 h-8 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-base font-bold`}>H</span>
-                                                Alto - {producto.dimensiones.alto} cm
-                                            </li>
-                                        )}
-                                        {producto.dimensiones?.largo && (
-                                            <li className="flex items-center gap-3 text-gray-700 text-lg break-words">
-                                                <span className={`w-8 h-8 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-base font-bold`}>L</span>
-                                                Largo - {producto.dimensiones.largo} cm
-                                            </li>
-                                        )}
-                                        {producto.dimensiones?.ancho && (
-                                            <li className="flex items-center gap-3 text-gray-700 text-lg break-words">
-                                                <span className={`w-8 h-8 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-base font-bold`}>A</span>
-                                                Ancho - {producto.dimensiones.ancho} cm
-                                            </li>
-                                        )}
-                                    </ul>
-                                </div>
-                            </div>
+                                </details>
+
+                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
+                                        Especificaciones técnicas
+                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </summary>
+                                    <div className="px-6 pb-6 pt-2">
+                                        <div className="w-full flex flex-col overflow-hidden">
+                                            {producto.especificaciones?.map((spec, index) => {
+                                                const separatorIndex = spec.valor.indexOf(':');
+                                                let key = spec.valor;
+                                                let val = '';
+                                                if (separatorIndex !== -1) {
+                                                    key = spec.valor.substring(0, separatorIndex).trim();
+                                                    val = spec.valor.substring(separatorIndex + 1).trim();
+                                                }
+                                                return (
+                                                    <div 
+                                                        key={index} 
+                                                        className={`flex flex-col sm:flex-row py-4 px-6 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                                                    >
+                                                        <div className="w-full sm:w-1/2 font-semibold text-gray-800 text-sm">
+                                                            {key}
+                                                        </div>
+                                                        <div className="w-full sm:w-1/2 text-gray-600 text-sm mt-1 sm:mt-0 text-left">
+                                                            {val}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </details>
+
+                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
+                                        Dimensiones
+                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </summary>
+                                    <div className="px-6 pb-6 pt-2">
+                                        <div className="flex items-center gap-8">
+                                            <div className="w-24 md:w-32 flex-shrink-0">
+                                                <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
+                                            </div>
+                                            <ul className="space-y-3">
+                                                {producto.dimensiones?.alto && (
+                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
+                                                        <span className={`w-8 h-8 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>H</span>
+                                                        Alto - {producto.dimensiones.alto} cm
+                                                    </li>
+                                                )}
+                                                {producto.dimensiones?.largo && (
+                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
+                                                        <span className={`w-8 h-8 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>L</span>
+                                                        Largo - {producto.dimensiones.largo} cm
+                                                    </li>
+                                                )}
+                                                {producto.dimensiones?.ancho && (
+                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
+                                                        <span className={`w-8 h-8 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>A</span>
+                                                        Ancho - {producto.dimensiones.ancho} cm
+                                                    </li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>          
 
                             {/* ESTRUCTURA SEO: ¿Por qué elegirnos? (H2 + H3) */}
                             <div className="pt-4 border-t border-gray-200">
