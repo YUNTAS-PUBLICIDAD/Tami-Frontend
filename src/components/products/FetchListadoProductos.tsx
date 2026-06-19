@@ -506,7 +506,7 @@ const getCategoriaColor = (categoria: string) => {
 
 const CARD_RADIUS = 16;
 
-/* -------------------- PRODUCT CARD (H3) OPTIMIZADO PARA SEO -------------------- */
+/* -------------------- PRODUCT CARD (H3) -------------------- */
 const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { targetRef, hasIntersected } = useIntersectionObserver();
@@ -530,50 +530,74 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
     >
       <div
         ref={targetRef}
-        className="group flex flex-col w-full max-w-[380px] bg-white rounded-xl shadow-md border relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
+        className="group flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-auto bg-white rounded-xl shadow-md border relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
         style={{ borderColor: categoriaColor, borderRadius: CARD_RADIUS }}
       >
-        
-        {/* 1. CONTENEDOR DE IMAGEN (ÚNICO PARA AMBOS DISPOSITIVOS) */}
-        <div className="relative flex items-center justify-center w-full h-[180px] md:h-[280px] bg-[#f8f8f8] overflow-hidden shrink-0">
-          {!imageLoaded && <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center" />}
-          {hasIntersected && (
-            <img
-              src={imageSrc}
-              alt={producto.nombre}
-              loading="lazy"
-              onLoad={() => setImageLoaded(true)}
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out group-hover:md:scale-105 ${
-                imageLoaded ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          )}
-        </div>
-
-        {/* 2. CONTENEDOR DE TEXTO / FOOTER (ÚNICO PARA AMBOS DISPOSITIVOS) */}
-        <div
-          className="relative w-full h-auto md:h-12 md:min-h-12 flex items-center overflow-hidden py-2 px-1 md:p-0"
-          style={{ background: categoriaColor }}
-        >
-          {/* Ajuste interno de paddings adaptables */}
-          <div className="flex-1 w-full h-full flex items-center justify-center md:justify-start px-2 pr-24 md:pl-4 md:pr-20 md:py-1 overflow-hidden">
-            
-            {/* 🌟 ESTRUCTURA SEO PERFECTA: Solo existe un único H3 en todo el árbol DOM 🌟 */}
-            <h3 className="w-full uppercase text-white leading-tight break-words font-bold md:font-medium text-sm sm:text-base md:text-[13px] xl:text-[14px] text-center md:text-left line-clamp-4 md:line-clamp-2">
-              {producto.nombre}
-            </h3>
-
+        {/* MOBILE */}
+        <div className="flex-col w-full md:hidden h-auto">
+          <div
+            className="relative flex items-center justify-center w-full h-[180px] bg-[#f8f8f8] overflow-hidden shrink-0"
+            style={{ borderRadius: `${CARD_RADIUS}px ${CARD_RADIUS}px 0 0` }}
+          >
+            {!imageLoaded && <div className="absolute inset-0 bg-gray-300 animate-pulse" />}
+            {hasIntersected && (
+              <img
+                src={imageSrc}
+                alt={producto.nombre}
+                loading="lazy"
+                onLoad={() => setImageLoaded(true)}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              />
+            )}
           </div>
 
-          {/* El botón de comprar se mantiene idéntico en su posición absoluta */}
-          <button className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform">
-            Comprar
-          </button>
+          <div
+            className="flex flex-col items-center justify-between w-full h-auto py-2 px-1 relative overflow-hidden"
+            style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px` }}
+          >
+            <div className="flex-1 flex items-center justify-center px-2 pt-2 pb-2 pr-24 overflow-hidden">
+              {/* ESTRUCTURA SEO CORRECTA: H3 para el producto individual */}
+              <h3 className="text-sm sm:text-base w-full font-bold uppercase text-white text-center break-words leading-tight line-clamp-4">
+                {producto.nombre}
+              </h3>
+            </div>
+            <button className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform">
+              Comprar
+            </button>
+          </div>
         </div>
 
+        {/* DESKTOP */}
+        <div className="hidden w-full h-full md:flex md:flex-col">
+          <div className="relative w-full h-[280px] flex items-center justify-center overflow-hidden">
+            {!imageLoaded && <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center" />}
+            {hasIntersected && (
+              <img
+                src={imageSrc}
+                alt={producto.nombre}
+                loading="lazy"
+                onLoad={() => setImageLoaded(true)}
+                className={`block object-cover w-full h-full transition-all bg-[#f8f8f8] duration-500 ease-out group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              />
+            )}
+          </div>
+          <div
+            className="relative w-full h-12 min-h-12 flex items-center m-0 p-0 overflow-hidden"
+            style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px` }}
+          >
+            <div className="w-full h-full flex items-center pl-4 pr-20 py-1 overflow-hidden">
+              {/* ESTRUCTURA SEO CORRECTA: H3 para el producto individual */}
+              <h3 className="text-[13px] xl:text-[14px] font-medium uppercase text-white leading-tight break-words line-clamp-2">
+                {producto.nombre}
+              </h3>
+            </div>
+            <button className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform">
+              Comprar
+            </button>
+          </div>
+        </div>
       </div>
     </a>
   );
 });
-
 const MemoizedProductCard = ProductCard;
