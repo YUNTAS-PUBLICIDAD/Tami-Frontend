@@ -12,7 +12,7 @@ const productosUrl = config.endpoints.productos;
 <Layout
   title="Product Details"
   description="Descripcion por defecto"
-  canonicalUrl="https://tamimaquinarias.com/productos"
+  canonicalUrl="https://tamimaquinarias.com/catalogo-maquinarias"
 >
   <div class="w-full">
     {/* -------------------- HERO -------------------- */}
@@ -397,7 +397,7 @@ const productosUrl = config.endpoints.productos;
       canonicalLink.rel = "canonical";
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.href = `https://tamimaquinarias.com/productos/detalle?link=${encodeURIComponent(product.link)}`;
+    canonicalLink.href = `https://tamimaquinarias.com/catalogo-maquinarias/detalle?link=${encodeURIComponent(product.link)}`;
 
     productNameToIdMap[product.link] = product.id;
     localStorage.setItem(`product_${product.link}`, product.link);
@@ -430,7 +430,7 @@ const productosUrl = config.endpoints.productos;
 
     related.forEach((prod) => {
       const a = document.createElement("a");
-      a.href = `/productos/detalle?link=${encodeURIComponent(prod.link)}`;
+      a.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(prod.link)}`;
       a.className = "group cursor-pointer";
       a.title = `Ver detalles de ${prod.titulo}`;
       const div = document.createElement("div");
@@ -512,7 +512,7 @@ const productosUrl = config.endpoints.productos;
           logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
           url: "https://tamimaquinarias.com/",
         },
-        url: `https://tamimaquinarias.com/productos/detalle/?link=${encodeURIComponent(product.link)}`,
+        url: `https://tamimaquinarias.com/catalogo-maquinarias/detalle/?link=${encodeURIComponent(product.link)}`,
         category: product.seccion,
         review: [
           {

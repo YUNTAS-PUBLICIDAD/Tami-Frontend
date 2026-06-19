@@ -527,7 +527,7 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
 
   return (
     <a
-      href={`/productos/${producto.link}`}
+      href={`/catalogo-maquinarias/${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
       className="w-full"
     >
