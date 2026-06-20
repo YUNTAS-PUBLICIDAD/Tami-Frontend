@@ -309,8 +309,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     </div>
                                 </details>
                             </div>
-                            {/* ESTRUCTURA SEO: ¿Por qué elegirnos? (H2 + H3) */}
-                            <div className="pt-4 border-t border-gray-200">
+                            
+                            <div>
                                 <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
                                     ¿Por qué elegirnos?
                                 </h2>
