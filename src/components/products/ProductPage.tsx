@@ -218,45 +218,22 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             <h2 className="text-2xl md:text-4xl font-extrabold text-[#015f86] uppercase mb-1 break-words">
                                 Descripción del producto
                             </h2>
-                            <h3 className="text-lg md:text-xl font-semibold text-gray-700 italic mb-4 break-words">
-                                {producto.subtitulo || "Versatilidad, potencia y eficiencia profesional"}
-                            </h3>
-
-                            <div className="mb-6">
-                                <p className="text-gray-600 text-base leading-relaxed break-words">
-                                    {producto.descripcion}
-                                </p>
-                            </div>
-
-                            {/* Contenedor de Atributos */}
-                            <div className="bg-gray-100 rounded-xl p-6 mb-6 border border-gray-200">
-                                
-                                {/* ESTRUCTURA SEO: Especificaciones técnicas (H2 + H3) */}
-                                <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
-                                    Especificaciones técnicas
-                               </h2>
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                    Equipos compactos, eficientes y de alto rendimiento operativo
-                                </h3>
-                                <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
-                                    {producto.especificaciones?.map((spec, index) => (
-                                        <li key={index} className="break-words">{spec.valor}</li>
-                                    ))}
-                                </ul>
-
-                                {/* ESTRUCTURA SEO: Dimensiones del producto (H2 + H3) */}
-                                <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1 mt-6">
-                                    Dimensiones del producto
-                                </h2>
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                    Alto, largo y ancho
-                                </h3>
-                                <div className="flex items-center gap-8">
-                                    <div className="w-24 md:w-32 flex-shrink-0">
-                                        <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
+                            <div className="flex flex-col gap-3 mb-8 mt-6">
+                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden" open>
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
+                                        Descripción
+                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </summary>
+                                    <div className="px-6 pb-6 pt-2">
+                                        <p className="text-gray-600 text-base leading-relaxed break-words">
+                                            {producto.descripcion}
+                                        </p>
                                     </div>
-                                </div>
-                                
+                                </details>
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
                                     <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
                                         Especificaciones técnicas
@@ -331,10 +308,9 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </div>
                                     </div>
                                 </details>
-                            </div>          
-
-                            {/* ESTRUCTURA SEO: ¿Por qué elegirnos? (H2 + H3) */}
-                            <div className="pt-4 border-t border-gray-200">
+                            </div>
+                            
+                            <div>
                                 <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
                                     ¿Por qué elegirnos?
                                 </h2>
@@ -345,7 +321,6 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
                                 </p>
                             </div>
-
                         </div>
                     </div>
                 </div>
