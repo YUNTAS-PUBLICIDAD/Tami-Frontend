@@ -39,7 +39,9 @@ if (!producto) {
   keywords={producto.etiqueta?.keywords || ""}
   canonicalUrl={`${Astro.site}catalogo-maquinarias/${producto.link}`}
 >
-  <ProductPage producto={producto} client:idle />
+  <ProductPage 
+  producto={producto} client:idle 
+  />
 
   {/* Los modales antiguos han sido desactivados en favor del nuevo ScrollModal unificado */}
   {/* <ModalDetalles link={producto.link} seccion={producto.seccion} /> */}
