@@ -251,7 +251,7 @@ const ChatbotWidget: React.FC = () => {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 60);
-      return; // 🔥 Frenamos en seco: No gasta procesamiento, no activa carga ni llama a la IA
+      return; // Frenamos en seco: No gasta procesamiento, no activa carga ni llama a la IA
     }
 
     // --- Flujo normal del Chatbot ---

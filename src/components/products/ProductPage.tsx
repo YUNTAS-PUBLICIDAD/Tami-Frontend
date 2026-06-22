@@ -141,6 +141,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                 ">
                 <div className="w-full pl-15 pr-13 md:pl-20 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div className="flex flex-col justify-center text-left">
+                        {/* H1 Semántico Perfecto */}
                         <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>
                             <span className="block text-white">{productTitleFirstWord}</span>
                             {productTitleRest && (
@@ -214,14 +215,18 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                         {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
                         <div>
-                            {/* ESTRUCTURA SEO: Descripción del Producto (H2 + H3) */}
-                            <h2 className="text-2xl md:text-4xl font-extrabold text-[#015f86] uppercase mb-1 break-words">
+                            {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
+                            <div className="text-2xl md:text-4xl font-extrabold text-[#015f86] uppercase mb-1 break-words">
                                 Descripción del producto
-                            </h2>
+                            </div>
+
                             <div className="flex flex-col gap-3 mb-8 mt-6">
+                                
+                                {/* 1. SECCIÓN DESCRIPCIÓN */}
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden" open>
-                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
-                                        Descripción
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                        {/* PATRÓN SEO: El título del acordeón ahora es un H2 legítimo */}
+                                        <h2 className="font-semibold text-base text-gray-800 m-0">Descripción del producto</h2>
                                         <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -229,14 +234,21 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </span>
                                     </summary>
                                     <div className="px-6 pb-6 pt-2">
+                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline */}
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                            {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
+                                        </h3>
                                         <p className="text-gray-600 text-base leading-relaxed break-words">
                                             {producto.descripcion}
                                         </p>
                                     </div>
                                 </details>
+
+                                {/* 2. SECCIÓN ESPECIFICACIONES TÉCNICAS */}
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
-                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
-                                        Especificaciones técnicas
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                        {/*   PATRÓN SEO: Elevado a H2 */}
+                                        <h2 className="font-semibold text-base text-gray-800 m-0">Especificaciones técnicas</h2>
                                         <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -244,6 +256,10 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </span>
                                     </summary>
                                     <div className="px-6 pb-6 pt-2">
+                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline de especificaciones */}
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                            {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
+                                        </h3>
                                         <div className="w-full flex flex-col overflow-hidden">
                                             {producto.especificaciones?.map((spec, index) => {
                                                 const separatorIndex = spec.valor.indexOf(':');
@@ -271,9 +287,11 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     </div>
                                 </details>
 
+                                {/* 3. SECCIÓN DIMENSIONES */}
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
-                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-base text-gray-800 list-none [&::-webkit-details-marker]:hidden">
-                                        Dimensiones
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                        {/*   PATRÓN SEO: Ajustado a "Dimensiones del producto" en H2 */}
+                                        <h2 className="font-semibold text-base text-gray-800 m-0">Dimensiones del producto</h2>
                                         <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -281,6 +299,10 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </span>
                                     </summary>
                                     <div className="px-6 pb-6 pt-2">
+                                        {/*   PATRÓN SEO: H3 Subyacente idéntico a la documentación */}
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                                            Alto, largo y ancho
+                                        </h3>
                                         <div className="flex items-center gap-8">
                                             <div className="w-24 md:w-32 flex-shrink-0">
                                                 <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
@@ -310,7 +332,9 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 </details>
                             </div>
                             
+                            {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
                             <div>
+                                {/* H2 + H3 se mantienen nativos ya que seguían el patrón del documento original perfectamente */}
                                 <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
                                     ¿Por qué elegirnos?
                                 </h2>
@@ -328,13 +352,13 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
             {/* -------------------- SECCIÓN DE BLOG (H2) -------------------- */}
             <div className="max-w-full mx-auto px-4 md:px-8 py-4">
-
+                {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
                 <RelatedBlogs productId={producto.id} />
             </div>
 
             {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
             <div className="max-w-full mx-auto px-4 md:px-8 py-8">
-
+                {/* SimilarProductsSection gestiona solo su <h2>Productos similares</h2> */}
                 <SimilarProductsSection products={producto.productos_relacionados || []} />
             </div>
         </div>
