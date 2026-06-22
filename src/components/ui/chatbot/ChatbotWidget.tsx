@@ -72,7 +72,7 @@ const ChatbotWidget: React.FC = () => {
   const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   const [showBubble, setShowBubble] = useState(true);
-  const [isTyping, setIsTyping] = useState(true); // 🚀 REPARADO: Estado maestro para los 3 puntitos
+  const [isTyping, setIsTyping] = useState(true); 
   const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState("");
@@ -235,7 +235,6 @@ const ChatbotWidget: React.FC = () => {
   };
 
   const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    // 🛡️ ESCUDO ANTI-ABUSO: Filtramos textos malintencionados o kilométricos antes de procesar nada
     if (valorEnviado.trim().length > 300) {
       setMessages(prev => [
         ...prev,
@@ -251,7 +250,7 @@ const ChatbotWidget: React.FC = () => {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 60);
-      return; // 🔥 Frenamos en seco: No gasta procesamiento, no activa carga ni llama a la IA
+      return; 
     }
 
     // --- Flujo normal del Chatbot ---
@@ -495,7 +494,6 @@ const ChatbotWidget: React.FC = () => {
                   </svg>
                 </button>
 
-                {/* 🔄 REPARADO: Ahora evalúa de forma 100% segura el estado nativo isTyping */}
                 {isTyping ? (
                   <div className="flex items-center gap-1.5 py-2 px-3 justify-center bg-grey-600 min-w-[65px] mx-auto rounded-xl">
                     <div className="w-2 h-2 bg-[#015f86] rounded-full animate-bounce"></div>
