@@ -2,11 +2,11 @@ import React from 'react';
 import type { RefObject } from 'react';
 import ChatbotIcon from './ChatbotIcon';
 import { useChatbotIcon } from 'src/hooks/useChatbotConfig';
+
 interface Opcion {
   label: string;
   valor: string;
 }
-
 
 interface Message {
   role: 'bot' | 'user';
@@ -39,7 +39,8 @@ interface ChatbotScreenProps {
   isLoading?: boolean;
   isResetting?: boolean;
   input?: string;
-  messagesEndRef?: RefObject<HTMLDivElement|null>;
+  messagesEndRef?: RefObject<HTMLDivElement | null>;
+  inputRef?: RefObject<HTMLInputElement | null>;
   onClose?: () => void;
   onReset?: () => void;
   onInputChange?: (val: string) => void;
@@ -64,6 +65,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   isResetting = false,
   input = '',
   messagesEndRef,
+  inputRef,
   onClose = noop,
   onReset = noop,
   onInputChange = noop,
@@ -71,7 +73,11 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   onOpcionClick = noop,
 }) => {
   const { colorInicial, colorFinal } = useChatbotIcon();
-  const isInteractive = !!messagesEndRef;  
+
+  // Si messagesEndRef está presente, el componente es interactivo (widget real)
+  // Si no, es una previsualización estática (ej: panel de administración)
+  const isInteractive = !!messagesEndRef;
+
   return (
     <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
 
@@ -79,18 +85,19 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
       <div
         style={{ background: `linear-gradient(to right, ${colorInicial}, ${colorFinal})` }}
         className="px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0"
-      >        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+      >
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
         <div className="flex items-center gap-2.5 relative z-10">
           <div className="relative">
             <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
               <ChatbotIcon />
             </div>
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm" />
           </div>
           <div>
             <h3 className="font-bold text-base leading-tight tracking-tight">Asistente Tami</h3>
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
               <p className="text-[12px] font-medium opacity-90">En línea</p>
             </div>
           </div>
@@ -100,7 +107,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
           <button
             onClick={onReset}
             title="Reiniciar conversación"
-            disabled={isLoading || isResetting || isInteractive}
+            disabled={isLoading || isResetting || !isInteractive}
             className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,18 +131,24 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
         {isResetting ? (
           <div className="flex flex-1 items-center justify-center py-10">
             <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
-              <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-              <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+              <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce" />
+              <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+              <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
             </div>
           </div>
         ) : messages.map((msg, index) => (
-          <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
-            <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
-              ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
-              : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
+          <div
+            key={index}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}
+          >
+            <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${
+              msg.role === 'user'
+                ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
+                : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
             }`}>
-              <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.respuesta}</p>
+              <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                {msg.respuesta}
+              </p>
 
               {/* Botones de opciones */}
               {msg.tipo === 'opciones' && msg.opciones && msg.role === 'bot' && (
@@ -167,7 +180,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
                             loading="lazy"
                             onError={(e) => { e.currentTarget.style.display = 'none'; }}
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       )}
                       <div className="p-5">
@@ -181,9 +194,9 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
                         >
                           <span>Consultar producto</span>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                            <polyline points="15 3 21 3 21 9"></polyline>
-                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
                           </svg>
                         </a>
                       </div>
@@ -213,9 +226,9 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
-              <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce" />
+              <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+              <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
             </div>
           </div>
         )}
@@ -226,6 +239,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
       <div className="bg-white p-4 border-t border-gray-100 shadow-[0_-15px_30px_rgba(0,0,0,0.03)] shrink-0">
         <form onSubmit={onSendMessage} className="flex gap-2">
           <input
+            ref={inputRef ?? null}
             type="text"
             value={input}
             onChange={(e) => onInputChange(e.target.value)}
@@ -238,12 +252,12 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
                     ? 'Ej: Juan, 987654321'
                     : 'Escribe un mensaje...'
             }
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
-            disabled={isLoading}
+            disabled={isLoading || !isInteractive}
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400 disabled:opacity-60 disabled:cursor-not-allowed"
           />
           <button
             type="submit"
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || !isInteractive}
             className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
