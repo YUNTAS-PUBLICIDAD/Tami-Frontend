@@ -455,6 +455,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 "etiqueta[popup_button_text]",
                 formData.etiqueta.popup_button_text || "¡COTIZA AHORA!"
             );
+            formDataToSend.append(
+                "etiqueta[keywords]",
+                formData.etiqueta.keywords.length > 0 ? JSON.stringify(formData.etiqueta.keywords) : "[]"
+            );          
             formDataToSend.append("keywords", JSON.stringify(formData.etiqueta.keywords));
             formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
             formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);

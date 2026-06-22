@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import type Blog from '../../models/Blog';
-import { config } from '../../../config';
+import { config, getApiUrl } from '../../../config';
 import CardBlog from '../blog/CardBlog';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -32,7 +32,7 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
     const fetchAndFilterBlogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${config.apiUrl}${config.endpoints.blogs.list}`);
+        const response = await fetch(getApiUrl(config.endpoints.blogs.list));        
         const result = await response.json();
         const allBlogs: Blog[] = result.data || result || [];
         const filtered = allBlogs
@@ -123,6 +123,9 @@ const RelatedBlogs: React.FC<Props> = ({ productId }) => {
   return (
     <div className="w-full bg-gray-10 py-2 lg:py-16">
       <div className="max-w-full mx-auto">
+      <h2 className="text-2xl md:text-4xl font-extrabold text-[#015f86] uppercase mb-6 text-center">
+        Blog del producto
+      </h2>
         <div className="flex flex-col lg:flex-row gap-8 items-stretch">
           <div className="flex-grow w-full lg:w-0 px-4 md:px-8 order-2 lg:order-1">
             {relatedBlogs.length > 1 ? (

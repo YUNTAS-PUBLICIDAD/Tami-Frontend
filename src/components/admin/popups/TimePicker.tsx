@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface TimePickerProps {
   id: string;
@@ -11,97 +11,61 @@ interface TimePickerProps {
 
 export default function TimePicker({ id, name, label, defaultValue = 0, value, onChange }: TimePickerProps) {
   const resolvedValue = value ?? defaultValue;
-  const isExternalSyncRef = useRef(false);
 
-  // Determinar el estado inicial basándonos en el valor recibido
   const getInitialMode = (val: number) => {
     if (val === -1) return 'nosend';
     if (val === 0) return 'immediate';
-    // Si no es -1 ni 0, y coincide con opciones fijas del select anterior
-    // if ([10, 15, 20, 30, 60].includes(val)) return 'static';
     return 'custom';
   };
 
-  const initialMode = getInitialMode(defaultValue);
+  const initialMode = getInitialMode(resolvedValue);
   
-  // Estados reactivos internos del componente
   const [mode, setMode] = useState<string>(initialMode);
   const [selectValue, setSelectValue] = useState<string>(initialMode === 'custom' ? 'custom' : resolvedValue === -1 ? '-1' : '0');
   const [hours, setHours] = useState<number>(initialMode === 'custom' ? Math.floor(resolvedValue / 60) : 0);
   const [minutes, setMinutes] = useState<number>(initialMode === 'custom' ? resolvedValue % 60 : 10);
   const [totalMinutes, setTotalMinutes] = useState<number>(resolvedValue);
 
-  const applyValueToState = (nextValue: number) => {
-    const nextMode = getInitialMode(nextValue);
-
-    isExternalSyncRef.current = true;
+  // Sincronizar cuando el valor inicial o externo cambie de verdad
+  useEffect(() => {
+    const nextMode = getInitialMode(resolvedValue);
     setMode(nextMode);
-    setSelectValue(nextMode === 'custom' ? 'custom' : nextValue === -1 ? '-1' : '0');
-    setHours(nextMode === 'custom' ? Math.floor(nextValue / 60) : 0);
-    setMinutes(nextMode === 'custom' ? nextValue % 60 : 10);
-    setTotalMinutes(nextValue);
-  };
+    setSelectValue(nextMode === 'custom' ? 'custom' : resolvedValue === -1 ? '-1' : '0');
+    setHours(nextMode === 'custom' ? Math.floor(resolvedValue / 60) : 0);
+    setMinutes(nextMode === 'custom' ? resolvedValue % 60 : 10);
+    setTotalMinutes(resolvedValue);
+  }, [resolvedValue]);
 
-  // Escucha cambios externos en el valor para mantener sincronizado el reloj
-  useEffect(() => {
-    applyValueToState(resolvedValue);
-  }, [resolvedValue, id, name]);
-
-  useEffect(() => {
-    const handleExternalSync = (event: Event) => {
-      const customEvent = event as CustomEvent<{ id?: string; value?: number }>;
-      if (!customEvent.detail || customEvent.detail.id !== id || typeof customEvent.detail.value !== 'number') {
-        return;
-      }
-
-      applyValueToState(customEvent.detail.value);
-    };
-
-    window.addEventListener('timepicker-sync', handleExternalSync as EventListener);
-
-    return () => {
-      window.removeEventListener('timepicker-sync', handleExternalSync as EventListener);
-    };
-  }, [id]);
-  
-
-  // Cada vez que cambie el modo o las horas/minutos del reloj, recalculamos el total
-  useEffect(() => {
-    if (isExternalSyncRef.current) {
-      isExternalSyncRef.current = false;
-      return;
-    }
-
+  // Función unificada para propagar los cambios de forma segura sin bucles
+  const propagateChange = (currentMode: string, currentHours: number, currentMinutes: number) => {
     let calculated = 0;
-    if (mode === 'nosend') calculated = -1;
-    else if (mode === 'immediate') calculated = 0;
-    else if (mode === 'static') calculated = parseInt(selectValue);
-    else if (mode === 'custom') {
-      calculated = (hours * 60) + minutes;
+    if (currentMode === 'nosend') calculated = -1;
+    else if (currentMode === 'immediate') calculated = 0;
+    else if (currentMode === 'custom') {
+      const h = isNaN(currentHours) ? 0 : currentHours;
+      const m = isNaN(currentMinutes) ? 0 : currentMinutes;
+      calculated = (h * 60) + m;
       if (calculated === 0) calculated = 1; // Evita colisión con inmediato
     }
+
     setTotalMinutes(calculated);
     onChange?.(calculated);
 
     window.dispatchEvent(new CustomEvent('timepicker-change', {
-      detail: {
-        id,
-        value: calculated,
-      },
+      detail: { id, value: calculated },
     }));
-  }, [mode, hours, minutes]);
+  };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setSelectValue(val);
     
-    if (val === 'custom') {
-      setMode('custom');
-    } else if (val === '-1') {
-      setMode('nosend');
-    } else if (val === '0') {
-      setMode('immediate')
-    }
+    let nextMode = 'custom';
+    if (val === '-1') nextMode = 'nosend';
+    if (val === '0') nextMode = 'immediate';
+    
+    setMode(nextMode);
+    propagateChange(nextMode, hours, minutes);
   };
 
   return (
@@ -110,10 +74,8 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
         {label}
       </label>
       
-      {/* Input oculto que interactúa de forma nativa con el formulario de Astro */}
       <input type="hidden" id={id} name={name} value={totalMinutes} />
 
-      {/* Selector principal */}
       <select 
         value={selectValue}
         onChange={handleSelectChange}
@@ -124,7 +86,6 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
         <option value="custom">🕒 Personalizado (Configurar Reloj)...</option>
       </select>
 
-      {/* Reloj Digital Reactivo */}
       {mode === 'custom' && (
         <div className="flex items-center justify-center gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm max-w-[260px] mx-auto transition-all">
           {/* Horas */}
@@ -134,19 +95,20 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
               type="number"
               min="0"
               max="23"
-              // Si el estado es NaN, mostramos string vacío para que el usuario no vea nada
               value={isNaN(hours) ? "" : hours} 
               onChange={(e) => {
                 const val = e.target.value;
-                // Si borra, guardamos NaN (sigue siendo un number válido para TypeScript)
-                setHours(val === "" ? NaN : (Math.min(23, Math.max(0, parseInt(val) || 0))));
+                const nextHours = val === "" ? NaN : Math.min(23, Math.max(0, parseInt(val) || 0));
+                setHours(nextHours);
+                propagateChange(mode, nextHours, minutes);
               }}
               onBlur={() => {
-                // Al salir, restauramos el 0 obligatorio
-                if (isNaN(hours)) setHours(0 );
+                if (isNaN(hours)) {
+                  setHours(0);
+                  propagateChange(mode, 0, minutes);
+                }
               }}
-              className="w-16 p-2 text-center text-2xl font-black bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-
+              className="w-16 p-2 text-center text-2xl font-black bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all [appearance:textfield]"
             />
           </div>
 
@@ -162,17 +124,19 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
               value={isNaN(minutes) ? "" : minutes} 
               onChange={(e) => {
                 const val = e.target.value;
-                // Si borra, guardamos NaN (sigue siendo un number válido para TypeScript)
-                setMinutes(val === "" ? NaN : (Math.min(23, Math.max(0, parseInt(val) || 0)) ));
+                const nextMinutes = val === "" ? NaN : Math.min(59, Math.max(0, parseInt(val) || 0));
+                setMinutes(nextMinutes);
+                propagateChange(mode, hours, nextMinutes);
               }}
               onBlur={() => {
-                // Al salir, restauramos el 0 obligatorio
-                if (isNaN(minutes)) setMinutes(0 );
+                if (isNaN(minutes)) {
+                  setMinutes(0);
+                  propagateChange(mode, hours, 0);
+                }
               }}
-              className="w-16 p-2 text-center text-2xl font-black bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-16 p-2 text-center text-2xl font-black bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-all [appearance:textfield]"
             />
           </div>
-
         </div>
       )}
     </div>
