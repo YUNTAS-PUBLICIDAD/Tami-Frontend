@@ -225,7 +225,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 {/* 1. SECCIÓN DESCRIPCIÓN */}
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden" open>
                                     <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                        {/* 🌟 PATRÓN SEO: El título del acordeón ahora es un H2 legítimo */}
+                                        {/* PATRÓN SEO: El título del acordeón ahora es un H2 legítimo */}
                                         <h2 className="font-semibold text-base text-gray-800 m-0">Descripción del producto</h2>
                                         <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -234,7 +234,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </span>
                                     </summary>
                                     <div className="px-6 pb-6 pt-2">
-                                        {/* 🌟 PATRÓN SEO: H3 Subyacente inmediato para el tagline */}
+                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline */}
                                         <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                             {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
                                         </h3>
@@ -247,7 +247,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 {/* 2. SECCIÓN ESPECIFICACIONES TÉCNICAS */}
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
                                     <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                        {/* 🌟 PATRÓN SEO: Elevado a H2 */}
+                                        {/*   PATRÓN SEO: Elevado a H2 */}
                                         <h2 className="font-semibold text-base text-gray-800 m-0">Especificaciones técnicas</h2>
                                         <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -256,7 +256,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </span>
                                     </summary>
                                     <div className="px-6 pb-6 pt-2">
-                                        {/* 🌟 PATRÓN SEO: H3 Subyacente inmediato para el tagline de especificaciones */}
+                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline de especificaciones */}
                                         <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                             {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
                                         </h3>
@@ -290,7 +290,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 {/* 3. SECCIÓN DIMENSIONES */}
                                 <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
                                     <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                        {/* 🌟 PATRÓN SEO: Ajustado a "Dimensiones del producto" en H2 */}
+                                        {/*   PATRÓN SEO: Ajustado a "Dimensiones del producto" en H2 */}
                                         <h2 className="font-semibold text-base text-gray-800 m-0">Dimensiones del producto</h2>
                                         <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -299,7 +299,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         </span>
                                     </summary>
                                     <div className="px-6 pb-6 pt-2">
-                                        {/* 🌟 PATRÓN SEO: H3 Subyacente idéntico a la documentación */}
+                                        {/*   PATRÓN SEO: H3 Subyacente idéntico a la documentación */}
                                         <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
                                             Alto, largo y ancho
                                         </h3>
