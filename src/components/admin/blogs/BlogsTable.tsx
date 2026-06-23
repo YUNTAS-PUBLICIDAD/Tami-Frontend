@@ -497,7 +497,9 @@ const BlogsTable = () => {
                     <div className="flex items-center">
                       {blog.imagenes?.[0]?.ruta_imagen ? (
                         <img
-                          src={`${getApiUrl("")}${blog.imagenes[0].ruta_imagen}`}
+                          src={blog.imagenes[0].ruta_imagen.startsWith("http")
+                            ? blog.imagenes[0].ruta_imagen
+                            : `${String(getApiUrl("")).replace(/\/+$/, '')}/${blog.imagenes[0].ruta_imagen.replace(/^\/+/, '')}`}
                           alt={blog.titulo}
                           className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
                         />
