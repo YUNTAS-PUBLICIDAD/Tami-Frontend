@@ -11,7 +11,7 @@ import bg_card3 from "@images/index/cards/maquinarias.webp";
 const sectionCards = [
   {
     id: "Negocio",
-    title: "NEGOCIO",
+    title: "SOLDADORAS INVERTER DE ALTA CALIDAD",
     alt:"Personas con chalecos hablando en ambiente de negocios",
     paragraph:
       "Equipos diseñados para\noptimizar y agilizar tus\nprocesos laborales.",
@@ -20,7 +20,7 @@ const sectionCards = [
   },
   {
     id: "Decoración",
-    title: "DECORACIÓN",
+    title: "MOBILIARIO LED Y DECORACIÓN COMERCIAL",
     alt:"Pared decorada con objetos ornamentales",
     paragraph:
       "Productos que combinan\nfuncionalidad y estilo para\ntu espacio.",
@@ -29,7 +29,7 @@ const sectionCards = [
   },
   {
     id: "Maquinaria",
-    title: "MAQUINARIAS",
+    title: "MÁQUINAS SELLADORAS Y ENVASADORAS",
     alt:"Sillas de madera organizadas en comedor",
     paragraph:
       "Herramientas innovadoras\nque impulsan el crecimiento\nde tu negocio.",

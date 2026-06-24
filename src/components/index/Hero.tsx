@@ -66,7 +66,7 @@ const Hero = () => {
           animate="visible"
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight sm:leading-snug drop-shadow-lg max-w-[90%] sm:max-w-3xl"
         >
-          Innovación y Soluciones para cada Proyecto
+          TAMI Maquinarias: Máquinas para Emprendedores en Perú
         </motion.h1>
         
         <motion.p

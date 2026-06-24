@@ -42,11 +42,11 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
     class="min-h-[360px] flex items-center justify-center px-4 text-center bg-white"
   >
     <div class="max-w-4xl mx-auto">
-      <h2
+      <p
         class="text-teal-700 pl-5 pr-5 text-3xl md:text-4xl xl:text-5xl font-extrabold tracking-wider leading-tight mb-4"
       >
         ¡BIENVENIDOS A TAMI!
-      </h2>
+      </p>
       <p class="text-black max-w-2xl pl-5 pr-5">
         COMPROMETIDOS CON EL <span class="font-bold text-black-700"
           >EMPRENDEDOR PERUANO</span
@@ -64,10 +64,12 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
     <!-- Título - 30% izquierda -->
     <div class="flex items-center justify-center lg:justify-start">
       <h2
-        class="text-white text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight text-center lg:text-left"
+        class="text-white text-2xl lg:text-3xl xl:text-4xl font-bold leading-tight text-center lg:text-left"
       >
-        <span class="block">PRODUCTOS</span>
-        <span class="block">DESTACADOS</span>
+        <span class="block">SOLUCIONES DE</span>
+        <span class="block">AUTOMATIZACIÓN Y</span>
+        <span class="block">HERRAMIENTAS DE</span>
+        <span class="block">PRODUCCIÓN</span>
       </h2>
     </div>
 
@@ -82,11 +84,11 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
     <div
       class="flex flex-col justify-center items-center px-4 sm:px-12 space-y-2 text-center"
     >
-      <h2
-        class="font-extrabold text-center3xl sm:text-4xl lg:text-5xl 2xl:text-6xl lg:mb-2 leading-snug mx-auto text-[#0C998A]"
+      <p
+        class="font-extrabold text-center text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl lg:mb-2 leading-snug mx-auto text-[#0C998A]"
       >
         ENVÍOS A TODA LIMA METROPOLITANA
-      </h2>
+      </p>
 
       <a
         href={whatsappLink}
@@ -147,11 +149,11 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
         class="bg-gray-800 py-6 md:py-0 md:bg-transparent md:absolute md:inset-0 flex items-center justify-center md:items-center md:justify-end z-10"
       >
         <div class="text-white text-center max-w-2xl px-6 md:px-12 md:mr-8">
-          <h2
+          <p
             class="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight drop-shadow-md"
           >
             ¿POR QUÉ ELEGIR TAMI?
-          </h2>
+          </p>
           <p
             class="text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg font-light mb-3 sm:mb-4 md:mb-6 opacity-95 leading-relaxed drop-shadow-sm"
           >
@@ -185,15 +187,15 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
   <section
     class="w-full pt-12 mt-16 md:mt-24 flex flex-col relative bg-[linear-gradient(90deg,_#035751_0%,_#018C81_100%)] before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[7px] before:shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.1)] before:shadow-gray-200 overflow-hidden"
   >
-    <h2
+    <p
       class="text-center font-black text-white mb-3 md:mb-4 pl-16 pr-16
             w-full
              tracking-normal md:tracking-widest
              text-[5vw] sm:text-2xl md:text-4xl"
     >
       LO QUE DICEN NUESTROS CLIENTES
-    </h2>
-    <h3
+    </p>
+    <p
       class="text-center font-bold text-white mb-8 md:mb-14 w-full mx-auto pl-10 pr-10 md:px-4
              text-[10px] sm:text-sm md:text-lg lg:text-xl xl:text-2xl
              tracking-wide leading-relaxed
@@ -201,7 +203,7 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
     >
       VALORAMOS CADA COMENTARIO PARA SEGUIR MEJORANDO Y OFRECIENDO LO MEJOR PARA
       TI.
-    </h3>
+    </p>
     <Testimonials client:visible />
   </section>
 </Layout>

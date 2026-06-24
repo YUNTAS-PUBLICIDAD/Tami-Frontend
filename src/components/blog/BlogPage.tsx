@@ -26,9 +26,9 @@ const BlogPage = () => {
 
   return (
     <section className="container mx-auto p-4 md:p-10 lg:px-24">
-      <h2 className="text-teal-700 text-3xl md:text-4xl font-bold mb-6">
+      <p className="text-teal-700 text-3xl md:text-4xl font-bold mb-6">
         Todos los artículos
-      </h2>
+      </p>
 
       <div className="mb-8">
         {/* BUSCADOR */}
