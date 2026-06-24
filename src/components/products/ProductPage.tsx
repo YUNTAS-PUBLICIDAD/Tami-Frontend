@@ -233,9 +233,10 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                             {/* 2. CUADRO DIVIDIDO: ESPECIFICACIONES + DIMENSIONES */}
                             <div className="flex flex-col sm:flex-row bg-[#F8F9FA] rounded-xl overflow-hidden border border-gray-200 mb-8">
-                                
+    
                                 {/* Panel izquierdo: Especificaciones técnicas */}
-                                <div className="flex-1 px-6 py-5">
+                                {/* Cambiado a w-full sm:flex-1 para que ocupe exactamente la mitad */}
+                                <div className="w-full sm:flex-1 px-6 py-5">
                                     <h2 className="font-semibold text-base text-gray-800 mb-1">Especificaciones técnicas</h2>
                                     <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                         {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
@@ -271,7 +272,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 <div className="block sm:hidden h-px bg-gray-200 w-full" />
 
                                 {/* Panel derecho: Dimensiones */}
-                                <div className="sm:w-56 px-6 py-5 flex-shrink-0">
+                                {/* Cambiado de sm:w-56 flex-shrink-0 a w-full sm:flex-1 */}
+                                <div className="w-full sm:flex-1 px-6 py-5">
                                     <h2 className="font-semibold text-base text-gray-800 mb-1">Dimensiones del producto</h2>
                                     <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
                                         Alto, largo y ancho
