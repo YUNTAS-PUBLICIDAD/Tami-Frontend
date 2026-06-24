@@ -52,7 +52,7 @@ const defaultMessages: Message[] = [
   {
     role: 'bot',
     tipo: 'texto',
-    respuesta: '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?',
+    respuesta: '¡Hola! 👋 Soy Tamara, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?',
   },
 ];
 
