@@ -229,123 +229,77 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     {producto.descripcion}
                                 </p>
                             </div>
-
-                                {/* 2. SECCIÓN ESPECIFICACIONES TÉCNICAS */}
-                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
-                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                        {/*   PATRÓN SEO: Elevado a H2 */}
-                                        <h2 className="font-semibold text-base text-gray-800 m-0">Especificaciones técnicas</h2>
-                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </span>
-                                    </summary>
-                                    <div className="px-6 pb-6 pt-2">
-                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline de especificaciones */}
-                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                            {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                        </h3>
-                                        <div className="w-full flex flex-col overflow-hidden">
-                                            {producto.especificaciones?.map((spec, index) => {
-                                                const separatorIndex = spec.valor.indexOf(':');
-                                                let key = spec.valor;
-                                                let val = '';
-                                                if (separatorIndex !== -1) {
-                                                    key = spec.valor.substring(0, separatorIndex).trim();
-                                                    val = spec.valor.substring(separatorIndex + 1).trim();
-                                                }
-                                                return (
-                                                    <div 
-                                                        key={index} 
-                                                        className={`flex flex-col sm:flex-row py-4 px-6 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                                                    >
-                                                        <div className="w-full sm:w-1/2 font-semibold text-gray-800 text-sm">
-                                                            {key}
-                                                        </div>
-                                                        <div className="w-full sm:w-1/2 text-gray-600 text-sm mt-1 sm:mt-0 text-left">
-                                                            {val}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </details>
-
-                                {/* 3. SECCIÓN DIMENSIONES */}
-                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
-                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                        {/*   PATRÓN SEO: Ajustado a "Dimensiones del producto" en H2 */}
-                                        <h2 className="font-semibold text-base text-gray-800 m-0">Dimensiones del producto</h2>
-                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </span>
-                                    </summary>
-                                    <div className="px-6 pb-6 pt-2">
-                                        {/*   PATRÓN SEO: H3 Subyacente idéntico a la documentación */}
-                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                            Alto, largo y ancho
-                                        </h3>
-                                        <div className="flex items-center gap-8">
-                                            <div className="w-24 md:w-32 flex-shrink-0">
-                                                <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
-                                            </div>
-                                            <ul className="space-y-3">
-                                                {producto.dimensiones?.alto && (
-                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
-                                                        <span className={`w-8 h-8 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>H</span>
-                                                        Alto - {producto.dimensiones.alto} cm
-                                                    </li>
-                                                )}
-                                                {producto.dimensiones?.largo && (
-                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
-                                                        <span className={`w-8 h-8 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>L</span>
-                                                        Largo - {producto.dimensiones.largo} cm
-                                                    </li>
-                                                )}
-                                                {producto.dimensiones?.ancho && (
-                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
-                                                        <span className={`w-8 h-8 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>A</span>
-                                                        Ancho - {producto.dimensiones.ancho} cm
-                                                    </li>
-                                                )}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </details>
-                            </div>
-                            
-                            {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+                            {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
                             <div>
-                                {/* H2 + H3 se mantienen nativos ya que seguían el patrón del documento original perfectamente */}
-                                <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
-                                    ¿Por qué elegirnos?
+                                <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                Especificaciones técnicas
                                 </h2>
+
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                    Calidad garantizada, innovación tecnológica y soporte de confianza
+                                {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
                                 </h3>
-                                <p className="text-gray-600 text-base leading-relaxed break-words">
-                                    En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
-                                </p>
+
+                                <div className="w-full flex flex-col overflow-hidden">
+                                {producto.especificaciones?.map((spec, index) => {
+                                    const separatorIndex = spec.valor.indexOf(':');
+                                    let key = spec.valor;
+                                    let val = '';
+
+                                    if (separatorIndex !== -1) {
+                                    key = spec.valor.substring(0, separatorIndex).trim();
+                                    val = spec.valor.substring(separatorIndex + 1).trim();
+                                    }
+
+                                    return (
+                                    <div
+                                        key={index}
+                                        className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                                    >
+                                        <span className="font-semibold text-gray-800 text-sm">{key}</span>
+                                        <span className="text-gray-600 text-sm">{val}</span>
+                                    </div>
+                                    );
+                                })}
+                                </div>
                             </div>
 
-                            {/* 3. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
-                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        ¿Por qué elegirnos?
-                                    </h2>
-                                </summary>
-                                <div className="px-6 pb-6 pt-2">
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                        Calidad garantizada, innovación tecnológica y soporte de confianza
-                                    </h3>
-                                    <p className="text-gray-600 text-base leading-relaxed break-words">
-                                        En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
-                                    </p>
+                            <div>
+                                <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                Dimensiones del producto
+                                </h2>
+
+                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                                Alto, largo y ancho
+                                </h3>
+
+                                <div className="flex items-center gap-8">
+                                <div className="w-24 md:w-32 flex-shrink-0">
+                                    <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
                                 </div>
+
+                                <ul className="space-y-3">
+                                    {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
+                                    {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
+                                    {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
+                                </ul>
+                                </div>
+                            </div>
+                            </div>
+                                  {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+                                    <div className='mt-12'>
+                                        {/* H2 + H3 se mantienen nativos ya que seguían el patrón del documento original perfectamente */}
+                                        <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
+                                            ¿Por qué elegirnos?
+                                        </h2>
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                            Calidad garantizada, innovación tecnológica y soporte de confianza
+                                        </h3>
+                                        <p className="text-gray-600 text-base leading-relaxed break-words">
+                                            En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
+                                        </p>
+                                    </div>
+                            </div>
                         </div>
                     </div>
                 </div>
