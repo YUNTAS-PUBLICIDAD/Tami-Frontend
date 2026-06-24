@@ -125,9 +125,9 @@ const Testimonials: React.FC = () => {
                     decoding="async"
                     className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
                   />
-                  <h3 className="text-xl font-bold text-teal-700 tracking-wide mb-1">
+                  <p className="text-xl font-bold text-teal-700 tracking-wide mb-1">
                     {t.name}
-                  </h3>
+                  </p>
                   <div className="text-orange-400 text-lg mb-3">
                     {"★".repeat(t.rating) + "☆".repeat(5 - t.rating)}
                   </div>
@@ -170,9 +170,9 @@ const Testimonials: React.FC = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-bold text-teal-700 tracking-wide">
+              <p className="text-lg font-bold text-teal-700 tracking-wide">
                 {t.name}
-              </h3>
+              </p>
               <div className="text-orange-400 text-xl">
                 {"★".repeat(t.rating) + "☆".repeat(5 - t.rating)}
               </div>

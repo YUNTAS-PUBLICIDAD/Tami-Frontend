@@ -56,7 +56,7 @@ const SectionCardsContainer = () => {
     return (
       <section className="w-full my-8 scroll-mt-20 max-w-screen-2xl mx-auto px-4 md:px-10">
         <h2 className="text-4xl font-extrabold mb-12 text-center text-teal-600">
-          OPTIMIZA TU TRABAJO, NEGOCIO Y HOGAR
+          MAQUINARIA INDUSTRIAL Y COMERCIAL PARA TU NEGOCIO
         </h2>
         <div className="flex justify-center gap-10 flex-wrap">
           {sectionCards.map((item) => (
@@ -92,7 +92,7 @@ const SectionCardsContainer = () => {
       aria-label="Carrusel Optimiza tu negocio y hogar"
     >
       <h2 className="text-3xl font-extrabold mb-8 text-center text-teal-600">
-        OPTIMIZA TU TRABAJO, NEGOCIO Y HOGAR
+        MAQUINARIA INDUSTRIAL Y COMERCIAL PARA TU NEGOCIO
       </h2>
 
       <div
