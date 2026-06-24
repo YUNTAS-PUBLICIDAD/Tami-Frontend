@@ -236,7 +236,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                                 </summary>
                             {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div className="mb-8 mt-6 ml-7">
+                            <div className="mb-8 mt-6 ml-6">
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                     {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
                                 </h3>
