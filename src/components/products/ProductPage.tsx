@@ -220,113 +220,131 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 Descripción del producto
                             </div>
 
-                            {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div className="mb-8 mt-6">
-                                <h2 className="font-semibold text-base text-gray-800 mb-1">Descripción del producto</h2>
+                            <div className="flex flex-col gap-3 mb-8 mt-6">
+                                
+                                {/* 1. SECCIÓN DESCRIPCIÓN */}
+                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden" open>
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                        {/* PATRÓN SEO: El título del acordeón ahora es un H2 legítimo */}
+                                        <h2 className="font-semibold text-base text-gray-800 m-0">Descripción del producto</h2>
+                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </summary>
+                                    <div className="px-6 pb-6 pt-2">
+                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline */}
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                            {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
+                                        </h3>
+                                        <p className="text-gray-600 text-base leading-relaxed break-words">
+                                            {producto.descripcion}
+                                        </p>
+                                    </div>
+                                </details>
+
+                                {/* 2. SECCIÓN ESPECIFICACIONES TÉCNICAS */}
+                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                        {/*   PATRÓN SEO: Elevado a H2 */}
+                                        <h2 className="font-semibold text-base text-gray-800 m-0">Especificaciones técnicas</h2>
+                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </summary>
+                                    <div className="px-6 pb-6 pt-2">
+                                        {/*   PATRÓN SEO: H3 Subyacente inmediato para el tagline de especificaciones */}
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                            {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
+                                        </h3>
+                                        <div className="w-full flex flex-col overflow-hidden">
+                                            {producto.especificaciones?.map((spec, index) => {
+                                                const separatorIndex = spec.valor.indexOf(':');
+                                                let key = spec.valor;
+                                                let val = '';
+                                                if (separatorIndex !== -1) {
+                                                    key = spec.valor.substring(0, separatorIndex).trim();
+                                                    val = spec.valor.substring(separatorIndex + 1).trim();
+                                                }
+                                                return (
+                                                    <div 
+                                                        key={index} 
+                                                        className={`flex flex-col sm:flex-row py-4 px-6 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                                                    >
+                                                        <div className="w-full sm:w-1/2 font-semibold text-gray-800 text-sm">
+                                                            {key}
+                                                        </div>
+                                                        <div className="w-full sm:w-1/2 text-gray-600 text-sm mt-1 sm:mt-0 text-left">
+                                                            {val}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </details>
+
+                                {/* 3. SECCIÓN DIMENSIONES */}
+                                <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
+                                    <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                        {/*   PATRÓN SEO: Ajustado a "Dimensiones del producto" en H2 */}
+                                        <h2 className="font-semibold text-base text-gray-800 m-0">Dimensiones del producto</h2>
+                                        <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </span>
+                                    </summary>
+                                    <div className="px-6 pb-6 pt-2">
+                                        {/*   PATRÓN SEO: H3 Subyacente idéntico a la documentación */}
+                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                                            Alto, largo y ancho
+                                        </h3>
+                                        <div className="flex items-center gap-8">
+                                            <div className="w-24 md:w-32 flex-shrink-0">
+                                                <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
+                                            </div>
+                                            <ul className="space-y-3">
+                                                {producto.dimensiones?.alto && (
+                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
+                                                        <span className={`w-8 h-8 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>H</span>
+                                                        Alto - {producto.dimensiones.alto} cm
+                                                    </li>
+                                                )}
+                                                {producto.dimensiones?.largo && (
+                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
+                                                        <span className={`w-8 h-8 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>L</span>
+                                                        Largo - {producto.dimensiones.largo} cm
+                                                    </li>
+                                                )}
+                                                {producto.dimensiones?.ancho && (
+                                                    <li className="flex items-center gap-3 text-gray-700 text-base break-words">
+                                                        <span className={`w-8 h-8 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-sm font-bold`}>A</span>
+                                                        Ancho - {producto.dimensiones.ancho} cm
+                                                    </li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                            
+                            {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+                            <div>
+                                {/* H2 + H3 se mantienen nativos ya que seguían el patrón del documento original perfectamente */}
+                                <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
+                                    ¿Por qué elegirnos?
+                                </h2>
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                    {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
+                                    Calidad garantizada, innovación tecnológica y soporte de confianza
                                 </h3>
                                 <p className="text-gray-600 text-base leading-relaxed break-words">
-                                    {producto.descripcion}
+                                    En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
                                 </p>
                             </div>
-
-                            {/* 2. CUADRO DIVIDIDO: ESPECIFICACIONES + DIMENSIONES */}
-                            <div className="flex flex-col sm:flex-row bg-[#F8F9FA] rounded-xl overflow-hidden border border-gray-200 mb-8">
-    
-                                {/* Panel izquierdo: Especificaciones técnicas */}
-                                {/* Cambiado a w-full sm:flex-1 para que ocupe exactamente la mitad */}
-                                <div className="w-full sm:flex-1 px-6 py-5">
-                                    <h2 className="font-semibold text-base text-gray-800 mb-1">Especificaciones técnicas</h2>
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                        {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                    </h3>
-                                    <div className="w-full flex flex-col overflow-hidden rounded-lg">
-                                        {producto.especificaciones?.map((spec, index) => {
-                                            const separatorIndex = spec.valor.indexOf(':');
-                                            let key = spec.valor;
-                                            let val = '';
-                                            if (separatorIndex !== -1) {
-                                                key = spec.valor.substring(0, separatorIndex).trim();
-                                                val = spec.valor.substring(separatorIndex + 1).trim();
-                                            }
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className={`flex flex-col sm:flex-row py-3 px-4 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                                                >
-                                                    <div className="w-full sm:w-1/2 font-semibold text-gray-800 text-sm">
-                                                        {key}
-                                                    </div>
-                                                    <div className="w-full sm:w-1/2 text-gray-600 text-sm mt-1 sm:mt-0 text-left">
-                                                        {val}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                {/* Divisor vertical */}
-                                <div className="hidden sm:block w-px bg-gray-200 self-stretch" />
-                                <div className="block sm:hidden h-px bg-gray-200 w-full" />
-
-                                {/* Panel derecho: Dimensiones */}
-                                {/* Cambiado de sm:w-56 flex-shrink-0 a w-full sm:flex-1 */}
-                                <div className="w-full sm:flex-1 px-6 py-5">
-                                    <h2 className="font-semibold text-base text-gray-800 mb-1">Dimensiones del producto</h2>
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                        Alto, largo y ancho
-                                    </h3>
-                                    <div className="flex flex-col items-center gap-4">
-                                        <div className="w-20 md:w-24 flex-shrink-0">
-                                            <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
-                                        </div>
-                                        <ul className="space-y-3 w-full">
-                                            {producto.dimensiones?.alto && (
-                                                <li className="flex items-center gap-3 text-gray-700 text-sm break-words">
-                                                    <span className={`w-7 h-7 flex-shrink-0 ${getDimensionBgColor('H')} rounded-full flex items-center justify-center text-white text-xs font-bold`}>H</span>
-                                                    Alto — {producto.dimensiones.alto} cm
-                                                </li>
-                                            )}
-                                            {producto.dimensiones?.largo && (
-                                                <li className="flex items-center gap-3 text-gray-700 text-sm break-words">
-                                                    <span className={`w-7 h-7 flex-shrink-0 ${getDimensionBgColor('L')} rounded-full flex items-center justify-center text-white text-xs font-bold`}>L</span>
-                                                    Largo — {producto.dimensiones.largo} cm
-                                                </li>
-                                            )}
-                                            {producto.dimensiones?.ancho && (
-                                                <li className="flex items-center gap-3 text-gray-700 text-sm break-words">
-                                                    <span className={`w-7 h-7 flex-shrink-0 ${getDimensionBgColor('A')} rounded-full flex items-center justify-center text-white text-xs font-bold`}>A</span>
-                                                    Ancho — {producto.dimensiones.ancho} cm
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* 3. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
-                            <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
-                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        ¿Por qué elegirnos?
-                                    </h2>
-                                    <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </span>
-                                </summary>
-                                <div className="px-6 pb-6 pt-2">
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                        Calidad garantizada, innovación tecnológica y soporte de confianza
-                                    </h3>
-                                    <p className="text-gray-600 text-base leading-relaxed break-words">
-                                        En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
-                                    </p>
-                                </div>
-                            </details>
                         </div>
                     </div>
                 </div>
