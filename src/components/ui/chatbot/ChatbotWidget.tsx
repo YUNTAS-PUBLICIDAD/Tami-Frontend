@@ -318,7 +318,7 @@ const ChatbotWidget: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-bold text-base leading-tight tracking-tight">
-                  TAMARA
+                  Asistente Tami
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
@@ -510,7 +510,7 @@ const ChatbotWidget: React.FC = () => {
 
                 <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">
-                    TAMARA
+                    Asistente Tami
                   </span>
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
                 </div>
