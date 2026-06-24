@@ -222,7 +222,6 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                             {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
                             <div className="mb-8 mt-6">
-                                <h2 className="font-semibold text-base text-gray-800 mb-1">Descripción del producto</h2>
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                     {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
                                 </h3>
@@ -307,16 +306,10 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             </div>
 
                             {/* 3. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
-                            <details className="group bg-[#F8F9FA] rounded-xl overflow-hidden">
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
                                     <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
                                         ¿Por qué elegirnos?
                                     </h2>
-                                    <span className="transition-transform duration-300 group-open:-rotate-180 text-gray-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </span>
                                 </summary>
                                 <div className="px-6 pb-6 pt-2">
                                     <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
@@ -326,7 +319,6 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
                                     </p>
                                 </div>
-                            </details>
                         </div>
                     </div>
                 </div>
