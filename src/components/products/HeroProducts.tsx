@@ -49,12 +49,12 @@ const HeroProducts = () => {
               <p className="sm:text-xl md:text-2xl xl:text-3xl 2xl:text-4xl pb-4 font-light">
                 {heroProductsArray[currentSlide].subTitulo1}
               </p>
-              <h1 className="text-lg sm:text-xl md:text-4xl lg:text-5xl xl:text-6xl pb-4 2xl:text-6xl font-extrabold whitespace-pre-line">
+              <p className="text-lg sm:text-xl md:text-4xl lg:text-5xl xl:text-6xl pb-4 2xl:text-6xl font-extrabold whitespace-pre-line">
                 {heroProductsArray[currentSlide].title}
-              </h1>
-              <h2 className="sm:text-xl md:text-2xl xl:text-3xl 2xl:text-4xl pr-12 font-semibold">
+              </p>
+              <p className="sm:text-xl md:text-2xl xl:text-3xl 2xl:text-4xl pr-12 font-semibold">
                 {heroProductsArray[currentSlide].subTitulo2}
-              </h2>
+              </p>
             </div>
             {heroProductsArray[currentSlide].subTitulo2 &&
               currentSlide !== 0 &&
