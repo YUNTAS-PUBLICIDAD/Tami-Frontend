@@ -141,7 +141,7 @@ export default function ListadoDeProductos() {
 
   const procesarSecciones = useCallback(
     (productos: Producto[]) => {
-      const secciones = ["Maquinaria", "Negocio", "Decoracion"];
+      const secciones = ["Maquinaria", "Negocio", "Decoracion", "Purificacion"];
 
       return secciones.map((nombreSeccion) => ({
         nombre: nombreSeccion, // Mantenemos el nombre para renderizar el H2 correcto
@@ -458,13 +458,32 @@ const Seccion = React.memo(function Seccion({
     ));
   }, [productosDeLaSeccion]);
 
+  const getSeccionDisplay = (nombreSeccion: string) => {
+    const normalized = nombreSeccion
+      ?.toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .trim();
 
+    switch (normalized) {
+      case "maquinaria":
+        return "Equipos de Sellado, Empaque y Embalaje";
+      case "negocio":
+        return "Herramientas de Soldadura Profesional";
+      case "decoracion":
+        return "Mobiliario LED Comercial y Tecnología";
+      case "purificacion":
+        return "Sistemas de Purificación de Agua";
+      default:
+        return nombreSeccion;
+    }
+  };
 
   return (
     <div className="w-full flex flex-col gap-6">
       {/* CORRECCIÓN SEO: Inyección controlada de H2 semánticos por categoría */}
       <h2 className="text-xl md:text-3xl font-extrabold text-[#015f86] uppercase tracking-wide border-b pb-2 border-gray-200">
-        {nombre}
+        {getSeccionDisplay(nombre)}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
         {productCards}
