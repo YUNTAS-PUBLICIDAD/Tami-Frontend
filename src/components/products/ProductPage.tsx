@@ -349,9 +349,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* -------------------- SECCIÓN DE BLOG (H2) -------------------- */}
+            {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
             <div className="max-w-full mx-auto px-4 md:px-8 py-4">
                 {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
                 <RelatedBlogs productId={producto.id} />
@@ -359,11 +358,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
             {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
             <div className="max-w-full mx-auto px-4 md:px-8 py-8">
-                {/* SimilarProductsSection gestiona solo su <h2>Productos similares</h2> */}
-                <SimilarProductsSection products={producto.productos_relacionados || []} />
+                <SimilarProductsSection
+                    products={producto.productos_relacionados || []}
+                />
             </div>
         </div>
     );
-}
+};
 
 export default ProductPage;
