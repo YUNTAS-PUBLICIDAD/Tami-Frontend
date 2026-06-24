@@ -216,10 +216,25 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                         {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
                         <div>
                             {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
-                            <div className="text-2xl md:text-4xl font-extrabold text-[#015f86] uppercase mb-1 break-words">
-                                Descripción del producto
-                            </div>
+                            <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
+                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
+                                        Descripcion del producto
+                                    </h2>
+                                    <svg
+                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                        <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
 
+                                </summary>
                             {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
                             <div className="mb-8 mt-6">
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
@@ -229,6 +244,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     {producto.descripcion}
                                 </p>
                             </div>
+                            </details>
                             {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
                             <div>
