@@ -286,19 +286,36 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 </div>
                             </div>
                             </div>
-                                  {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
-                                    <div className='mt-12'>
-                                        {/* H2 + H3 se mantienen nativos ya que seguían el patrón del documento original perfectamente */}
-                                        <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl mb-1">
-                                            ¿Por qué elegirnos?
-                                        </h2>
-                                        <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                            Calidad garantizada, innovación tecnológica y soporte de confianza
-                                        </h3>
-                                        <p className="text-gray-600 text-base leading-relaxed break-words">
-                                            En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
-                                        </p>
-                                    </div>
+                                {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+                            <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
+
+                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
+                                        ¿Por qué elegirnos?
+                                    </h2>
+                                    <svg
+                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                        <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+
+                                </summary>
+                                <div className="px-6 pb-6 pt-2">
+                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                        Calidad garantizada, innovación tecnológica y soporte de confianza
+                                    </h3>
+                                    <p className="text-gray-600 text-base leading-relaxed break-words">
+                                        En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
+                                    </p>
+                                </div>
+                            </details>
                             </div>
                         </div>
                     </div>
