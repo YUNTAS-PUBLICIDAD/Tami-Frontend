@@ -1,33 +1,192 @@
 ---
 import whatsappIcon from "@icons/smi_whatsapp.svg";
+import { CONTACT_DATA } from "src/constants";
 
-// Mantenemos tu lógica para que no se renderice en el panel de administración
+// No renderizar en el panel de administración
 const pathname = Astro.url.pathname;
 if (pathname.startsWith("/admin")) return null;
 
-const whatsappUrl = "https://api.whatsapp.com/send?phone=51978883199&text=Hola%20Tami%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20servicios.";
+// Extraer el primer número de teléfono dinámicamente desde la configuración
+const firstPhone = CONTACT_DATA.phone.split("/")[0].trim();
+const phoneDigits = firstPhone.replace(/[\s\-\+]/g, "");
+const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneDigits}&text=Hola%20Tami%2C%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20servicios.`;
 ---
 
-<a
-  href={whatsappUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  title="Contactar por WhatsApp"
-  class="fixed bottom-6 left-6 z-50 flex md:hidden items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#1ebe57] text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 motion-safe:animate-bounce-slow"
->
-  <img src={whatsappIcon.src} alt="WhatsApp" class="w-7 h-7" />
-</a>
+<!-- Botón flotante de WhatsApp: visible en mobile y desktop -->
+<div class="wa-float-wrapper" id="wa-float-widget">
+  <a
+    href={whatsappUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    title="Contactar por WhatsApp"
+    class="wa-float-btn"
+    id="wa-float-btn"
+  >
+    <!-- Pulse ring -->
+    <span class="wa-pulse-ring" aria-hidden="true"></span>
+
+    <!-- Ícono -->
+    <span class="wa-icon-wrap">
+      <img src={whatsappIcon.src} alt="WhatsApp" class="wa-icon" width="28" height="28" />
+    </span>
+
+    <!-- Label CTA (visible en desktop al hacer hover) -->
+    <span class="wa-label">Escríbenos por WhatsApp</span>
+  </a>
+</div>
 
 <style>
-  /* Animación sutil para llamar la atención sin ser molesta */
-  @keyframes bounceSlow {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+  /* ── Contenedor flotante ── */
+  .wa-float-wrapper {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 50;
   }
-  
-  .motion-safe\:animate-bounce-slow {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: bounceSlow 3s infinite ease-in-out;
+
+  /* ── Botón principal ── */
+  .wa-float-btn {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 3.5rem;
+    padding: 0 0.125rem;
+    background: #25D366;
+    color: #fff;
+    border-radius: 1.75rem;
+    box-shadow:
+      0 4px 14px rgba(37, 211, 102, 0.4),
+      0 1px 3px rgba(0, 0, 0, 0.12);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    will-change: transform, box-shadow;
+  }
+
+  .wa-float-btn:hover {
+    background: #1ebe57;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 8px 25px rgba(37, 211, 102, 0.5),
+      0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .wa-float-btn:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow:
+      0 2px 8px rgba(37, 211, 102, 0.3),
+      0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ── Ícono ── */
+  .wa-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .wa-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    filter: brightness(0) invert(1);
+  }
+
+  /* ── Label CTA (oculto por defecto, visible en desktop hover) ── */
+  .wa-label {
+    max-width: 0;
+    opacity: 0;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding-right: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  /* ── Pulse ring ── */
+  .wa-pulse-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(37, 211, 102, 0.5);
+    animation: waPulse 2.5s ease-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes waPulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    70% {
+      transform: scale(1.35);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.35);
+      opacity: 0;
+    }
+  }
+
+  /* ── Animación sutil de entrada ── */
+  .wa-float-wrapper {
+    animation: waSlideIn 0.6s ease-out both;
+    animation-delay: 1s;
+  }
+
+  @keyframes waSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* ── Desktop: expandir label en hover ── */
+  @media (min-width: 768px) {
+    .wa-float-btn {
+      height: 3.5rem;
+      padding: 0 0.125rem;
+    }
+
+    .wa-float-btn:hover .wa-label {
+      max-width: 250px;
+      opacity: 1;
+      padding-right: 1.25rem;
+    }
+
+    .wa-float-btn:hover .wa-pulse-ring {
+      border-radius: 1.75rem;
+    }
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .wa-pulse-ring {
+      animation: none;
+    }
+    .wa-float-wrapper {
+      animation: none;
+    }
+    .wa-float-btn {
+      transition-duration: 0.1s;
+    }
+    .wa-label {
+      transition-duration: 0.1s;
     }
   }
 </style>
