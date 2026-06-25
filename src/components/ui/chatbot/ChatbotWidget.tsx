@@ -121,21 +121,18 @@ const ChatbotWidget: React.FC = () => {
 
   useEffect(() => {
     if (!hasHydratedStorage) return;
-    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); }
-    catch { }
-  }, [messages, hasHydratedStorage]);
-
+    localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+  }, [messages]); // solo messages
+  
   useEffect(() => {
     if (!hasHydratedStorage) return;
-    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify(context)); }
-    catch { }
-  }, [context, hasHydratedStorage]);
-
+    localStorage.setItem(CONTEXT_KEY, JSON.stringify(context));
+  }, [context]); // solo context
+  
   useEffect(() => {
     if (!hasHydratedStorage) return;
-    try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
-    catch { }
-  }, [isOpen, hasHydratedStorage]);
+    localStorage.setItem(OPEN_KEY, String(isOpen));
+  }, [isOpen]); // solo isOpen
 
 
   useEffect(() => {
@@ -477,7 +474,8 @@ const ChatbotWidget: React.FC = () => {
         /* Botón Flotante */
         <div className="flex items-end gap-4 mb-8 pointer-events-auto">
           {showBubble && (
-            <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? "animate-balloon-pop" : "animate-in slide-in-from-right-10 fade-in duration-500"}`}>
+            <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? "animate-balloon-pop" : "animate-in slide-in-from-right-10 fade-in duration-500"}`}  //Linea 480
+            > 
               <div
                 className="w-fit bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
@@ -495,9 +493,10 @@ const ChatbotWidget: React.FC = () => {
                   </svg>
                 </button>
 
-                {/* 🔄 REPARADO: Ahora evalúa de forma 100% segura el estado nativo isTyping */}
+                {/* REPARADO: Ahora evalúa de forma 100% segura el estado nativo isTyping */}
                 {isTyping ? (
-                  <div className="flex items-center gap-1.5 py-2 px-3 justify-center bg-grey-600 min-w-[65px] mx-auto rounded-xl">
+                  <div className="flex items-center gap-1.5 py-2 px-3 justify-center bg-grey-600 min-w-[65px] mx-auto rounded-xl" //Linea 500
+                  >
                     <div className="w-2 h-2 bg-[#015f86] rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-[#015f86] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
                     <div className="w-2 h-2 bg-[#015f86] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>

@@ -25,7 +25,7 @@ const ProductSlideshow = () => {
   const offsetRef = useRef<number>(0);
   const isPausedRef = useRef<boolean>(false);
 
-  const fullWidthRef = useRef<number>(0); // 🔧 optimización
+  const fullWidthRef = useRef<number>(0); // optimización
 
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
@@ -88,7 +88,7 @@ const ProductSlideshow = () => {
     const step = 0.45;
     offsetRef.current = 0;
 
-    // 🔧 calcular scrollWidth solo una vez
+    // calcular scrollWidth solo una vez
     fullWidthRef.current = el.scrollWidth / 2;
 
     const animate = () => {

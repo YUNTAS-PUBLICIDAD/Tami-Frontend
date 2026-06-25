@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { config, getApiUrl } from "../../config";
 import { origenCliente } from "@data/origenCliente";
 import Swal from "sweetalert2";
@@ -61,8 +61,10 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     "/blog",
   ];
 
-  const isProductDetail = pathname.startsWith("/catalogo-maquinarias/") && pathname !== "/catalogo-maquinarias";
-
+  const isProductDetail = useMemo(
+    () => pathname.startsWith("/catalogo-maquinarias/") && pathname !== "/catalogo-maquinarias",
+    [pathname]
+  );
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -85,7 +87,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     const fetchSettings = async () => {
       try {
         // 1. Fetch Global Settings
-        const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`));
+        const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`)); //88
         let globalData: any = {};
         if (response.ok) {
           const responseData = await response.json();
@@ -157,7 +159,7 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     if (pathname) {
       fetchSettings();
     }
-  }, [isPreview, pathname, isProductDetail]);
+  }, [isPreview, pathname]);
 
   // Preview event listener
   useEffect(() => {

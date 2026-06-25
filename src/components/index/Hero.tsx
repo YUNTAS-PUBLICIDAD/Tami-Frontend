@@ -6,10 +6,10 @@ const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % heroArray.length);
-    }, 6000);
-    return () => clearInterval(interval);
+    //const interval = setInterval(() => {
+    //  setCurrentIndex((prev) => (prev + 1) % heroArray.length);
+    //}, 6000);
+    //return () => clearInterval(interval);
   }, []);
 
   // Variantes para el texto
@@ -27,16 +27,13 @@ const Hero = () => {
       className="relative w-full min-h-[410px] sm:min-h-screen flex flex-col justify-between pb-10 sm:pb-20"
       aria-label="Hero carousel"
     >
-
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <AnimatePresence mode="popLayout">
           <motion.div
-            key={currentIndex}
-            className="absolute inset-0 w-full h-full"
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5 }}
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.8 }}
+            className=" ... translate-y-1/2"  
           >
             <img
               src={heroArray[currentIndex].imageDesktop}
@@ -55,7 +52,7 @@ const Hero = () => {
       </div>
 
       {/* Texto sobre la imagen */}
-      <div 
+      <div //55
         key={`text-${currentIndex}`}
         className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white px-4 sm:px-6 md:px-10"
       >
