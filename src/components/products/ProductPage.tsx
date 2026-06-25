@@ -71,7 +71,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     useEffect(() => {
         const fetchFreshProductData = async () => {
             try {
-                const response = await fetch(`${config.apiUrl}api/v1/productos/link/${initialProducto.link}`);
+                const response = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${initialProducto.link}`);
                 if (response.ok) {
                     const freshData = await response.json();
                     setProducto(freshData.data);
@@ -328,7 +328,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         Calidad garantizada, innovación tecnológica y soporte de confianza
                                     </h3>
                                     <p className="text-gray-600 text-base leading-relaxed break-words">
-                                        En TAMI Maquinarias estamos comprometidos con el éxito de tu negocio. Ofrecemos equipos industriales de alta durabilidad diseñados para maximizar la productividad operativa de tu taller o planta de producción, respaldados con asistencia técnica especializada constante.
+                                       {producto.porque_elegirnos}
                                     </p>
                                 </div>
                             </details>

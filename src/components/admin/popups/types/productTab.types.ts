@@ -54,6 +54,7 @@ export interface ProductFormData {
   // Base product fields
   id?: string | number;
   nombre?: string;
+  porque_elegirnos?: string;
   titulo?: string;
   subtitulo?: string;
   descripcion?: string;
