@@ -124,7 +124,7 @@ const { title, description, canonicalUrl, keywords, forceSolidNav = false } = As
      * it here avoids mounting it entirely).
      */}
     {!(Astro.url.pathname === "/catalogo-maquinarias") && (
-      <ScrollModal client:idle />
+      <ScrollModal client:only="react"  />
     )}
     {/* Activado con el atributo `client:idle`.*/}
     <script is:inline>
