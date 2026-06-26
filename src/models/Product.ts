@@ -23,6 +23,7 @@ import type Specs from "./Specs";
 // Interface para el formulario de producto
 export interface ProductFormularioPOST {
   nombre: string;
+  porque_elegirnos: string;
   titulo: string;
   subtitulo: string;
   link: string;
@@ -109,6 +110,7 @@ export interface ImagenForm {
 export default interface Producto {
   id: number;
   nombre: string;
+  porque_elegirnos: string;
   seccion: string;
   link: string;
   titulo: string;
@@ -155,6 +157,7 @@ export default interface Producto {
 // valores por defecto para guardar o editar
 export const defaultValuesProduct: ProductFormularioPOST = {
   nombre: "",
+  porque_elegirnos: "",
   titulo: "",
   subtitulo: "",
   descripcion: "",

@@ -163,6 +163,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
   function validatePage1(): boolean {
     const newErrors: Record<string, string> = {};
     if (!formData.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio.";
+    if (!formData.porque_elegirnos?.trim()) newErrors.porque_elegirnos = "El porque es obligatorio";
     if (!formData.descripcion?.trim()) newErrors.descripcion = "La descripción es obligatoria.";
     if (!formData.titulo?.trim()) newErrors.titulo = "El título es obligatorio.";
     if (!formData.subtitulo?.trim()) newErrors.subtitulo = "El subtítulo es obligatorio.";
@@ -409,6 +410,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       const formDataToSend = new FormData();
 
       formDataToSend.append("nombre", formData.nombre);
+      formDataToSend.append("porque_elegirnos", formData.porque_elegirnos);
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("subtitulo", formData.subtitulo);
       formDataToSend.append("descripcion", formData.descripcion);
