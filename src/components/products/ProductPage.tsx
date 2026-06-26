@@ -5,11 +5,6 @@ import type Producto from '../../models/Product'
 import { insertJsonLd } from "../../utils/schema-markup-generator";
 import { config } from '../../../config';
 import RelatedBlogs from './RelatedBlogs';
-
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
-
-import SimilarProductCard from './SimilarProductCard';
 import SimilarProductsSection from './SimilarProductSection';
 
 declare global {
@@ -121,17 +116,13 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     };
 
     return (
-        <div className="w-full bg-gray-50">
-            <style>{`
-                .detalle-producto-titulo-desktop {
-                    --detalle-titulo-size: ${detailTitleSize}px;
-                }
-                @media (min-width: 768px) {
-                    .detalle-producto-titulo-desktop {
-                        font-size: var(--detalle-titulo-size) !important;
-                    }
-                }
-            `}</style>
+        <div className="w-full bg-gray-50 text-3xl md:text-[var(--detalle-titulo-size)] font-extrabold uppercase"
+             style={{
+                // Pasamos la variable de forma segura al CSS del elemento
+                ['--detalle-titulo-size' as any]: `${detailTitleSize}px`
+             }}
+        >
+
             
             {/* -------------------- HERO Section (H1) -------------------- */}
             <div className="
