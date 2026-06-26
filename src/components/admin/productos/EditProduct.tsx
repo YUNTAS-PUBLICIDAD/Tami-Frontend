@@ -14,7 +14,7 @@ import imagenEstilo1 from "@images/popup/estilo1.webp";
 import imagenEstilo2 from "@images/popup/estilo2.webp";
 import imagenEstilo3 from "@images/popup/estilo3.webp";
 import EmailEditor from "../popups/EmailEditor";
-
+import RichTextEditor from "./RichTextEditor";
 interface EditProductProps {
     product: Product;
     onProductUpdated: () => Promise<void> | void;
@@ -858,26 +858,28 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                     </div>
                                     <div className="form-input">
                                         <label>Descripción:</label>
-                                        <textarea
-                                            ref={el => { fieldRefs.current.descripcion = el; }}
+                                          <RichTextEditor
                                             value={formData.descripcion}
-                                            onChange={handleChange}
-                                            name="descripcion"
-                                            placeholder="Descripción del producto..."
-                                            className={`min-h-[100px] ${errors.descripcion ? "border-red-500 focus:ring-red-400" : ""}`}
+                                            onChange={(html: string) =>
+                                                setFormData(prev => ({
+                                                ...prev,
+                                                descripcion: html,
+                                                }))
+                                            }
                                         />
                                         {errors.descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.descripcion}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label>¿Porque elegirnos?</label>
-                                        <textarea
-                                        ref={el=> {fieldRefs.current.porque_elegirnos = el;}}
-                                        value={formData.porque_elegirnos}
-                                        onChange={handleChange}
-                                        name="porque_elegirnos"
-                                        placeholder="Razones para escogernos.."
-                                        className={`min-h-[100px] ${errors.porque_elegirnos ? "border-red-500 focus:ring-red-400" : ""}`}></textarea>
-
+                                        <RichTextEditor
+                                            value={formData.porque_elegirnos}
+                                            onChange={(html: string) =>
+                                                setFormData(prev => ({
+                                                ...prev,
+                                                porque_elegirnos: html,
+                                                }))
+                                            }
+                                            />
                                     </div>
                                     <div className="form-input">
                                         <label htmlFor="meta_titulo" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
