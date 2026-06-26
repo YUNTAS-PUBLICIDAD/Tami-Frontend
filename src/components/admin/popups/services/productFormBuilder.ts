@@ -69,6 +69,7 @@ export class ProductFormBuilderService {
 
     // Base product fields (required)
     appendIfText("nombre", formData.nombre);
+    appendIfText("porque_elegirnos", formData.porque_elegirnos);
     appendIfText("titulo", formData.titulo);
     appendIfText("subtitulo", formData.subtitulo);
     // No forzar una descripción fija para evitar sobrescribir la del producto.
