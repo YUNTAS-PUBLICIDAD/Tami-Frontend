@@ -340,7 +340,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     text-gray-600
                                     text-base leading-relaxed
                                     break-words
-                                    scro">
+                                    whitespace-pre-wrap">
                                        {producto.porque_elegirnos}
                                     </p>
                                 </div>
