@@ -5,6 +5,7 @@ import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
 import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
 import { config } from "config";
+import {ChatInputArea} from "./ChatInputArea";
 
 interface Opcion {
   label: string;
@@ -75,12 +76,12 @@ const ChatbotWidget: React.FC = () => {
   const [isTyping, setIsTyping] = useState(true); // 🚀 REPARADO: Estado maestro para los 3 puntitos
   const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
-  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [icono, setIcono] = useState(robotIcon);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [resetCounter, setResetCounter] = useState(0);
   const isFirstBubble = useRef(true);
 
 
@@ -122,17 +123,17 @@ const ChatbotWidget: React.FC = () => {
   useEffect(() => {
     if (!hasHydratedStorage) return;
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
-  }, [messages]); // solo messages
+  }, [messages, hasHydratedStorage]); 
   
   useEffect(() => {
     if (!hasHydratedStorage) return;
     localStorage.setItem(CONTEXT_KEY, JSON.stringify(context));
-  }, [context]); // solo context
+  }, [context, hasHydratedStorage]);
   
   useEffect(() => {
     if (!hasHydratedStorage) return;
     localStorage.setItem(OPEN_KEY, String(isOpen));
-  }, [isOpen]); // solo isOpen
+  }, [isOpen, hasHydratedStorage]);
 
 
   useEffect(() => {
@@ -203,7 +204,7 @@ const ChatbotWidget: React.FC = () => {
     setTimeout(() => {
       setMessages([mensajeInicial]);
       setContext({ paso: 'menu_principal' });
-      setInput('');
+      setResetCounter(prev => prev + 1);
       try {
         localStorage.removeItem(MESSAGES_KEY);
         localStorage.removeItem(CONTEXT_KEY);
@@ -223,16 +224,16 @@ const ChatbotWidget: React.FC = () => {
     await enviarMensaje(opcion.label, opcion.valor);
   };
 
-  const sendMessage = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!input.trim() || isLoading) return;
-    const texto = input.trim();
-    setInput('');
-    await enviarMensaje(texto, texto);
-  };
+    // VERSION QUE DEPENDE DE INPUTAREA
+    const sendMessage = async (texto: string) => {
+      if (!texto.trim() || isLoading) return;
+      
+      // Ya no necesita setInput('') 
+      await enviarMensaje(texto, texto);
+    };
 
   const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    // 🛡️ ESCUDO ANTI-ABUSO: Filtramos textos malintencionados o kilométricos antes de procesar nada
+    //  ANTI-ABUSO: Filtra textos kilométricos antes de procesar nada
     if (valorEnviado.trim().length > 300) {
       setMessages(prev => [
         ...prev,
@@ -434,41 +435,12 @@ const ChatbotWidget: React.FC = () => {
           </div>
 
           {/* Input Area */}
-          <div className="bg-white p-4 border-t border-gray-100 shadow-[0_-15px_30px_rgba(0,0,0,0.03)] shrink-0">
-            <form onSubmit={sendMessage} className="flex gap-2">
-              <input
-                type="text"
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={
-                  context?.paso === "esperando_datos_producto_1"
-                    ? "Ej: negocio, Lima"
-                    : context?.paso === "esperando_datos_producto_2"
-                      ? "Ej: Adriano, 987654321"
-                      : context?.paso?.includes("datos_contacto")
-                        ? "Ej: Juan, 987654321"
-                        : "Escribe un mensaje..."
-                }
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
-                </svg>
-              </button>
-            </form>
-          </div>
+          <ChatInputArea 
+              onSendMessage={(texto) => sendMessage(texto)} 
+              isLoading={isLoading} 
+              contextoPaso={context?.paso} 
+              key={resetCounter} //RESETEAR AL CAMBIAR
+          />
         </div>
       ) : (
         /* Botón Flotante */
