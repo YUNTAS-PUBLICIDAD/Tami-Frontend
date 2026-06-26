@@ -236,14 +236,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                                 </summary>
                             {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div className="mb-8 mt-6 ml-7">
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                    {(producto as any).descripcion_subtitulo || "Versatilidad, potencia y eficiencia profesional"}
-                                </h3>
-                                <p className="text-gray-600 text-base leading-relaxed break-words">
-                                    {producto.descripcion}
-                                </p>
-                            </div>
+                            <div
+                                className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 ml-6"
+                                dangerouslySetInnerHTML={{
+                                        __html: producto.descripcion ?? "",
+                                    }}
+                                />
                             </details>
                             {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
@@ -323,26 +321,17 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     </svg>
 
                                 </summary>
-                                <div 
-                                className="
-                                px-6 pb-6 pt-2
-                                max-h-[280px]
-                                overflow-y-auto
-                                pr-2
-                                scrollbar-thin
-                                scrollbar-thumb-gray-300
-                                scrollbar-track-transparent">
+                                <div className="px-6 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2">
                                     <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                         Calidad garantizada, innovación tecnológica y soporte de confianza
                                     </h3>
-                                    <p 
-                                    className="
-                                    text-gray-600
-                                    text-base leading-relaxed
-                                    break-words
-                                    whitespace-pre-wrap">
-                                       {producto.porque_elegirnos}
-                                    </p>
+
+                                    <div
+                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+                                        dangerouslySetInnerHTML={{
+                                        __html: producto.porque_elegirnos ?? "",
+                                        }}
+                                    />
                                 </div>
                             </details>
                             </div>
