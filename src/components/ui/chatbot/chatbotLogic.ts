@@ -159,7 +159,7 @@ export const getLocalReply = async (
       message: {
         role: 'bot',
         tipo: 'texto',
-        respuesta: 'Entendido, dame un segundo para verificar... 🔄',
+        respuesta: 'Entendido, dame un segundo para verificar...',
       },
       nextPaso: 'menu_principal',
       contextPatch: {
