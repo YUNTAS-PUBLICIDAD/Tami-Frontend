@@ -323,11 +323,24 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     </svg>
 
                                 </summary>
-                                <div className="px-6 pb-6 pt-2">
+                                <div 
+                                className="
+                                px-6 pb-6 pt-2
+                                max-h-[280px]
+                                overflow-y-auto
+                                pr-2
+                                scrollbar-thin
+                                scrollbar-thumb-gray-300
+                                scrollbar-track-transparent">
                                     <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                         Calidad garantizada, innovación tecnológica y soporte de confianza
                                     </h3>
-                                    <p className="text-gray-600 text-base leading-relaxed break-words">
+                                    <p 
+                                    className="
+                                    text-gray-600
+                                    text-base leading-relaxed
+                                    break-words
+                                    scro">
                                        {producto.porque_elegirnos}
                                     </p>
                                 </div>
