@@ -214,6 +214,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     function validatePage1(): boolean {
         const newErrors: Record<string, string> = {};
         if (!formData.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio.";
+        if (!formData.porque_elegirnos?.trim()) newErrors.porque_elegirnos = "El porque elegirnos es obligatorio";
         if (!formData.descripcion?.trim()) newErrors.descripcion = "La descripción es obligatoria.";
         if (!formData.titulo?.trim()) newErrors.titulo = "El título es obligatorio.";
         if (!formData.subtitulo?.trim()) newErrors.subtitulo = "El subtítulo es obligatorio.";
@@ -371,6 +372,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         // Validación
         if (
             !formData.nombre ||
+            !formData.porque_elegirnos ||
             !formData.titulo ||
             !formData.subtitulo ||
             !formData.descripcion ||
@@ -391,6 +393,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             const formDataToSend = new FormData();
 
             formDataToSend.append("nombre", formData.nombre);
+            formDataToSend.append("porque_elegirnos", formData.porque_elegirnos);
             formDataToSend.append("titulo", formData.titulo);
             formDataToSend.append("subtitulo", formData.subtitulo);
             const linkActual = formData.link || product.link || slugify(formData.titulo || formData.nombre);
@@ -754,6 +757,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             setFormData({
                 ...defaultValuesProduct,
                 nombre: product.nombre,
+                porque_elegirnos: product.porque_elegirnos,
                 titulo: product.titulo,
                 subtitulo: product.subtitulo,
                 link: product.link,
@@ -863,6 +867,17 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                             className={`min-h-[100px] ${errors.descripcion ? "border-red-500 focus:ring-red-400" : ""}`}
                                         />
                                         {errors.descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.descripcion}</p>}
+                                    </div>
+                                    <div className="form-input">
+                                        <label>¿Porque elegirnos?</label>
+                                        <textarea
+                                        ref={el=> {fieldRefs.current.porque_elegirnos = el;}}
+                                        value={formData.porque_elegirnos}
+                                        onChange={handleChange}
+                                        name="porque_elegirnos"
+                                        placeholder="Razones para escogernos.."
+                                        className={`min-h-[100px] ${errors.porque_elegirnos ? "border-red-500 focus:ring-red-400" : ""}`}></textarea>
+
                                     </div>
                                     <div className="form-input">
                                         <label htmlFor="meta_titulo" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
