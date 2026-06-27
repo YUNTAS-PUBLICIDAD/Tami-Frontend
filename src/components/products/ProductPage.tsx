@@ -218,6 +218,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
                             <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                                
                                     <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
                                         Descripcion del producto
                                     </h2>
@@ -236,12 +237,14 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                                 </summary>
                             {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div
-                                className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 ml-6"
-                                dangerouslySetInnerHTML={{
-                                        __html: producto.descripcion ?? "",
-                                    }}
-                                />
+                            <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
+                                <div
+                                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
+                                    dangerouslySetInnerHTML={{
+                                            __html: producto.descripcion ?? "",
+                                        }}
+                                    />
+                            </div>
                             </details>
                             {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
@@ -327,7 +330,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     </h3>
 
                                     <div
-                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
                                         dangerouslySetInnerHTML={{
                                         __html: producto.porque_elegirnos ?? "",
                                         }}
