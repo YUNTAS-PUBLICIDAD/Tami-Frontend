@@ -716,7 +716,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <div className="rounded-2xl border border-slate-700/40 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-4 shadow-xl">
                       <div className="flex flex-col gap-1 mb-4">
                         <div>
-                          <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100">Estilo del título "Detalle Producto"</label>
+                          <label className="block text-sm font-semibold text-gray-200 dark:text-gray-100">Estilo del título "Detalle Producto"</label>
                           <p className="text-xs text-white dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
                         </div>
                       </div>
