@@ -14,28 +14,39 @@ interface NavBarProps {
 }
 
 function NavBar({ forceSolid = false }: NavBarProps) {
-  const apiUrl = import.meta.env.PUBLIC_API_URL || "";
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [search, setSearch] = useState("");
-  const [suggestions, setSuggestions] = useState<Producto[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const inputRef = useRef<HTMLFormElement>(null);
+    const apiUrl = import.meta.env.PUBLIC_API_URL || "";
+    const [isOpen, setIsOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [search, setSearch] = useState("");
+    const [suggestions, setSuggestions] = useState<Producto[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const inputRef = useRef<HTMLFormElement>(null);
 
-  // Cargar productos y filtrar sugerencias
-  useEffect(() => {
-    if (search.trim().length < 2) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-    setLoading(true);
-    fetch("/api/productos")
-      .then((res) => res.json())
-      .then((json) => {
-        const todos: Producto[] = json.data ?? [];
-        const query = search.trim().toLowerCase();
+    // NUEVO: Guardará los productos en la memoria RAM del componente para no re-descargar
+    const productosCacheRef = useRef<Producto[] | null>(null);
+    // NUEVO: Estado intermedio para el Debounce de la búsqueda
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    // 1. EFECTO DE DEBOUNCE: Espera 300ms antes de procesar lo que el usuario escribe
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setDebouncedSearch(search);
+      }, 300);
+      return () => clearTimeout(timer);
+    }, [search]);
+
+    // 2. FILTRADO Y CARGA OPTIMIZADA (Escucha a debouncedSearch)
+    useEffect(() => {
+      const query = debouncedSearch.trim().toLowerCase();
+      if (query.length < 2) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      // Función local para reutilizar el filtrado
+      const ejecutarFiltrado = (todos: Producto[]) => {
         const filtered = todos.filter((producto: Producto) =>
           [
             producto.nombre,
@@ -46,69 +57,82 @@ function NavBar({ forceSolid = false }: NavBarProps) {
         );
         setSuggestions(filtered.slice(0, 6));
         setShowSuggestions(true);
-      })
-      .catch(() => setSuggestions([]))
-      .finally(() => setLoading(false));
-  }, [search]);
+      };
 
-  // Cerrar sugerencias al hacer click fuera
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+      // Si ya los descargamos una vez, filtramos al instante sin usar Red (0ms)
+      if (productosCacheRef.current) {
+        ejecutarFiltrado(productosCacheRef.current);
+        return;
+      }
+
+      setLoading(true);
+      fetch("/api/productos")
+        .then((res) => res.json())
+        .then((json) => {
+          const todos: Producto[] = json.data ?? [];
+          productosCacheRef.current = todos; // Guardamos en memoria
+          ejecutarFiltrado(todos);
+        })
+        .catch(() => setSuggestions([]))
+        .finally(() => setLoading(false));
+    }, [debouncedSearch]);
+
+    // Cerrar sugerencias al hacer click fuera
+    useEffect(() => {
+      function handleClickOutside(e: MouseEvent) {
+        if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+          setShowSuggestions(false);
+        }
+      }
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // 3. SCROLL OPTIMIZADO: Elimina por completo el Forced Reflow
+    useEffect(() => {
+      let ticking = false;
+      let lastScrollY = 0; // Guardará la posición exacta de lectura
+
+      const handleScroll = () => {
+        // Se hace inmediatamente en el hilo principal del evento (Súper rápido)
+        lastScrollY = window.scrollY; 
+
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            // El cambio de estado se ejecuta limpio en el frame visual
+            setIsScrolled(lastScrollY > 50);
+            ticking = false;
+          });
+          ticking = true; 
+        }
+      };
+
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      
+      // Ejecución inicial segura
+      lastScrollY = window.scrollY;
+      setIsScrolled(lastScrollY > 50);
+
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }, []);
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (search.trim()) {
         setShowSuggestions(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const isAboveThreshold = window.scrollY > 50;
-          setIsScrolled(isAboveThreshold);
-          ticking = false;
-        });
-        ticking = true;
+        window.location.href = `/buscar?q=${encodeURIComponent(search.trim())}`;
       }
     };
 
-    // Verificar estado inicial
-    const initialCheck = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    // Agregar listener con passive para mejor rendimiento
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    // Esta es la línea que estaba en conflicto.
-    // Se elimina el punto y coma doble (;;) de tu versión HEAD.
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (search.trim()) {
+    const handleSuggestionClick = (producto: Producto) => {
       setShowSuggestions(false);
-      window.location.href = `/buscar?q=${encodeURIComponent(search.trim())}`;
-    }
-  };
-
-  const handleSuggestionClick = (producto: Producto) => {
-    setShowSuggestions(false);
-    setSearch("");
-    window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(
-      producto.link
-    )}`;
-  };
-
+      setSearch("");
+      window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(
+        producto.link
+      )}`;
+    };
   // Se usa la versión de 'pre-main' que usa comillas dobles
   // y tiene una ligera corrección de indentación.
   return (

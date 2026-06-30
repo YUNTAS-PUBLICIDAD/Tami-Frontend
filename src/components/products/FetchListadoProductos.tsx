@@ -70,6 +70,18 @@ export default function ListadoDeProductos() {
     }
   }, []);
 
+  // Actualizar la URL dinámicamente cuando el usuario cambia el filtro
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (filtroCategoria) {
+      url.searchParams.set("categoria", filtroCategoria);
+    } else {
+      url.searchParams.delete("categoria");
+    }
+    // pushState cambia la URL sin recargar la página web
+    window.history.pushState({}, "", url.toString());
+  }, [filtroCategoria]);
+
   const obtenerDatos = useCallback(async (useCache = true) => {
     try {
       abortControllerRef.current?.abort();

@@ -344,7 +344,7 @@ const ProductosTabla = () => {
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:w-auto gap-3 w-full items-stretch sm:items-center [&_button]:!w-full ">
+                        <div className="flex flex-col sm:flex-row sm:w-auto gap-3 w-full items-stretch sm:items-center">
 
                             <div className="w-full sm:w-auto flex flex-col [&_button]:flex [&_button]:items-center [&_button]:justify-between [&_button]:px-5">
                                 {/* Botón de Exportar */}
