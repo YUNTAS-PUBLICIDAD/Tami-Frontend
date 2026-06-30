@@ -6,6 +6,8 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import path from 'path';
 
+import partytown from '@astrojs/partytown';
+
 export default defineConfig({
     site: 'https://tamimaquinarias.com/',
     vite: {
@@ -21,25 +23,26 @@ export default defineConfig({
             }
         }
     },
-    integrations: [
-        sitemap({
-            filter: (page) =>
-                !page.includes('/admin') &&
-                !page.includes('/auth/') &&
-                !page.includes('/blog/details') &&
-                !page.includes('/catalogo-maquinarias/detalle') &&
-                !page.includes('/catalogo-maquinarias/ModalDetalles') &&
-                !page.includes('/buscar/')
-        }),
-        react(),
-        // criticalCSS({
-        //     dimensions: [
-        //         { width: 375, height: 812 },  
-        //         { width: 1440, height: 1024 }  
-        //     ]
-        // })
-        // No usar critical CSS por ahora, causa algunos problemas con los styles CSS
-    ],
+    integrations: [sitemap({
+        filter: (page) =>
+            !page.includes('/admin') &&
+            !page.includes('/auth/') &&
+            !page.includes('/blog/details') &&
+            !page.includes('/catalogo-maquinarias/detalle') &&
+            !page.includes('/catalogo-maquinarias/ModalDetalles') &&
+            !page.includes('/buscar/')
+    }), // criticalCSS({
+    //     dimensions: [
+    //         { width: 375, height: 812 },  
+    //         { width: 1440, height: 1024 }  
+    //     ]
+    // })
+    // No usar critical CSS por ahora, causa algunos problemas con los styles CSS
+    react(), partytown({
+        config: {
+          forward: ['dataLayer.push'],
+        },
+      })],
     build: {
         format: 'directory',
         inlineStylesheets: 'auto',
