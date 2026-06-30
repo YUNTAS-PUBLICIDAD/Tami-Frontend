@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
-import apiClient from "src/services/apiClient";
 import ChatbotIcon from "./ChatbotIcon";
-import { config } from "config";
-
 interface Opcion {
   label: string;
   valor: string;
@@ -102,22 +99,6 @@ const ChatbotWidget: React.FC = () => {
     "¿Necesitas repuestos? Puedo ayudarte a ubicarlos. ⚙️",
     "¿Buscas algo para tu negocio? 👨‍💼",
   ];
-
-  const fetchCurrentIcon = async () => {
-    try {
-      const response = await apiClient.get(config.endpoints.chatbot.getIcon);
-      const data = response.data;
-      if (data && data.url_icono) {
-        setIcono(data.url_icono);
-      }
-    } catch (err) {
-      console.error("Error al obtener el ícono del chatbot:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchCurrentIcon();
-  }, []);
 
   useEffect(() => {
     if (!hasHydratedStorage) return;
@@ -235,7 +216,7 @@ const ChatbotWidget: React.FC = () => {
   };
 
   const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    // 🛡️ ESCUDO ANTI-ABUSO: Filtramos textos malintencionados o kilométricos antes de procesar nada
+    //  Filtrar textos malintencionados o kilométricos antes de procesar nada
     if (valorEnviado.trim().length > 300) {
       setMessages(prev => [
         ...prev,
@@ -474,12 +455,12 @@ const ChatbotWidget: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* Botón Flotante */
-        <div className="flex items-end gap-4 mb-8 pointer-events-auto">
+        /* Botón Flotante - CORREGIDO PARA CLS */
+        <div className="relative flex items-end mb-8 pointer-events-auto">
           {showBubble && (
-            <div className={`relative group w-fit max-w-[200px] sm:max-w-[280px] origin-bottom-right ${isPopping ? "animate-balloon-pop" : "animate-in slide-in-from-right-10 fade-in duration-500"}`}>
+            <div className={`absolute bottom-0 right-[80px] group w-max max-w-[220px] sm:max-w-[280px] origin-bottom-right ${isPopping ? "animate-balloon-pop" : "animate-in slide-in-from-right-10 fade-in duration-500"}`}>
               <div
-                className="w-fit bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+                className="w-full min-h-[72px] sm:min-h-[88px] flex flex-col justify-center bg-white/90 backdrop-blur-xl border border-white/40 p-3 sm:p-5 rounded-[24px] rounded-br-[4px] shadow-[0_15px_50px_rgba(0,0,0,0.15)] relative cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
                 onClick={() => {
                   setIsOpen(true);
                   setShowBubble(false);
@@ -495,7 +476,6 @@ const ChatbotWidget: React.FC = () => {
                   </svg>
                 </button>
 
-                {/* 🔄 REPARADO: Ahora evalúa de forma 100% segura el estado nativo isTyping */}
                 {isTyping ? (
                   <div className="flex items-center gap-1.5 py-2 px-3 justify-center bg-grey-600 min-w-[65px] mx-auto rounded-xl">
                     <div className="w-2 h-2 bg-[#015f86] rounded-full animate-bounce"></div>
