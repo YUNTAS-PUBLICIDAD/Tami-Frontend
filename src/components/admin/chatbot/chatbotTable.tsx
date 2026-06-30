@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import IconUploader from './IconUploader'
 import GenericModal from '../ui/GenericModal'
 import ChatbotScreen from 'src/components/ui/chatbot/ChatbotScreen'
+import SaluteEditor from './saluteEditor'
 import GradientPickerField from './gradientPickerField';
 import apiClient from 'src/services/apiClient';
 import { config } from 'config';
@@ -226,34 +227,13 @@ return (
                         </button>
                       </div>
                     </div>
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-700 space-y-3">
-              <label className="block text-sm font-bold text-gray-800 dark:text-gray-100">
-                          Mensaje de Saludo Inicial
-              </label>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-              Escribe el primer mensaje automático que verá el usuario cuando abra la ventana del chat.
-              </p>
-                        
-              <textarea
-                  value={salute}
-                  onChange={(e) => setSalute(e.target.value)}
-                  disabled={loadingSaludo || isSavingSaludo}
-                  rows={4}
-                  placeholder={loadingSaludo ? "Cargando saludo actual..." : "Ej: ¡Hola! ¿En qué te puedo ayudar hoy?"}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all outline-none text-sm resize-none disabled:opacity-60"
-              />
-
-                        <div className="flex justify-end">
-                          <button
-                            type="button"
-                            onClick={handleSaveSaludo}
-                            disabled={isSavingSaludo || loadingSaludo || !salute.trim()}
-                            className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-                          >
-                            {isSavingSaludo ? "Guardando..." : "Guardar Saludo"}
-                          </button>
-                        </div>
-          </div>
+          <SaluteEditor
+            salute={salute}
+            isLoading={loadingSaludo}
+            isSaving={isSavingSaludo}
+            onChange={setSalute}
+            onSave={handleSaveSaludo}
+          />
 
 
         </div>
@@ -263,7 +243,15 @@ return (
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Vista Previa</p>
 
           <div className="absolute inset-0 bg-white/15 rounded-[24px] scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-          <ChatbotScreen />
+          <ChatbotScreen
+            messages={[
+              {
+                role: 'bot',
+                tipo: 'texto',
+                respuesta: salute || '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?'
+              }
+            ]}
+          />
 
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center">Vista actual del chatbot</p>
         </div>
