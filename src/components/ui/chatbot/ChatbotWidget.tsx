@@ -3,6 +3,8 @@ import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
 import ChatbotIcon from "./ChatbotIcon";
+import { apiClient } from 'src/services/apiClient';
+import { config } from 'config';
 interface Opcion {
   label: string;
   valor: string;
