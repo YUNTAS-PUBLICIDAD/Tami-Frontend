@@ -83,9 +83,6 @@ interface LocalReplyResult {
   contextPatch?: Partial<ChatContextMinimal>;
 }
 
-const INFO_OR_COTIZACION_REPLY =
-  'Claro 😊 ¿Buscas algo para maquinaria, decoración o para tu negocio? Cuéntame un poco más y te ayudo a encontrar lo ideal.';
-
 
 const collapseWhitespaceQuery = (query: string): string => {
   const normalized = normalizeText(query);
@@ -124,31 +121,6 @@ export const getLocalReply = async (
       contextPatch: {
         rubro: datosIngresados,
       },
-    };
-  }
-
-  // 2. Intención explícita de solicitar un agente humano (Protegido contra textos largos)
-  const esMensajeCorto = text.trim().length < 40;
-  if (esMensajeCorto && includesAny(normalized, ['asesor', 'humano', 'persona', 'agente', 'vendedor'])) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: '¡Por supuesto! Para pasarte con el asesor ideal: ¿De qué es tu negocio y en qué ciudad estás? 😊',
-      },
-      nextPaso: 'local_esperando_datos_asesor',
-    };
-  }
-
-  // 3. Consultas genéricas sobre información o cotizaciones iniciales
-  if (currentPaso === 'menu_principal' && includesAny(normalized, ['info', 'informacion', 'cotizacion', 'cotizar'])) {
-    return {
-      message: {
-        role: 'bot',
-        tipo: 'texto',
-        respuesta: INFO_OR_COTIZACION_REPLY,
-      },
-      nextPaso: 'menu_principal',
     };
   }
 
@@ -202,13 +174,12 @@ export const getLocalReply = async (
       throw new Error(`Error en servidor: ${response.status}`);
     }
 
-    return {
-      role: 'bot',
-      tipo: 'texto',
-      respuesta: data.response || data.output || data.respuesta || 'Sin respuesta del servidor.',
-      link_whatsapp: data.link_whatsapp,
-    };
-
+   return {
+    role: 'bot',
+    tipo: data.link_whatsapp ? 'fin_flujo' : 'texto',
+    respuesta: data.response || data.output || data.respuesta,
+    link_whatsapp: data.link_whatsapp,
+   };
   } catch (error) {
     console.error('Error frontend chatbot:', error);
     return {
