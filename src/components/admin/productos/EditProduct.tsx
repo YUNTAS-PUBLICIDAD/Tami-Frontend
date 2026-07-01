@@ -49,15 +49,30 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         >
     ) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        // Limpiar error del campo al escribir
-        setErrors(prev => {
-            if (prev[name]) {
-                const next = { ...prev };
-                delete next[name];
-                return next;
+        
+        // 1. Actualizamos el estado del formulario
+        setFormData(prev => {
+            const nuevoEstado = { ...prev, [name]: value };
+            
+            // Si el usuario escribe en 'nombre', copiamos el valor en 'titulo'
+            if (name === "nombre") {
+                nuevoEstado.titulo = value;
             }
-            return prev;
+            
+            return nuevoEstado;
+        });
+    
+        // 2. Limpiamos los errores correspondientes al escribir
+        setErrors(prev => {
+            const next = { ...prev };
+            if (next[name]) delete next[name];
+            
+            // Si se limpia el error de nombre, también limpiamos el de título
+            if (name === "nombre" && next.titulo) {
+                delete next.titulo;
+            }
+            
+            return next;
         });
     };
 
@@ -869,18 +884,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         />
                                         {errors.descripcion && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.descripcion}</p>}
                                     </div>
-                                    <div className="form-input">
-                                        <label>¿Porque elegirnos?</label>
-                                        <RichTextEditor
-                                            value={formData.porque_elegirnos}
-                                            onChange={(html: string) =>
-                                                setFormData(prev => ({
-                                                ...prev,
-                                                porque_elegirnos: html,
-                                                }))
-                                            }
-                                            />
-                                    </div>
+                                    
                                     <div className="form-input">
                                         <label htmlFor="meta_titulo" className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1">
                                             <span>Meta título</span>
@@ -1007,6 +1011,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                         </p>
                                         {errors.titulo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.titulo}</p>}
                                     </div>
+
                                     <div className="form-input">
                                         <div className="rounded-2xl border border-slate-700/40 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-4 shadow-xl">
                                             <div className="flex flex-col gap-1 mb-4">
@@ -1015,7 +1020,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     <p className="text-xs text-white dark:text-gray-400">Ajusta el tamaño, color y tratamiento tipográfico del encabezado de la sección de detalle.</p>
                                                 </div>
                                             </div>
-
                                             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm mb-4">
                                                 <div className="flex items-center justify-between mb-3">
                                                     <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-300">Vista previa</span>
@@ -1053,7 +1057,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                     })()}
                                                 </span>
                                             </div>
-
                                             <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.3fr] gap-4 items-start">
                                                 <div>
                                                     <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">Tamaño</label>
@@ -1094,47 +1097,46 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 </div>
                                                 
                                                 <div>
-    <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">
-        Estilo
-    </label>
+                                                <label className="block text-xs font-semibold uppercase tracking-wide text-white dark:text-gray-400 mb-2">
+                                                    Estilo
+                                                </label>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {[
+                                                        { value: "normal", label: "Normal" },
+                                                        { value: "negrita", label: "Negrita" },
+                                                        { value: "cursiva", label: "Cursiva" },
+                                                        { value: "negrita_cursiva", label: "Negrita + cursiva" },
+                                                        { value: "subrayado", label: "Subrayado" },
+                                                    ].map((option) => {
+                                                        const isActive =
+                                                            formData.etiqueta.titulo_detalle_producto_style === option.value;
 
-    <div className="grid grid-cols-2 gap-2">
-        {[
-            { value: "normal", label: "Normal" },
-            { value: "negrita", label: "Negrita" },
-            { value: "cursiva", label: "Cursiva" },
-            { value: "negrita_cursiva", label: "Negrita + cursiva" },
-            { value: "subrayado", label: "Subrayado" },
-        ].map((option) => {
-            const isActive =
-                formData.etiqueta.titulo_detalle_producto_style === option.value;
-
-            return (
-                <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                        setFormData((prev) => ({
-                            ...prev,
-                            etiqueta: {
-                                ...prev.etiqueta,
-                                titulo_detalle_producto_style: option.value,
-                            },
-                        }));
-                    }}
-                    className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-pointer ${
-                        isActive
-                            ? "border-teal-500 bg-teal-600 text-white shadow-md"
-                            : "border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 text-gray-700 dark:text-gray-200 hover:border-teal-400"
-                    }`}
-                >
-                    {option.label}
-                </button>
-            );
-        })}
-    </div>
-</div>
+                                                        return (
+                                                            <button
+                                                                key={option.value}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setFormData((prev) => ({
+                                                                        ...prev,
+                                                                        etiqueta: {
+                                                                            ...prev.etiqueta,
+                                                                            titulo_detalle_producto_style: option.value,
+                                                                        },
+                                                                    }));
+                                                                }}
+                                                                className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all cursor-pointer ${
+                                                                    isActive
+                                                                        ? "border-teal-500 bg-teal-600 text-white shadow-md"
+                                                                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 text-gray-700 dark:text-gray-200 hover:border-teal-400"
+                                                                }`}
+                                                            >
+                                                                {option.label}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
+                                        </div>
                                         </div>
                                     </div>
                                     <div className="form-input">
@@ -1324,6 +1326,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                                 {errors.largo && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.largo}</p>}
                                             </div>
                                         </div>
+                                    </div>
+                                    <div className="form-input">
+                                        <label>¿Porque elegirnos?</label>
+                                        <RichTextEditor
+                                            value={formData.porque_elegirnos}
+                                            onChange={(html: string) =>
+                                                setFormData(prev => ({
+                                                ...prev,
+                                                porque_elegirnos: html,
+                                                }))
+                                            }
+                                            />
                                     </div>
                                 </div>
                                 <button
