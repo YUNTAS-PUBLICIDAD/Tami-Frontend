@@ -8,6 +8,7 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
 }
+
 const LineHeight = Extension.create({
   name: "lineHeight",
 
@@ -48,8 +49,9 @@ export default function RichTextEditor({ value, onChange }: Props) {
     },
     editorProps: {
       attributes: {
+        // 1. Añadimos dark:text-gray-200 al texto del editor
         class:
-          "min-h-[250px] p-4 outline-none text-gray-700 text-base leading-relaxed",
+          "min-h-[250px] p-4 outline-none text-gray-700 dark:text-gray-200 text-base leading-relaxed",
       },
     },
   });
@@ -62,59 +64,66 @@ export default function RichTextEditor({ value, onChange }: Props) {
 
   if (!editor) return null;
 
+  // Clases comunes para los botones para que se vean bien en ambos modos
+  const btnClass = "px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors";
+
   return (
-    <div className="border border-gray-300 rounded-xl overflow-hidden bg-white">
-      <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 p-2 bg-gray-50">
-        <button type="button" onClick={() => editor.chain().focus().undo().run()}>
+    // 2. Contenedor principal: Fondo oscuro y bordes adaptables
+    <div className="border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+      
+      <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-700 p-2 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200">
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().undo().run()}>
           ↶
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().redo().run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().redo().run()}>
           ↷
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().toggleBold().run()}>
           <b>B</b>
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().toggleItalic().run()}>
           <i>I</i>
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().toggleUnderline().run()}>
           <u>U</u>
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("left").run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().setTextAlign("left").run()}>
           ←
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("center").run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().setTextAlign("center").run()}>
           ↔
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("right").run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().setTextAlign("right").run()}>
           →
         </button>
 
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("justify").run()}>
+        <button type="button" className={btnClass} onClick={() => editor.chain().focus().setTextAlign("justify").run()}>
           ☰
         </button>
-       <select
-        className="border rounded px-2 py-1 text-sm bg-white"
-        defaultValue=""
-        onChange={(e) => {
+        
+        {/* 4. Select de interlineado: Fondo y texto adaptables */}
+        <select
+          className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-teal-500"
+          defaultValue=""
+          onChange={(e) => {
             const value = e.target.value;
             if (!value) return;
 
             editor.chain().focus().updateAttributes("paragraph", {
-            lineHeight: value,
+              lineHeight: value,
             }).run();
 
             editor.chain().focus().updateAttributes("heading", {
-            lineHeight: value,
+              lineHeight: value,
             }).run();
-        }}
+          }}
         >
           <option value="" disabled>
             Interlineado
