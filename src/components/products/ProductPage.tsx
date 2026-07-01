@@ -220,7 +220,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
                                 
                                     <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        Características de {producto.nombre}
+                                        Características de {producto.nombre.toLowerCase()}
                                     </h2>
                                     <svg
                                     className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
@@ -250,7 +250,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
                             <div>
                                 <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Especificaciones técnicas de {producto.nombre}
+                                Especificaciones técnicas de {producto.nombre.toLowerCase()}
                                 </h2>
 
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
@@ -283,7 +283,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                             <div>
                                 <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Dimensiones de {producto.nombre}
+                                Dimensiones de {producto.nombre.toLowerCase()}
                                 </h2>
 
                                 <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
