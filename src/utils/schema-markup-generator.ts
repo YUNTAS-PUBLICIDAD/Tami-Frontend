@@ -46,7 +46,7 @@ export function generateProductJsonLd(product: Producto) {
       logo: "https://tamimaquinarias.com/_astro/logo-estatico-100x116.B0Pf3Br1.webp",
       url: "https://tamimaquinarias.com/",
     },
-    url: `https://tamimaquinarias.com/catalogo-maquinarias/${encodeURIComponent(product.link)}`,
+    url: `https://tamimaquinarias.com/catalogo-maquinarias/detalle?link=${encodeURIComponent(product.link)}`,
     category: product.seccion,
     /* offers: {
       "@type": "Offer",

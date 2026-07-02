@@ -115,7 +115,7 @@ const productsUrl = config.endpoints.productos.list;
       <!-- VIDEO -->
       <div
         id="blog-video-container"
-        class="mx-auto px-4 md:px-20 py-4 md:py-6 bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl mb-8 md:mb-10 border border-gray-200"
+        class="hidden mx-auto px-4 md:px-20 py-4 md:py-6 bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl mb-8 md:mb-10 border border-gray-200"
       >
         <div id="blog-video-section" class="mt-4 md:mt-8"></div>
       </div>
@@ -282,6 +282,8 @@ const productsUrl = config.endpoints.productos.list;
           const blogSectionsElement = document.getElementById("blog-sections");
           const blogVideoSectionElement =
             document.getElementById("blog-video-section");
+          const blogVideoContainerElement =
+            document.getElementById("blog-video-container");
           const titulo = blog.titulo.toUpperCase();
           if (blogImgElement) {
           blogImgElement.src = getBlogImageUrl(blog.hero_image || blog.miniatura || "/images/fallback.webp");
@@ -347,7 +349,7 @@ const productsUrl = config.endpoints.productos.list;
             }
 
             if (slugProducto) {
-              btnVerProducto.href = `/productos/${slugProducto}`;
+              btnVerProducto.href = `/catalogo-maquinarias/detalle?link=${slugProducto}`;
               btnVerProducto.innerText =
                 blog.etiqueta?.popup_button_text?.trim() || "Ver Producto";
               if (blog.etiqueta?.popup_button_color) {
@@ -381,10 +383,10 @@ const productsUrl = config.endpoints.productos.list;
 
               section.innerHTML = `
               <!-- Texto primero en mobile, layout lateral en desktop -->
-            <div class="flex flex-col min-[930px]:flex-row ${index % 2 === 1 ? "min-[930px]:flex-row-reverse" : ""} gap-6 min-[930px]:gap-12 items-center">
+            <div class="flex flex-col min-[930px]:flex-row ${index % 2 === 1 ? "min-[930px]:flex-row-reverse" : ""} gap-6 min-[930px]:gap-12 items-start">
               
-              <div class="w-full min-[930px]:w-1/2 px-2 min-[930px]:px-4 flex flex-col justify-center">
-                <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
+              <div class="w-full min-[930px]:w-1/2 px-2 min-[930px]:px-4 flex flex-col justify-start items-start">
+                <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-left leading-relaxed break-words">
                   <p class="text-sm md:text-base whitespace-pre-line break-words">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
                 </article>
               </div>
@@ -410,14 +412,40 @@ const productsUrl = config.endpoints.productos.list;
           }
 
           if (blogVideoSectionElement && blog.video_id) {
-            blogVideoSectionElement.innerHTML = `
+            function getYoutubeVideoId(videoValue) {
+              if (!videoValue || typeof videoValue !== "string") return "";
+              const value = videoValue.trim();
+              if (!value) return "";
+
+              const directIdMatch = value.match(/^[a-zA-Z0-9_-]{11}$/);
+              if (directIdMatch) return value;
+
+              const urlMatch = value.match(
+                /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+              );
+
+              return urlMatch?.[1] || "";
+            }
+
+            const validVideoId = getYoutubeVideoId(blog.video_id);
+
+            if (!validVideoId) {
+              if (blogVideoContainerElement) {
+                blogVideoContainerElement.classList.add("hidden");
+              }
+            } else {
+              if (blogVideoContainerElement) {
+                blogVideoContainerElement.classList.remove("hidden");
+              }
+
+              blogVideoSectionElement.innerHTML = `
             <section class="rounded-lg md:rounded-xl shadow-md py-4 md:py-4 px-4 md:px-20 bg-gray-50">
                 <h1 class="text-lg md:text-xl lg:text-2xl text-sky-400 font-bold mb-4 md:mb-6 text-center md:text-left break-words">${blog.video_titulo}</h1>
                 <div class="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
                     <iframe
                         width="100%"
                         height="100%"
-                        src="https://www.youtube.com/embed/${blog.video_id}"
+                        src="https://www.youtube.com/embed/${validVideoId}"
                         title="YouTube video player"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin"
@@ -427,6 +455,9 @@ const productsUrl = config.endpoints.productos.list;
                 </div>
             </section>
           `;
+            }
+          } else if (blogVideoContainerElement) {
+            blogVideoContainerElement.classList.add("hidden");
           }
 
           clearTimeout(safetyTimeout);
