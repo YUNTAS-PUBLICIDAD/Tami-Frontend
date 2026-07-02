@@ -95,7 +95,6 @@ const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
   return base;
 };
 
-
 const AddBlogModal: React.FC<AddBlogModalProps> = ({
   onBlogAdded,
   isOpen: propIsOpen,
@@ -123,7 +122,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     video_url: "",
     video_titulo: "",
     producto_id: "",
-    created_at: new Date().toISOString().split('T')[0],
+    created_at: new Date().toISOString().split("T")[0],
     miniatura: null,
     hero_image: null,
     imagenes: [
@@ -168,9 +167,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
     if (blogToEdit) {
       const productoEncontrado = productos.find(
-        (p) => p.nombre === blogToEdit.nombre_producto
+        (p) => p.nombre === blogToEdit.nombre_producto,
       );
-      const productoIdEdit = blogToEdit.producto_id ?? productoEncontrado?.id ?? "";
+      const productoIdEdit =
+        blogToEdit.producto_id ?? productoEncontrado?.id ?? "";
       setFormData({
         titulo: blogToEdit.titulo || "",
         link: blogToEdit.link || "",
@@ -179,7 +179,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_url: blogToEdit.video_url || "",
         video_titulo: blogToEdit.video_titulo || "",
         producto_id: productoIdEdit ? String(productoIdEdit) : "",
-        created_at: blogToEdit.created_at ? blogToEdit.created_at.split(/[ T]/)[0] : new Date().toISOString().split('T')[0],
+        created_at: blogToEdit.created_at
+          ? blogToEdit.created_at.split(/[ T]/)[0]
+          : new Date().toISOString().split("T")[0],
         miniatura: blogToEdit.miniatura || null,
         hero_image: blogToEdit.hero_image || null,
         imagenes: normalizeImagenes(blogToEdit.imagenes || [], blogToEdit),
@@ -187,7 +189,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
           meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
           popup_button_text: blogToEdit.etiqueta?.popup_button_text || "",
-          popup_button_color: blogToEdit.etiqueta?.popup_button_color || "#47ce36",
+          popup_button_color:
+            blogToEdit.etiqueta?.popup_button_color || "#47ce36",
           popup_text_color: blogToEdit.etiqueta?.popup_text_color || "#ffffff",
         },
       });
@@ -197,7 +200,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           ? blogToEdit.hero_image.startsWith("http")
             ? blogToEdit.hero_image
             : `${config.apiUrl}${blogToEdit.hero_image}`
-          : null
+          : null,
       );
     } else {
       setFormData({
@@ -208,7 +211,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         video_url: "",
         video_titulo: "",
         producto_id: "",
-        created_at: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString().split("T")[0],
         miniatura: null,
         hero_image: null,
         imagenes: [
@@ -231,7 +234,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
 
@@ -316,7 +319,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleFileChangeAdicional = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -338,7 +341,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleParrafoChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
-    index: number
+    index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = { ...nuevoArray[index], parrafo: e.target.value };
@@ -347,7 +350,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleAltTextChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
     nuevoArray[index] = { ...nuevoArray[index], text_alt: e.target.value };
@@ -356,7 +359,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleInsertLinkClick = (index: number) => {
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`
+      `crear_descripcion_antes_${index}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -367,7 +370,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Selecciona texto",
         "Selecciona texto para enlazar.",
-        "warning"
+        "warning",
       );
       return;
     }
@@ -379,7 +382,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   const handleProductLinkClick = (index: number) => {
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`
+      `crear_descripcion_antes_${index}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -390,7 +393,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Selecciona texto",
         "Selecciona texto para enlazar.",
-        "warning"
+        "warning",
       );
       return;
     }
@@ -407,18 +410,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       return;
     }
     const productoSeleccionado = productos.find(
-      (p) => String(p.id) === String(formData.producto_id)
+      (p) => String(p.id) === String(formData.producto_id),
     );
     if (!productoSeleccionado?.link) {
       Swal.fire(
         "Producto no encontrado",
         "No se encontró el producto.",
-        "error"
+        "error",
       );
       return;
     }
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`
+      `crear_descripcion_antes_${activeIndex}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -450,12 +453,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Enlace inválido",
         "Ingresa una URL válida (https://...).",
-        "error"
+        "error",
       );
       return;
     }
     const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`
+      `crear_descripcion_antes_${activeIndex}`,
     ) as HTMLTextAreaElement;
 
     const start = textarea.selectionStart;
@@ -491,7 +494,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       video_url: "",
       video_titulo: "",
       producto_id: "",
-      created_at: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString().split("T")[0],
       miniatura: null,
       hero_image: null,
       imagenes: [
@@ -520,7 +523,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `El título es obligatorio y máx. ${LENGTHS.titulo} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -532,7 +535,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `El párrafo es obligatorio y máx. ${LENGTHS.parrafo} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -544,7 +547,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `La descripción es obligatoria y máx. ${LENGTHS.descripcion} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -556,7 +559,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `El título del video es obligatorio y máx. ${LENGTHS.videoTitulo} caracteres.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -569,7 +572,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       Swal.fire(
         "Error",
         `La URL del video es obligatoria, máx. ${LENGTHS.videoUrl} y debe ser válida.`,
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -590,13 +593,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     // Validación imágenes adicionales y párrafos
     if (
       formData.imagenes.some(
-        (img) => (!blogToEdit && !img.imagen) || !img.parrafo
+        (img) => (!blogToEdit && !img.imagen) || !img.parrafo,
       )
     ) {
       Swal.fire(
         "Error",
         "Cada imagen adicional y su descripción son obligatorias.",
-        "error"
+        "error",
       );
       setIsSaving(false);
       return;
@@ -605,14 +608,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     // Validación text_alt
     if (
       formData.imagenes.some(
-        (img) => !img.text_alt || img.text_alt.trim() === ""
+        (img) => !img.text_alt || img.text_alt.trim() === "",
       )
     ) {
-      Swal.fire(
-        "Error",
-        "Cada imagen debe tener texto ALT.",
-        "error"
-      );
+      Swal.fire("Error", "Cada imagen debe tener texto ALT.", "error");
       setIsSaving(false);
       return;
     }
@@ -625,7 +624,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         : config.endpoints.blogs.create;
 
       const formDataToSend = new FormData();
-      
+
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("link", formData.link);
       formDataToSend.append("subtitulo1", formData.subtitulo1);
@@ -635,14 +634,26 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       formDataToSend.append("video_titulo", formData.video_titulo || "");
 
       formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
-      formDataToSend.append("meta_descripcion", formData.etiqueta.meta_descripcion);
+      formDataToSend.append(
+        "meta_descripcion",
+        formData.etiqueta.meta_descripcion,
+      );
 
       formDataToSend.append("producto_id", formData.producto_id.toString());
 
-      formDataToSend.append("popup_button_text", formData.etiqueta.popup_button_text || "");
-      formDataToSend.append("popup_button_color", formData.etiqueta.popup_button_color || "#47ce36");
-      formDataToSend.append("popup_text_color", formData.etiqueta.popup_text_color || "#ffffff");
-      
+      formDataToSend.append(
+        "popup_button_text",
+        formData.etiqueta.popup_button_text || "",
+      );
+      formDataToSend.append(
+        "popup_button_color",
+        formData.etiqueta.popup_button_color || "#47ce36",
+      );
+      formDataToSend.append(
+        "popup_text_color",
+        formData.etiqueta.popup_text_color || "#ffffff",
+      );
+
       if (formData.created_at) {
         formDataToSend.append("created_at", formData.created_at);
       }
@@ -656,23 +667,23 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       }
 
       formData.imagenes.forEach((item, index) => {
-      formDataToSend.append(
-        "imagen_tipo[]",
-        item.imagen instanceof File ? "file" : "existing"
-      );
+        formDataToSend.append(
+          "imagen_tipo[]",
+          item.imagen instanceof File ? "file" : "existing",
+        );
 
-      // SIEMPRE enviar text_alt
-      formDataToSend.append("text_alt[]", item.text_alt || "");
+        // SIEMPRE enviar text_alt
+        formDataToSend.append("text_alt[]", item.text_alt || "");
 
-      if (item.imagen instanceof File) {
-        formDataToSend.append("imagenes[]", item.imagen);
-      } else if (item.id) {
-        formDataToSend.append("imagen_ids[]", item.id.toString());
-      }
+        if (item.imagen instanceof File) {
+          formDataToSend.append("imagenes[]", item.imagen);
+        } else if (item.id) {
+          formDataToSend.append("imagen_ids[]", item.id.toString());
+        }
 
-      // SIEMPRE enviar párrafo
-      formDataToSend.append("parrafos[]", item.parrafo || "");
-    });
+        // SIEMPRE enviar párrafo
+        formDataToSend.append("parrafos[]", item.parrafo || "");
+      });
       if (blogToEdit) {
         formDataToSend.append("_method", "PUT");
       }
@@ -690,8 +701,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           title: blogToEdit
             ? "Blog actualizado con éxito"
             : "Blog creado con éxito",
-          text: `El blog "${data.data.titulo}" ha sido ${blogToEdit ? "actualizado" : "creado"
-            } correctamente.`,
+          text: `El blog "${data.data.titulo}" ha sido ${
+            blogToEdit ? "actualizado" : "creado"
+          } correctamente.`,
           confirmButtonColor: "#3085d6",
         });
         closeModal();
@@ -715,8 +727,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         // Formatear los errores de Laravel
         const errors = error.response.data.errors;
         errorMessage = Object.keys(errors)
-          .map(key => `${key}: ${errors[key].join(', ')}`)
-          .join('\n');
+          .map((key) => `${key}: ${errors[key].join(", ")}`)
+          .join("\n");
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else {
@@ -734,7 +746,6 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       setIsSaving(false);
     }
   };
-
 
   // Cuenta palabras en un string
   function contarPalabras(texto: string): number {
@@ -799,28 +810,28 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
   //toggle de imagen/recomendaciones dadmin/blo
   const handleRemoveImage = (index: number) => {
-  const nuevasImagenes = [...formData.imagenes];
+    const nuevasImagenes = [...formData.imagenes];
 
-  nuevasImagenes[index] = {
-    ...nuevasImagenes[index],
-    imagen: null,
-    previewUrl: undefined,
-    url: "",
-  };
+    nuevasImagenes[index] = {
+      ...nuevasImagenes[index],
+      imagen: null,
+      previewUrl: undefined,
+      url: "",
+    };
 
-  setFormData({
-    ...formData,
-    imagenes: nuevasImagenes,
-  });
+    setFormData({
+      ...formData,
+      imagenes: nuevasImagenes,
+    });
   };
 
   //toggle de imagen/Multimedia dadmin/blo
   const handleRemoveMiniatura = () => {
-  setFormData({
-    ...formData,
-    miniatura: null,
-  });
-};
+    setFormData({
+      ...formData,
+      miniatura: null,
+    });
+  };
 
   return (
     <>
@@ -846,15 +857,154 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               onSubmit={handleSubmit}
               className="flex flex-col gap-6"
             >
+              {/* --- Miniatura --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Miniatura
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input md:col-span-2">
+                    <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">
+                      Miniatura del Blog*
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="miniatura-upload"
+                    />
+                    <label
+                      htmlFor="miniatura-upload"
+                      className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {formData.miniatura ? (
+                        <div className="relative flex flex-col items-center justify-center gap-3 group">
+                          {/* IMAGEN */}
+                          <img
+                            src={
+                              previewMiniatura
+                                ? previewMiniatura
+                                : typeof formData.miniatura === "string"
+                                  ? formData.miniatura.startsWith("http")
+                                    ? formData.miniatura
+                                    : `${config.apiUrl}${formData.miniatura}`
+                                  : ""
+                            }
+                            alt="Vista previa miniatura"
+                            className="h-40 object-cover rounded shadow-md"
+                          />
+                          {/* OVERLAY */}
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                              Cambiar imagen
+                            </span>
+                          </div>
+
+                          {/* BOTÓN X */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleRemoveMiniatura();
+                            }}
+                            className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
+                          >
+                            x
+                          </button>
+
+                          <span className="text-teal-600 font-medium text-sm">
+                            {(formData.miniatura as any).name ||
+                              "Haz clic para cambiar la imagen"}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-4">
+                          <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-8 w-8 text-teal-500 opacity-70"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+
+                            <span className="font-medium">
+                              Click aquí para subir miniatura principal
+                            </span>
+                          </span>
+
+                          {/* RECOMENDACIONES */}
+                          <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                            <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                              💡 Recomendación:
+                            </p>
+
+                            <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                              <li>• Formatos: WEBP o GIF</li>
+                              <li>• Tamaño ideal: 960x540 px</li>
+                              <li>• Máximo: 2 MB</li>
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               {/* --- INFORMACIÓN GENERAL --- */}
               <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
                 <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                   Información General
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Título para web*</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Título del blog*
+                    </label>
                     <input
                       type="text"
                       name="titulo"
@@ -865,7 +1015,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     />
                   </div>
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Link Permanente*</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Link Permanente*
+                    </label>
                     <input
                       type="text"
                       name="link"
@@ -876,7 +1028,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     />
                   </div>
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Fecha de Creación*</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Fecha de Creación*
+                    </label>
                     <input
                       type="date"
                       name="created_at"
@@ -886,7 +1040,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     />
                   </div>
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Relacionar con producto*</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Relacionar con producto*
+                    </label>
                     <select
                       name="producto_id"
                       value={formData.producto_id}
@@ -904,54 +1060,117 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 </div>
               </div>
 
-              {/* --- TEXTOS PRINCIPALES --- */}
+              {/* --- SEO --- */}
               <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
                 <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
-                  Textos Introductorios
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Párrafo corto (100 palabras)*</label>
-                    <textarea
-                      name="subtitulo1"
-                      value={formData.subtitulo1}
-                      onChange={handleChange}
-                      maxLength={LENGTHS.parrafo}
-                      required
-                      rows={3}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     />
-                    <small className="text-gray-500 text-end block mt-1">
-                      {contarPalabras(formData.subtitulo1)} palabras (Máx {LENGTHS.parrafo})
+                  </svg>
+                  Optimización SEO
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Meta título
+                    </label>
+                    <input
+                      type="text"
+                      name="meta_titulo"
+                      value={formData.etiqueta.meta_titulo}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            meta_titulo: e.target.value.slice(
+                              0,
+                              LENGTHS.metaTitulo,
+                            ),
+                          },
+                        })
+                      }
+                      maxLength={LENGTHS.metaTitulo}
+                    />
+                    <small className="text-gray-500 mt-1 block">
+                      Sugerido {LENGTHS.metaTitulo} caracteres
                     </small>
                   </div>
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Descripción (255 palabras)*</label>
-                    <textarea
-                      name="subtitulo2"
-                      value={formData.subtitulo2}
-                      onChange={handleChange}
-                      maxLength={LENGTHS.descripcion}
-                      required
-                      rows={4}
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Meta descripción
+                    </label>
+                    <input
+                      type="text"
+                      name="meta_descripcion"
+                      value={formData.etiqueta.meta_descripcion}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            meta_descripcion: e.target.value.slice(
+                              0,
+                              LENGTHS.metaDescripcion,
+                            ),
+                          },
+                        })
+                      }
+                      maxLength={LENGTHS.metaDescripcion}
                     />
-                    <small className="text-gray-500 text-end block mt-1">
-                      {contarPalabras(formData.subtitulo2)} palabras (Máx {LENGTHS.descripcion})
+                    <small className="text-gray-500 mt-1 block">
+                      Sugerido {LENGTHS.metaDescripcion} caracteres
                     </small>
                   </div>
                 </div>
               </div>
-              {/* --- MULTIMEDIA --- */}
-              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  Multimedia
-                </h3>
-                {/* FONDO DINÁMICO POR BLOG */}
-                <div className="form-input md:col-span-2 mt-4">
-                  <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">
-                    Hero Image del Blog*
-                  </label>
+
+              <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400">
+                    Contenido del Blog
+                  </h3>
+                </div>
+                {/* --- Imagen Principal Blog Contenedor--- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm mb-3">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Imagen Principal
+                  </h3>
+                  {/* Imagen Principal Blog */}
+                  <div className="form-input md:col-span-2 mt-4">
+                    <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">
+                      Imagen Principal del Blog*
+                    </label>
                     <input
                       type="file"
                       accept="image/*"
@@ -973,168 +1192,311 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         setPreviewHero(URL.createObjectURL(file));
                       }}
                       className="hidden"
-                      id="hero-image-upload"/>
-                  <label htmlFor="hero-image-upload" className="cursor-pointer border-2 border-dashed border-purple-300 dark:border-purple-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors">
-                    {formData.hero_image ? (
-                      <div className="relative flex flex-col items-center justify-center gap-3 group">
-                        <img
-                          src={
-                            previewHero
-                              ? previewHero
-                              : typeof formData.hero_image === "string"
-                                ? formData.hero_image.startsWith("http")
-                                  ? formData.hero_image
-                                  : `${config.apiUrl}${formData.hero_image}`
-                                : ""
-                          }
-                          alt="Hero preview"
-                          className="h-40 object-cover rounded shadow-md"
-                        />
-
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="bg-purple-500 text-white px-3 py-1 rounded text-sm font-semibold">
-                            Cambiar imagen
-                          </span>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-
-                            setFormData((prev) => ({
-                              ...prev,
-                              hero_image: null,
-                            }));
-
-                            setPreviewHero(null);
-                          }}
-                          className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
-                        >
-                          ×
-                        </button>
-
-                        <span className="text-purple-600 font-medium text-sm">
-                          Cambiar Hero Image
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center gap-3">
-                        <span className="font-medium">
-                            Click aquí para subir Hero image del Blog
-                          </span>
-
-                        {/* RECOMENDACIONES */}
-                        <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
-                          <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
-                          💡 Recomendación:
-                          </p>
-
-                          <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
-                            <li>• Formatos: WEBP o GIF</li>
-                            <li>• Tamaño ideal: 960x540 px</li>
-                            <li>• Máximo: 2 MB</li>
-                          </ul>
-                          </div>
-                      </div>
-                    )}
-                  </label>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="form-input md:col-span-2">
-                    <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">Miniatura del Blog*</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="miniatura-upload"
+                      id="hero-image-upload"
                     />
                     <label
-                      htmlFor="miniatura-upload"
-                      className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors">
-                      {formData.miniatura ? (
-                      <div className="relative flex flex-col items-center justify-center gap-3 group">
+                      htmlFor="hero-image-upload"
+                      className="cursor-pointer border-2 border-dashed border-purple-300 dark:border-purple-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {formData.hero_image ? (
+                        <div className="relative flex flex-col items-center justify-center gap-3 group">
+                          <img
+                            src={
+                              previewHero
+                                ? previewHero
+                                : typeof formData.hero_image === "string"
+                                  ? formData.hero_image.startsWith("http")
+                                    ? formData.hero_image
+                                    : `${config.apiUrl}${formData.hero_image}`
+                                  : ""
+                            }
+                            alt="Hero preview"
+                            className="h-40 object-cover rounded shadow-md"
+                          />
 
-                        {/* IMAGEN */}
-                        <img
-                          src={
-                            previewMiniatura
-                              ? previewMiniatura
-                              : typeof formData.miniatura === "string"
-                                ? formData.miniatura.startsWith("http")
-                                  ? formData.miniatura
-                                  : `${config.apiUrl}${formData.miniatura}`
-                                : ""
-                          }
-                          alt="Vista previa miniatura"
-                          className="h-40 object-cover rounded shadow-md"
-                        />
-                        {/* OVERLAY */}
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
-                            Cambiar imagen
-                          </span>
-                        </div>
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="bg-purple-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                              Cambiar imagen
+                            </span>
+                          </div>
 
-                        {/* BOTÓN X */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleRemoveMiniatura();
-                          }}
-                          className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white">
-                          x
-                        </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
 
-                        <span className="text-teal-600 font-medium text-sm">
-                          {(formData.miniatura as any).name ||
-                            "Haz clic para cambiar la imagen"}
-                        </span>
-                      </div>
-                      ) : (
-                      <div className="flex flex-col items-center justify-center gap-4">
+                              setFormData((prev) => ({
+                                ...prev,
+                                hero_image: null,
+                              }));
 
-                        <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-8 w-8 text-teal-500 opacity-70"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                              setPreviewHero(null);
+                            }}
+                            className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
+                            ×
+                          </button>
 
-                          <span className="font-medium">
-                            Click aquí para subir miniatura principal
+                          <span className="text-purple-600 font-medium text-sm">
+                            Cambiar Hero Image
                           </span>
-                        </span>
-
-                        {/* RECOMENDACIONES */}
-                        <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
-                          <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
-                            💡 Recomendación:
-                          </p>
-
-                          <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
-                            <li>• Formatos: WEBP o GIF</li>
-                            <li>• Tamaño ideal: 960x540 px</li>
-                            <li>• Máximo: 2 MB</li>
-                          </ul>
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <span className="font-medium">
+                            Click aquí para subir la imagen principal del Blog
+                          </span>
+
+                          {/* RECOMENDACIONES */}
+                          <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                            <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                              💡 Recomendación:
+                            </p>
+
+                            <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                              <li>• Formatos: WEBP o GIF</li>
+                              <li>• Tamaño ideal: 960x540 px</li>
+                              <li>• Máximo: 2 MB</li>
+                            </ul>
+                          </div>
+                        </div>
+                      )}
                     </label>
                   </div>
+                </div>
+                {/* --- TEXTOS PRINCIPALES --- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm mb-3">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h7"
+                      />
+                    </svg>
+                    Textos Introductorios
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Párrafo corto (100 palabras)*
+                      </label>
+                      <textarea
+                        name="subtitulo1"
+                        value={formData.subtitulo1}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.parrafo}
+                        required
+                        rows={3}
+                      />
+                      <small className="text-gray-500 text-end block mt-1">
+                        {contarPalabras(formData.subtitulo1)} palabras (Máx{" "}
+                        {LENGTHS.parrafo})
+                      </small>
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Descripción (255 palabras)*
+                      </label>
+                      <textarea
+                        name="subtitulo2"
+                        value={formData.subtitulo2}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.descripcion}
+                        required
+                        rows={4}
+                      />
+                      <small className="text-gray-500 text-end block mt-1">
+                        {contarPalabras(formData.subtitulo2)} palabras (Máx{" "}
+                        {LENGTHS.descripcion})
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                {formData.imagenes.map((imagen, index) => (
+                  <div
+                    key={index}
+                    className="mb-6 p-5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900/50"
+                  >
+                    <div className="mb-4 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
+                      <span className="inline-block font-bold text-base text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1 rounded-full">
+                        Sección {numeroAPalabras(index + 1)}
+                      </span>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 ml-3">
+                        Edita una sección a la vez y usa el botón X para limpiar
+                        su imagen
+                      </p>
+                    </div>
+                    {/* IMAGEN */}
+                    <div className="flex flex-col space-y-4">
+                      {/* INPUT SUBIR */}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChangeAdicional(e, index)}
+                        className="hidden"
+                        id={`file-input-${index}`}
+                      />
+
+                      {/* INPUT CAMBIAR */}
+                      <input
+                        type="file"
+                        id={`file-input-change-${index}`}
+                        accept="image/*"
+                        onChange={(e) => handleFileChangeAdicional(e, index)}
+                        className="hidden"
+                      />
+
+                      {/* SI HAY IMAGEN */}
+                      {imagen.previewUrl || imagen.url ? (
+                        <div className="relative group">
+                          {/* IMAGEN */}
+                          <img
+                            src={imagen.previewUrl || imagen.url}
+                            alt={`Sección ${index + 1}`}
+                            className="w-full h-48 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md"
+                          />
+
+                          {/* OVERLAY */}
+                          <label
+                            htmlFor={`file-input-change-${index}`}
+                            className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          >
+                            <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                              Cambiar imagen
+                            </span>
+                          </label>
+
+                          {/* BOTÓN X */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleRemoveImage(index);
+                            }}
+                            className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
+                          >
+                            x
+                          </button>
+                        </div>
+                      ) : (
+                        /* SI NO HAY IMAGEN */
+                        <div className="border-2 border-dashed border-teal-400 dark:border-teal-600 rounded-xl p-4 bg-teal-50 dark:bg-teal-900/10 hover:bg-teal-100 dark:hover:bg-teal-900/20 transition-colors">
+                          <label
+                            htmlFor={`file-input-${index}`}
+                            className="cursor-pointer block text-center"
+                          >
+                            <div className="w-full inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors mb-3">
+                              Seleccionar archivo
+                            </div>
+                          </label>
+
+                          {/* RECOMENDACIONES */}
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                            <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                              💡 Recomendación:
+                            </p>
+
+                            <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                              <li>• Formatos: WEBP</li>
+                              <li>• Tamaño ideal: 1200x800 px</li>
+                              <li>• Máximo: 2 MB</li>
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* COLUMNA DERECHA - PÁRRAFO */}
+                      <div className="flex flex-col space-y-3">
+                        <div className="flex justify-between items-start gap-2">
+                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            Párrafo de la sección*
+                          </label>
+                          <div className="flex gap-2 flex-wrap justify-end">
+                            <button
+                              type="button"
+                              onClick={() => handleInsertLinkClick(index)}
+                              className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium"
+                            >
+                              Insertar Link
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleProductLinkClick(index)}
+                              className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium"
+                            >
+                              Link Producto
+                            </button>
+                          </div>
+                        </div>
+                        <textarea
+                          id={`crear_descripcion_antes_${index}`}
+                          value={imagen.parrafo}
+                          onChange={(e) => handleParrafoChange(e, index)}
+                          placeholder="Escribe el contenido de esta sección..."
+                          className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors resize-none"
+                          rows={8}
+                          required
+                        />
+                      </div>
+                      {/* Campo SEO */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Texto Alternativo (SEO)*
+                        </label>
+                        <input
+                          type="text"
+                          value={imagen.text_alt}
+                          onChange={(e) => handleAltTextChange(e, index)}
+                          placeholder="Describe brevemente el contenido de la imagen"
+                          className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* --- MULTIMEDIA --- */}
+              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Multimedia
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Título del video para YouTube*</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Título del video para YouTube*
+                    </label>
                     <input
                       type="text"
                       name="video_titulo"
@@ -1145,7 +1507,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     />
                   </div>
                   <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">URL del video*</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      URL del video*
+                    </label>
                     <input
                       type="text"
                       name="video_url"
@@ -1159,209 +1523,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 </div>
               </div>
 
-              {/* --- SEO --- */}
-              <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                  Optimización SEO
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Meta título</label>
-                    <input
-                      type="text"
-                      name="meta_titulo"
-                      value={formData.etiqueta.meta_titulo}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          etiqueta: {
-                            ...formData.etiqueta,
-                            meta_titulo: e.target.value.slice(
-                              0,
-                              LENGTHS.metaTitulo
-                            ),
-                          },
-                        })
-                      }
-                      maxLength={LENGTHS.metaTitulo}
-                    />
-                    <small className="text-gray-500 mt-1 block">
-                      Sugerido {LENGTHS.metaTitulo} caracteres
-                    </small>
-                  </div>
-                  <div className="form-input">
-                    <label className="font-medium text-gray-700 dark:text-gray-300">Meta descripción</label>
-                    <input
-                      type="text"
-                      name="meta_descripcion"
-                      value={formData.etiqueta.meta_descripcion}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          etiqueta: {
-                            ...formData.etiqueta,
-                            meta_descripcion: e.target.value.slice(
-                              0,
-                              LENGTHS.metaDescripcion
-                            ),
-                          },
-                        })
-                      }
-                      maxLength={LENGTHS.metaDescripcion}
-                    />
-                    <small className="text-gray-500 mt-1 block">
-                      Sugerido {LENGTHS.metaDescripcion} caracteres
-                    </small>
-                  </div>
-                </div>
-
-
-                <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400">Contenido del Blog</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Edita una sección a la vez y usa el botón X para limpiar su imagen</p>
-                  </div>
-                  {formData.imagenes.map((imagen, index) => (
-                    <div key={index} className="mb-6 p-5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900/50">
-                      <div className="mb-4 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
-                        <span className="inline-block font-bold text-base text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1 rounded-full">
-                          Sección {numeroAPalabras(index + 1)}
-                        </span>
-                      </div>
-                      {/* IMAGEN */}
-                      <div className="flex flex-col space-y-4">
-
-                        {/* INPUT SUBIR */}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleFileChangeAdicional(e, index)}
-                          className="hidden"
-                          id={`file-input-${index}`}
-                        />
-
-                        {/* INPUT CAMBIAR */}
-                        <input
-                          type="file"
-                          id={`file-input-change-${index}`}
-                          accept="image/*"
-                          onChange={(e) => handleFileChangeAdicional(e, index)}
-                          className="hidden"
-                        />
-
-                        {/* SI HAY IMAGEN */}
-                        {(imagen.previewUrl || imagen.url) ? (
-                          <div className="relative group">
-
-                            {/* IMAGEN */}
-                            <img
-                              src={imagen.previewUrl || imagen.url}
-                              alt={`Sección ${index + 1}`}
-                              className="w-full h-48 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md"
-                            />
-
-                            {/* OVERLAY */}
-                            <label
-                              htmlFor={`file-input-change-${index}`}
-                              className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                            >
-                              <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
-                                Cambiar imagen
-                              </span>
-                            </label>
-
-                            {/* BOTÓN X */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleRemoveImage(index);
-                              }}
-                              className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white">
-                              x
-                            </button>
-                          </div>
-                        ) : (
-
-                          /* SI NO HAY IMAGEN */
-                          <div className="border-2 border-dashed border-teal-400 dark:border-teal-600 rounded-xl p-4 bg-teal-50 dark:bg-teal-900/10 hover:bg-teal-100 dark:hover:bg-teal-900/20 transition-colors">
-
-                            <label
-                              htmlFor={`file-input-${index}`}
-                              className="cursor-pointer block text-center"
-                            >
-                              <div className="w-full inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors mb-3">
-                                Seleccionar archivo
-                              </div>
-                            </label>
-
-                            {/* RECOMENDACIONES */}
-                            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
-                              <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
-                                💡 Recomendación:
-                              </p>
-
-                              <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
-                                <li>• Formatos: WEBP</li>
-                                <li>• Tamaño ideal: 1200x800 px</li>
-                                <li>• Máximo: 2 MB</li>
-                              </ul>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* COLUMNA DERECHA - PÁRRAFO */}
-                        <div className="flex flex-col space-y-3">
-                          <div className="flex justify-between items-start gap-2">
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Párrafo de la sección*</label>
-                            <div className="flex gap-2 flex-wrap justify-end">
-                              <button
-                                type="button"
-                                onClick={() => handleInsertLinkClick(index)}
-                                className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium"
-                              >
-                                Insertar Link
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleProductLinkClick(index)}
-                                className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium"
-                              >
-                                Link Producto
-                              </button>
-                            </div>
-                          </div>
-                          <textarea
-                            id={`crear_descripcion_antes_${index}`}
-                            value={imagen.parrafo}
-                            onChange={(e) => handleParrafoChange(e, index)}
-                            placeholder="Escribe el contenido de esta sección..."
-                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors resize-none"
-                            rows={8}
-                            required
-                          />
-                        </div>
-                         {/* Campo SEO */}
-                          <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Texto Alternativo (SEO)*</label>
-                            <input
-                              type="text"
-                              value={imagen.text_alt}
-                              onChange={(e) => handleAltTextChange(e, index)}
-                              placeholder="Describe brevemente el contenido de la imagen"
-                              className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                              required
-                            />
-                          </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
               {/* CONFIGURACIÓN DEL BOTÓN */}
               <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
-                
                 <div className="mb-6">
                   <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                     Configuración del Botón
@@ -1396,10 +1559,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
 
                 {/* COLORES */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-
                   {/* COLOR DEL BOTÓN */}
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                    
                     <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">
                       Color del Botón
                     </span>
@@ -1426,16 +1587,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
                           Seleccionar
                         </span>
-                        <span className="text-xs text-gray-400">
-                          fondo
-                        </span>
+                        <span className="text-xs text-gray-400">fondo</span>
                       </div>
                     </div>
                   </div>
 
                   {/* COLOR DEL TEXTO */}
                   <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
-                    
                     <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">
                       Color del Texto
                     </span>
@@ -1462,9 +1620,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
                           Seleccionar
                         </span>
-                        <span className="text-xs text-gray-400">
-                          texto
-                        </span>
+                        <span className="text-xs text-gray-400">texto</span>
                       </div>
                     </div>
                   </div>
@@ -1484,7 +1640,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </button>
                 </div>
               </div>
-              
+
               <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"
@@ -1506,12 +1662,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         </div>
       )}
 
-{/* Modal para insertar enlace manual */}
-{isModalOpen && (
+      {/* Modal para insertar enlace manual */}
+      {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
           <div className="bg-white p-6 rounded-xl w-96">
             <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
-            <p className="text-sm text-gray-600 mb-2">Enlace para: <strong>{selectedText}</strong></p>
+            <p className="text-sm text-gray-600 mb-2">
+              Enlace para: <strong>{selectedText}</strong>
+            </p>
             <input
               type="text"
               placeholder="https://..."
@@ -1520,8 +1678,18 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-              <button onClick={handleAddLink} className="px-4 py-2 bg-teal-600 text-white rounded">Insertar</button>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 text-gray-500"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddLink}
+                className="px-4 py-2 bg-teal-600 text-white rounded"
+              >
+                Insertar
+              </button>
             </div>
           </div>
         </div>
@@ -1531,21 +1699,24 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       {isProductLinkModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
           <div className="bg-white p-6 rounded-xl w-96 text-gray-900">
-            <h3 className="text-xl font-bold mb-3 text-purple-600">Vincular Producto</h3>
+            <h3 className="text-xl font-bold mb-3 text-purple-600">
+              Vincular Producto
+            </h3>
             <p className="text-sm text-gray-600 mb-4">
-              ¿Deseas convertir el texto "<strong>{selectedText}</strong>" en un enlace directo al producto seleccionado en la Información General?
+              ¿Deseas convertir el texto "<strong>{selectedText}</strong>" en un
+              enlace directo al producto seleccionado en la Información General?
             </p>
             <div className="flex justify-end gap-2">
-              <button 
+              <button
                 type="button"
-                onClick={() => setIsProductLinkModalOpen(false)} 
+                onClick={() => setIsProductLinkModalOpen(false)}
                 className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded transition-colors"
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={handleAddProduct} 
+                onClick={handleAddProduct}
                 className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
               >
                 Confirmar Enlace
