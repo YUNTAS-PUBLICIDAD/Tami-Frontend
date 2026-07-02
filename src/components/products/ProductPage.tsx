@@ -286,132 +286,114 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                         {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
                         <div>
-                            {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
-                            <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
-                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                
-                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        Características de {producto.nombre.toLowerCase()}
-                                    </h2>
-                                    <svg
-                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                        <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
-                                        />
+                            {/* 1. CARACTERÍSTICAS (DESCRIPCIÓN) */}
+                            <div className="mb-10 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                                <h2 className="text-[#015f86] font-extrabold text-2xl mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">
+                                    <svg className="w-6 h-6 text-[#015f86]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
-
-                                </summary>
-                            {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
+                                    Características de {producto.nombre.toLowerCase()}
+                                </h2>
                                 <div
-                                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
+                                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
                                     dangerouslySetInnerHTML={{
-                                            __html: producto.descripcion ?? "",
-                                        }}
-                                    />
-                            </div>
-                            </details>
-                            {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
-                            <div>
-                                <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Especificaciones técnicas de {producto.nombre.toLowerCase()}
-                                </h2>
-
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                </h3>
-
-                                <div className="w-full flex flex-col overflow-hidden">
-                                {producto.especificaciones?.map((spec, index) => {
-                                    const separatorIndex = spec.valor.indexOf(':');
-                                    let key = spec.valor;
-                                    let val = '';
-
-                                    if (separatorIndex !== -1) {
-                                    key = spec.valor.substring(0, separatorIndex).trim();
-                                    val = spec.valor.substring(separatorIndex + 1).trim();
-                                    }
-
-                                    return (
-                                    <div
-                                        key={index}
-                                        className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                                    >
-                                        <span className="font-semibold text-gray-800 text-sm">{key}</span>
-                                        <span className="text-gray-600 text-sm">{val}</span>
-                                    </div>
-                                    );
-                                })}
-                                </div>
+                                        __html: producto.descripcion ?? "",
+                                    }}
+                                />
                             </div>
 
-                            <div>
-                                <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Dimensiones de {producto.nombre.toLowerCase()}
-                                </h2>
-
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                Alto, largo y ancho
-                                </h3>
-
-                                <div className="flex items-center gap-8">
-                                <div className="w-24 md:w-32 flex-shrink-0">
-                                    <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
-                                </div>
-
-                                <ul className="space-y-3">
-                                    {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
-                                    {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
-                                    {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
-                                </ul>
-                                </div>
-                            </div>
-                            </div>
-                                {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
-                            <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
-
-                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        ¿Por qué elegirnos?
-                                    </h2>
-                                    <svg
-                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                        <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
-                                        />
+                            {/* 2. ¿POR QUÉ ELEGIRNOS? */}
+                            <div className="mb-10 bg-teal-50/40 p-6 rounded-2xl border border-teal-100 shadow-sm">
+                                <h2 className="text-[#015f86] font-extrabold text-2xl mb-3 flex items-center gap-2">
+                                    <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                     </svg>
+                                    ¿Por qué elegirnos?
+                                </h2>
+                                <h3 className="text-gray-500 font-medium text-sm mb-3 italic">
+                                    Calidad garantizada, innovación tecnológica y soporte de confianza
+                                </h3>
+                                <div
+                                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+                                    dangerouslySetInnerHTML={{
+                                        __html: producto.porque_elegirnos ?? "",
+                                    }}
+                                />
+                            </div>
 
-                                </summary>
-                                <div className="px-6 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2">
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                        Calidad garantizada, innovación tecnológica y soporte de confianza
+                            {/* 3. ESPECIFICACIONES Y DIMENSIONES */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                                <div>
+                                    <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                        ⚙️ Especificaciones técnicas
+                                    </h2>
+                                    <h3 className="text-gray-500 font-medium text-xs mb-4 italic">
+                                        {(producto as any).especificaciones_subtitulo || "Máximo rendimiento y automatización industrial"}
                                     </h3>
 
-                                    <div
-                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
-                                        dangerouslySetInnerHTML={{
-                                        __html: producto.porque_elegirnos ?? "",
-                                        }}
-                                    />
+                                    <div className="border border-gray-150 rounded-xl overflow-hidden shadow-sm bg-white">
+                                        <table className="w-full text-left border-collapse">
+                                            <tbody>
+                                                {producto.especificaciones?.map((spec, index) => {
+                                                    const separatorIndex = spec.valor.indexOf(':');
+                                                    let key = spec.valor;
+                                                    let val = '';
+                                                    if (separatorIndex !== -1) {
+                                                        key = spec.valor.substring(0, separatorIndex).trim();
+                                                        val = spec.valor.substring(separatorIndex + 1).trim();
+                                                    }
+
+                                                    return (
+                                                        <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
+                                                            <td className="px-4 py-3 text-sm font-semibold text-gray-800 border-b border-gray-100">{key}</td>
+                                                            <td className="px-4 py-3 text-sm text-gray-600 border-b border-gray-100">{val}</td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </details>
+
+                                <div className="flex flex-col">
+                                    <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                        📦 Dimensiones
+                                    </h2>
+                                    <h3 className="text-gray-500 font-medium text-xs mb-4 italic">
+                                        Medidas oficiales del empaque
+                                    </h3>
+
+                                    <div className="flex items-center gap-6 bg-gray-50 p-4 rounded-xl border border-gray-200 flex-1">
+                                        <div className="w-16 flex-shrink-0 bg-white p-2.5 rounded-xl shadow-sm border border-gray-150">
+                                            <img src={boxSize.src} title="Dimensiones" alt="Dimensiones" className="w-full h-auto" loading="lazy" />
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-2 flex-1">
+                                            {producto.dimensiones?.alto && (
+                                                <div className="flex justify-between text-sm border-b pb-1">
+                                                    <span className="text-gray-500 font-medium">Alto:</span>
+                                                    <span className="font-bold text-[#015f86]">{producto.dimensiones.alto} cm</span>
+                                                </div>
+                                            )}
+                                            {producto.dimensiones?.largo && (
+                                                <div className="flex justify-between text-sm border-b pb-1">
+                                                    <span className="text-gray-500 font-medium">Largo:</span>
+                                                    <span className="font-bold text-[#015f86]">{producto.dimensiones.largo} cm</span>
+                                                </div>
+                                            )}
+                                            {producto.dimensiones?.ancho && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-500 font-medium">Ancho:</span>
+                                                    <span className="font-bold text-[#015f86]">{producto.dimensiones.ancho} cm</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
             {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
             <div className="max-w-full mx-auto px-4 md:px-8 py-4">
