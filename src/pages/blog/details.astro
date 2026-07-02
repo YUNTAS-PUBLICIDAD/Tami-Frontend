@@ -347,7 +347,7 @@ const productsUrl = config.endpoints.productos.list;
             }
 
             if (slugProducto) {
-              btnVerProducto.href = `/productos/${slugProducto}`;
+              btnVerProducto.href = `/catalogo-maquinarias/detalle?link=${slugProducto}`;
               btnVerProducto.innerText =
                 blog.etiqueta?.popup_button_text?.trim() || "Ver Producto";
               if (blog.etiqueta?.popup_button_color) {

@@ -42,6 +42,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
     const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
+    const [isLinkEdited, setIsLinkEdited] = useState(false);
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -52,24 +53,48 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         
         // 1. Actualizamos el estado del formulario
         setFormData(prev => {
-            const nuevoEstado = { ...prev, [name]: value };
+            const nuevoEstado = { ...prev };
             
-            // Si el usuario escribe en 'nombre', copiamos el valor en 'titulo'
             if (name === "nombre") {
+                nuevoEstado.nombre = value;
                 nuevoEstado.titulo = value;
+                if (!isLinkEdited) {
+                    nuevoEstado.link = value
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .toLowerCase()
+                        .replaceAll(" ", "-");
+                }
+            } else if (name === "link") {
+                const sanitized = value
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase()
+                    .replaceAll(" ", "-");
+                nuevoEstado.link = sanitized;
+            } else {
+                (nuevoEstado as any)[name] = value;
             }
             
             return nuevoEstado;
         });
+
+        if (name === "link") {
+            setIsLinkEdited(true);
+        }
     
         // 2. Limpiamos los errores correspondientes al escribir
         setErrors(prev => {
             const next = { ...prev };
             if (next[name]) delete next[name];
             
-            // Si se limpia el error de nombre, también limpiamos el de título
-            if (name === "nombre" && next.titulo) {
-                delete next.titulo;
+            // Si se limpia el error de nombre, también limpiamos el de título y link
+            if (name === "nombre") {
+                if (next.titulo) delete next.titulo;
+                if (next.link) delete next.link;
+            }
+            if (name === "link") {
+                if (next.link) delete next.link;
             }
             
             return next;
@@ -224,11 +249,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         setFormPage(1);
         setShowModal(false);
         setFormData(defaultValuesProduct);
+        setIsLinkEdited(false);
     }
 
     function validatePage1(): boolean {
         const newErrors: Record<string, string> = {};
         if (!formData.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio.";
+        if (!formData.link?.trim()) newErrors.link = "El link permanente es obligatorio.";
         if (!formData.porque_elegirnos?.trim()) newErrors.porque_elegirnos = "El porque elegirnos es obligatorio";
         if (!formData.descripcion?.trim()) newErrors.descripcion = "La descripción es obligatoria.";
         if (!formData.titulo?.trim()) newErrors.titulo = "El título es obligatorio.";
@@ -411,7 +438,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
             formDataToSend.append("porque_elegirnos", formData.porque_elegirnos);
             formDataToSend.append("titulo", formData.titulo);
             formDataToSend.append("subtitulo", formData.subtitulo);
-            const linkActual = formData.link || product.link || slugify(formData.titulo || formData.nombre);
+            const linkActual = formData.link.trim() || product.link || slugify(formData.nombre);
             formDataToSend.append("link", linkActual);
             formDataToSend.append("descripcion", formData.descripcion);
             formDataToSend.append("stock", formData.stock.toString());
@@ -769,6 +796,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                 detalle_titulo_estilo?: string;
             };
 
+            setIsLinkEdited(!!product.link);
+
             setFormData({
                 ...defaultValuesProduct,
                 nombre: product.nombre,
@@ -870,6 +899,19 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                                           ⚠️ <span className="font-semibold">Mínimo 40 caracteres</span> • <span className="font-semibold">Máximo recomendado 80</span> para evitar que el título se corte.
                                         </p>
                                         {errors.nombre && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.nombre}</p>}
+                                    </div>
+                                    <div className="form-input">
+                                        <label>Link del producto:</label>
+                                        <input
+                                            ref={el => { fieldRefs.current.link = el; }}
+                                            value={formData.link}
+                                            onChange={handleChange}
+                                            type="text"
+                                            name="link"
+                                            placeholder="link-del-producto..."
+                                            className={errors.link ? "border-red-500 focus:ring-red-400" : ""}
+                                        />
+                                        {errors.link && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.link}</p>}
                                     </div>
                                     <div className="form-input">
                                         <label>Descripción:</label>
