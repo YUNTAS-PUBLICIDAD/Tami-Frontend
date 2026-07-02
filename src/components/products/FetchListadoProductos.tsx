@@ -330,6 +330,7 @@ export default function ListadoDeProductos() {
               <button
                 type="button"
                 onClick={() => setOpenCategorias(prev => !prev)}
+                aria-label="Mostrar u ocultar categorías"
                 className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
               >
                 CATEGORÍAS {openCategorias ? "✕" : "☰"}
