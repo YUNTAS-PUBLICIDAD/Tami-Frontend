@@ -118,6 +118,15 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             }
             metaDescription.setAttribute("content", producto.etiqueta?.meta_descripcion || producto.descripcion || "Descripción por defecto");
 
+            let metaKeywords = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null;
+            if (!metaKeywords) {
+                const meta = document.createElement("meta");
+                meta.name = "keywords";
+                document.head.appendChild(meta);
+                metaKeywords = meta;
+            }
+            metaKeywords.setAttribute("content", producto.etiqueta?.keywords || "");
+
             let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
             if (!canonicalLink) {
                 const link = document.createElement("link");
