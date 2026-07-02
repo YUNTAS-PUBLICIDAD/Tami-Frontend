@@ -35,6 +35,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [productos, setProductos] = useState<Product[]>([]);
   const [nuevaEspecificacion, setNuevaEspecificacion] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLinkEdited, setIsLinkEdited] = useState(false);
 
   // Refs para scroll automático al primer error
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -47,15 +48,41 @@ const AddProduct = ({ onProductAdded }: Props) => {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    setFormData(prev => {
+      const nuevoEstado = { ...prev };
+      if (name === "nombre") {
+        nuevoEstado.nombre = value;
+        if (!isLinkEdited) {
+          nuevoEstado.link = value
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replaceAll(" ", "-");
+        }
+      } else if (name === "link") {
+        const sanitized = value
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replaceAll(" ", "-");
+        nuevoEstado.link = sanitized;
+      } else {
+        (nuevoEstado as any)[name] = value;
+      }
+      return nuevoEstado;
+    });
+
+    if (name === "link") {
+      setIsLinkEdited(true);
+    }
+
     // Limpiar error del campo al escribir
     setErrors(prev => {
-      if (prev[name]) {
-        const next = { ...prev };
-        delete next[name];
-        return next;
-      }
-      return prev;
+      const next = { ...prev };
+      if (next[name]) delete next[name];
+      if (name === "nombre" && next.link) delete next.link;
+      return next;
     });
   };
 
@@ -158,11 +185,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
     setFormPage(1); // Resetea el número de página
     setShowModal(false);
     setFormData(defaultValuesProduct);
+    setIsLinkEdited(false);
   }
 
   function validatePage1(): boolean {
     const newErrors: Record<string, string> = {};
     if (!formData.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio.";
+    if (!formData.link?.trim()) newErrors.link = "El link permanente es obligatorio.";
     if (!formData.porque_elegirnos?.trim()) newErrors.porque_elegirnos = "El porque es obligatorio";
     if (!formData.descripcion?.trim()) newErrors.descripcion = "La descripción es obligatoria.";
     if (!formData.titulo?.trim()) newErrors.titulo = "El título es obligatorio.";
@@ -432,7 +461,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo)
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho)
 
-      const link = slugify(formData.titulo || formData.nombre);
+      const link = formData.link.trim() || slugify(formData.nombre);
       formDataToSend.append("link", link);
 
       let imageIndex = 0;
@@ -578,6 +607,19 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       ⚠️ <span className="font-semibold">Mínimo 40 caracteres</span> • <span className="font-semibold">Máximo recomendado 80</span> para evitar que el título se corte.
                     </p>
                     {errors.nombre && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.nombre}</p>}
+                  </div>
+                  <div className="form-input">
+                    <label>Link del producto:</label>
+                    <input
+                      ref={el => { fieldRefs.current.link = el; }}
+                      value={formData.link}
+                      onChange={handleChange}
+                      type="text"
+                      name="link"
+                      placeholder="link-del-producto..."
+                      className={errors.link ? "border-red-500 focus:ring-red-400" : ""}
+                    />
+                    {errors.link && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠️</span>{errors.link}</p>}
                   </div>
                   <div className="form-input">
                     <label>Descripción:</label>

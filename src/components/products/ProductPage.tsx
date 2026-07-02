@@ -19,20 +19,21 @@ declare global {
 }
 
 interface Props {
-    producto: Producto
+    producto?: Producto
 }
 
 const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
-    const [producto, setProducto] = useState<Producto>(initialProducto);
-    const [productViewer, setProductViewer] = useState<string>(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+    const [producto, setProducto] = useState<Producto | null>(initialProducto || null);
+    const [loading, setLoading] = useState<boolean>(!initialProducto);
+    const [productViewer, setProductViewer] = useState<string>(initialProducto?.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
-    const productTitleParts = (producto.titulo || '').trim().split(/\s+/).filter(Boolean);
+    const productTitleParts = (producto?.titulo || '').trim().split(/\s+/).filter(Boolean);
     const productTitleFirstWord = productTitleParts[0] || '';
     const productTitleRest = productTitleParts.slice(1).join(' ');
 
-    const detailTitleColor = producto.detalle_titulo_color || producto.etiqueta?.titulo_detalle_producto_color || '#2DCCFF';
-    const detailTitleSize = Number(producto.detalle_titulo_tamano || producto.etiqueta?.titulo_detalle_producto_size || 24);
-    const rawDetailTitleStyle = producto.detalle_titulo_estilo || producto.etiqueta?.titulo_detalle_producto_style || 'negrita';
+    const detailTitleColor = producto?.detalle_titulo_color || producto?.etiqueta?.titulo_detalle_producto_color || '#015f86';
+    const detailTitleSize = Number(producto?.detalle_titulo_tamano || producto?.etiqueta?.titulo_detalle_producto_size || 24);
+    const rawDetailTitleStyle = producto?.detalle_titulo_estilo || producto?.etiqueta?.titulo_detalle_producto_style || 'negrita';
 
     const normalizedDetailTitleStyle = (() => {
         switch (rawDetailTitleStyle) {
@@ -67,11 +68,23 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         })
     };
 
-    // Cargar datos frescos del producto
+    // Cargar datos del producto (iniciales o frescos)
     useEffect(() => {
-        const fetchFreshProductData = async () => {
+        const fetchProductData = async () => {
+            let productLink = initialProducto?.link;
+            
+            if (!productLink) {
+                const params = new URLSearchParams(window.location.search);
+                productLink = params.get('link')?.trim();
+            }
+
+            if (!productLink) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                const response = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${initialProducto.link}`);
+                const response = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`);
                 if (response.ok) {
                     const freshData = await response.json();
                     setProducto(freshData.data);
@@ -79,18 +92,67 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     window.__detalleProducto = freshData.data;
                 }
             } catch (error) {
-                console.error('Error al cargar datos frescos del producto:', error);
+                console.error('Error al cargar datos del producto:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchFreshProductData();
-    }, [initialProducto.link]);
+        fetchProductData();
+    }, [initialProducto?.link]);
 
     useEffect(() => {
-        setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
-        insertJsonLd("product", producto);
-        window.__detalleProducto = producto;
+        if (producto) {
+            setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+            insertJsonLd("product", producto);
+            window.__detalleProducto = producto;
+
+            // Actualizar SEO dinámico en el cliente
+            document.title = producto.etiqueta?.meta_titulo || producto.titulo;
+            let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+            if (!metaDescription) {
+                const meta = document.createElement("meta");
+                meta.name = "description";
+                document.head.appendChild(meta);
+                metaDescription = meta;
+            }
+            metaDescription.setAttribute("content", producto.etiqueta?.meta_descripcion || producto.descripcion || "Descripción por defecto");
+
+            let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+            if (!canonicalLink) {
+                const link = document.createElement("link");
+                link.rel = "canonical";
+                document.head.appendChild(link);
+                canonicalLink = link;
+            }
+            canonicalLink.setAttribute("href", window.location.href);
+        }
     }, [producto]);
+
+    if (loading) {
+        return (
+            <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#00b6ff]"></div>
+                    <p className="text-white text-lg font-semibold animate-pulse">Cargando detalles del producto...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!producto) {
+        return (
+            <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center text-center px-4">
+                <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl max-w-md border border-red-200">
+                    <h2 className="text-3xl font-bold text-red-600 mb-4">Producto no encontrado</h2>
+                    <p className="text-gray-600 mb-8">No pudimos encontrar el producto solicitado. Por favor verifica la URL.</p>
+                    <a href="/catalogo-maquinarias" className="bg-[#00b6ff] text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:brightness-115 transition">
+                        Volver al catálogo
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     const getDimensionBgColor = (letter: string) => {
         return 'bg-[#00b6ff]';

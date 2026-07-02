@@ -427,8 +427,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     const before = parrafoActual.substring(0, start);
     const after = parrafoActual.substring(end);
 
-    //const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
-    const productUrl = `/catalogo-maquinarias/${productoSeleccionado.link}`;
+    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
     const linkedProductText = `<a href="${productUrl}" style="font-weight: bold;" title="${productoSeleccionado.link}">${selectedText}</a>`;
     const newValue = before + linkedProductText + after;
 
