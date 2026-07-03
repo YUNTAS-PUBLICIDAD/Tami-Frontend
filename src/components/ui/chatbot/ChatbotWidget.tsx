@@ -472,6 +472,7 @@ const ChatbotWidget: React.FC = () => {
               />
               <button
                 type="submit"
+                aria-label='Enviar mensaje'
                 disabled={!input.trim() || isLoading}
                 className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
               >
@@ -501,6 +502,7 @@ const ChatbotWidget: React.FC = () => {
               >
                 <button
                   onClick={handleCloseBubble}
+                  aria-label="Cerrar"
                   className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
                 >
                   <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
