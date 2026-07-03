@@ -37,6 +37,7 @@ const HeroProducts = () => {
           <button
             onClick={handlePrev}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit cursor-pointer"
+            aria-label="Anterior"
           >
           </button>
 
@@ -77,6 +78,7 @@ const HeroProducts = () => {
           <button
             onClick={handleNext}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit justify-self-end"
+            aria-label="Siguiente"
           >
           </button>
         </div>
