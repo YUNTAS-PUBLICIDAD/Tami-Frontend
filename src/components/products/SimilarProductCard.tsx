@@ -30,7 +30,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
 
   return (
     <a
-      href={`/catalogo-maquinarias/${product.link}`}
+      href={`/catalogo-maquinarias/detalle?link=${product.link}`}
       className="
         group relative block w-full 
         rounded-xl shadow-lg border border-gray-100 overflow-hidden 

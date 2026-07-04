@@ -15,7 +15,13 @@ interface Props {
   keywords?: string;
   forceSolidNav?: boolean;
 }
-const { title, description, canonicalUrl, keywords, forceSolidNav = false } = Astro.props;
+const {
+  title,
+  description,
+  canonicalUrl,
+  keywords,
+  forceSolidNav = false,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -51,12 +57,10 @@ const { title, description, canonicalUrl, keywords, forceSolidNav = false } = As
       crossorigin
     />
 
-
-
     <link rel="preconnect" href="https://i.imgur.com" />
     <link rel="preconnect" href="https://apitami.tamimaquinarias.com" />
 
-  <GoogleAnalytics />
+    <GoogleAnalytics />
 
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
@@ -118,14 +122,18 @@ const { title, description, canonicalUrl, keywords, forceSolidNav = false } = As
       <slot />
     </main>
     <Footer />
-    {/**
-     * don't inject the catalog popup on the productos section
-     * (the modal itself also checks allowedRoutes, but excluding
-     * it here avoids mounting it entirely).
-     */}
-    {!(Astro.url.pathname === "/catalogo-maquinarias") && (
-      <ScrollModal client:idle />
-    )}
+    {
+      /**
+       * don't inject the catalog popup on the productos section
+       * (the modal itself also checks allowedRoutes, but excluding
+       * it here avoids mounting it entirely).
+       */
+    }
+    {
+      !(Astro.url.pathname === "/catalogo-maquinarias") && (
+        <ScrollModal client:idle />
+      )
+    }
     {/* Activado con el atributo `client:idle`.*/}
     <script is:inline>
       function addOpenScrollListeners() {
@@ -149,7 +157,7 @@ const { title, description, canonicalUrl, keywords, forceSolidNav = false } = As
       observer.observe(document.body, { childList: true, subtree: true });
     </script>
     <SocialWidget />
-    <ChatbotWidget client:idle />
+    <ChatbotWidget client:only="react" />
     <Toast />
   </body>
 </html>

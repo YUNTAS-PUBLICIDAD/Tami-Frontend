@@ -19,20 +19,21 @@ declare global {
 }
 
 interface Props {
-    producto: Producto
+    producto?: Producto
 }
 
 const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
-    const [producto, setProducto] = useState<Producto>(initialProducto);
-    const [productViewer, setProductViewer] = useState<string>(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+    const [producto, setProducto] = useState<Producto | null>(initialProducto || null);
+    const [loading, setLoading] = useState<boolean>(!initialProducto);
+    const [productViewer, setProductViewer] = useState<string>(initialProducto?.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
-    const productTitleParts = (producto.titulo || '').trim().split(/\s+/).filter(Boolean);
+    const productTitleParts = (producto?.titulo || '').trim().split(/\s+/).filter(Boolean);
     const productTitleFirstWord = productTitleParts[0] || '';
     const productTitleRest = productTitleParts.slice(1).join(' ');
 
-    const detailTitleColor = producto.detalle_titulo_color || producto.etiqueta?.titulo_detalle_producto_color || '#2DCCFF';
-    const detailTitleSize = Number(producto.detalle_titulo_tamano || producto.etiqueta?.titulo_detalle_producto_size || 24);
-    const rawDetailTitleStyle = producto.detalle_titulo_estilo || producto.etiqueta?.titulo_detalle_producto_style || 'negrita';
+    const detailTitleColor = producto?.detalle_titulo_color || producto?.etiqueta?.titulo_detalle_producto_color || '#015f86';
+    const detailTitleSize = Number(producto?.detalle_titulo_tamano || producto?.etiqueta?.titulo_detalle_producto_size || 24);
+    const rawDetailTitleStyle = producto?.detalle_titulo_estilo || producto?.etiqueta?.titulo_detalle_producto_style || 'negrita';
 
     const normalizedDetailTitleStyle = (() => {
         switch (rawDetailTitleStyle) {
@@ -67,30 +68,123 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         })
     };
 
-    // Cargar datos frescos del producto
+    // Cargar datos del producto (iniciales o frescos)
     useEffect(() => {
-        const fetchFreshProductData = async () => {
+        const fetchProductData = async () => {
+            let productLink = initialProducto?.link;
+
+            if (!productLink) {
+                const params = new URLSearchParams(window.location.search);
+                productLink = params.get('link')?.trim();
+            }
+
+            if (!productLink && !initialProducto?.id) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                const response = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${initialProducto.link}`);
+                // Si tenemos el producto inicial con su ID, preferimos buscar por ID.
+                // Esto garantiza que si se modificó el link (slug), obtendremos la información actualizada
+                // y podremos redireccionar al usuario adecuadamente.
+                const url = initialProducto?.id
+                    ? `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/${initialProducto.id}`
+                    : `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`;
+
+                const response = await fetch(url);
                 if (response.ok) {
                     const freshData = await response.json();
-                    setProducto(freshData.data);
-                    setProductViewer(freshData.data.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
-                    window.__detalleProducto = freshData.data;
+                    const freshProduct = freshData.data;
+                    setProducto(freshProduct);
+                    setProductViewer(freshProduct.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+                    window.__detalleProducto = freshProduct;
+
+                    // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
+                    if (initialProducto && freshProduct.link !== initialProducto.link) {
+                        window.location.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(freshProduct.link)}`;
+                    }
+                } else if (initialProducto?.id && productLink) {
+                    // Fallback por si la búsqueda por ID falla, intentamos por link
+                    const fallbackResponse = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`);
+                    if (fallbackResponse.ok) {
+                        const freshData = await fallbackResponse.json();
+                        const freshProduct = freshData.data;
+                        setProducto(freshProduct);
+                        setProductViewer(freshProduct.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+                        window.__detalleProducto = freshProduct;
+                    }
                 }
             } catch (error) {
-                console.error('Error al cargar datos frescos del producto:', error);
+                console.error('Error al cargar datos del producto:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchFreshProductData();
-    }, [initialProducto.link]);
+        fetchProductData();
+    }, [initialProducto?.link, initialProducto?.id]);
 
     useEffect(() => {
-        setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
-        insertJsonLd("product", producto);
-        window.__detalleProducto = producto;
+        if (producto) {
+            setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+            insertJsonLd("product", producto);
+            window.__detalleProducto = producto;
+
+            // Actualizar SEO dinámico en el cliente
+            document.title = producto.etiqueta?.meta_titulo || producto.titulo;
+            let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+            if (!metaDescription) {
+                const meta = document.createElement("meta");
+                meta.name = "description";
+                document.head.appendChild(meta);
+                metaDescription = meta;
+            }
+            metaDescription.setAttribute("content", producto.etiqueta?.meta_descripcion || producto.descripcion || "Descripción por defecto");
+
+            let metaKeywords = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null;
+            if (!metaKeywords) {
+                const meta = document.createElement("meta");
+                meta.name = "keywords";
+                document.head.appendChild(meta);
+                metaKeywords = meta;
+            }
+            metaKeywords.setAttribute("content", producto.etiqueta?.keywords || "");
+
+            let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+            if (!canonicalLink) {
+                const link = document.createElement("link");
+                link.rel = "canonical";
+                document.head.appendChild(link);
+                canonicalLink = link;
+            }
+            canonicalLink.setAttribute("href", window.location.href);
+        }
     }, [producto]);
+
+    if (loading) {
+        return (
+            <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#00b6ff]"></div>
+                    <p className="text-white text-lg font-semibold animate-pulse">Cargando detalles del producto...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!producto) {
+        return (
+            <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center text-center px-4">
+                <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl max-w-md border border-red-200">
+                    <h2 className="text-3xl font-bold text-red-600 mb-4">Producto no encontrado</h2>
+                    <p className="text-gray-600 mb-8">No pudimos encontrar el producto solicitado. Por favor verifica la URL.</p>
+                    <a href="/catalogo-maquinarias" className="bg-[#00b6ff] text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:brightness-115 transition">
+                        Volver al catálogo
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     const getDimensionBgColor = (letter: string) => {
         return 'bg-[#00b6ff]';
@@ -132,7 +226,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     }
                 }
             `}</style>
-            
+
             {/* -------------------- HERO Section (H1) -------------------- */}
             <div className="
                     relative pt-32 md:pt-40 pb-20 min-h-screen 
@@ -182,7 +276,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20">
                 <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-                        
+
                         {/* Visor de imágenes */}
                         <div className="flex flex-col items-center">
                             <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
@@ -212,98 +306,97 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 ))}
                             </div>
                         </div>
-
                         {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
                         <div>
                             {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
                             <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                
+
                                     <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        Descripcion del producto
+                                        Características de {producto.nombre.toLowerCase()}
                                     </h2>
                                     <svg
-                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                        className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
                                         />
                                     </svg>
 
                                 </summary>
-                            {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
-                                <div
-                                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
-                                    dangerouslySetInnerHTML={{
+                                {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
+                                <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
+                                    <div
+                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
+                                        dangerouslySetInnerHTML={{
                                             __html: producto.descripcion ?? "",
                                         }}
                                     />
-                            </div>
+                                </div>
                             </details>
                             {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
-                            <div>
-                                <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Especificaciones técnicas
-                                </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
+                                <div>
+                                    <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                        Especificaciones técnicas de {producto.nombre.toLowerCase()}
+                                    </h2>
 
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                </h3>
+                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                        {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
+                                    </h3>
 
-                                <div className="w-full flex flex-col overflow-hidden">
-                                {producto.especificaciones?.map((spec, index) => {
-                                    const separatorIndex = spec.valor.indexOf(':');
-                                    let key = spec.valor;
-                                    let val = '';
+                                    <div className="w-full flex flex-col overflow-hidden">
+                                        {producto.especificaciones?.map((spec, index) => {
+                                            const separatorIndex = spec.valor.indexOf(':');
+                                            let key = spec.valor;
+                                            let val = '';
 
-                                    if (separatorIndex !== -1) {
-                                    key = spec.valor.substring(0, separatorIndex).trim();
-                                    val = spec.valor.substring(separatorIndex + 1).trim();
-                                    }
+                                            if (separatorIndex !== -1) {
+                                                key = spec.valor.substring(0, separatorIndex).trim();
+                                                val = spec.valor.substring(separatorIndex + 1).trim();
+                                            }
 
-                                    return (
-                                    <div
-                                        key={index}
-                                        className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                                    >
-                                        <span className="font-semibold text-gray-800 text-sm">{key}</span>
-                                        <span className="text-gray-600 text-sm">{val}</span>
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                                                >
+                                                    <span className="font-semibold text-gray-800 text-sm">{key}</span>
+                                                    <span className="text-gray-600 text-sm">{val}</span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                    );
-                                })}
-                                </div>
-                            </div>
-
-                            <div>
-                                <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Dimensiones del producto
-                                </h2>
-
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                Alto, largo y ancho
-                                </h3>
-
-                                <div className="flex items-center gap-8">
-                                <div className="w-24 md:w-32 flex-shrink-0">
-                                    <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
                                 </div>
 
-                                <ul className="space-y-3">
-                                    {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
-                                    {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
-                                    {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
-                                </ul>
+                                <div>
+                                    <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                        Dimensiones de {producto.nombre.toLowerCase()}
+                                    </h2>
+
+                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                                        Alto, largo y ancho
+                                    </h3>
+
+                                    <div className="flex items-center gap-8">
+                                        <div className="w-24 md:w-32 flex-shrink-0">
+                                            <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
+                                        </div>
+
+                                        <ul className="space-y-3">
+                                            {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
+                                            {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
+                                            {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            </div>
-                                {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+                            {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
                             <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
 
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
@@ -311,15 +404,15 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         ¿Por qué elegirnos?
                                     </h2>
                                     <svg
-                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                        className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
                                         />
                                     </svg>
 
@@ -332,29 +425,29 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     <div
                                         className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
                                         dangerouslySetInnerHTML={{
-                                        __html: producto.porque_elegirnos ?? "",
+                                            __html: producto.porque_elegirnos ?? "",
                                         }}
                                     />
                                 </div>
                             </details>
-                            </div>
                         </div>
                     </div>
                 </div>
-
-            {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
-            <div className="max-w-full mx-auto px-4 md:px-8 py-4">
-                {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
-                <RelatedBlogs productId={producto.id} />
             </div>
 
+            {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
+            < div className="max-w-full mx-auto px-4 md:px-8 py-4" >
+                {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
+                < RelatedBlogs productId={producto.id} />
+            </div >
+
             {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
-            <div className="max-w-full mx-auto px-4 md:px-8 py-8">
+            < div className="max-w-full mx-auto px-4 md:px-8 py-8" >
                 <SimilarProductsSection
                     products={producto.productos_relacionados || []}
                 />
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

@@ -3,6 +3,8 @@ import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 import type { ApiProduct } from "./chatbotLogic";
 import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
 import ChatbotIcon from "./ChatbotIcon";
+import { apiClient } from 'src/services/apiClient';
+import { config } from 'config';
 interface Opcion {
   label: string;
   valor: string;
@@ -76,21 +78,48 @@ const ChatbotWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [icono, setIcono] = useState(robotIcon);
+  const [activeSalute, setActiveSalute] = useState<string>(GREETING_REPLY);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isFirstBubble = useRef(true);
 
 
+  // Cargar saludo e icono
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await apiClient.get(config.endpoints.chatbot.getSalute);
+        if (response.data && response.data.success && response.data.salute) {
+          const dbSalute = response.data.salute;
+          setActiveSalute(dbSalute);
+          setMessages((prev) => {
+            if (
+              prev.length === 1 &&
+              prev[0].role === 'bot' &&
+              (prev[0].respuesta === GREETING_REPLY || prev[0].respuesta.startsWith('¡Hola! 👋 Soy la Asistente Tami'))
+            ) {
+              return [{ ...prev[0], respuesta: dbSalute }];
+            }
+            return prev;
+          });
+        }
+      } catch (err) {
+        console.error("Error al obtener saludo del chatbot:", err);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   // If we have only the greeting message shown and default context, move to expecting product
   useEffect(() => {
     try {
-      if (messages.length === 1 && messages[0].respuesta === GREETING_REPLY && context?.paso === 'menu_principal') {
+      if (messages.length === 1 && messages[0].role === 'bot' && context?.paso === 'menu_principal') {
         setContext((prev) => ({ ...(prev || { paso: 'menu_principal' }), paso: 'esperando_producto' }));
       }
     } catch (e) {
       // ignore
     }
-  }, []);
+  }, [messages, context]);
 
   const bubbleMessages = [
     "¿Tienes dudas sobre nuestros productos? ¡Pregúntame! 🌾",
@@ -185,7 +214,11 @@ const ChatbotWidget: React.FC = () => {
     if (isLoading || isResetting) return;
     setIsResetting(true);
     setTimeout(() => {
-      setMessages([mensajeInicial]);
+      setMessages([{
+        role: 'bot',
+        tipo: 'texto',
+        respuesta: activeSalute,
+      }]);
       setContext({ paso: 'menu_principal' });
       setInput('');
       try {
@@ -439,6 +472,7 @@ const ChatbotWidget: React.FC = () => {
               />
               <button
                 type="submit"
+                aria-label='Enviar mensaje'
                 disabled={!input.trim() || isLoading}
                 className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
               >
@@ -468,6 +502,7 @@ const ChatbotWidget: React.FC = () => {
               >
                 <button
                   onClick={handleCloseBubble}
+                  aria-label="Cerrar"
                   className="absolute -top-1.5 -right-1.5 sm:-top-2.5 sm:-right-2.5 w-6 h-6 sm:w-7 sm:h-7 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-lg transition-all hover:scale-110 active:scale-90"
                 >
                   <svg width="12" height="12" className="sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
