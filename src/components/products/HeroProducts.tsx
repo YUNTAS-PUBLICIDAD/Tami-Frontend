@@ -37,6 +37,7 @@ const HeroProducts = () => {
           <button
             onClick={handlePrev}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit cursor-pointer"
+            aria-label="Anterior"
           >
           </button>
 
@@ -60,7 +61,7 @@ const HeroProducts = () => {
               currentSlide !== 0 &&
               heroProductsArray[currentSlide].link && (
                 <a
-                  href={`https://tamimaquinarias.com/catalogo-maquinarias/detalle/?link=${heroProductsArray[currentSlide].link}`}
+                  href={`/catalogo-maquinarias/detalle?link=${heroProductsArray[currentSlide].link}`}
                   className="sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-4xl mt-8 xl:mt-16 2xl:mt-20 px-6 xl:px-10 2xl:px-20 py-2 xl:py-4 2xl:py-6 bg-white text-teal-700 font-bold rounded-full shadow-md hover:text-white hover:bg-teal-900 transition-all duration-300 inline-block"
                 >
                   Saber más
@@ -77,6 +78,7 @@ const HeroProducts = () => {
           <button
             onClick={handleNext}
             className="hidden sm:block text-slate-300 lg:hover:text-white transition-colors w-9 lg:w-20 2xl:w-32 h-fit justify-self-end"
+            aria-label="Siguiente"
           >
           </button>
         </div>
