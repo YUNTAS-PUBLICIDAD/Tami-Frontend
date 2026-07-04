@@ -72,7 +72,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     useEffect(() => {
         const fetchProductData = async () => {
             let productLink = initialProducto?.link;
-            
+
             if (!productLink) {
                 const params = new URLSearchParams(window.location.search);
                 productLink = params.get('link')?.trim();
@@ -203,7 +203,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     }
                 }
             `}</style>
-            
+
             {/* -------------------- HERO Section (H1) -------------------- */}
             <div className="
                     relative pt-32 md:pt-40 pb-20 min-h-screen 
@@ -253,7 +253,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20">
                 <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-                        
+
                         {/* Visor de imágenes */}
                         <div className="flex flex-col items-center">
                             <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
@@ -283,98 +283,97 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 ))}
                             </div>
                         </div>
-
                         {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
                         <div>
                             {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
                             <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                
+
                                     <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
                                         Características de {producto.nombre.toLowerCase()}
                                     </h2>
                                     <svg
-                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                        className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
                                         />
                                     </svg>
 
                                 </summary>
-                            {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                            <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
-                                <div
-                                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
-                                    dangerouslySetInnerHTML={{
+                                {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
+                                <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
+                                    <div
+                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
+                                        dangerouslySetInnerHTML={{
                                             __html: producto.descripcion ?? "",
                                         }}
                                     />
-                            </div>
+                                </div>
                             </details>
                             {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
-                            <div>
-                                <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Especificaciones técnicas de {producto.nombre.toLowerCase()}
-                                </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
+                                <div>
+                                    <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                        Especificaciones técnicas de {producto.nombre.toLowerCase()}
+                                    </h2>
 
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                </h3>
+                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                        {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
+                                    </h3>
 
-                                <div className="w-full flex flex-col overflow-hidden">
-                                {producto.especificaciones?.map((spec, index) => {
-                                    const separatorIndex = spec.valor.indexOf(':');
-                                    let key = spec.valor;
-                                    let val = '';
+                                    <div className="w-full flex flex-col overflow-hidden">
+                                        {producto.especificaciones?.map((spec, index) => {
+                                            const separatorIndex = spec.valor.indexOf(':');
+                                            let key = spec.valor;
+                                            let val = '';
 
-                                    if (separatorIndex !== -1) {
-                                    key = spec.valor.substring(0, separatorIndex).trim();
-                                    val = spec.valor.substring(separatorIndex + 1).trim();
-                                    }
+                                            if (separatorIndex !== -1) {
+                                                key = spec.valor.substring(0, separatorIndex).trim();
+                                                val = spec.valor.substring(separatorIndex + 1).trim();
+                                            }
 
-                                    return (
-                                    <div
-                                        key={index}
-                                        className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                                    >
-                                        <span className="font-semibold text-gray-800 text-sm">{key}</span>
-                                        <span className="text-gray-600 text-sm">{val}</span>
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                                                >
+                                                    <span className="font-semibold text-gray-800 text-sm">{key}</span>
+                                                    <span className="text-gray-600 text-sm">{val}</span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                    );
-                                })}
-                                </div>
-                            </div>
-
-                            <div>
-                                <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                Dimensiones de {producto.nombre.toLowerCase()}
-                                </h2>
-
-                                <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                Alto, largo y ancho
-                                </h3>
-
-                                <div className="flex items-center gap-8">
-                                <div className="w-24 md:w-32 flex-shrink-0">
-                                    <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
                                 </div>
 
-                                <ul className="space-y-3">
-                                    {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
-                                    {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
-                                    {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
-                                </ul>
+                                <div>
+                                    <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                        Dimensiones de {producto.nombre.toLowerCase()}
+                                    </h2>
+
+                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                                        Alto, largo y ancho
+                                    </h3>
+
+                                    <div className="flex items-center gap-8">
+                                        <div className="w-24 md:w-32 flex-shrink-0">
+                                            <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
+                                        </div>
+
+                                        <ul className="space-y-3">
+                                            {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
+                                            {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
+                                            {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            </div>
-                                {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+                            {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
                             <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
 
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
@@ -382,15 +381,15 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         ¿Por qué elegirnos?
                                     </h2>
                                     <svg
-                                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                        className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
                                         />
                                     </svg>
 
@@ -403,29 +402,29 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                     <div
                                         className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
                                         dangerouslySetInnerHTML={{
-                                        __html: producto.porque_elegirnos ?? "",
+                                            __html: producto.porque_elegirnos ?? "",
                                         }}
                                     />
                                 </div>
                             </details>
-                            </div>
                         </div>
                     </div>
                 </div>
-
-            {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
-            <div className="max-w-full mx-auto px-4 md:px-8 py-4">
-                {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
-                <RelatedBlogs productId={producto.id} />
             </div>
 
+            {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
+            < div className="max-w-full mx-auto px-4 md:px-8 py-4" >
+                {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
+                < RelatedBlogs productId={producto.id} />
+            </div >
+
             {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
-            <div className="max-w-full mx-auto px-4 md:px-8 py-8">
+            < div className="max-w-full mx-auto px-4 md:px-8 py-8" >
                 <SimilarProductsSection
                     products={producto.productos_relacionados || []}
                 />
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
