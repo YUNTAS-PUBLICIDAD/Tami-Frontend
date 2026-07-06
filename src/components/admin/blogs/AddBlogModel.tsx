@@ -836,8 +836,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     <>
       {(isOpen || propIsOpen) && (
         <div className="dialog-overlay">
-          <div className="dialog max-h-[90vh] md:max-h-[92vh] !pt-0">
-            <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !mt-0">
+          <div className="dialog-blog max-h-[90vh] md:max-h-[92vh]">
+            <div className="dialog-header-blog flex items-center justify-between">
               <h2 className="dialog-title flex-1 text-center">
                 {blogToEdit ? "Editar Blog" : "Añadir Nuevo Blog"}
               </h2>
@@ -851,6 +851,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
               </button>
             </div>
 
+            <div className="dialog-body-blog">
             <form
               encType="multipart/form-data"
               onSubmit={handleSubmit}
@@ -1657,6 +1658,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 </button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}
