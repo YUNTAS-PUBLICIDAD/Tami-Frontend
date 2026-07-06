@@ -248,7 +248,7 @@ return (
               {
                 role: 'bot',
                 tipo: 'texto',
-                respuesta: salute || '¡Hola! 👋 Soy la Asistente Tami, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?'
+                respuesta: salute || '¡Hola! 👋 Soy Tamara, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?'
               }
             ]}
           />
