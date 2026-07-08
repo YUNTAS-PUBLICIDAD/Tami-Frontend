@@ -1082,6 +1082,84 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-6"
               >
+                {/* --- INFORMACIÓN GENERAL --- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Información General
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Título del blog*
+                      </label>
+                      <input
+                        type="text"
+                        name="titulo"
+                        value={formData.titulo}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Link Permanente*
+                      </label>
+                      <input
+                        type="text"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Fecha de Creación*
+                      </label>
+                      <input
+                        type="date"
+                        name="created_at"
+                        value={formData.created_at}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Relacionar con producto*
+                      </label>
+                      <select
+                        name="producto_id"
+                        value={formData.producto_id}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Selecciona un producto</option>
+                        {productos.map((producto: any) => (
+                          <option key={producto.id} value={producto.id}>
+                            {producto.nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
                 {/* --- Miniatura --- */}
                 <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
                   <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
@@ -1217,7 +1295,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       required
                     />
                   </div>
-                  <div className="form-input">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
                       Alt
                     </label>
@@ -1243,86 +1322,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                       required
                     />
                   </div>
+                    
+                  </div>
+                  
                 </div>
 
-                {/* --- INFORMACIÓN GENERAL --- */}
-                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
-                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    Información General
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">
-                        Título del blog*
-                      </label>
-                      <input
-                        type="text"
-                        name="titulo"
-                        value={formData.titulo}
-                        onChange={handleChange}
-                        maxLength={LENGTHS.titulo}
-                        required
-                      />
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">
-                        Link Permanente*
-                      </label>
-                      <input
-                        type="text"
-                        name="link"
-                        value={formData.link}
-                        onChange={handleChange}
-                        maxLength={LENGTHS.titulo}
-                        required
-                      />
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">
-                        Fecha de Creación*
-                      </label>
-                      <input
-                        type="date"
-                        name="created_at"
-                        value={formData.created_at}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="form-input">
-                      <label className="font-medium text-gray-700 dark:text-gray-300">
-                        Relacionar con producto*
-                      </label>
-                      <select
-                        name="producto_id"
-                        value={formData.producto_id}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Selecciona un producto</option>
-                        {productos.map((producto: any) => (
-                          <option key={producto.id} value={producto.id}>
-                            {producto.nombre}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
+                
 
                 {/* --- SEO --- */}
                 <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
@@ -1527,8 +1532,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         )}
                       </label>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <div className="form-input">
+                    <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
                           Nombre
                         </label>
@@ -1541,6 +1545,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           required
                         />
                       </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
                           Alt
@@ -1718,20 +1724,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                             </div>
                           </div>
                         )}
-                        {/* Campo SEO */}
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Texto Alternativo (SEO)*
-                          </label>
-                          <input
-                            type="text"
-                            value={imagen.text_alt}
-                            onChange={(e) => handleAltTextChange(e, index)}
-                            placeholder="Describe brevemente el contenido de la imagen"
-                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
-                          />
-                        </div>
+                        {/* Campos SEO */}
+                        
                         {/* Nombre */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -1747,9 +1741,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           />
                         </div>
                         {/* Tittle */}
-                        <div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Tittle*
+                            Tittle de la imagen*
                           </label>
                           <input
                             type="text"
@@ -1760,6 +1755,23 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                             required
                           />
                         </div>
+                        {/* Alt */}
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Alt de la imagen*
+                          </label>
+                          <input
+                            type="text"
+                            value={imagen.text_alt}
+                            onChange={(e) => handleAltTextChange(e, index)}
+                            placeholder="Describe brevemente el contenido de la imagen"
+                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                            required
+                          />
+                        </div>
+
+                        </div>
+                        
 
                         {/* COLUMNA DERECHA - PÁRRAFO */}
                         <div className="flex flex-col space-y-3">
