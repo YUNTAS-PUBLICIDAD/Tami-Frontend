@@ -22,8 +22,8 @@ const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12" }) =>
         className={`object-cover rounded-full shadow-sm ${className}`}
         alt="Chatbot Icon"
         src={defaultIcon}
-        width={469}
-        height={469}
+        width={120}   // 2x de 60px mostrado, para pantallas retina
+        height={120}
       />
     );
   }
