@@ -524,7 +524,7 @@ const ChatbotWidget: React.FC = () => {
                 )}
 
                 <div className="mt-1 sm:mt-2.5 flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wide sm:tracking-widest text-[#015f86]">
+                  <span className="text-[10px]  uppercase tracking-wide sm:tracking-widest text-[#015f86]">
                     Asistente Tamara
                   </span>
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
