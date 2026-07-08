@@ -62,9 +62,6 @@ const PopupForm = ({
             src={settings?.popup_image_url || asesoriaImg.src}
             alt="Imagen Izquierda"
             className={`absolute inset-0 w-full h-full object-cover object-center select-none scale-100`}
-            loading="eager" 
-            fetchPriority="high"  /* Le da la máxima prioridad de red por encima del JS */
-            decoding="sync" /* Sincroniza el renderizado */
           />
         </div>
 
