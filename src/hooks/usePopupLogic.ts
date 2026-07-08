@@ -81,17 +81,45 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
       setLoadingSettings(false);
       return;
     }
-
+  
+    if (!pathname) return;
+  
+    let cancelled = false;
+    const controller = new AbortController();
+  
     const fetchSettings = async () => {
       try {
-        // 1. Fetch Global Settings
-        const response = await fetch(getApiUrl(`${config.endpoints.popups.getSettings}?t=${Date.now()}`));
+        // 1. Preparamos ambas peticiones para lanzarlas en paralelo.
+        //    (quitamos el "?t=" para permitir cache de navegador/CDN;
+        //    si tu backend NO manda headers de Cache-Control, vuelve a
+        //    agregarlo, pero considera resolverlo en el backend en vez
+        //    de forzar el cache-busting en cada carga)
+        const globalPromise = fetch(
+          getApiUrl(config.endpoints.popups.getSettings),
+          { signal: controller.signal }
+        );
+  
+        let productLink: string | null = null;
+        if (isProductDetail) {
+          const parts = pathname.split("/").filter(Boolean);
+          productLink = parts[parts.length - 1] || null;
+        }
+  
+        const productPromise = isProductDetail && productLink
+          ? fetch(getApiUrl(`/api/v1/productos/link/${productLink}`), { signal: controller.signal })
+          : Promise.resolve(null);
+  
+        // 2. Ambas peticiones corren al mismo tiempo, no una tras otra.
+        const [response, prodRes] = await Promise.all([globalPromise, productPromise]);
+  
+        if (cancelled) return;
+  
         let globalData: any = {};
         if (response.ok) {
           const responseData = await response.json();
           globalData = responseData.data || responseData;
         }
-
+  
         let finalSettings: PopupSettings = {
           ...globalData,
           popup_image_url: globalData.image1 || globalData.popup_image_url,
@@ -102,61 +130,77 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
           button_text: globalData.button_text || globalData.btnText || "CONOCER MAS",
           popup_start_delay_minutes: globalData.popup_start_delay_minutes || globalData.popupInicioDelay || 60,
         };
-
-        // 2. If it's a product detail page, override with product-specific settings
+  
         if (isProductDetail) {
-          const parts = pathname.split("/").filter(Boolean);
-          const productLink = parts[parts.length - 1];
-          
-          finalSettings.popup_start_delay_minutes = globalData.product_popup_delay_minutes || globalData.popupProductosDelay || 60;
-
-          if (productLink) {
+          finalSettings.popup_start_delay_minutes =
+            globalData.product_popup_delay_minutes || globalData.popupProductosDelay || 60;
+  
+          if (prodRes && prodRes.ok) {
             try {
-              const prodRes = await fetch(getApiUrl(`/api/v1/productos/link/${productLink}?t=${Date.now()}`));
-              if (prodRes.ok) {
-                const prodJson = await prodRes.json();
-                const product = prodJson.data || prodJson;
-                console.log("✅ Product data loaded:", product);
-                setProductId(product.id || null);
-
-                const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
-                const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
-                  const tipo = (img.tipo || "").toLowerCase();
-                  return tipo === "popup2" || tipo === "popup_2";
-                });
-                const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
-                const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
-
-                finalSettings = {
-                  ...finalSettings,
-                  popup_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_image_url,
-                  popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
-                  popup_mobile_image_url: imagenPopupMobile ? `${config.apiUrl}${imagenPopupMobile.url_imagen}` : (imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url),
-                  popup_mobile_image2_url: imagenPopupMobile2 ? `${config.apiUrl}${imagenPopupMobile2.url_imagen}` : (imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url),
-                  popup_mobile_image_count: 2,
-                  button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
-                  button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
-                  button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
-                };
-              } else {
-                console.warn("⚠️ Product fetch failed with status:", prodRes.status);
-              }
+              const prodJson = await prodRes.json();
+              const product = prodJson.data || prodJson;
+              setProductId(product.id || null);
+  
+              const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
+              const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
+                const tipo = (img.tipo || "").toLowerCase();
+                return tipo === "popup2" || tipo === "popup_2";
+              });
+              const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
+              const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
+  
+              finalSettings = {
+                ...finalSettings,
+                popup_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_image_url,
+                popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
+                popup_mobile_image_url: imagenPopupMobile
+                  ? `${config.apiUrl}${imagenPopupMobile.url_imagen}`
+                  : (imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url),
+                popup_mobile_image2_url: imagenPopupMobile2
+                  ? `${config.apiUrl}${imagenPopupMobile2.url_imagen}`
+                  : (imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url),
+                popup_mobile_image_count: 2,
+                button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
+                button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
+                button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
+              };
             } catch (e) {
-              console.error("❌ Error fetching product-specific data:", e);
+              console.error("❌ Error parsing product-specific data:", e);
             }
+          } else if (prodRes) {
+            console.warn("⚠️ Product fetch failed with status:", prodRes.status);
           }
         }
-
-        setSettings(finalSettings);
+  
+        if (!cancelled) setSettings(finalSettings);
       } catch (err) {
-        console.error("❌ fetchSettings error:", err);
+        if ((err as any)?.name !== "AbortError") {
+          console.error("❌ fetchSettings error:", err);
+        }
       } finally {
-        setLoadingSettings(false);
+        if (!cancelled) setLoadingSettings(false);
       }
     };
-    if (pathname) {
-      fetchSettings();
+  
+    // 3. Diferimos la petición: el popup no se muestra de inmediato
+    //    (default 60 min de delay), así que no hay razón para competir
+    //    por ancho de banda con los recursos críticos del primer render.
+    let idleId: number | ReturnType<typeof setTimeout>;
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(() => fetchSettings());
+    } else {
+      idleId = setTimeout(fetchSettings, 2000);
     }
+  
+    return () => {
+      cancelled = true;
+      controller.abort();
+      if ("cancelIdleCallback" in window && typeof idleId === "number") {
+        window.cancelIdleCallback(idleId);
+      } else {
+        clearTimeout(idleId as ReturnType<typeof setTimeout>);
+      }
+    };
   }, [isPreview, pathname, isProductDetail]);
 
   // Preview event listener
@@ -224,22 +268,21 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
   // Exit Intent
   useEffect(() => {
     if (isPreview) return;
-    const handleMouseOut = (e: MouseEvent) => {
+    const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0) {
         if (showModal || isClosing || !isDelayFinished) return;
         const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
         const now = Date.now();
         const isAnyModalOpen = document.querySelector(".modal-overlay");
-
+  
         if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current && !isAnyModalOpen && !showModal) {
           setShowModal(true);
           hasShownRef.current = true;
-          console.log("[usePopupLogic] Popup triggered by exit intent.");
         }
       }
     };
-    window.addEventListener("mouseout", handleMouseOut);
-    return () => window.removeEventListener("mouseout", handleMouseOut);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave); //ahora usamos mouseleave 
   }, [pathname, showModal, isClosing, isDelayFinished]);
 
   // Global manual trigger
@@ -258,26 +301,39 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
   // Scroll trigger
   useEffect(() => {
     if (isPreview) return;
-    const handleScroll = () => {
+  
+    let ticking = false;
+  
+    const processScroll = () => {
       if (!pathname || !allowedRoutes.includes(pathname)) return;
       if (showModal || isClosing) return;
+  
       const currentScroll = window.scrollY;
       const scrollDirection = currentScroll < lastScrollRef.current ? "up" : "down";
       lastScrollRef.current = currentScroll;
-
+  
       const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
       if (atBottom) hasReachedBottomRef.current = true;
-
+  
       if (hasReachedBottomRef.current && scrollDirection === "up" && !hasShownRef.current && isDelayFinished) {
         const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
         if (Date.now() - lastClosed < MODAL_COOLDOWN_MS) return;
         setShowModal(true);
         hasShownRef.current = true;
         hasReachedBottomRef.current = false;
-        console.log("[usePopupLogic] Popup triggered by scroll.");
       }
     };
-    window.addEventListener("scroll", handleScroll);
+  
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        processScroll();
+        ticking = false;
+      });
+    };
+  
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname, showModal, isClosing, isDelayFinished]);
 
