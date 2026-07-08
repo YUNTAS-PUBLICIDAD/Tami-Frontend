@@ -14,6 +14,25 @@ import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.webp";
 import { Image, getImage } from "astro:assets";
 
 import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
+import Picture from "astro/components/Picture.astro";
+
+
+
+
+// Optimizar la imagen de Desktop en el servidor
+const desktopImage = await getImage({
+  src: bg_card4,
+  formats: ['avif', 'webp'],
+  // Aquí puedes definir el ancho estimado para desktop si quieres optimizar más
+});
+
+// Optimizar la imagen de Mobile en el servidor
+const mobileImage = await getImage({
+  src: bg_card4_mobile,
+  formats: ['avif', 'webp'],
+  width: 780, // Tamaño optimizado para pantallas retina móviles
+});
+
 
 const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 800 });
 
@@ -69,23 +88,17 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 80
       class="relative overflow-hidden flex items-center h-[60vh] sm:h-[80vh] md:items-center justify-center md:justify-start"
     >
       <!-- Fondo mobile -->
-      <Image
-        src={bg_card4_mobile}
-        alt="Fondo Tami Mobile"
-        class="block md:hidden absolute inset-0 h-full object-cover w-full object-center md:object-cover"
-        loading="eager"
-        fetchpriority="high"
-        widths={[390, 780]}
-        sizes="(max-width: 768px) 390px, 100vw"
-      />
-      <!-- Fondo desktop -->
-      <Image
-        src={bg_card4}
-        alt="Fondo Tami Desktop"
-        class="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
-        loading="lazy"
-        decoding="async"
-      />
+      <picture class="absolute inset-0 w-full h-full">
+        <source media="(max-width: 767px)" srcset={mobileImage.src} />
+        
+        <img 
+          src={desktopImage.src} 
+          alt="Fondo Tami Maquinarias"
+          loading="eager" 
+          fetchpriority="high"
+          class="w-full h-full object-cover object-center"
+        />
+      </picture>
 
       <!-- Oscurecido -->
       <div class="absolute inset-0 bg-black/45 z-0"></div>
