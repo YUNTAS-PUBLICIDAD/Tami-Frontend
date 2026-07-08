@@ -1,4 +1,5 @@
 // src/components/blog/CardBlog.tsx
+
 import React from "react";
 import type Blog from "src/models/Blog";
 import { config } from "config";
@@ -8,17 +9,15 @@ interface CardBlogProps {
 }
 
 const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
-  // 1. Obtienes la URL original
-  const rawImageUrl = blog.miniatura
+
+  const imageUrl = blog.miniatura
     ? blog.miniatura.startsWith("http")
       ? blog.miniatura
       : `${config.apiUrl}${blog.miniatura}`
     : "/images/default-blog.webp";
 
-  // 2. LA MAGIA: Pasas la URL por el optimizador de Astro
-  // Le pedimos que la reduzca a 400px de ancho y la convierta a WebP/AVIF
-  const imageUrl = `/_image?href=${encodeURIComponent(rawImageUrl)}&w=400&f=webp`;
   const altText = blog.titulo || "Imagen del blog";
+
   return (
     <a
       href={`/blog/details?link=${blog.link}`}
@@ -82,5 +81,6 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
     </a>
   );
 });
+
 
 export default CardBlog;
