@@ -7,9 +7,9 @@ import { IoMdCloseCircle } from "react-icons/io";
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
-  text_alt: string;
-  nombre: string;
-  tittle: string;
+  img_alt: string;
+  img_nombre: string;
+  img_tittle: string;
   url?: string;
   previewUrl?: string;
   id?: number | string;
@@ -78,9 +78,9 @@ const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
     return {
       imagen: null,
       parrafo: blogToEdit?.parrafos?.[index]?.parrafo || "",
-      text_alt: img.text_alt || "",
-      nombre: img.nombre || "",
-      tittle: img.tittle || "",
+      img_alt: img.img_alt || "",
+      img_nombre: img.img_nombre || "",
+      img_tittle: img.img_tittle || "",
       url: raw
         ? raw.startsWith("http")
           ? raw
@@ -95,9 +95,9 @@ const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
     base.push({
       imagen: null,
       parrafo: "",
-      text_alt: "",
-      nombre: "",
-      tittle: "",
+      img_alt: "",
+      img_nombre: "",
+      img_tittle: "",
       url: "",
       previewUrl: undefined,
       id: undefined,
@@ -147,17 +147,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       {
         imagen: null,
         parrafo: "",
-        text_alt: "",
-        nombre: "",
-        tittle: "",
+        img_alt: "",
+        img_nombre: "",
+        img_tittle: "",
         previewUrl: undefined,
       },
       {
         imagen: null,
         parrafo: "",
-        text_alt: "",
-        nombre: "",
-        tittle: "",
+        img_alt: "",
+        img_nombre: "",
+        img_tittle: "",
         previewUrl: undefined,
       },
     ],
@@ -261,17 +261,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           {
             imagen: null,
             parrafo: "",
-            text_alt: "",
-            nombre: "",
-            tittle: "",
+            img_alt: "",
+            img_nombre: "",
+            img_tittle: "",
             previewUrl: undefined,
           },
           {
             imagen: null,
             parrafo: "",
-            text_alt: "",
-            nombre: "",
-            tittle: "",
+            img_alt: "",
+            img_nombre: "",
+            img_tittle: "",
             previewUrl: undefined,
           },
         ],
@@ -413,30 +413,30 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
-  const handleAltTextChange = (
+  const handleImgAltChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], text_alt: e.target.value };
+    nuevoArray[index] = { ...nuevoArray[index], img_alt: e.target.value };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
-  const handleNombreChange = (
+  const handleImgNombreChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], nombre: e.target.value };
+    nuevoArray[index] = { ...nuevoArray[index], img_nombre: e.target.value };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
-  const handleTittleChange = (
+  const handleImgTittleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], tittle: e.target.value };
+    nuevoArray[index] = { ...nuevoArray[index], img_tittle: e.target.value };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -589,17 +589,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
         {
           imagen: null,
           parrafo: "",
-          text_alt: "",
-          nombre: "",
-          tittle: "",
+          img_alt: "",
+          img_nombre: "",
+          img_tittle: "",
           previewUrl: undefined,
         },
         {
           imagen: null,
           parrafo: "",
-          text_alt: "",
-          nombre: "",
-          tittle: "",
+          img_alt: "",
+          img_nombre: "",
+          img_tittle: "",
           previewUrl: undefined,
         },
       ],
@@ -786,10 +786,10 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       return;
     }
 
-    // Validación text_alt
+    // Validación img_alt
     if (
       formData.imagenes.some(
-        (img) => !img.text_alt || img.text_alt.trim() === "",
+        (img) => !img.img_alt || img.img_alt.trim() === "",
       )
     ) {
       Swal.fire("Error", "Cada imagen debe tener texto ALT.", "error");
@@ -798,7 +798,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     }
 
     if (
-      formData.imagenes.some((img) => !img.nombre || img.nombre.trim() === "")
+      formData.imagenes.some((img) => !img.img_nombre || img.img_nombre.trim() === "")
     ) {
       Swal.fire("Error", "Cada imagen debe tener un nombre.", "error");
       setIsSaving(false);
@@ -806,7 +806,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     }
 
     if (
-      formData.imagenes.some((img) => !img.tittle || img.tittle.trim() === "")
+      formData.imagenes.some((img) => !img.img_tittle || img.img_tittle.trim() === "")
     ) {
       Swal.fire("Error", "Cada imagen debe tener un título.", "error");
       setIsSaving(false);
@@ -890,12 +890,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
           item.imagen instanceof File ? "file" : "existing",
         );
 
-        // SIEMPRE enviar text_alt
-        formDataToSend.append("text_alt[]", item.text_alt || "");
+        // SIEMPRE enviar img_alt
+        formDataToSend.append("img_alt[]", item.img_alt || "");
 
-        formDataToSend.append("nombre[]", item.nombre || "");
+        formDataToSend.append("img_nombre[]", item.img_nombre || "");
 
-        formDataToSend.append("tittle[]", item.tittle || "");
+        formDataToSend.append("img_tittle[]", item.img_tittle || "");
 
         if (item.imagen instanceof File) {
           formDataToSend.append("imagenes[]", item.imagen);
@@ -1039,8 +1039,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       imagen: null,
       previewUrl: undefined,
       url: "",
-      nombre: "",
-      tittle: "",
+      img_nombre: "",
+      img_tittle: "",
     };
 
     setFormData({
@@ -1733,8 +1733,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           </label>
                           <input
                             type="text"
-                            value={imagen.nombre}
-                            onChange={(e) => handleNombreChange(e, index)}
+                            value={imagen.img_nombre}
+                            onChange={(e) => handleImgNombreChange(e, index)}
                             placeholder="Nombre de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                             required
@@ -1748,8 +1748,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           </label>
                           <input
                             type="text"
-                            value={imagen.tittle}
-                            onChange={(e) => handleTittleChange(e, index)}
+                            value={imagen.img_tittle}
+                            onChange={(e) => handleImgTittleChange(e, index)}
                             placeholder="Título de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                             required
@@ -1762,8 +1762,8 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           </label>
                           <input
                             type="text"
-                            value={imagen.text_alt}
-                            onChange={(e) => handleAltTextChange(e, index)}
+                            value={imagen.img_alt}
+                            onChange={(e) => handleImgAltChange(e, index)}
                             placeholder="Describe brevemente el contenido de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                             required
