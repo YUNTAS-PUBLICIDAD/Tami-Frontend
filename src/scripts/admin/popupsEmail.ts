@@ -104,7 +104,7 @@ export function initEmail() {
         if (btnTextColorInput) state.btnTextColor = btnTextColorInput.value || "";
 
         const delayInput = document.getElementById("emailSendDelay") as HTMLSelectElement | null;
-        if (delayInput) state.delay = delayInput.value || "5";
+        if (delayInput) state.delay = delayInput.value ?? "5";
 
         const delImgInput = document.getElementById("delete_emailImage") as HTMLInputElement | null;
         if (delImgInput) state.deleteImage = delImgInput.value || "0";
