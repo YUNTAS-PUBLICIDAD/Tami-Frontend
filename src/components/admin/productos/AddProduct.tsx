@@ -172,6 +172,21 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
+  const handleImagesTituloChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    setFormData(prev => {
+      const nuevoArray = [...prev.imagenes];
+      nuevoArray[index] = {
+        ...nuevoArray[index],
+        imageTitle: e.target.value,
+      };
+      return { ...prev, imagenes: nuevoArray };
+    });
+  };
+
+
   const handleImagesTextoSEOChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -417,8 +432,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formData.imagenes.forEach((imagen) => {
         if (imagen.url_imagen) {
           const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
+          const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
           formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
           formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
+          formDataToSend.append(`titulos[${imageIndex}]`, titulo);
           imageIndex++;
         }
       });
@@ -951,6 +968,21 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <div key={index} className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex flex-col gap-3">
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
                           
+                          <div className="flex flex-col gap-1">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo:</label>
+                            <input
+                              ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
+                              type="text"
+                              value={img.imageTitle}
+                              onChange={(e) => handleImagesTituloChange(e, index)}
+                              placeholder="Ej: Selladora industrial de bolsas de café"
+                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${
+                                errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              }`}
+                            />
+                            {errors[`titulo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`titulo_${index}`]}</p>}
+                          </div>
+
                           <div className="border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-950 rounded-xl p-4 flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden group">
                             {img.url_imagen ? (
                               <div className="w-full flex flex-col items-center gap-3">
@@ -984,7 +1016,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                               </div>
                             )}
                           </div>
-
+                          
                           <div className="flex flex-col gap-1">
                             <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
                             <input

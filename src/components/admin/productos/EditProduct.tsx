@@ -68,13 +68,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         id: img.id,
         url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
         texto_alt_SEO: img.texto_alt_SEO || "",
+        imageTitle: img.titulo || "",
         original_path: img.url_imagen
       })) || [];
       
       while (imagenesTransformadas.length < 5) {
         imagenesTransformadas.push({
           url_imagen: "",
-          texto_alt_SEO: ""
+          texto_alt_SEO: "",
+          imageTitle: "",
         });
       }
 
@@ -254,7 +256,24 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     });
   };
 
+
+  const handleImagesTituloChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    setFormData(prev => {
+      const nuevoArray = [...prev.imagenes];
+      nuevoArray[index] = {
+        ...nuevoArray[index],
+        imageTitle: e.target.value,
+      };
+      return { ...prev, imagenes: nuevoArray };
+    });
+  };
+
+
   const handleImagesTextoSEOChange = (
+
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
@@ -503,23 +522,27 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
       // MANEJO DE IMÁGENES DE GALERÍA (Exactamente la lógica original de edición)
       const imagenesNuevas: File[] = [];
       const imagenesNuevasAlt: string[] = [];
+      const imagenesNuevasTitulo: string[] = [];
       const imagenesEditadas: ImagenEditada[] = [];
-      const imagenesExistentesData: Array<{ url: string; id?: number; alt: string; }> = [];
+      const imagenesExistentesData: Array<{ url: string; id?: number; alt: string; ttl?:string }> = [];
 
       formData.imagenes.forEach((imagen, index) => {
         if (!imagen.url_imagen) return;
         const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
+        const titulo = imagen.imageTitle?.trim() || `Imagen producto ${index + 1}`;
 
         if (imagen.url_imagen instanceof File) {
           if (imagen.id) {
             imagenesEditadas.push({
               id: imagen.id,
               file: imagen.url_imagen,
-              alt: altText
+              alt: altText,
+              ttl: titulo
             });
           } else {
             imagenesNuevas.push(imagen.url_imagen);
             imagenesNuevasAlt.push(altText);
+            imagenesNuevasTitulo.push(titulo);
           }
         } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
           let urlLimpia = "";
@@ -538,7 +561,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
           imagenesExistentesData.push({
             url: urlLimpia,
             id: imagen.id,
-            alt: altText
+            alt: altText,
+            ttl: titulo
           });
         }
       });
@@ -547,12 +571,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
       imagenesNuevas.forEach((file, idx) => {
         formDataToSend.append('imagenes_nuevas[]', file);
         formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
+        formDataToSend.append(`imagenes_nuevas_titulo[]`, imagenesNuevasTitulo[idx])
       });
 
       imagenesEditadas.forEach((img, idx) => {
         formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
         formDataToSend.append(`imagenes_editadas[${idx}][file]`, img.file);
         formDataToSend.append(`imagenes_editadas[${idx}][alt]`, img.alt);
+        formDataToSend.append(`imagenes_editadas[${idx}][ttl]`, img.ttl);
+
       });
 
       imagenesExistentesData.forEach((img, idx) => {
@@ -561,6 +588,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
           formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
         }
         formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
+        formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, img.ttl || `Imagen producto ${idx + 1}`)
       });
 
       formData.relacionados.forEach((item, index) => {
@@ -1099,6 +1127,21 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                         <div key={index} className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex flex-col gap-3">
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
                           
+                          <div className="flex flex-col gap-1">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
+                            <input
+                              ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
+                              type="text"
+                              value={img.imageTitle}
+                              onChange={(e) => handleImagesTituloChange(e, index)}
+                              placeholder="Ej: Selladora industrial de bolsas de café"
+                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${
+                                errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              }`}
+                            />
+                            {errors[`titulo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`titulo_${index}`]}</p>}
+                          </div>
+
                           <div className="border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-950 rounded-xl p-4 flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden group">
                             {img.url_imagen ? (
                               <div className="w-full flex flex-col items-center gap-3">
@@ -1134,7 +1177,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
                               type="text"
