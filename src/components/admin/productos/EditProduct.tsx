@@ -68,13 +68,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         id: img.id,
         url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
         texto_alt_SEO: img.texto_alt_SEO || "",
+        imageTitle: img.titulo || "",
         original_path: img.url_imagen
       })) || [];
       
       while (imagenesTransformadas.length < 5) {
         imagenesTransformadas.push({
           url_imagen: "",
-          texto_alt_SEO: ""
+          texto_alt_SEO: "",
+          imageTitle: "",
         });
       }
 
@@ -271,6 +273,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
 
   const handleImagesTextoSEOChange = (
+
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {

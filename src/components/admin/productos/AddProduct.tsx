@@ -432,8 +432,10 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formData.imagenes.forEach((imagen) => {
         if (imagen.url_imagen) {
           const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
+          const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
           formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
           formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
+          formDataToSend.append(`titulos[${imageIndex}]`, titulo);
           imageIndex++;
         }
       });
