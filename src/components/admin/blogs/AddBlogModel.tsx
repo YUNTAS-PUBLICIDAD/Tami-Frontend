@@ -969,12 +969,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     }
   };
 
-  // Cuenta palabras en un string
-  function contarPalabras(texto: string): number {
+  // Cuenta Caracteres en un string
+  function contarCaracteres(texto: string): number {
     return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
   }
-  // Utilidad para convertir números a palabras en español
-  function numeroAPalabras(n: number): string {
+  // Utilidad para convertir números a Caracteres en español
+  function numeroACaracteres(n: number): string {
     const unidades = [
       "cero",
       "uno",
@@ -1019,13 +1019,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       return decenas[d] + " y " + unidades[u];
     }
     if (n === 100) return "cien";
-    if (n < 200) return "ciento " + numeroAPalabras(n - 100);
+    if (n < 200) return "ciento " + numeroACaracteres(n - 100);
     if (n < 1000) {
       const c = Math.floor(n / 100);
       const r = n % 100;
       let centena = c === 1 ? "ciento" : unidades[c] + "cientos";
       if (r === 0) return centena;
-      return centena + " " + numeroAPalabras(r);
+      return centena + " " + numeroACaracteres(r);
     }
     return n.toString();
   }
@@ -1597,7 +1597,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     <div className="grid grid-cols-1 gap-4">
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Párrafo corto (100 palabras)*
+                          Párrafo corto (100 Caracteres)*
                         </label>
                         <textarea
                           name="subtitulo1"
@@ -1608,13 +1608,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           rows={3}
                         />
                         <small className="text-gray-500 text-end block mt-1">
-                          {contarPalabras(formData.subtitulo1)} palabras (Máx{" "}
+                          {contarCaracteres(formData.subtitulo1)} Caracteres (Máx{" "}
                           {LENGTHS.parrafo})
                         </small>
                       </div>
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Descripción (255 palabras)*
+                          Descripción (255 Caracteres)*
                         </label>
                         <textarea
                           name="subtitulo2"
@@ -1625,7 +1625,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           rows={4}
                         />
                         <small className="text-gray-500 text-end block mt-1">
-                          {contarPalabras(formData.subtitulo2)} palabras (Máx{" "}
+                          {contarCaracteres(formData.subtitulo2)} Caracteres (Máx{" "}
                           {LENGTHS.descripcion})
                         </small>
                       </div>
@@ -1639,7 +1639,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     >
                       <div className="mb-4 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
                         <span className="inline-block font-bold text-base text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1 rounded-full">
-                          Sección {numeroAPalabras(index + 1)}
+                          Sección {numeroACaracteres(index + 1)}
                         </span>
                         <p className="text-xs text-gray-500 dark:text-gray-400 ml-3">
                           Edita una sección a la vez y usa el botón X para
