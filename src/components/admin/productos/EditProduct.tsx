@@ -1125,7 +1125,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
                           
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
                               type="text"
@@ -1174,7 +1174,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
                               type="text"
