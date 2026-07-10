@@ -58,20 +58,14 @@ const mensajeInicial: Message = {
 
 const ChatbotWidget: React.FC = () => {
   // Estado persistente 
-  const [messages, setMessages] = useState<Message[]>(() => {
-    try {
-      const saved = localStorage.getItem(MESSAGES_KEY);
-      return saved ? JSON.parse(saved) : [mensajeInicial];
-    } catch { return [mensajeInicial]; }
-  });
-
+  const [messages, setMessages] = useState<Message[]>([mensajeInicial]); // valor por defecto, useEffect se encarga de hidratarlo desde localStorage
   const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   const [showBubble, setShowBubble] = useState(true);
-  const [isTyping, setIsTyping] = useState(true); // 🚀 REPARADO: Estado maestro para los 3 puntitos
+  const [isTyping, setIsTyping] = useState(true); // REPARADO: Estado maestro para los 3 puntitos 
   const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState("");
@@ -89,14 +83,14 @@ const ChatbotWidget: React.FC = () => {
     const fetchConfig = async () => {
       try {
         const response = await apiClient.get(config.endpoints.chatbot.getSalute);
-        if (response.data && response.data.success && response.data.salute) {
+        if (response.data?.success && response.data?.salute) {
           const dbSalute = response.data.salute;
           setActiveSalute(dbSalute);
           setMessages((prev) => {
             if (
               prev.length === 1 &&
               prev[0].role === 'bot' &&
-              (prev[0].respuesta === GREETING_REPLY || prev[0].respuesta.startsWith('¡Hola! 👋 Soy la Tamara'))
+              (prev[0].respuesta === GREETING_REPLY || prev[0].respuesta.startsWith('¡Hola! 👋 Soy Tamara'))
             ) {
               return [{ ...prev[0], respuesta: dbSalute }];
             }
@@ -107,7 +101,15 @@ const ChatbotWidget: React.FC = () => {
         console.error("Error al obtener saludo del chatbot:", err);
       }
     };
-    fetchConfig();
+  
+    const idleId = 'requestIdleCallback' in window
+      ? window.requestIdleCallback(fetchConfig)
+      : setTimeout(fetchConfig, 1500);
+  
+    return () => {
+      if ('cancelIdleCallback' in window && typeof idleId === 'number') window.cancelIdleCallback(idleId);
+      else clearTimeout(idleId as any);
+    };
   }, []);
 
   // If we have only the greeting message shown and default context, move to expecting product
@@ -199,10 +201,19 @@ const ChatbotWidget: React.FC = () => {
     return () => { activeTimeouts.forEach((timeoutId) => clearTimeout(timeoutId)); };
   }, [isOpen]);
 
+  const isFirstOpenRef = useRef(true);
+
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (!isOpen) {
+      isFirstOpenRef.current = true; // reset para la próxima apertura
+      return;
     }
+    if (!messagesEndRef.current) return;
+  
+    // Solo anima el scroll cuando se agrega un mensaje NUEVO con el chat ya abierto.
+    const behavior = isFirstOpenRef.current ? 'auto' : 'smooth';
+    messagesEndRef.current.scrollIntoView({ behavior });
+    isFirstOpenRef.current = false;
   }, [messages, isOpen]);
 
   const toggleChat = () => {
