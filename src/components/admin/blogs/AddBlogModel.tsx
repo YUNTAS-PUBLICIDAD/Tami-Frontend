@@ -1285,7 +1285,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                   <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Nombre
+                      Nombre de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1299,7 +1299,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Alt
+                      Alt de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1312,7 +1312,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                   <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Tittle
+                      Tittle de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1535,7 +1535,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     </div>
                     <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Nombre
+                          Nombre de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1544,13 +1544,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+
                         />
                       </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Alt
+                          Alt de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1559,11 +1560,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+                          placeholder="Ingrese Alt de la Imagen"
                         />
                       </div>
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Tittle
+                          Título de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1572,6 +1574,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+                          placeholder="Ingrese Título de la Imagen"
                         />
                       </div>
                     </div>
@@ -1730,7 +1733,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         {/* Nombre */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Nombre*
+                            Nombre de la Imagen
                           </label>
                           <input
                             type="text"
