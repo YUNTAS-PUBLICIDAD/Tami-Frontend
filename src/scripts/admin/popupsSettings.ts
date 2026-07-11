@@ -98,7 +98,7 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                     emailsState[idx].btnLink = settings[`email_btn_link${suffix}`] || settings[`emailBtnLink${suffix}`] || "https://tami.com/productos";
                     emailsState[idx].btnBgColor = settings[`email_btn_bg_color${suffix}`] || settings[`emailBtnBgColor${suffix}`] || "#0b1c3c";
                     emailsState[idx].btnTextColor = settings[`email_btn_text_color${suffix}`] || settings[`emailBtnTextColor${suffix}`] || "#ffffff";
-                    emailsState[idx].delay = String(settings[`email_send_delay_minutes${suffix}`] || settings[`emailSendDelay${suffix}`] || 5);
+                    emailsState[idx].delay = String(settings[`email_send_delay_minutes${suffix}`] ?? settings[`emailSendDelay${suffix}`] ?? 5);
                 };
 
                 mapEmail("1", "");

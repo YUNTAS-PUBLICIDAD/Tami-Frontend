@@ -552,6 +552,10 @@ export function initPopupManager() {
         if (emailBtnTextColorInput) emailBtnTextColorInput.value = state.btnTextColor;
         if (emailSendDelayInput) emailSendDelayInput.value = state.delay;
 
+        window.dispatchEvent(new CustomEvent("timepicker-sync", {
+            detail: { id: "emailSendDelay", value: Number(state.delay) || 0 },
+        }));
+
         const emailTitleDisplay = document.getElementById("emailTitleDisplay");
         if (emailTitleDisplay) emailTitleDisplay.textContent = `Correo Electrónico #${idx}`;
 
