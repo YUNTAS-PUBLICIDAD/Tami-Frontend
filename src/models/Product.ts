@@ -95,6 +95,7 @@ export interface ImagenEditada {
   id: number;
   file: File;
   alt: string;
+  ttl: string;
 }
 
 // Usado para el formulario de creación/edición
