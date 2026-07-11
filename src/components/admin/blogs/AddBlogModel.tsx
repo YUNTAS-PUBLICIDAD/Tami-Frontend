@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { validateImage } from "../../../utils/imageValidation.ts";
 import Swal from "sweetalert2";
 import { IoMdCloseCircle } from "react-icons/io";
+import RichTextEditor from "../productos/RichTextEditor.tsx";
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
@@ -969,12 +970,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     }
   };
 
-  // Cuenta palabras en un string
-  function contarPalabras(texto: string): number {
+  // Cuenta Caracteres en un string
+  function contarCaracteres(texto: string): number {
     return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
   }
-  // Utilidad para convertir números a palabras en español
-  function numeroAPalabras(n: number): string {
+  // Utilidad para convertir números a Caracteres en español
+  function numeroACaracteres(n: number): string {
     const unidades = [
       "cero",
       "uno",
@@ -1019,13 +1020,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       return decenas[d] + " y " + unidades[u];
     }
     if (n === 100) return "cien";
-    if (n < 200) return "ciento " + numeroAPalabras(n - 100);
+    if (n < 200) return "ciento " + numeroACaracteres(n - 100);
     if (n < 1000) {
       const c = Math.floor(n / 100);
       const r = n % 100;
       let centena = c === 1 ? "ciento" : unidades[c] + "cientos";
       if (r === 0) return centena;
-      return centena + " " + numeroAPalabras(r);
+      return centena + " " + numeroACaracteres(r);
     }
     return n.toString();
   }
@@ -1284,7 +1285,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                   <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Nombre
+                      Nombre de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1298,7 +1299,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Alt
+                      Alt de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1311,7 +1312,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                   <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Tittle
+                      Tittle de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1534,7 +1535,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     </div>
                     <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Nombre
+                          Nombre de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1543,13 +1544,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+
                         />
                       </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Alt
+                          Alt de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1558,11 +1560,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+                          placeholder="Ingrese Alt de la Imagen"
                         />
                       </div>
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Tittle
+                          Título de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1571,6 +1574,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+                          placeholder="Ingrese Título de la Imagen"
                         />
                       </div>
                     </div>
@@ -1597,7 +1601,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     <div className="grid grid-cols-1 gap-4">
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Párrafo corto (100 palabras)*
+                          Párrafo corto (100 Caracteres)*
                         </label>
                         <textarea
                           name="subtitulo1"
@@ -1608,13 +1612,13 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           rows={3}
                         />
                         <small className="text-gray-500 text-end block mt-1">
-                          {contarPalabras(formData.subtitulo1)} palabras (Máx{" "}
+                          {contarCaracteres(formData.subtitulo1)} Caracteres (Máx{" "}
                           {LENGTHS.parrafo})
                         </small>
                       </div>
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Descripción (255 palabras)*
+                          Descripción (255 Caracteres)*
                         </label>
                         <textarea
                           name="subtitulo2"
@@ -1625,7 +1629,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           rows={4}
                         />
                         <small className="text-gray-500 text-end block mt-1">
-                          {contarPalabras(formData.subtitulo2)} palabras (Máx{" "}
+                          {contarCaracteres(formData.subtitulo2)} Caracteres (Máx{" "}
                           {LENGTHS.descripcion})
                         </small>
                       </div>
@@ -1639,7 +1643,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     >
                       <div className="mb-4 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
                         <span className="inline-block font-bold text-base text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1 rounded-full">
-                          Sección {numeroAPalabras(index + 1)}
+                          Sección {numeroACaracteres(index + 1)}
                         </span>
                         <p className="text-xs text-gray-500 dark:text-gray-400 ml-3">
                           Edita una sección a la vez y usa el botón X para
@@ -1729,7 +1733,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         {/* Nombre */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Nombre*
+                            Nombre de la Imagen
                           </label>
                           <input
                             type="text"
@@ -1774,6 +1778,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         
 
                         {/* COLUMNA DERECHA - PÁRRAFO */}
+                        
                         <div className="flex flex-col space-y-3">
                           <div className="flex justify-between items-start gap-2">
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -1796,17 +1801,28 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                               </button>
                             </div>
                           </div>
-                          <textarea
-                            id={`crear_descripcion_antes_${index}`}
-                            value={imagen.parrafo}
-                            onChange={(e) => handleParrafoChange(e, index)}
-                            placeholder="Escribe el contenido de esta sección..."
-                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors resize-none"
-                            rows={8}
-                            required
-                          />
+                          <div className="flex flex-col space-y-3">
+
+                            <RichTextEditor
+                              value={imagen.parrafo}
+                              onChange={(html) => {
+                                setFormData((prev) => {
+                                  const nuevasImagenes = [...prev.imagenes];
+
+                                  nuevasImagenes[index] = {
+                                    ...nuevasImagenes[index],
+                                    parrafo: html,
+                                  };
+
+                                  return {
+                                    ...prev,
+                                    imagenes: nuevasImagenes,
+                                  };
+                                });
+                              }}
+                            />
+                          </div>                    
                         </div>
-                        
                       </div>
                     </div>
                   ))}

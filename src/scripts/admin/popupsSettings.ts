@@ -74,6 +74,10 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 window.dispatchEvent(new CustomEvent("timepicker-sync", {
                     detail: { id: "whatsappTime3", value: Number(whatsappTime3Value) || 0 },
                 }));
+                
+                window.dispatchEvent(new CustomEvent("timepicker-sync", {
+                    detail: { id: "emailSendDelay", value: Number(getSettingValue(settings, ["email_send_delay_minutes", "emailSendDelay"], 0)) },
+                }));
 
                 whatsappData["1"] = { text: whatsappMessage1Value, image: currentInicioImages.whatsappImage };
                 whatsappData["2"] = { text: whatsappMessage2Value, image: currentInicioImages.whatsappImage2 };
@@ -254,6 +258,7 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             addFileToForm(formData, "whatsappImage", "whatsappImage");
             addFileToForm(formData, "whatsappImage2", "whatsappImage2");
             addFileToForm(formData, "whatsappImage3", "whatsappImage3");
+            console.log("FormData to be sent:", formData);
 
             await updatePopupSettingsFormData(formData);
 
