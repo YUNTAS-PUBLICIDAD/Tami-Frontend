@@ -36,6 +36,23 @@ export default function TimePicker({ id, name, label, defaultValue = 0, value, o
     setTotalMinutes(resolvedValue);
   }, [resolvedValue]);
 
+  // Escuchar eventos de sincronización externa (al cargar settings guardados)
+  useEffect(() => {
+    const handleSync = (e: CustomEvent) => {
+      if (e.detail?.id !== id) return;
+      const val = Number(e.detail?.value ?? 0);
+      const nextMode = getInitialMode(val);
+      setMode(nextMode);
+      setSelectValue(nextMode === 'custom' ? 'custom' : val === -1 ? '-1' : '0');
+      setHours(nextMode === 'custom' ? Math.floor(val / 60) : 0);
+      setMinutes(nextMode === 'custom' ? val % 60 : 10);
+      setTotalMinutes(val);
+    };
+
+    window.addEventListener('timepicker-sync', handleSync as EventListener);
+    return () => window.removeEventListener('timepicker-sync', handleSync as EventListener);
+  }, [id]);
+
   // Función unificada para propagar los cambios de forma segura sin bucles
   const propagateChange = (currentMode: string, currentHours: number, currentMinutes: number) => {
     let calculated = 0;
