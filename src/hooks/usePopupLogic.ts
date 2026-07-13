@@ -101,8 +101,15 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
   
         let productLink: string | null = null;
         if (isProductDetail) {
-          const parts = pathname.split("/").filter(Boolean);
-          productLink = parts[parts.length - 1] || null;
+          const searchParams = new URLSearchParams(window.location.search);
+          productLink = searchParams.get('link');
+          if (!productLink) {
+            const parts = pathname.split("/").filter(Boolean);
+            const lastPart = parts[parts.length - 1] || null;
+            if (lastPart !== 'detalle') {
+              productLink = lastPart;
+            }
+          }
         }
   
         const productPromise = isProductDetail && productLink
@@ -415,9 +422,16 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
       if (isProductDetail) {
         formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
         
-        // Obtener link del pathname si no tenemos el ID
-        const parts = pathname.split("/").filter(Boolean);
-        const productLink = parts[parts.length - 1];
+        // Obtener link de query param o pathname
+        const searchParams = new URLSearchParams(window.location.search);
+        let productLink = searchParams.get('link');
+        if (!productLink) {
+          const parts = pathname.split("/").filter(Boolean);
+          const lastPart = parts[parts.length - 1];
+          if (lastPart !== 'detalle') {
+            productLink = lastPart;
+          }
+        }
         
         if (productId) formData.append("producto_id", productId.toString());
         if (productLink) formData.append("link", productLink);
