@@ -79,7 +79,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                 productLink = params.get('link')?.trim();
             }
 
+            console.log('[DEBUG] ProductPage - productLink:', productLink);
+            console.log('[DEBUG] ProductPage - initialProducto:', initialProducto);
+            console.log('[DEBUG] ProductPage - API URL:', config.apiUrl);
+
             if (!productLink && !initialProducto?.id) {
+                console.log('[DEBUG] ProductPage - No hay productLink ni id, retornando');
                 setLoading(false);
                 return;
             }
@@ -92,31 +97,48 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     ? `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/${initialProducto.id}`
                     : `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`;
 
+                console.log('[DEBUG] ProductPage - Intentando fetch URL:', url);
+
                 const response = await fetch(url);
+                console.log(' [DEBUG] ProductPage - Response status:', response.status, response.statusText);
+
                 if (response.ok) {
                     const freshData = await response.json();
                     const freshProduct = freshData.data;
+                    console.log(' [DEBUG] ProductPage - Producto encontrado:', freshProduct?.link);
                     setProducto(freshProduct);
                     setProductViewer(freshProduct.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
                     window.__detalleProducto = freshProduct;
 
                     // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
                     if (initialProducto && freshProduct.link !== initialProducto.link) {
+                        console.log('[DEBUG] ProductPage - Redirigiendo a:', freshProduct.link);
                         window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(freshProduct.link)}`;
                     }
                 } else if (initialProducto?.id && productLink) {
                     // Fallback por si la búsqueda por ID falla, intentamos por link
-                    const fallbackResponse = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`);
+                    console.log('[DEBUG] ProductPage - Primer intento falló, probando fallback');
+                    const fallbackUrl = `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`;
+                    console.log('[DEBUG] ProductPage - Fallback URL:', fallbackUrl);
+                    
+                    const fallbackResponse = await fetch(fallbackUrl);
+                    console.log('[DEBUG] ProductPage - Fallback response status:', fallbackResponse.status, fallbackResponse.statusText);
+                    
                     if (fallbackResponse.ok) {
                         const freshData = await fallbackResponse.json();
                         const freshProduct = freshData.data;
+                        console.log('[DEBUG] ProductPage - Producto encontrado en fallback:', freshProduct?.link);
                         setProducto(freshProduct);
                         setProductViewer(freshProduct.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
                         window.__detalleProducto = freshProduct;
+                    } else {
+                        console.error('[DEBUG] ProductPage - Producto NO encontrado. URL:', url);
                     }
+                } else {
+                    console.error('[DEBUG] ProductPage - Response NOT OK. Status:', response.status);
                 }
             } catch (error) {
-                console.error('Error al cargar datos del producto:', error);
+                console.error('[DEBUG] ProductPage - Error al cargar datos del producto:', error);
             } finally {
                 setLoading(false);
             }
