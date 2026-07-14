@@ -857,13 +857,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     <div className="form-input flex flex-col gap-2">
                       <div className="flex items-center justify-between">
                         <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
-                        <button
-                          type="button"
-                          onClick={handleInsertLinkClick}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 transition cursor-pointer"
-                        >
-                          🔗 Insertar Enlace
-                        </button>
                       </div>
                       <div ref={el => { fieldRefs.current.descripcion = el; }}>
                         <RichTextEditor

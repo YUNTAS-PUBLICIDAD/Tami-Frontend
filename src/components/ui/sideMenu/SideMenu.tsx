@@ -110,7 +110,7 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
 
   const handleUserClick = () => {
     if (user) {
-      window.location.href = "/admin/inicio";
+      window.location.href = "/admin/inicio/";
     }
   };
 
@@ -150,7 +150,7 @@ const SideMenu = ({ isOpen, onClose, links }: SideMenuProps) => {
             <div className="text-center">
               <NavLink
                 isForNavBar={false}
-                to="/auth/sign-in"
+                to="/auth/sign-in/"
                 title="Iniciar sesión en Tami Maquinarias"
               >
                 <div
