@@ -56,6 +56,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         }
     })();
 
+
     const detalleProductoTituloStyle: React.CSSProperties = {
         color: detailTitleColor,
         fontWeight: normalizedDetailTitleStyle === 'bold-italic' || normalizedDetailTitleStyle === 'bold' ? 800 : 600,
@@ -101,7 +102,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                     // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
                     if (initialProducto && freshProduct.link !== initialProducto.link) {
-                        window.location.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(freshProduct.link)}`;
+                        window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(freshProduct.link)}`;
                     }
                 } else if (initialProducto?.id && productLink) {
                     // Fallback por si la búsqueda por ID falla, intentamos por link
@@ -195,6 +196,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         if (url.startsWith('http')) return url;
         return `${config.apiUrl}${url}`;
     };
+
+    const descripcionConLinks = (producto.descripcion ?? "").replace(
+        /&lt;a\s+href="([^"]*)"&gt;([\s\S]*?)&lt;\/a&gt;/gi,
+        (_match, href, texto) =>
+          `<a href="${href}" target="_blank" rel="noopener noreferrer" class="font-bold underline text-[#015f86] hover:text-[#014a68]">${texto}</a>`
+      );
 
     const handleWhatsAppClick = () => {
         const phoneNumber = "51978883199";
@@ -311,7 +318,6 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
                             <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
                                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-
                                     <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
                                         Características de {producto.nombre.toLowerCase()}
                                     </h2>
@@ -327,14 +333,12 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                             d="M19 9l-7 7-7-7"
                                         />
                                     </svg>
-
                                 </summary>
-                                {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
                                 <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
                                     <div
                                         className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
                                         dangerouslySetInnerHTML={{
-                                            __html: producto.descripcion ?? "",
+                                            __html: descripcionConLinks,
                                         }}
                                     />
                                 </div>

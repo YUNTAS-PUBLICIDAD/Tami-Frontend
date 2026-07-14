@@ -7,7 +7,7 @@ interface RedirectIfAuthenticatedProps {
 
 export default function RedirectIfAuthenticated({
   children,
-  redirectTo = "/admin/inicio",
+  redirectTo = "/admin/inicio/",
 }: RedirectIfAuthenticatedProps) {
   const [isLoading, setIsLoading] = useState(true);
 

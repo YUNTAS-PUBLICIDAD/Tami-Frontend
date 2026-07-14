@@ -166,7 +166,7 @@ const productsUrl = config.endpoints.productos.list;
             return;
           }
           const encodedLink = encodeURIComponent(linkBlog);
-          const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${encodedLink}`;
+          const fullUrl = `${getApiUrl}${blogsUrl.list}/link/${encodedLink}/`;
           if (!fullUrl.startsWith("http"))
             throw new Error(`URL inválida: ${fullUrl}`);
           const response = await fetch(fullUrl);
@@ -229,8 +229,8 @@ const productsUrl = config.endpoints.productos.list;
               blogPost: [
                 {
                   "@type": "BlogPosting",
-                  "@id": `https://tamimaquinarias.com/blog/${blog.link}`,
-                  mainEntityOfPage: `https://tamimaquinarias.com/blog/${blog.link}`,
+                  "@id": `https://tamimaquinarias.com/blog/${blog.link}/`,
+                  mainEntityOfPage: `https://tamimaquinarias.com/blog/${blog.link}/`,
                   headline: blog.nombre_producto,
                   name: blog.nombre_producto,
                   description: description,
@@ -248,7 +248,7 @@ const productsUrl = config.endpoints.productos.list;
                     height: "800",
                     width: "1200",
                   },
-                  url: `https://tamimaquinarias.com/blog/${blog.link}`,
+                  url: `https://tamimaquinarias.com/blog/${blog.link}/`,
                   keywords: ["LED", "Marketing Visual"],
                 },
               ],
@@ -349,7 +349,7 @@ const productsUrl = config.endpoints.productos.list;
             }
 
             if (slugProducto) {
-              btnVerProducto.href = `/catalogo-maquinarias/detalle?link=${slugProducto}`;
+              btnVerProducto.href = `/catalogo-maquinarias/details/?link=${slugProducto}`;
               btnVerProducto.innerText =
                 blog.etiqueta?.popup_button_text?.trim() || "Ver Producto";
               if (blog.etiqueta?.popup_button_color) {

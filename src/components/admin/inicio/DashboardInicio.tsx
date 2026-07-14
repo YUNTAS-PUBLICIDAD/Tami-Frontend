@@ -37,7 +37,7 @@ const DashboardInicio: React.FC = () => {
 
 
   const handleVerTodos = () => {
-    window.location.href = '/admin/seguimiento';
+    window.location.href = '/admin/seguimiento/';
   };
 
   useEffect(() => {

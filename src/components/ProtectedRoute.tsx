@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            window.location.href = "/auth/sign-in";
+            window.location.href = "/auth/sign-in/";
         } else {
             setIsAuthenticated(true);
         }

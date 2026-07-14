@@ -181,7 +181,7 @@ function NavBar({ forceSolid = false }: NavBarProps) {
           {/* Botón de Login y Menú Móvil */}
           <div className="flex items-center">
             <a
-              href="/auth/sign-in"
+              href="/auth/sign-in/"
               title="Ir a la sección de inicio de sesión"
               className="hidden lg:block bg-white rounded-md py-3 px-8 text-[#07625b] font-bold text-lg hover:bg-gray-200 transition-colors"
             >

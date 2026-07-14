@@ -32,7 +32,7 @@ const getImageUrl = (url: unknown): string => {
 
         return (
                 <a
-                        href={`/catalogo-maquinarias/detalle?link=${encodeURIComponent(producto.link)}`}
+                        href={`/catalogo-maquinarias/details/?link=${encodeURIComponent(producto.link)}`}
                         class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
                 >
                     <img
@@ -55,7 +55,7 @@ const getImageUrl = (url: unknown): string => {
 
         return (
                 <a
-                        href={`/blog/details?link=${blog.link}`}
+                        href={`/blog/details/?link=${blog.link}`}
                         class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
                 >
                     <img

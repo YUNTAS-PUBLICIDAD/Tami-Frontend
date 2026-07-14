@@ -93,7 +93,7 @@ apiClient.interceptors.response.use(
                 if (typeof window !== 'undefined') {
                     localStorage.removeItem('token');
                     localStorage.removeItem('userInfo');
-                    window.location.href = '/auth/sign-in';
+                    window.location.href = '/auth/sign-in/';
                 }
                 return Promise.reject(refreshError);
             } finally {

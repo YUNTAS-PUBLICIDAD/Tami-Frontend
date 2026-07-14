@@ -1,17 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
-import type Product from "../../../models/Product.ts";
+import type Product from "src/models/Product";
 import { IoMdCloseCircle } from "react-icons/io";
+import { FaEdit } from "react-icons/fa";
 import { config } from "../../../../config.ts";
 import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
-import RichTextEditor from "./RichTextEditor";
+import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor";
+import type { ImagenForm, ImagenEditada } from "../../../models/Product";
 
-type Props = {
-  onProductAdded?: () => void;
-};
+interface EditProductProps {
+  product: Product;
+  onProductUpdated: () => Promise<void> | void;
+}
 
 const TABS = [
   { id: "general", label: "Datos Generales", icon: "ℹ️" },
@@ -23,7 +26,7 @@ const TABS = [
   { id: "relacionados", label: "Relacionados", icon: "🔗" }
 ];
 
-const AddProduct = ({ onProductAdded }: Props) => {
+const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
@@ -39,6 +42,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [newKeyword, setNewKeyword] = useState("");
 
   const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
+
+  // Estado del modal "Insertar Enlace" para la descripción
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const descripcionEditorRef = useRef<RichTextEditorHandle>(null);
 
   const formContainerRef = useRef<HTMLDivElement>(null);
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -56,6 +65,85 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
     return URL.createObjectURL(image);
   };
+
+  useEffect(() => {
+    if (showModal && product) {
+      const refreshCache = Date.now();
+      
+      const imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
+        id: img.id,
+        url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
+        texto_alt_SEO: img.texto_alt_SEO || "",
+        original_path: img.url_imagen
+      })) || [];
+      
+      while (imagenesTransformadas.length < 5) {
+        imagenesTransformadas.push({
+          url_imagen: "",
+          texto_alt_SEO: ""
+        });
+      }
+
+      const relacionadosIds = product.productos_relacionados?.map((rel: any) => rel.id) || [];
+      const keywordsArray = product.etiqueta?.keywords 
+        ? product.etiqueta.keywords.split(",").map(kw => kw.trim()).filter(k => k !== "")
+        : [];
+
+      const imagenPopup2 = product.producto_imagenes?.find((img) => {
+        const tipo = (img.tipo || "").toLowerCase();
+        return tipo === "popup2" || tipo === "popup_2";
+      });
+
+      const detalleTituloProducto = product as Product & {
+        detalle_titulo_tamano?: string;
+        detalle_titulo_color?: string;
+        detalle_titulo_estilo?: string;
+      };
+
+      setIsLinkEdited(!!product.link);
+
+      setFormData({
+        ...defaultValuesProduct,
+        nombre: product.nombre || "",
+        porque_elegirnos: product.porque_elegirnos || "",
+        titulo: product.titulo || "",
+        subtitulo: product.subtitulo || "",
+        link: product.link || "",
+        descripcion: product.descripcion || "",
+        etiqueta: {
+          keywords: keywordsArray.length > 0 ? keywordsArray : [""],
+          meta_titulo: product.etiqueta?.meta_titulo || "",
+          meta_descripcion: product.etiqueta?.meta_descripcion || "",
+          popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
+          titulo_popup_1: product.etiqueta?.titulo_popup_1 || "",
+          titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
+          titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
+          titulo_detalle_producto_size: detalleTituloProducto.detalle_titulo_tamano || product.etiqueta?.titulo_detalle_producto_size || "24",
+          titulo_detalle_producto_color: detalleTituloProducto.detalle_titulo_color || product.etiqueta?.titulo_detalle_producto_color || "#015f86",
+          titulo_detalle_producto_style: detalleTituloProducto.detalle_titulo_estilo || product.etiqueta?.titulo_detalle_producto_style || "negrita",
+          popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+          popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
+          popup_text_color: product.etiqueta?.popup_text_color || "#000000",
+          popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
+        },
+        stock: product.stock ?? 100,
+        precio: product.precio ?? 0,
+        seccion: product.seccion || "Negocio",
+        especificaciones: Array.isArray(product.especificaciones)
+          ? product.especificaciones.map((e: any) => e.valor)
+          : [],
+        relacionados: relacionadosIds,
+        imagenes: imagenesTransformadas,
+        dimensiones: {
+          largo: product.dimensiones?.largo || "",
+          alto: product.dimensiones?.alto || "",
+          ancho: product.dimensiones?.ancho || "",
+        },
+        imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
+        texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
+      });
+    }
+  }, [showModal, product]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -136,6 +224,31 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
   };
 
+  const handleInsertLinkClick = () => {
+    const selected = descripcionEditorRef.current?.getSelectedText() || "";
+
+    if (!selected.trim()) {
+      Swal.fire("Selecciona texto", "Selecciona texto para enlazar.", "warning");
+      return;
+    }
+
+    setSelectedText(selected);
+    setLinkUrl("");
+    setIsLinkModalOpen(true);
+  };
+
+  const handleAddLink = () => {
+    if (!linkUrl.trim()) {
+      Swal.fire("Falta el enlace", "Ingresa una URL válida.", "warning");
+      return;
+    }
+
+    descripcionEditorRef.current?.insertLink(linkUrl.trim());
+    setIsLinkModalOpen(false);
+    setLinkUrl("");
+    setSelectedText("");
+  };
+
   const handleImagesChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -171,6 +284,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       return { ...prev, imagenes: nuevoArray };
     });
   };
+
 
   const handleImagesTituloChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -401,14 +515,14 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("porque_elegirnos", formData.porque_elegirnos);
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("subtitulo", formData.subtitulo);
+      const linkActual = formData.link.trim() || product.link || slugify(formData.nombre);
+      formDataToSend.append("link", linkActual);
       formDataToSend.append("descripcion", formData.descripcion);
       formDataToSend.append("stock", formData.stock.toString());
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
       
-      const cleanKeywords = formData.etiqueta.keywords.filter(tag => tag.trim() !== '');
-      formDataToSend.append("keywords", JSON.stringify(cleanKeywords));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       
@@ -417,58 +531,130 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("detalle_titulo_estilo", formData.etiqueta.titulo_detalle_producto_style || "negrita");
       
       formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo || "estilo1");
+      formDataToSend.append("etiqueta[titulo_popup_1]", formData.etiqueta.titulo_popup_1 || "");
+      formDataToSend.append("etiqueta[titulo_popup_2]", formData.etiqueta.titulo_popup_2 || "");
+      formDataToSend.append("etiqueta[titulo_popup_3]", formData.etiqueta.titulo_popup_3 || "");
+      formDataToSend.append("etiqueta[popup3_sin_fondo]", formData.etiqueta.popup3_sin_fondo ? "true" : "false");
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
       formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
       formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "¡COTIZA AHORA!");
       
+      const cleanKeywords = formData.etiqueta.keywords.filter(k => k.trim() !== "");
+      formDataToSend.append("etiqueta[keywords]", JSON.stringify(cleanKeywords));
+      formDataToSend.append("keywords", JSON.stringify(cleanKeywords));
+
       formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
 
-      const link = formData.link.trim() || slugify(formData.nombre);
-      formDataToSend.append("link", link);
+      // MANEJO DE IMÁGENES DE GALERÍA (Exactamente la lógica original de edición)
+      const imagenesNuevas: File[] = [];
+      const imagenesNuevasAlt: string[] = [];
+      const imagenesNuevasTitulo: string[] = [];
+      const imagenesEditadas: ImagenEditada[] = [];
+      const imagenesExistentesData: Array<{ url: string; id?: number; alt: string; ttl?:string }> = [];
 
-      let imageIndex = 0;
-      formData.imagenes.forEach((imagen) => {
-        if (imagen.url_imagen) {
-          const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
-          const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
-          formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
-          formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
-          formDataToSend.append(`titulos[${imageIndex}]`, titulo);
-          imageIndex++;
+      formData.imagenes.forEach((imagen, index) => {
+        if (!imagen.url_imagen) return;
+        const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
+        const titulo = imagen.imageTitle?.trim() || `Imagen producto ${index + 1}`;
+
+        if (imagen.url_imagen instanceof File) {
+          if (imagen.id) {
+            imagenesEditadas.push({
+              id: imagen.id,
+              file: imagen.url_imagen,
+              alt: altText,
+              ttl: titulo
+            });
+          } else {
+            imagenesNuevas.push(imagen.url_imagen);
+            imagenesNuevasAlt.push(altText);
+            imagenesNuevasTitulo.push(titulo);
+          }
+        } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
+          let urlLimpia = "";
+          if (imagen.original_path) {
+            urlLimpia = imagen.original_path;
+          } else {
+            try {
+              const urlObj = new URL(imagen.url_imagen, window.location.origin);
+              urlLimpia = urlObj.pathname;
+            } catch (error) {
+              urlLimpia = imagen.url_imagen.split('?')[0].replace(config.apiUrl, '');
+            }
+          }
+          urlLimpia = decodeURIComponent(urlLimpia.split('?')[0]);
+          
+          imagenesExistentesData.push({
+            url: urlLimpia,
+            id: imagen.id,
+            alt: altText,
+            ttl: titulo
+          });
         }
+      });
+
+      // Añadir al FormData
+      imagenesNuevas.forEach((file, idx) => {
+        formDataToSend.append('imagenes_nuevas[]', file);
+        formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
+        formDataToSend.append(`imagenes_nuevas_titulo[]`, imagenesNuevasTitulo[idx])
+      });
+
+      imagenesEditadas.forEach((img, idx) => {
+        formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
+        formDataToSend.append(`imagenes_editadas[${idx}][file]`, img.file);
+        formDataToSend.append(`imagenes_editadas[${idx}][alt]`, img.alt);
+        formDataToSend.append(`imagenes_editadas[${idx}][ttl]`, img.ttl);
+
+      });
+
+      imagenesExistentesData.forEach((img, idx) => {
+        formDataToSend.append(`imagenes_existentes[${idx}][url]`, img.url);
+        if (img.id) {
+          formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
+        }
+        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
+        formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, img.ttl || `Imagen producto ${idx + 1}`)
       });
 
       formData.relacionados.forEach((item, index) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
 
+      formDataToSend.append("_method", "PUT");
+
       const response = await apiClient.post(
-        config.endpoints.productos.create,
-        formDataToSend
+        config.endpoints.productos.update(product.id),
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       if (response.status === 200 || response.status === 201) {
         Swal.fire({
           icon: "success",
-          title: "Producto añadido exitosamente",
+          title: "Producto actualizado exitosamente",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
         closeModal();
+        await onProductUpdated?.();
         setIsLoading(false);
-        onProductAdded?.();
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: response.data.message || "Error al procesar la respuesta del servidor",
+          text: response.data.message || "Error al actualizar el producto",
         });
         setIsLoading(false);
       }
     } catch (error: any) {
-      console.error("Error al enviar los datos:", error);
+      console.error("❌ Error al enviar los datos:", error);
       let errorMessage = "Ocurrió un error al procesar la solicitud.";
       if (error.response?.data?.errors) {
         const errs = error.response.data.errors;
@@ -478,11 +664,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else {
-        errorMessage = error.message;
+        errorMessage = error.message || String(error);
       }
       Swal.fire({
         icon: "error",
-        title: "Error de Validación",
+        title: "Error de Guardado",
         text: `❌ ${errorMessage}`,
       });
       setIsLoading(false);
@@ -505,11 +691,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
   return (
     <>
-      <button onClick={openModal} className="relative flex items-center justify-center w-full bg-teal-600 text-white hover:bg-teal-700 px-12 transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Agregar Producto
+      <button
+        className="p-2 text-green-600 hover:text-green-800 transition hover:cursor-pointer"
+        title="Editar"
+        onClick={openModal}
+      >
+        <FaEdit size={18} />
       </button>
 
       {showModal && (
@@ -518,7 +705,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
             
             {/* Cabecera del Diálogo */}
             <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !m-0 p-4 md:p-6 bg-teal-700 text-white flex-shrink-0">
-              <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">Agregar Producto</h4>
+              <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">Editar Producto</h4>
               <button
                 type="button"
                 className="text-white hover:text-red-400 transition-all duration-300 cursor-pointer text-3xl"
@@ -574,7 +761,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         onChange={handleChange}
                         type="text"
                         name="nombre"
-                        placeholder="Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"
+                        placeholder="Nombre del producto..."
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
@@ -609,7 +796,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         onChange={handleChange}
                         type="text"
                         name="subtitulo"
-                        placeholder="Ej: Aumente la vida útil de sus chifles"
+                        placeholder="Subtitulo del producto..."
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
@@ -668,9 +855,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">📝 Descripciones</h3>
                     
                     <div className="form-input flex flex-col gap-2">
-                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
+                      </div>
                       <div ref={el => { fieldRefs.current.descripcion = el; }}>
                         <RichTextEditor
+                          ref={descripcionEditorRef}
                           value={formData.descripcion}
                           onChange={(html) => setFormData(prev => ({ ...prev, descripcion: html }))}
                         />
@@ -781,7 +971,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <button
                           type="button"
                           onClick={addNewSpecification}
-                          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition h-10 w-full sm:w-auto"
+                          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition h-10 w-full sm:w-auto cursor-pointer"
                         >
                           + Añadir
                         </button>
@@ -801,7 +991,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                               <button
                                 type="button"
                                 onClick={() => eliminarEspecificacion(index)}
-                                className="text-red-500 hover:text-red-700 p-1"
+                                className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -992,7 +1182,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                   className="h-28 object-contain rounded"
                                 />
                                 <label className="text-xs text-teal-600 hover:text-teal-800 underline font-bold cursor-pointer transition">
-                                  Cambiar archivo
+                                  Reemplazar archivo
                                   <input
                                     type="file"
                                     accept="image/*"
@@ -1016,7 +1206,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="flex flex-col gap-1">
                             <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
                             <input
@@ -1247,8 +1437,42 @@ const AddProduct = ({ onProductAdded }: Props) => {
           </div>
         </div>
       )}
+
+      {isLinkModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Enlace para: <strong>{selectedText}</strong>
+            </p>
+            <input
+              type="text"
+              placeholder="https://..."
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsLinkModalOpen(false)}
+                className="px-4 py-2 text-gray-500"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleAddLink}
+                className="px-4 py-2 bg-teal-600 text-white rounded"
+              >
+                Insertar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
-export default AddProduct;
+export default EditProduct;

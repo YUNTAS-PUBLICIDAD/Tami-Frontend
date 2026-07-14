@@ -40,7 +40,7 @@ const SEARCH_STOPWORDS = new Set([
 export const DEFAULT_WHATSAPP =
   'https://wa.me/51978883199?text=Hola%20Tami%2C%20quisiera%20informaci%C3%B3n%20para%20mi%20negocio.';
 
-export const buildProductLink = (link: string) => `/catalogo-maquinarias/detalle?link=${link}`;
+export const buildProductLink = (link: string) => `/catalogo-maquinarias/detalle/?link=${link}`;
 
 const resolveProductLink = (rawLink?: string): string | null => {
   if (!rawLink) return null;
@@ -49,7 +49,7 @@ const resolveProductLink = (rawLink?: string): string | null => {
   if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
   if (clean.startsWith('/catalogo-maquinarias/detalle?link=')) return clean;
   if (clean.startsWith('/catalogo-maquinarias/')) return clean;
-  if (clean.startsWith('/')) return `/catalogo-maquinarias/detalle?link=${clean.slice(1)}`;
+  if (clean.startsWith('/')) return `/catalogo-maquinarias/detalle/?link=${clean.slice(1)}`;
   return buildProductLink(clean);
 };
 
