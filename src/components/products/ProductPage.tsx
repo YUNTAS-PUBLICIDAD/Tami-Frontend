@@ -19,11 +19,11 @@ declare global {
 }
 
 interface Props {
-    producto?: Producto
+    producto?: Partial<Producto>
 }
 
 const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
-    const [producto, setProducto] = useState<Producto | null>(initialProducto || null);
+    const [producto, setProducto] = useState<Producto | null>(initialProducto as Producto | null);
     const [loading, setLoading] = useState<boolean>(!initialProducto);
     const [productViewer, setProductViewer] = useState<string>(initialProducto?.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
 
@@ -198,7 +198,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     };
 
     const descripcionConLinks = (producto.descripcion ?? "").replace(
-        /&lt;a\s+href="([^"]*)"&gt;([\s\S]*?)&lt;\/a&gt;/gi,
+        /<a\s+href="([^"]*)">([\s\S]*?)<\/a>/gi,
         (_match, href, texto) =>
           `<a href="${href}" target="_blank" rel="noopener noreferrer" class="font-bold underline text-[#015f86] hover:text-[#014a68]">${texto}</a>`
       );
