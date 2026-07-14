@@ -466,13 +466,19 @@ const productsUrl = config.endpoints.productos.list;
           clearTimeout(safetyTimeout);
           removeLoaderSafe();
         } catch (error) {
+
+          console.error("=========== ERROR BLOG ===========");
+          console.error(error);
+          console.error(error?.stack);
+          console.error("==================================");
+
           const blogHeader = document.getElementById("blog-header");
           if (blogHeader) {
             blogHeader.style.display = "none";
           }
-          
+
           const blogContent = document.getElementById("blog-content");
-          if (blogContent) {
+           if (blogContent) {
             blogContent.classList.add("mt-24", "md:mt-32", "min-h-[50vh]", "flex", "flex-col", "items-center", "justify-center");
             
             blogContent.innerHTML = `
@@ -485,6 +491,7 @@ const productsUrl = config.endpoints.productos.list;
             </div>
           `;
           }
+
           clearTimeout(safetyTimeout);
           removeLoaderSafe();
         }
