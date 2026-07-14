@@ -21,7 +21,7 @@ try {
     productsArray.slice(-3).map((item) => (
       <li class="pd-container__content group">
         <a
-          href={`/catalogo-maquinarias/detalle/?id=${item.id}`}
+          href={`/catalogo-maquinarias/detalle/?link=${String(item.link).replace(/^\/+|\/+$/g, "")}/`}
           class="pd-container__link"
         >
           <img
