@@ -2,7 +2,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-// import criticalCSS from 'astro-critical-css';
 import sitemap from '@astrojs/sitemap';
 import path from 'path';
 
@@ -12,7 +11,7 @@ export default defineConfig({
     site: 'https://tamimaquinarias.com/',
     vite: {
         // @ts-ignore
-        plugins: [tailwindcss()],
+        plugins: [tailwindcss()], // Tu Tailwind v4 limpio
         resolve: {
             alias: {
                 'src': path.resolve('./src'),
@@ -21,7 +20,12 @@ export default defineConfig({
                 '@layouts': path.resolve('./src/layouts'),
                 '@styles': path.resolve('./src/styles')
             }
-        }
+        },
+        build: {
+            // 🚀 LA CLAVE AQUÍ: Cambiamos de true a false
+            // Al no dividir el CSS, obligamos a que se unifique y Astro pueda inyectarlo
+            cssCodeSplit: false, 
+        },
     },
     integrations: [sitemap({
         filter: (page) =>
@@ -38,15 +42,20 @@ export default defineConfig({
     //     ]
     // })
     // No usar critical CSS por ahora, causa algunos problemas con los styles CSS
-    react(), partytown({
+    react(), 
+    partytown({
         config: {
           forward: ['dataLayer.push'],
         },
       })],
     build: {
         format: 'directory',
-        inlineStylesheets: 'auto',
+        // 🚀 Forzamos a Astro a inyectar el stylesheet unificado en el HTML
+        inlineStylesheets: 'always', 
     },
     compressHTML: true,
-    scopedStyleStrategy: 'where'
+    scopedStyleStrategy: 'where',
+    image: {
+        domains: ['localhost', '127.0.0.1'],
+    },
 });
