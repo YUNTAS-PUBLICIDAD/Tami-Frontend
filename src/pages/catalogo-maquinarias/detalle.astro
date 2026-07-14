@@ -1,13 +1,22 @@
 ---
 import Layout from "src/layouts/Layout.astro";
 import ProductPage from "src/components/products/ProductPage";
+
+const productSlug = Astro.url.searchParams.get("link");
+
+const safeSlug =
+  productSlug?.trim().toLowerCase().replace(/[^a-z0-9-]/g, "") ?? null;
+
+const canonicalUrl = safeSlug
+  ? `https://tamimaquinarias.com/catalogo-maquinarias/${safeSlug}/`
+  : "https://tamimaquinarias.com/catalogo-maquinarias/";
 ---
 
 <Layout
   title="Detalle de Producto - Tami Maquinarias"
-  description="Cargando detalles de producto..."
+  description="Consulta las características, aplicaciones y beneficios de nuestras maquinarias y equipos comerciales."
   keywords=""
-  canonicalUrl="https://tamimaquinarias.com/catalogo-maquinarias"
+  canonicalUrl={canonicalUrl}
 >
   <ProductPage client:load />
 </Layout>

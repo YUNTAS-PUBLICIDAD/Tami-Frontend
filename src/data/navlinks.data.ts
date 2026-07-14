@@ -5,26 +5,26 @@ const navLinks = [
     title: "Ir a la página de inicio"
   },
   {
-    url: "/nosotros",
+    url: "/nosotros/",
     texto: "NOSOTROS",
     title: "Ir a la sección de nosotros"
   },
   {
-    url: "/catalogo-maquinarias",
+    url: "/catalogo-maquinarias/",
     texto: "PRODUCTOS",
     title: "Ir a la sección de productos"
   },
   {
-    url: "/politicas-envio",
+    url: "/politicas-envio/",
     texto: "POLÍTICAS DE ENVÍO",
     title: "Ir a la sección de políticas de envío"
   },
   {
-    url: "/blog",
+    url: "/blog/",
     texto: "BLOGS",
     title: "Ir a la sección de blogs"
   },{
-    url: "/contacto",
+    url: "/contacto/",
     texto: "CONTACTO",
     title: "Ir a la sección de Contacto"
   }

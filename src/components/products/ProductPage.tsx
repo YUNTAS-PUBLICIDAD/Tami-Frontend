@@ -102,7 +102,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
                     // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
                     if (initialProducto && freshProduct.link !== initialProducto.link) {
-                        window.location.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(freshProduct.link)}`;
+                        window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(freshProduct.link)}`;
                     }
                 } else if (initialProducto?.id && productLink) {
                     // Fallback por si la búsqueda por ID falla, intentamos por link

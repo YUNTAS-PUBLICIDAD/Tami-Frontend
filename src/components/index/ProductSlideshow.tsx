@@ -192,7 +192,7 @@ const ProductSlideshow = () => {
   };
 
   const getLinkHref = (item: Producto) =>
-    `/catalogo-maquinarias/detalle?link=${item.link ?? slugify(String(item.titulo))}`;
+    `/catalogo-maquinarias/detalle/?link=${item.link ?? slugify(String(item.titulo))}`;
 
   if (isLoading) {
     return (

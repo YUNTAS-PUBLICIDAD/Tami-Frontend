@@ -15,6 +15,7 @@ interface Props {
   keywords?: string;
   forceSolidNav?: boolean;
 }
+
 const {
   title,
   description,
@@ -22,6 +23,37 @@ const {
   keywords,
   forceSolidNav = false,
 } = Astro.props;
+
+/**
+ * URL actual sin parámetros ni fragmentos.
+ *
+ * Con build.format = "directory" y trailingSlash = "always",
+ * toda URL interna debe terminar en "/".
+ */
+const currentPath =
+  Astro.url.pathname === "/"
+    ? "/"
+    : `${Astro.url.pathname.replace(/\/+$/, "")}/`;
+
+/**
+ * Si una página envía canonicalUrl, la normalizamos.
+ * Si no la envía, utilizamos automáticamente la URL actual.
+ */
+const rawCanonical =
+  canonicalUrl ?? new URL(currentPath, Astro.site).toString();
+
+const canonical = new URL(rawCanonical, Astro.site);
+
+canonical.search = "";
+canonical.hash = "";
+
+canonical.pathname =
+  canonical.pathname === "/"
+    ? "/"
+    : `${canonical.pathname.replace(/\/+$/, "")}/`;
+
+const normalizedCanonical = canonical.toString();
+
 ---
 
 <!doctype html>
@@ -62,7 +94,7 @@ const {
 
     <GoogleAnalytics />
 
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={normalizedCanonical} />
     <meta name="generator" content={Astro.generator} />
     <meta name="author" content="Tamimaquinarias" />
     <meta name="robots" content="index, follow" />
@@ -130,8 +162,10 @@ const {
        */
     }
     {
-      !(Astro.url.pathname === "/catalogo-maquinarias") && (
-        <ScrollModal client:idle />
+    (
+      Astro.url.pathname.replace(/\/+$/, "") !== "/catalogo-maquinarias" && (
+      <ScrollModal client:idle />
+      )
       )
     }
     {/* Activado con el atributo `client:idle`.*/}
