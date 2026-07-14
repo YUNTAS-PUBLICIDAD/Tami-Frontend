@@ -7,7 +7,9 @@ import apiClient from "../../../services/apiClient";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify";
-import RichTextEditor from "./RichTextEditor";
+import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor";
+import { isValidUrl } from "../formutils.ts";
+import InsertLinkModal from "../blogs/InsertLinkModal.tsx";
 
 type Props = {
   onProductAdded?: () => void;
@@ -42,6 +44,33 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
   const formContainerRef = useRef<HTMLDivElement>(null);
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const editorRef = useRef<RichTextEditorHandle | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [link, setLink] = useState("");
+
+  const handleInsertLinkClick = () => {
+    const selected = editorRef.current?.getSelectedText();
+    if (!selected) {
+      Swal.fire("Selecciona texto", "Resalta el texto que deseas enlazar.", "warning");
+      return;
+    }
+    setSelectedText(selected);
+    setIsModalOpen(true);
+  };
+
+  const handleAddLink = () => {
+    if (!link.trim() || !isValidUrl(link.trim())) {
+      Swal.fire("Enlace inválido", "Ingresa una URL válida (https://...).", "error");
+      return;
+    }
+    const linkedText = `<a href="${link.trim()}" style="font-weight: bold;" title="${selectedText}">${selectedText}</a>`;
+    editorRef.current?.insertHTML(linkedText);
+    setIsModalOpen(false);
+    setLink("");
+    setSelectedText("");
+  };
 
   const getFullImageUrl = (url: string) => {
     if (!url) return "";
@@ -669,14 +698,27 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     
                     <div className="form-input flex flex-col gap-2">
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        <button type="button" onClick={handleInsertLinkClick}>Insertar Link</button>
+                      </div> 
                       <div ref={el => { fieldRefs.current.descripcion = el; }}>
                         <RichTextEditor
                           value={formData.descripcion}
                           onChange={(html) => setFormData(prev => ({ ...prev, descripcion: html }))}
+                          ref={editorRef}
                         />
                       </div>
                       {errors.descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.descripcion}</p>}
                     </div>
+
+                      <InsertLinkModal
+                        isOpen={isModalOpen}
+                        selectedText={selectedText}
+                        link={link}
+                        setLink={setLink}
+                        onClose={() => setIsModalOpen(false)}
+                        onConfirm={handleAddLink}
+                      />
 
                     <div className="form-input flex flex-col gap-2">
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propuesta "¿Por qué elegirnos?":</label>

@@ -1,10 +1,15 @@
 import { config } from "../../../../config.ts";
 import apiClient from "../../../services/apiClient.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { validateImage } from "../../../utils/imageValidation.ts";
 import Swal from "sweetalert2";
 import { IoMdCloseCircle } from "react-icons/io";
-import RichTextEditor from "../productos/RichTextEditor.tsx";
+import RichTextEditor, {
+  type RichTextEditorHandle,
+} from "../productos/RichTextEditor.tsx";
+import InsertLinkModal from "./InsertLinkModal.tsx";
+import {isValidUrl} from "../formutils.ts";
+
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
@@ -61,15 +66,6 @@ const LENGTHS = {
   metaDescripcion: 160, // recomendado (no bloqueante)
 };
 
-/* ===== utilidades ===== */
-const isValidUrl = (value: string) => {
-  try {
-    const u = new URL(value);
-    return !!u.protocol && !!u.host;
-  } catch {
-    return false;
-  }
-};
 
 //asegurando 2 secciones para blog
 const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
@@ -170,6 +166,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       popup_text_color: "#ffffff",
     },
   });
+
+  // 👇 Antes se buscaba un <textarea> con querySelector/getElementById.
+  // Ahora el párrafo es un RichTextEditor (TipTap), así que guardamos
+  // una ref a su instancia por cada índice para poder pedirle la
+  // selección actual e insertar el link ahí.
+  const richTextEditorRefs = useRef<(RichTextEditorHandle | null)[]>([]);
 
   useEffect(() => {
     if (propIsOpen !== undefined) setIsOpen(propIsOpen);
@@ -441,51 +443,64 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
-  const handleInsertLinkClick = (index: number) => {
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`,
-    ) as HTMLTextAreaElement;
+  const handleInsertLinkClick = (
+    index: number,
+    _e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    // Antes: se buscaba un <textarea> en el DOM con querySelector.
+    // Ahora: el párrafo es un RichTextEditor (TipTap), así que le
+    // preguntamos directamente al editor cuál es su texto seleccionado.
+    const editorHandle = richTextEditorRefs.current[index];
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = textarea.value.substring(start, end);
+    if (!editorHandle) {
+      Swal.fire("Error", "No se encontró el campo de texto.", "error");
+      return;
+    }
+
+    const selected = editorHandle.getSelectedText();
 
     if (!selected) {
       Swal.fire(
         "Selecciona texto",
-        "Selecciona texto para enlazar.",
-        "warning",
+        "Por favor, resalta con el mouse el texto en el párrafo que deseas enlazar.",
+        "warning"
       );
       return;
     }
 
     setActiveIndex(index);
     setSelectedText(selected);
-    setIsModalOpen(true);
+    setIsModalOpen(true); // 👈 ¡Ahora sí se ejecutará!
   };
 
-  const handleProductLinkClick = (index: number) => {
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`,
-    ) as HTMLTextAreaElement;
+  const handleProductLinkClick = (
+    index: number,
+    _e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const editorHandle = richTextEditorRefs.current[index];
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = textarea.value.substring(start, end);
+    if (!editorHandle) {
+      Swal.fire("Error", "No se encontró el campo de texto.", "error");
+      return;
+    }
+
+    const selected = editorHandle.getSelectedText();
 
     if (!selected) {
       Swal.fire(
         "Selecciona texto",
-        "Selecciona texto para enlazar.",
-        "warning",
+        "Por favor, resalta con el mouse el texto que deseas enlazar.",
+        "warning"
       );
       return;
     }
 
     setActiveIndex(index);
     setSelectedText(selected);
-    setIsProductLinkModalOpen(true);
+    setIsProductLinkModalOpen(true); // 👈 Se ejecutará sin detenerse
   };
+
+  
 
   const handleAddProduct = () => {
     if (activeIndex === null) return;
@@ -504,27 +519,19 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       );
       return;
     }
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`,
-    ) as HTMLTextAreaElement;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
-    const before = parrafoActual.substring(0, start);
-    const after = parrafoActual.substring(end);
+    const editorHandle = richTextEditorRefs.current[activeIndex];
+    if (!editorHandle) {
+      Swal.fire("Error", "No se encontró el editor de párrafo.", "error");
+      return;
+    }
 
     const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
     const linkedProductText = `<a href="${productUrl}" style="font-weight: bold;" title="${productoSeleccionado.link}">${selectedText}</a>`;
-    const newValue = before + linkedProductText + after;
 
-    const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = {
-      ...nuevosParrafos[activeIndex],
-      parrafo: newValue,
-    };
+    // El editor reemplaza directamente el texto que seguía seleccionado
+    // (ya no dependemos de índices start/end de un textarea plano).
+    editorHandle.insertHTML(linkedProductText);
 
-    setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
     setIsProductLinkModalOpen(false);
     setSelectedText("");
     setActiveIndex(null);
@@ -540,27 +547,17 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       );
       return;
     }
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`,
-    ) as HTMLTextAreaElement;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-
-    const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
-    const before = parrafoActual.substring(0, start);
-    const after = parrafoActual.substring(end);
+    const editorHandle = richTextEditorRefs.current[activeIndex];
+    if (!editorHandle) {
+      Swal.fire("Error", "No se encontró el editor de párrafo.", "error");
+      return;
+    }
 
     const linkedText = `<a href="${link.trim()}" style="font-weight: bold;" title="${selectedText}">${selectedText}</a>`;
-    const newValue = before + linkedText + after;
 
-    const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = {
-      ...nuevosParrafos[activeIndex],
-      parrafo: newValue,
-    };
+    // Reemplaza directamente la selección que seguía activa en el editor.
+    editorHandle.insertHTML(linkedText);
 
-    setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
     setIsModalOpen(false);
     setLink("");
     setSelectedText("");
@@ -1787,14 +1784,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                             <div className="flex gap-2 flex-wrap justify-end">
                               <button
                                 type="button"
-                                onClick={() => handleInsertLinkClick(index)}
+                                onClick={(e) => handleInsertLinkClick(index, e)}
                                 className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium"
                               >
                                 Insertar Link
                               </button>
                               <button
                                 type="button"
-                                onClick={() => handleProductLinkClick(index)}
+                                onClick={(e) => handleInsertLinkClick(index, e)}
                                 className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium"
                               >
                                 Link Producto
@@ -1804,6 +1801,9 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           <div className="flex flex-col space-y-3">
 
                             <RichTextEditor
+                              ref={(el) => {
+                                richTextEditorRefs.current[index] = el;
+                              }}
                               value={imagen.parrafo}
                               onChange={(html) => {
                                 setFormData((prev) => {
@@ -2026,37 +2026,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
       )}
 
       {/* Modal para insertar enlace manual */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-          <div className="bg-white p-6 rounded-xl w-96">
-            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
-            <p className="text-sm text-gray-600 mb-2">
-              Enlace para: <strong>{selectedText}</strong>
-            </p>
-            <input
-              type="text"
-              placeholder="https://..."
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-gray-500"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleAddLink}
-                className="px-4 py-2 bg-teal-600 text-white rounded"
-              >
-                Insertar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <InsertLinkModal
+        isOpen={isModalOpen}
+        selectedText={selectedText}
+        link={link}
+        setLink={setLink}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleAddLink}
+      />
 
       {/*  MODAL  Para insertar enlace de producto */}
       {isProductLinkModalOpen && (
