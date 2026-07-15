@@ -10,6 +10,7 @@ import { slugify } from "../../../utils/slugify";
 import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor";
 import { isValidUrl, handleAddLink } from "../formutils.ts";
 import InsertLinkModal from "../blogs/InsertLinkModal.tsx";
+import { useLinkInsertion } from "../useLinkInsertion.ts";
 
 type Props = {
   onProductAdded?: () => void;
@@ -49,6 +50,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [linkInDescription, setLinkInDescription] = useState("");
+  const descCampoLink = useLinkInsertion();
+  const pqelCampoLink = useLinkInsertion();
 
   const handleInsertLinkClick = () => {
     const selected = editorRef.current?.getSelectedText();
@@ -507,7 +510,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
       });
 
       let imageIndex = 0;
-      formData.imagenes.forEach((imagen) => {
+      formData.imagenes.forEach((imagen, idx) => {
         if (imagen.url_imagen) {
           const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
           const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
@@ -516,8 +519,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
           formDataToSend.append(`titulos[${imageIndex}]`, titulo);
           imageIndex++;
         }
-        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
-        formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, img.ttl || `Imagen producto ${idx + 1}`)
+        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, imagen.alt);
+        formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, imagen.ttl || `Imagen producto ${idx + 1}`)
       });
 
       formData.relacionados.forEach((item, index) => {
@@ -776,14 +779,29 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
                     <div className="form-input flex flex-col gap-2">
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propuesta "¿Por qué elegirnos?":</label>
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        <button type="button" onClick={pqelCampoLink.handleInsertLinkClick}>Insertar Link</button>
+                      </div>
                       <div ref={el => { fieldRefs.current.porque_elegirnos = el; }}>
                         <RichTextEditor
                           value={formData.porque_elegirnos}
                           onChange={(html) => setFormData(prev => ({ ...prev, porque_elegirnos: html }))}
-                        />
+                          ref={pqelCampoLink.editorRef}
+                          />
                       </div>
                       {errors.porque_elegirnos && <p className="text-red-500 text-xs mt-1">⚠️ {errors.porque_elegirnos}</p>}
                     </div>
+                    <InsertLinkModal
+                      isOpen={pqelCampoLink.isModalOpen}
+                      selectedText={pqelCampoLink.selectedText}
+                      link={pqelCampoLink.link}
+                      setLink={pqelCampoLink.setLink}
+                      onClose={() => pqelCampoLink.setIsModalOpen(false)}
+                      onConfirm={() => handleAddLink(
+                        pqelCampoLink.link, pqelCampoLink.editorRef, pqelCampoLink.selectedText,
+                        pqelCampoLink.setIsModalOpen, pqelCampoLink.setLink, pqelCampoLink.setSelectedText
+                      )}
+                    />
                   </div>
                 )}
 

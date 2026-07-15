@@ -12,6 +12,7 @@ import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor";
 import type { ImagenForm, ImagenEditada } from "../../../models/Product";
 import {isValidUrl, handleAddLink} from "../formutils.ts";
 import InsertLinkModal from "../blogs/InsertLinkModal.tsx";
+import { useLinkInsertion } from "../useLinkInsertion.ts";
 
 interface EditProductProps {
   product: Product;
@@ -55,7 +56,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const editorRef = useRef<RichTextEditorHandle | null>(null);
-
+  const descCampoLink = useLinkInsertion();
+  const pqelCampoLink = useLinkInsertion();
   const handleInsertLinkClick = () => {
     const selected = editorRef.current?.getSelectedText();
     if (!selected) {
@@ -873,17 +875,31 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
                       {errors.descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.descripcion}</p>}
                     </div>
-
                     <div className="form-input flex flex-col gap-2">
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propuesta "¿Por qué elegirnos?":</label>
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        <button type="button" onClick={pqelCampoLink.handleInsertLinkClick}>Insertar Link</button>
+                      </div>      
                       <div ref={el => { fieldRefs.current.porque_elegirnos = el; }}>
                         <RichTextEditor
                           value={formData.porque_elegirnos}
                           onChange={(html) => setFormData(prev => ({ ...prev, porque_elegirnos: html }))}
+                          ref={pqelCampoLink.editorRef}
                         />
                       </div>
                       {errors.porque_elegirnos && <p className="text-red-500 text-xs mt-1">⚠️ {errors.porque_elegirnos}</p>}
                     </div>
+                        <InsertLinkModal
+                                    isOpen={pqelCampoLink.isModalOpen}
+                                    selectedText={pqelCampoLink.selectedText}
+                                    link={pqelCampoLink.link}
+                                    setLink={pqelCampoLink.setLink}
+                                    onClose={() => pqelCampoLink.setIsModalOpen(false)}
+                                    onConfirm={() => handleAddLink(
+                                    pqelCampoLink.link, pqelCampoLink.editorRef, pqelCampoLink.selectedText,
+                                    pqelCampoLink.setIsModalOpen, pqelCampoLink.setLink, pqelCampoLink.setSelectedText
+                                          )}
+                                        />
                   </div>
                 )}
 
