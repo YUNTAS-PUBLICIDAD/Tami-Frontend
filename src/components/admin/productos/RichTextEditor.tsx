@@ -1,3 +1,4 @@
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { useEditor, EditorContent, Extension } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -68,7 +69,6 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, Props>(
       }
     }, [value, editor]);
 
-    // 👇 Esto es lo que soluciona la ruptura: como ya no hay <textarea>,
     // exponemos aquí lo que el modal de "Insertar Link" necesita:
     // el texto seleccionado y una forma de insertar HTML en esa selección.
     useImperativeHandle(

@@ -45,6 +45,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
   const [formData, setFormData] = useState<ProductFormularioPOST>(defaultValuesProduct);
 
+  // Estado del modal "Insertar Enlace" para la descripción
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const descripcionEditorRef = useRef<RichTextEditorHandle>(null);
+
   const formContainerRef = useRef<HTMLDivElement>(null);
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -97,15 +103,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         id: img.id,
         url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
         texto_alt_SEO: img.texto_alt_SEO || "",
-        imageTitle: img.titulo || "",
         original_path: img.url_imagen
       })) || [];
       
       while (imagenesTransformadas.length < 5) {
         imagenesTransformadas.push({
           url_imagen: "",
-          texto_alt_SEO: "",
-          imageTitle: "",
+          texto_alt_SEO: ""
         });
       }
 
@@ -249,6 +253,31 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     }
   };
 
+  const handleInsertLinkClick = () => {
+    const selected = descripcionEditorRef.current?.getSelectedText() || "";
+
+    if (!selected.trim()) {
+      Swal.fire("Selecciona texto", "Selecciona texto para enlazar.", "warning");
+      return;
+    }
+
+    setSelectedText(selected);
+    setLinkUrl("");
+    setIsLinkModalOpen(true);
+  };
+
+  const handleAddLink = () => {
+    if (!linkUrl.trim()) {
+      Swal.fire("Falta el enlace", "Ingresa una URL válida.", "warning");
+      return;
+    }
+
+    descripcionEditorRef.current?.insertLink(linkUrl.trim());
+    setIsLinkModalOpen(false);
+    setLinkUrl("");
+    setSelectedText("");
+  };
+
   const handleImagesChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -302,7 +331,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
 
   const handleImagesTextoSEOChange = (
-
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
@@ -862,6 +890,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                       </div>                 
                       <div ref={el => { fieldRefs.current.descripcion = el; }}>
                         <RichTextEditor
+                          ref={descripcionEditorRef}
                           value={formData.descripcion}
                           onChange={(html) => setFormData(prev => ({ ...prev, descripcion: html }))}
                           ref={editorRef}
@@ -1171,7 +1200,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
                           
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo:</label>
                             <input
                               ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
                               type="text"
@@ -1220,7 +1249,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
                             <input
                               ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
                               type="text"
@@ -1446,6 +1475,40 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {isLinkModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Enlace para: <strong>{selectedText}</strong>
+            </p>
+            <input
+              type="text"
+              placeholder="https://..."
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsLinkModalOpen(false)}
+                className="px-4 py-2 text-gray-500"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleAddLink}
+                className="px-4 py-2 bg-teal-600 text-white rounded"
+              >
+                Insertar
+              </button>
+            </div>
           </div>
         </div>
       )}
