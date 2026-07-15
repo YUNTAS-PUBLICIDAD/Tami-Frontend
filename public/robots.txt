@@ -2,20 +2,7 @@ User-agent: *
 
 # Páginas públicas principales
 Allow: /
-Allow: /index
-Allow: /catalogo-maquinarias/
-Allow: /catalogo-maquinarias/*
-Allow: /productos/
-Allow: /productos/*
-Allow: /blog/
-Allow: /blog/*
-Allow: /nosotros
-Allow: /politicas-envio/
-Allow: /politicas-privacidad/
-Allow: /terminos-condiciones/
-Allow: /libro-reclamaciones/
-Allow: /contacto/
-Allow: /buscar/
+
 
 # Páginas y rutas bloqueadas
 Disallow: /admin/
@@ -23,10 +10,7 @@ Disallow: /auth/
 Disallow: /api/
 Disallow: /search
 
-# Bloquear parámetros de consulta
-Disallow: /*?link=
-Disallow: /*?id=
-Disallow: /*?*
 
 # Sitemap generado automáticamente por Astro
 Sitemap: https://tamimaquinarias.com/sitemap-index.xml
+
