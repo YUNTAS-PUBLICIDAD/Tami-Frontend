@@ -13,3 +13,4 @@ Disallow: /search
 
 # Sitemap generado automáticamente por Astro
 Sitemap: https://tamimaquinarias.com/sitemap-index.xml
+
