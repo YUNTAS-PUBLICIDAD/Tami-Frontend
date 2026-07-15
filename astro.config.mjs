@@ -9,7 +9,6 @@ import partytown from '@astrojs/partytown';
 
 export default defineConfig({
     site: 'https://tamimaquinarias.com/',
-    trailingSlash: 'always',
     vite: {
         // @ts-ignore
         plugins: [tailwindcss()], // Tu Tailwind v4 limpio

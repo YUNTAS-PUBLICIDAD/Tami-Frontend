@@ -5,20 +5,21 @@
   RewriteEngine On
   RewriteBase /
 
-  # 1. Si no es un archivo ni un directorio existente...
+  # 1. EXCLUSIÓN: Si hay parámetros (?link=...), NO redirigir.
+  RewriteCond %{QUERY_STRING} .
+  RewriteRule ^ - [L]
+
+  # 2. REDIRECCIÓN SEO: Si no hay parámetros y no termina en '/', añadir '/'
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  
-  # 2. Si la URL no termina en '/', añadir '/' y redirigir
   RewriteCond %{REQUEST_URI} !(\.html|\.js|\.css|\.png|\.jpg|\.webp|\.svg|\.woff2)$
-  RewriteCond %{REQUEST_URI} !/$
-  RewriteRule ^(.*)$ /$1/ [L,R=301]
+  RewriteCond %{REQUEST_URI} !(.*)/$
+  RewriteRule ^(.*)$ /$1/ [L,R=301,QSA]
 
-  # 3. Servir el index.html correspondiente
+  # 3. RUTA INTERNA: Servir el index.html correspondiente
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^(.*)/$ $1/index.html [L]
-  # Nota: Astro genera carpetas, si usas 'directory', usa solo ^(.*)/$ index.html [L]
 </IfModule>
 # Compresión GZIP para mejorar rendimiento en Hostinger
 <IfModule mod_deflate.c>
