@@ -216,8 +216,6 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     const handlePreviewUpdate = (e: any) => {
       const { settings: newSettings, mode } = e.detail;
-      console.log("📋 [usePopupLogic] Event received! mode:", mode);
-      console.log("📋 [usePopupLogic] mobile_image_url:", newSettings?.popup_mobile_image_url?.substring(0, 50));
       if (newSettings) {
         setSettings((prev) => ({ ...prev, ...newSettings }));
       }
@@ -227,7 +225,9 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
     };
 
     window.addEventListener("update-popup-preview", handlePreviewUpdate);
-    return () => window.removeEventListener("update-popup-preview", handlePreviewUpdate);
+    return () => {
+      window.removeEventListener("update-popup-preview", handlePreviewUpdate);
+    };
   }, [isPreview]);
 
   // Auto-time modal
