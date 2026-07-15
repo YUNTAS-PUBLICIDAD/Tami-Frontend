@@ -67,10 +67,13 @@ export const useProductEventListeners = ({
    * Memoized handler for Email updates
    */
   const handleEmailUpdate = useCallback((idx: number) => (e: any) => {
-    if (typeof e.detail === "string") {
-      onEmailUpdate(idx as 1|2|3, e.detail);
-    } else if (e?.detail && typeof e.detail === 'object' && typeof e.detail.body === 'string') {
-      onEmailUpdate(idx as 1|2|3, e.detail.body);
+    const rawDetail = e?.detail;
+    if (rawDetail && typeof rawDetail === 'object' && rawDetail.source === 'product') return;
+
+    if (typeof rawDetail === "string") {
+      onEmailUpdate(idx as 1|2|3, rawDetail);
+    } else if (rawDetail && typeof rawDetail === 'object' && typeof rawDetail.body === 'string') {
+      onEmailUpdate(idx as 1|2|3, rawDetail.body);
     }
   }, [onEmailUpdate]);
 
