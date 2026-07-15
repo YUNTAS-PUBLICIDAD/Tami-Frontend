@@ -285,7 +285,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
     });
   };
 
-
   const handleImagesTituloChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -610,10 +609,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
       });
 
-      imagenesExistentesData.forEach((img, idx) => {
-        formDataToSend.append(`imagenes_existentes[${idx}][url]`, img.url);
-        if (img.id) {
-          formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
+      let imageIndex = 0;
+      formData.imagenes.forEach((imagen) => {
+        if (imagen.url_imagen) {
+          const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
+          const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
+          formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
+          formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
+          formDataToSend.append(`titulos[${imageIndex}]`, titulo);
+          imageIndex++;
         }
         formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
         formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, img.ttl || `Imagen producto ${idx + 1}`)
@@ -1213,7 +1217,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                               </div>
                             )}
                           </div>
-
+                          
                           <div className="flex flex-col gap-1">
                             <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
                             <input

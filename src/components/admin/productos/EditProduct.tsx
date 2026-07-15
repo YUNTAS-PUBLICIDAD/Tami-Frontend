@@ -74,13 +74,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
         id: img.id,
         url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
         texto_alt_SEO: img.texto_alt_SEO || "",
+        imageTitle: img.titulo || "",
         original_path: img.url_imagen
       })) || [];
       
       while (imagenesTransformadas.length < 5) {
         imagenesTransformadas.push({
           url_imagen: "",
-          texto_alt_SEO: ""
+          texto_alt_SEO: "",
+          imageTitle: "",
         });
       }
 
@@ -302,6 +304,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
 
   const handleImagesTextoSEOChange = (
+
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
@@ -1166,7 +1169,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
                           
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
                               type="text"
@@ -1215,7 +1218,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
                               type="text"

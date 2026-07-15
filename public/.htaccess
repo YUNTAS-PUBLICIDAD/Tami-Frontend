@@ -1,16 +1,25 @@
-# Habilitar rewrite para Astro
+# ============================================
+# REWRITE PARA ASTRO CON TRAILING SLASH
+# ============================================
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  
-  # No redirigir si el archivo existe
+
+  # 1. Si no es un archivo ni un directorio existente...
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   
-  # Manejar rutas de Astro
-  RewriteRule ^(.*)$ /index.html [L]
-</IfModule>
+  # 2. Si la URL no termina en '/', añadir '/' y redirigir
+  RewriteCond %{REQUEST_URI} !(\.html|\.js|\.css|\.png|\.jpg|\.webp|\.svg|\.woff2)$
+  RewriteCond %{REQUEST_URI} !/$
+  RewriteRule ^(.*)$ /$1/ [L,R=301]
 
+  # 3. Servir el index.html correspondiente
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)/$ $1/index.html [L]
+  # Nota: Astro genera carpetas, si usas 'directory', usa solo ^(.*)/$ index.html [L]
+</IfModule>
 # Compresión GZIP para mejorar rendimiento en Hostinger
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
