@@ -2,4 +2,9 @@ User-agent: *
 
 Allow: /
 
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /search
+
 Sitemap: https://tamimaquinarias.com/sitemap-index.xml
