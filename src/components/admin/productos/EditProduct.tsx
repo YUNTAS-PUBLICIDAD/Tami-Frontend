@@ -11,6 +11,16 @@ import { slugify } from "../../../utils/slugify";
 import RichTextEditor from "./RichTextEditor";
 import type { ImagenForm, ImagenEditada } from "../../../models/Product";
 
+// Función de validación de URL
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 interface EditProductProps {
   product: Product;
   onProductUpdated: () => Promise<void> | void;
@@ -45,6 +55,34 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 
   const formContainerRef = useRef<HTMLDivElement>(null);
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [link, setLink] = useState("");
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+
+  const handleAddLink = () => {
+    if (!link.trim() || !isValidUrl(link.trim())) {
+      Swal.fire("Enlace inválido", "Ingresa una URL válida (https://...).", "error");
+      return;
+    }
+    const linkedText = `<a href="${link.trim()}" style="font-weight: bold;" title="${selectedText}">${selectedText}</a>`;
+    // Nota: La inserción directa en el editor requiere acceso al editor de TipTap
+    // Por ahora, el usuario puede copiar y pegar el enlace manualmente
+    navigator.clipboard.writeText(linkedText).then(() => {
+      Swal.fire({
+        icon: "success",
+        title: "Enlace copiado",
+        text: "El enlace HTML se copió al portapapeles. Pégalo en el editor.",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    });
+    setIsModalOpen(false);
+    setLink("");
+    setSelectedText("");
+  };
 
   const getFullImageUrl = (url: string) => {
     if (!url) return "";
@@ -312,6 +350,53 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
       especificaciones: prev.especificaciones.filter((_, i) => i !== index)
     }));
   };
+
+    const handleInsertLinkClick = (index: number) => {
+      const textarea = document.getElementById(
+        `crear_descripcion_antes_${index}`,
+      ) as HTMLTextAreaElement;
+  
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selected = textarea.value.substring(start, end);
+  
+      if (!selected) {
+        Swal.fire(
+          "Selecciona texto",
+          "Selecciona texto para enlazar.",
+          "warning",
+        );
+        return;
+      }
+  
+      setActiveIndex(index);
+      setSelectedText(selected);
+      setIsModalOpen(true);
+    };
+  
+    const handleProductLinkClick = (index: number) => {
+      const textarea = document.getElementById(
+        `crear_descripcion_antes_${index}`,
+      ) as HTMLTextAreaElement;
+  
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selected = textarea.value.substring(start, end);
+  
+      if (!selected) {
+        Swal.fire(
+          "Selecciona texto",
+          "Selecciona texto para enlazar.",
+          "warning",
+        );
+        return;
+      }
+  
+      setActiveIndex(index);
+      setSelectedText(selected);
+      setIsProductLinkModalOpen(true);
+    };
+  
 
   const handleEspecificacionChange = (index: number, value: string) => {
     setFormData(prev => {
@@ -828,12 +913,16 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
                     
                     <div className="form-input flex flex-col gap-2">
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        <button type="button" onClick={() => handleInsertLinkClick(0)}>Insertar Link</button>
+                      </div>                 
                       <div ref={el => { fieldRefs.current.descripcion = el; }}>
                         <RichTextEditor
                           value={formData.descripcion}
                           onChange={(html) => setFormData(prev => ({ ...prev, descripcion: html }))}
                         />
                       </div>
+
                       {errors.descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.descripcion}</p>}
                     </div>
 
@@ -1411,3 +1500,4 @@ const EditProduct: React.FC<EditProductProps> = ({ product, onProductUpdated }) 
 };
 
 export default EditProduct;
+
