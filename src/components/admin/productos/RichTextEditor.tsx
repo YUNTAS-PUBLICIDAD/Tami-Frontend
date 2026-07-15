@@ -3,7 +3,6 @@ import { useEditor, EditorContent, Extension } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
-import { useEffect, forwardRef, useImperativeHandle } from "react";
 
 interface Props {
   value: string;
