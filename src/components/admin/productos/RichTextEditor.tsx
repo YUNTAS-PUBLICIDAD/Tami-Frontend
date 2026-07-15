@@ -3,7 +3,7 @@ import { useEditor, EditorContent, Extension } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
-
+import Link from "@tiptap/extension-link";
 interface Props {
   value: string;
   onChange: (value: string) => void;
@@ -55,6 +55,7 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, Props>(
           types: ["heading", "paragraph"],
         }),
         LineHeight,
+        Link,
       ],
       content: value || "",
       onUpdate: ({ editor }) => {
@@ -81,22 +82,21 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, Props>(
           return editor.state.doc.textBetween(from, to, " ");
         },
         insertLink: (url: string) => {
-          if (!editor) return;
-          const { from, to } = editor.state.selection;
-          if (from === to) return;
+        if (!editor) return;
 
-          const selectedText = editor.state.doc.textBetween(from, to, " ");
-          const literalTag = `<a href="${url}">${selectedText}</a>`;
+        const { from, to } = editor.state.selection;
 
-          // Insertamos como nodo de texto explícito (no como HTML a parsear),
-          // para que las etiquetas queden visibles como texto literal y
-          // el usuario pueda borrarlas o editarlas como cualquier otro texto.
-          editor
-            .chain()
-            .focus()
-            .insertContentAt({ from, to }, { type: "text", text: literalTag })
-            .run();
-        },
+        if (from === to) return;
+
+        editor
+          .chain()
+          .focus()
+          .extendMarkRange("link")
+          .setLink({
+            href: url,
+          })
+          .run();
+      },
       }),
       [editor]
     );
