@@ -3,6 +3,9 @@
 # ============================================
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  # Forzar versión con WWW
+  RewriteCond %{HTTP_HOST} ^tamimaquinarias\.com [NC]
+  RewriteRule ^(.*)$ https://www.tamimaquinarias.com/$1 [L,R=301]
   RewriteBase /
 
   # 1. EXCLUSIÓN: Si hay parámetros (?link=...), NO redirigir.
