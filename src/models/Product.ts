@@ -73,6 +73,7 @@ export interface ProductFormularioPOST {
 
 // Usado en la base de datos o en el GET
 export interface ImagenBack {
+  titulo: string;
   id: number;
   url_imagen: string;
   texto_alt_SEO: string;
