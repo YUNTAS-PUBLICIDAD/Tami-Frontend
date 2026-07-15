@@ -78,7 +78,6 @@ jobs:
               --timeout=300 \
               --exclude='.git/' \
               --exclude='back/' \
-              --exclude='.htaccess' \
               --exclude='*.log' \
               --exclude='node_modules/' \
               -e "ssh -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o ServerAliveInterval=30 -o ServerAliveCountMax=3" \

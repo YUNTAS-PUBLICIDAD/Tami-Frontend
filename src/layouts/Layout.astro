@@ -22,6 +22,8 @@ const {
   keywords,
   forceSolidNav = false,
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname + (Astro.url.pathname.endsWith('/') ? '' : '/') + Astro.url.search, Astro.site).toString();
 ---
 
 <!doctype html>
@@ -61,8 +63,7 @@ const {
     <link rel="preconnect" href="https://apitami.tamimaquinarias.com" />
 
     <GoogleAnalytics />
-
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
     <meta name="author" content="Tamimaquinarias" />
     <meta name="robots" content="index, follow" />
