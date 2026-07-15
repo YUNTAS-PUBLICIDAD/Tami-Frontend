@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
+import { defaultValuesProduct, type ImagenEditada, type ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
 import { config } from "../../../../config.ts";
@@ -48,7 +48,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
   const editorRef = useRef<RichTextEditorHandle | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedText, setSelectedText] = useState("");
-  const [link, setLink] = useState("");
+  const [linkInDescription, setLinkInDescription] = useState("");
 
   const handleInsertLinkClick = () => {
     const selected = editorRef.current?.getSelectedText();
@@ -443,8 +443,68 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
 
-      const link = formData.link.trim() || slugify(formData.nombre);
-      formDataToSend.append("link", link);
+      // MANEJO DE IMÁGENES DE GALERÍA (Exactamente la lógica original de edición)
+      const imagenesNuevas: File[] = [];
+      const imagenesNuevasAlt: string[] = [];
+      const imagenesNuevasTitulo: string[] = [];
+      const imagenesEditadas: ImagenEditada[] = [];
+      const imagenesExistentesData: Array<{ url: string; id?: number; alt: string; ttl?:string }> = [];
+
+      formData.imagenes.forEach((imagen, index) => {
+        if (!imagen.url_imagen) return;
+        const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
+        const titulo = imagen.imageTitle?.trim() || `Imagen producto ${index + 1}`;
+
+        if (imagen.url_imagen instanceof File) {
+          if (imagen.id) {
+            imagenesEditadas.push({
+              id: imagen.id,
+              file: imagen.url_imagen,
+              alt: altText,
+              ttl: titulo
+            });
+          } else {
+            imagenesNuevas.push(imagen.url_imagen);
+            imagenesNuevasAlt.push(altText);
+            imagenesNuevasTitulo.push(titulo);
+          }
+        } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
+          let urlLimpia = "";
+          if (imagen.original_path) {
+            urlLimpia = imagen.original_path;
+          } else {
+            try {
+              const urlObj = new URL(imagen.url_imagen, window.location.origin);
+              urlLimpia = urlObj.pathname;
+            } catch (error) {
+              urlLimpia = imagen.url_imagen.split('?')[0].replace(config.apiUrl, '');
+            }
+          }
+          urlLimpia = decodeURIComponent(urlLimpia.split('?')[0]);
+          
+          imagenesExistentesData.push({
+            url: urlLimpia,
+            id: imagen.id,
+            alt: altText,
+            ttl: titulo
+          });
+        }
+      });
+
+      // Añadir al FormData
+      imagenesNuevas.forEach((file, idx) => {
+        formDataToSend.append('imagenes_nuevas[]', file);
+        formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
+        formDataToSend.append(`imagenes_nuevas_titulo[]`, imagenesNuevasTitulo[idx])
+      });
+
+      imagenesEditadas.forEach((img, idx) => {
+        formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
+        formDataToSend.append(`imagenes_editadas[${idx}][file]`, img.file);
+        formDataToSend.append(`imagenes_editadas[${idx}][alt]`, img.alt);
+        formDataToSend.append(`imagenes_editadas[${idx}][ttl]`, img.ttl);
+
+      });
 
       let imageIndex = 0;
       formData.imagenes.forEach((imagen) => {
@@ -456,6 +516,8 @@ const AddProduct = ({ onProductAdded }: Props) => {
           formDataToSend.append(`titulos[${imageIndex}]`, titulo);
           imageIndex++;
         }
+        formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
+        formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, img.ttl || `Imagen producto ${idx + 1}`)
       });
 
       formData.relacionados.forEach((item, index) => {
@@ -703,12 +765,12 @@ const AddProduct = ({ onProductAdded }: Props) => {
                       <InsertLinkModal
                         isOpen={isModalOpen}
                         selectedText={selectedText}
-                        link={link}
-                        setLink={setLink}
+                        link={linkInDescription}
+                        setLink={setLinkInDescription}
                         onClose={() => setIsModalOpen(false)}
                         onConfirm={()=> {handleAddLink(
-                          link, editorRef, selectedText,
-                                                  setIsModalOpen, setLink, setSelectedText
+                          linkInDescription, editorRef, selectedText,
+                                                  setIsModalOpen, setLinkInDescription, setSelectedText
                         )}}
                       />
 

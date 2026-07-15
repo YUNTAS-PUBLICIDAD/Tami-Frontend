@@ -1,20 +1,16 @@
 User-agent: *
 
-Allow: /productos/
-Allow: /productos/*
-Allow: /blog/
-Allow: /blog/*
-Allow: /sobre-nosotros
-Allow: /politicas-de-envio/
+# Páginas públicas principales
 Allow: /
 
+
+# Páginas y rutas bloqueadas
 Disallow: /admin/
 Disallow: /auth/
 Disallow: /api/
 Disallow: /search
 
-Disallow: /*?link=
-Disallow: /*?id=
-Disallow: /*?*
 
+# Sitemap generado automáticamente por Astro
 Sitemap: https://tamimaquinarias.com/sitemap-index.xml
+
