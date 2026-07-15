@@ -1,13 +1,22 @@
 ---
 import Layout from "src/layouts/Layout.astro";
 import ProductPage from "src/components/products/ProductPage";
+
+// 1. Capturamos el link que viene en la URL
+const link = Astro.url.searchParams.get('link');
+
+// 2. Construimos la URL CANÓNICA real para este producto.
+// Si no hay 'link', usamos una URL por defecto.
+const canonicalUrl = link 
+  ? `https://tamimaquinarias.com/catalogo-maquinarias/${link}/` 
+  : "https://tamimaquinarias.com/catalogo-maquinarias/";
 ---
 
 <Layout
   title="Detalle de Producto - Tami Maquinarias"
   description="Cargando detalles de producto..."
   keywords=""
-  canonicalUrl="https://tamimaquinarias.com/catalogo-maquinarias"
+  canonicalUrl={canonicalUrl}
 >
   <ProductPage client:load />
 </Layout>
