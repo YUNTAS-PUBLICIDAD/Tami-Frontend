@@ -123,41 +123,15 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
         fetchProductData();
     }, [initialProducto?.link, initialProducto?.id]);
-
+    
     useEffect(() => {
         if (producto) {
             setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
             insertJsonLd("product", producto);
             window.__detalleProducto = producto;
 
-            // Actualizar SEO dinámico en el cliente
+            // Solo mantén esto, que no afecta el SEO negativo
             document.title = producto.etiqueta?.meta_titulo || producto.titulo;
-            let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-            if (!metaDescription) {
-                const meta = document.createElement("meta");
-                meta.name = "description";
-                document.head.appendChild(meta);
-                metaDescription = meta;
-            }
-            metaDescription.setAttribute("content", producto.etiqueta?.meta_descripcion || producto.descripcion || "Descripción por defecto");
-
-            let metaKeywords = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null;
-            if (!metaKeywords) {
-                const meta = document.createElement("meta");
-                meta.name = "keywords";
-                document.head.appendChild(meta);
-                metaKeywords = meta;
-            }
-            metaKeywords.setAttribute("content", producto.etiqueta?.keywords || "");
-
-            let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-            if (!canonicalLink) {
-                const link = document.createElement("link");
-                link.rel = "canonical";
-                document.head.appendChild(link);
-                canonicalLink = link;
-            }
-            canonicalLink.setAttribute("href", window.location.href);
         }
     }, [producto]);
 
