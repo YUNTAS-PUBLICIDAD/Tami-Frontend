@@ -22,6 +22,9 @@ const {
   keywords,
   forceSolidNav = false,
 } = Astro.props;
+
+const finalCanonical = canonicalUrl || `${Astro.url.origin}${Astro.url.pathname}`;
+
 ---
 
 <!doctype html>
@@ -62,7 +65,7 @@ const {
 
     <GoogleAnalytics />
 
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={finalCanonical} />
     <meta name="generator" content={Astro.generator} />
     <meta name="author" content="Tamimaquinarias" />
     <meta name="robots" content="index, follow" />
