@@ -133,8 +133,8 @@ export const EmailSection: React.FC<EmailSectionProps> = ({
                         </h4>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <div className="flex flex-col justify-between h-[100]">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mt-2">
                                     Texto del Botón:
                                 </label>
                                 <input
