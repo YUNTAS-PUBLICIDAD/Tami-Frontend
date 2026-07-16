@@ -19,12 +19,16 @@ const productosUrl = config.endpoints.productos;
 export async function getStaticPaths() {
   const response = await ProductoService.getAllProductos();
 
-  return response.map((producto: Producto) => ({
-    params: { link: producto.link },
-    props: { producto },
-  }));
+  return response
+    .filter((producto) => producto.link && typeof producto.link === "string") // 1. Filtra vacíos
+    .map((producto: Producto) => ({
+      // 2. Limpia el link: extrae solo el último segmento si viene una URL completa
+      params: {
+        link: producto.link.split("/").pop() || producto.link,
+      },
+      props: { producto },
+    }));
 }
-
 // Props que recibirá el componente
 const { link } = Astro.params;
 const { producto } = Astro.props as { producto: Producto };
@@ -39,11 +43,11 @@ if (!producto) {
   keywords={producto.etiqueta?.keywords || ""}
   canonicalUrl={`${Astro.site}catalogo-maquinarias/${producto.link}`}
 >
-  <ProductPage 
-  producto={producto} client:idle 
-  />
+  <ProductPage producto={producto} client:idle />
 
-  {/* Los modales antiguos han sido desactivados en favor del nuevo ScrollModal unificado */}
+  {
+    /* Los modales antiguos han sido desactivados en favor del nuevo ScrollModal unificado */
+  }
   {/* <ModalDetalles link={producto.link} seccion={producto.seccion} /> */}
   {/* <ModalDetalles2 link={producto.link} seccion={producto.seccion} /> */}
   {/* <ModalDetalles3 link={producto.link} seccion={producto.seccion} /> */}
