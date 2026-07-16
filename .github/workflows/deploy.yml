@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+     - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -35,7 +35,6 @@ jobs:
         env:
           PUBLIC_API_URL: ${{ github.ref == 'refs/heads/pre-main' && secrets.PUBLIC_API_URL_STAGING || secrets.PUBLIC_API_URL }}
           PUBLIC_WHATSAPP_SOCKET_URL: ${{ secrets.PUBLIC_WHATSAPP_SOCKET_URL }}
-
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
