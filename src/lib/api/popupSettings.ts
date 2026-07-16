@@ -12,8 +12,8 @@ export interface PopupSettings {
   popup_mobile_image2_url?: string;
   popup_mobile_image_count?: number;
   button_text?: string;
-  popup_start_delay_minutes: number;
-  product_popup_delay_minutes: number;
+  popup_start_delay_seconds: number;
+  product_popup_delay_seconds: number;
   email_btn_text?: string;
   email_btn_link?: string;
   email_btn_bg_color?: string;
@@ -37,7 +37,7 @@ export interface PopupSettingsResponse {
 
 export type UpdatePopupSettingsPayload = Pick<
   PopupSettings,
-  "button_bg_color" | "button_text_color" | "popup_start_delay_minutes" | "product_popup_delay_minutes"
+  "button_bg_color" | "button_text_color" | "popup_start_delay_seconds" | "product_popup_delay_seconds"
 >;
 
 export const isHexColor = (value: string): boolean =>
@@ -65,8 +65,8 @@ export async function updatePopupSettings(
     {
       button_bg_color: payload.button_bg_color,
       button_text_color: payload.button_text_color,
-      popup_start_delay_minutes: payload.popup_start_delay_minutes,
-      product_popup_delay_minutes: payload.product_popup_delay_minutes,
+      popup_start_delay_seconds: payload.popup_start_delay_seconds,
+      product_popup_delay_seconds: payload.product_popup_delay_seconds,
     },
   );
 
