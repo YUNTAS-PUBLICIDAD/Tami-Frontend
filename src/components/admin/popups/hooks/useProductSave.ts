@@ -50,6 +50,13 @@ export const useProductSave = (): UseProductSaveReturn => {
           selectedProductId
         );
 
+        // Debug: log FormData entries for troubleshooting
+        console.group("🔍 [useProductSave] FormData being sent:");
+        for (const [key, value] of formDataToSend.entries()) {
+          console.log(`  ${key}:`, value instanceof File ? `[File: ${value.name}]` : value);
+        }
+        console.groupEnd();
+
         const response = await apiClient.post(
           config.endpoints.productos.update(selectedProductId),
           formDataToSend
