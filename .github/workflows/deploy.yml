@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 30  # ✅ Timeout general del job
 
     steps:
       - name: Checkout code
@@ -20,7 +20,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
+          cache: 'npm'
+      
       - name: Clean Install
         run: |
           rm -rf node_modules
@@ -29,7 +30,7 @@ jobs:
           npm install
 
       - name: Build project
-        run: |
+        run: | 
           rm -rf dist
           npm run build
         env:
@@ -42,6 +43,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
 
+      # ✅ NUEVO: Verificar conectividad SSH antes de deploy
       - name: Test SSH Connection
         run: |
           for i in {1..3}; do
@@ -59,6 +61,7 @@ jobs:
           echo "❌ No se pudo establecer conexión SSH después de 3 intentos"
           exit 1
 
+      # ✅ NUEVO: Determinar la ruta de destino según la rama
       - name: Set Target Path
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/pre-main" ]]; then
@@ -67,14 +70,16 @@ jobs:
             echo "DEST_PATH=~/domains/tamimaquinarias.com/public_html/" >> $GITHUB_ENV
           fi
 
+      # ✅ MEJORADO: Deploy dinámico según la rama
       - name: Deploy with Rsync
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v3   # modificacion del nombre y version para que funcione el deploy , de cambio a V3 por que pronto github dejara obsoleto la version v2 pq era la que manejaba node 16
         with:
           timeout_minutes: 10
           max_attempts: 3
           retry_wait_seconds: 30
           command: |
             echo "🚀 Desplegando a: ${{ env.DEST_PATH }}"
+
             rsync -avz --delete \
               --timeout=300 \
               --exclude='.git/' \
@@ -87,6 +92,7 @@ jobs:
 
       - name: Verify deployment
         run: |
+
           ssh -p ${{ secrets.SERVER_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
@@ -95,6 +101,7 @@ jobs:
       - name: Notify completion
         run: echo "🚀 Deploy Astro completado con éxito"
 
+      # ✅ NUEVO: Notificar si falla
       - name: Notify failure
         if: failure()
         run: |
