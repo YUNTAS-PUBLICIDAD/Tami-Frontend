@@ -79,24 +79,25 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, Props>(
         getSelectedText: () => {
           if (!editor) return "";
           const { from, to } = editor.state.selection;
+          if (from === to) return "";
           return editor.state.doc.textBetween(from, to, " ");
         },
         insertLink: (url: string) => {
-        if (!editor) return;
+          if (!editor) return;
 
-        const { from, to } = editor.state.selection;
+          const { from, to } = editor.state.selection;
 
-        if (from === to) return;
+          if (from === to) return;
 
-        editor
-          .chain()
-          .focus()
-          .extendMarkRange("link")
-          .setLink({
-            href: url,
-          })
-          .run();
-      },
+          editor
+            .chain()
+            .focus()
+            .extendMarkRange("link")
+            .setLink({
+              href: url,
+            })
+            .run();
+        },
       }),
       [editor]
     );
