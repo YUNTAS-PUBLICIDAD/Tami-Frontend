@@ -63,10 +63,6 @@ export class ProductSyncService {
 
     // Detect if mobile images exist to auto-switch preview mode
     const hasMobileImages = !!previewSettings.popup_mobile_image_url || !!previewSettings.popup_mobile_image2_url;
-    
-    console.log("🔍 [syncPopupPreview] mobileUrl:", previewSettings.popup_mobile_image_url?.substring(0, 50));
-    console.log("🔍 [syncPopupPreview] hasMobileImages:", hasMobileImages);
-    console.log("🔍 [syncPopupPreview] mode:", hasMobileImages ? "mobile" : "desktop");
 
     window.dispatchEvent(
       new CustomEvent("update-popup-preview", {
