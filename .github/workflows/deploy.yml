@@ -20,7 +20,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
+          cache: 'npm'
+      
       - name: Clean Install
         run: |
           rm -rf node_modules
@@ -29,7 +30,7 @@ jobs:
           npm install
 
       - name: Build project
-        run: |
+        run: | 
           rm -rf dist
           npm run build
         env:
