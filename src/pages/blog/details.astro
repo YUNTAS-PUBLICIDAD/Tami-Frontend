@@ -80,11 +80,11 @@ const productsUrl = config.endpoints.productos.list;
            mb-3 text-center break-words"
           >
           </h2>
-          <p
+          <h2
             id="blog-content-subtitle2"
             class="px-2 md:px-8 text-base md:text-xl font-semibold text-black text-center md:text-left break-words"
           >
-          </p>
+          </h2>
         </div>
 
         <!-- Fecha -->
@@ -282,11 +282,14 @@ const productsUrl = config.endpoints.productos.list;
           const blogSectionsElement = document.getElementById("blog-sections");
           const blogVideoSectionElement =
             document.getElementById("blog-video-section");
-          const blogVideoContainerElement =
-            document.getElementById("blog-video-container");
+          const blogVideoContainerElement = document.getElementById(
+            "blog-video-container",
+          );
           const titulo = blog.titulo.toUpperCase();
           if (blogImgElement) {
-          blogImgElement.src = getBlogImageUrl(blog.hero_image || blog.miniatura || "/images/fallback.webp");
+            blogImgElement.src = getBlogImageUrl(
+              blog.hero_image || blog.miniatura || "/images/fallback.webp",
+            );
           }
 
           if (blogTitleElement) blogTitleElement.innerHTML = titulo;
@@ -299,7 +302,7 @@ const productsUrl = config.endpoints.productos.list;
           if (blogContentSubtitle2Element)
             blogContentSubtitle2Element.innerHTML = blog.subtitulo2;
           if (blogImgElement) {
-          blogImgElement.alt = blog.titulo;
+            blogImgElement.alt = blog.titulo;
           }
 
           if (blogDateElement) {
@@ -440,7 +443,7 @@ const productsUrl = config.endpoints.productos.list;
 
               blogVideoSectionElement.innerHTML = `
             <section class="rounded-lg md:rounded-xl shadow-md py-4 md:py-4 px-4 md:px-20 bg-gray-50">
-                <h1 class="text-lg md:text-xl lg:text-2xl text-sky-400 font-bold mb-4 md:mb-6 text-center md:text-left break-words">${blog.video_titulo}</h1>
+                <h2 class="text-lg md:text-xl lg:text-2xl text-sky-400 font-bold mb-4 md:mb-6 text-center md:text-left break-words">${blog.video_titulo}</h2>
                 <div class="relative w-full h-48 md:h-64 lg:h-[30rem] rounded-lg overflow-hidden">
                     <iframe
                         width="100%"
@@ -467,11 +470,19 @@ const productsUrl = config.endpoints.productos.list;
           if (blogHeader) {
             blogHeader.style.display = "none";
           }
-          
+
           const blogContent = document.getElementById("blog-content");
           if (blogContent) {
-            blogContent.classList.add("mt-24", "md:mt-32", "min-h-[50vh]", "flex", "flex-col", "items-center", "justify-center");
-            
+            blogContent.classList.add(
+              "mt-24",
+              "md:mt-32",
+              "min-h-[50vh]",
+              "flex",
+              "flex-col",
+              "items-center",
+              "justify-center",
+            );
+
             blogContent.innerHTML = `
             <div class="text-center p-8 md:py-10">
               <h2 class="text-3xl font-bold text-red-600 mb-4">Error al cargar el blog</h2>

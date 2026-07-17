@@ -67,9 +67,9 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
           transition-colors duration-500 group-hover:from-cyan-50 group-hover:via-cyan-50/95
         "
       >
-        <h3 className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover:text-[#005f86]">
+        <p className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover:text-[#005f86]">
           {product.nombre}
-        </h3>
+        </p>
         <span
           className="
             flex-shrink-0 bg-gray-100 text-[#003e56] 
