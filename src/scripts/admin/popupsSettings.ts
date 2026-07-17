@@ -35,12 +35,9 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 }
 
                 const popupInicioDelayValue = String(getSettingValue(settings, ["popup_start_delay_minutes", "popupInicioDelay"], 0));
-                const popupProductosDelayValue = String(getSettingValue(settings, ["product_popup_delay_minutes", "popupProductosDelay"], 0));
 
                 const popupInicioDelayInput = document.getElementById("popupInicioDelay") as HTMLSelectElement | null;
-                const popupProductosDelayInput = document.getElementById("popupProductosDelay") as HTMLSelectElement | null;
                 if (popupInicioDelayInput) popupInicioDelayInput.value = popupInicioDelayValue;
-                if (popupProductosDelayInput) popupProductosDelayInput.value = popupProductosDelayValue;
 
                 const whatsappMessageInput = document.getElementById("whatsappMessage") as HTMLInputElement | null;
                 const whatsappMessageInput2 = document.getElementById("whatsappMessage2") as HTMLInputElement | null;
@@ -142,7 +139,6 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                     button_text_color: settings.button_text_color,
                     button_text: settings.button_text || "CONOCER MAS",
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
-                    product_popup_delay_minutes: settings.product_popup_delay_minutes,
                     popup_mobile_image_count: 2,
                 }, hasMobileImages ? "mobile" : null);
             }
@@ -178,16 +174,10 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement | null;
             const btnTextInput = document.getElementById("btnText") as HTMLInputElement | null;
             const popupInicioDelayInput = document.getElementById("popupInicioDelay") as HTMLSelectElement | null;
-            const popupProductosDelayInput = document.getElementById("popupProductosDelay") as HTMLSelectElement | null;
 
             const bgColor = btnBgColorInput?.value || "#14b8a6";
             const textColor = btnTextColorInput?.value || "#ffffff";
             const delay = parseInt(popupInicioDelayInput?.value || "60");
-
-            let productDelayValue = "60";
-            if (isProductoTab && popupProductosDelayInput) {
-                productDelayValue = popupProductosDelayInput.value;
-            }
 
             if (!isHexColor(bgColor) || !isHexColor(textColor)) {
                 throw new Error("Colores no válidos.");
@@ -203,7 +193,6 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             formData.append("popup_mobile_image_count", "2");
 
             if (isProductoTab) {
-                formData.append("product_popup_delay_minutes", productDelayValue);
                 window.dispatchEvent(new CustomEvent("request-save-product-popup"));
                 return; // Stop execution here, the React component handles the rest of the save process
             }

@@ -139,15 +139,15 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
         };
   
         if (isProductDetail) {
-          finalSettings.popup_start_delay_minutes =
-            globalData.product_popup_delay_minutes || globalData.popupProductosDelay || 60;
-  
           if (prodRes && prodRes.ok) {
             try {
               const prodJson = await prodRes.json();
               const product = prodJson.data || prodJson;
               setProductId(product.id || null);
-  
+
+              finalSettings.popup_start_delay_minutes =
+                product.etiqueta?.product_popup_delay_seconds ?? 30;
+
               const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
               const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
                 const tipo = (img.tipo || "").toLowerCase();

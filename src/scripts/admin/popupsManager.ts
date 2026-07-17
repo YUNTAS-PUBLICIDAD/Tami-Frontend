@@ -531,9 +531,6 @@ export function initPopupManager() {
     const popupInicioDelayInput = document.getElementById(
         "popupInicioDelay",
     ) as HTMLSelectElement;
-    const popupProductosDelayInput = document.getElementById(
-        "popupProductosDelay",
-    ) as HTMLSelectElement;
     const emailSendDelayInput = document.getElementById(
         "emailSendDelay",
     ) as HTMLSelectElement;
@@ -591,13 +588,6 @@ export function initPopupManager() {
         const val = popupInicioDelayInput.value;
         updatePreview({
             popup_start_delay_minutes: parseInt(val),
-        });
-    });
-
-    popupProductosDelayInput?.addEventListener("change", () => {
-        const val = popupProductosDelayInput.value;
-        updatePreview({
-            product_popup_delay_minutes: parseInt(val),
         });
     });
 
