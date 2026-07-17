@@ -380,7 +380,7 @@ const productsUrl = config.endpoints.productos.list;
             blog.imagenes.forEach((imagen, index) => {
               const section = document.createElement("section");
               section.className = "mb-8 md:mb-12";
-              //cambios
+              //fix centrar texto
               section.innerHTML = `
               <!-- Texto primero en mobile, layout lateral en desktop -->
             <div class="flex flex-col min-[930px]:flex-row ${index % 2 === 1 ? "min-[930px]:flex-row-reverse" : ""} gap-6 min-[930px]:gap-12 items-start">
