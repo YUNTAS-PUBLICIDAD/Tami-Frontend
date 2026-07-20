@@ -164,11 +164,13 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         return 'bg-[#00b6ff]';
     };
 
-    const getFullImageUrl = (url: string) => {
+    const getFullImageUrl = (url:string) => {
         if (!url || url === '/placeholder.png') return '/placeholder.png';
-        if (url.startsWith('http')) return url;
-        return `${config.apiUrl}${url}`;
-    };
+        if (url.startsWith("http")) return url;
+        const base = config.apiUrl.replace(/\/$/, "");   // quita "/" final si existe
+        const path = url.startsWith("/") ? url : `/${url}`;
+        return `${base}${path}`;
+      };
 
     const handleWhatsAppClick = () => {
         const phoneNumber = "51978883199";
