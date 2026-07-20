@@ -1,50 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
-import type { ApiProduct } from "./chatbotLogic";
+import type { Opcion, Message, ChatContext } from "./types";
 import { getLocalReply, GREETING_REPLY, fetchIaReply } from "./chatbotLogic";
 import ChatbotIcon from "./ChatbotIcon";
+import ChatbotScreen from "./ChatbotScreen";
+import type { ChatbotScreenProps } from "./ChatbotScreen";
 import { apiClient } from 'src/services/apiClient';
 import { config } from 'config';
-interface Opcion {
-  label: string;
-  valor: string;
-}
-
-interface ChatContext {
-  paso: string;
-  categoria?: string;
-  flujo?: string;
-  producto?: string;
-  ciudad?: string;
-  uso?: string;
-  nombre?: string;
-  telefono?: string;
-  etapa?: string;
-  rubro?: string;
-  necesidad?: string;
-  tipo_negocio?: string;
-  [key: string]: string | undefined;
-}
-
-interface Message {
-  role: 'bot' | 'user';
-  tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
-  respuesta: string;
-  opciones?: Opcion[];
-  productos?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  }[];
-  producto?: {
-    nombre: string;
-    descripcion: string;
-    imagen: string;
-    link_whatsapp: string;
-  };
-  link_whatsapp?: string;
-}
 
 const MESSAGES_KEY = 'tami_chat_messages';
 const CONTEXT_KEY = 'tami_chat_context';
@@ -57,15 +19,14 @@ const mensajeInicial: Message = {
 };
 
 const ChatbotWidget: React.FC = () => {
-  // Estado persistente 
-  const [messages, setMessages] = useState<Message[]>([mensajeInicial]); // valor por defecto, useEffect se encarga de hidratarlo desde localStorage
+  const [messages, setMessages] = useState<Message[]>([mensajeInicial]);
   const [context, setContext] = useState<ChatContext | null>({ paso: 'menu_principal' });
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   const [showBubble, setShowBubble] = useState(true);
-  const [isTyping, setIsTyping] = useState(true); // REPARADO: Estado maestro para los 3 puntitos 
+  const [isTyping, setIsTyping] = useState(true);
   const [isPopping, setIsPopping] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [input, setInput] = useState("");
@@ -76,7 +37,6 @@ const ChatbotWidget: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isFirstBubble = useRef(true);
-
 
   // Cargar saludo e icono
   useEffect(() => {
@@ -101,11 +61,11 @@ const ChatbotWidget: React.FC = () => {
         console.error("Error al obtener saludo del chatbot:", err);
       }
     };
-  
+
     const idleId = 'requestIdleCallback' in window
       ? window.requestIdleCallback(fetchConfig)
       : setTimeout(fetchConfig, 1500);
-  
+
     return () => {
       if ('cancelIdleCallback' in window && typeof idleId === 'number') window.cancelIdleCallback(idleId);
       else clearTimeout(idleId as any);
@@ -148,7 +108,6 @@ const ChatbotWidget: React.FC = () => {
     try { localStorage.setItem(OPEN_KEY, String(isOpen)); }
     catch { }
   }, [isOpen, hasHydratedStorage]);
-
 
   useEffect(() => {
     try {
@@ -205,12 +164,11 @@ const ChatbotWidget: React.FC = () => {
 
   useEffect(() => {
     if (!isOpen) {
-      isFirstOpenRef.current = true; // reset para la próxima apertura
+      isFirstOpenRef.current = true;
       return;
     }
     if (!messagesEndRef.current) return;
-  
-    // Solo anima el scroll cuando se agrega un mensaje NUEVO con el chat ya abierto.
+
     const behavior = isFirstOpenRef.current ? 'auto' : 'smooth';
     messagesEndRef.current.scrollIntoView({ behavior });
     isFirstOpenRef.current = false;
@@ -260,7 +218,6 @@ const ChatbotWidget: React.FC = () => {
   };
 
   const enviarMensaje = async (labelMostrado: string, valorEnviado: string) => {
-    //  Filtrar textos malintencionados o kilométricos antes de procesar nada
     if (valorEnviado.trim().length > 300) {
       setMessages(prev => [
         ...prev,
@@ -272,20 +229,17 @@ const ChatbotWidget: React.FC = () => {
         }
       ]);
 
-      // Enfocamos de nuevo el input para que el usuario pueda corregir su texto
       setTimeout(() => {
         inputRef.current?.focus();
       }, 60);
-      return; // Frenamos en seco: No gasta procesamiento, no activa carga ni llama a la IA
+      return;
     }
 
-    // --- Flujo normal del Chatbot ---
     const userMessage: Message = { role: 'user', tipo: 'texto', respuesta: labelMostrado };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
-      // 1. Evaluamos si el chatbot local basado en reglas sabe qué responder
       const localReply = await getLocalReply(valorEnviado, context, messages);
 
       if (localReply) {
@@ -302,12 +256,10 @@ const ChatbotWidget: React.FC = () => {
         return;
       }
 
-      // Llamamos a la función fetchIaReply que creamos en chatbotLogic.ts
       const botMessage = await fetchIaReply(valorEnviado);
 
       await new Promise(resolve => setTimeout(resolve, 1200));
 
-      // Pintamos la respuesta de Llama 3 en la pantalla
       setMessages(prev => [...prev, botMessage]);
 
     } catch (error) {
@@ -317,7 +269,7 @@ const ChatbotWidget: React.FC = () => {
         role: 'bot',
         tipo: 'texto',
         respuesta: 'Ups, tuvimos un problema de conexión 😅. Si urge, contáctanos directo a nuestro WhatsApp.',
-        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20falló%20el%20bot%20y%20necesito%20ayuda.'
+        link_whatsapp: 'https://wa.me/51978883199?text=Hola,%20me%20fall%C3%B3%20el%20bot%20y%20necesito%20ayuda.'
       }]);
     } finally {
       setIsLoading(false);
@@ -327,173 +279,27 @@ const ChatbotWidget: React.FC = () => {
     }
   };
 
+  const screenProps: ChatbotScreenProps = {
+    messages,
+    context,
+    isLoading,
+    isResetting,
+    input,
+    messagesEndRef,
+    inputRef,
+    onClose: toggleChat,
+    onReset: reiniciarChat,
+    onInputChange: setInput,
+    onSendMessage: sendMessage,
+    onOpcionClick: handleOpcionClick,
+  };
+
   return (
     <div className="fixed z-50 bottom-0 right-6 flex flex-col items-end font-montserrat pointer-events-none">
       {isOpen ? (
-        <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-[#2A938B] to-[#0D2D2B] px-5 py-3 text-white flex justify-between items-center shadow-md relative overflow-hidden shrink-0">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div className="flex items-center gap-2.5 relative z-10">
-              <div className="relative">
-                <div className="relative w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden shadow-inner">
-                  <ChatbotIcon />
-                </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm"></span>
-              </div>
-              <div>
-                <h3 className="font-bold text-base leading-tight tracking-tight">
-                  Asistente Tamara
-                </h3>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
-                  <p className="text-[12px] font-medium opacity-90">En línea</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 relative z-10">
-              <button
-                onClick={reiniciarChat}
-                title="Reiniciar conversación"
-                disabled={isLoading || isResetting}
-                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </button>
-              <button
-                onClick={toggleChat}
-                className="bg-white/10 hover:bg-white/25 p-2 rounded-xl transition-all duration-300 backdrop-blur-sm active:scale-90"
-                aria-label="Cerrar chat"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Área de Mensajes */}
-          <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-5 scrollbar-thin scrollbar-thumb-gray-200">
-            {isResetting ? (
-              <div className="flex flex-1 items-center justify-center py-10">
-                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
-                </div>
-              </div>
-            ) : messages.map((msg, index) => (
-              <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
-                <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
-                  ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
-                  : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
-                  }`}>
-                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.respuesta}</p>
-
-                  {msg.tipo === 'opciones' && msg.opciones && msg.role === 'bot' && (
-                    <div className="mt-4 flex flex-col gap-2">
-                      {msg.opciones.map((op, oIdx) => (
-                        <button
-                          key={oIdx}
-                          onClick={() => handleOpcionClick(op)}
-                          disabled={isLoading || index !== messages.length - 1}
-                          className="w-full text-left px-4 py-3 rounded-2xl border-2 border-[#015f86]/20 bg-[#015f86]/5 hover:bg-[#015f86]/10 hover:border-[#015f86]/40 text-[#015f86] font-semibold text-[14px] transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          {op.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {msg.tipo === 'producto' && (msg.productos || msg.producto) && (
-                    <div className="mt-5 flex flex-col gap-4">
-                      {(msg.productos || [msg.producto]).map((prod, pIdx) => prod && (
-                        <div key={pIdx} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group border-b-4 border-b-[#0d9488]/10">
-                          {prod.imagen && (
-                            <div className="h-44 w-full bg-gray-50 flex items-center justify-center p-0 relative overflow-hidden">
-                              <img
-                                src={prod.imagen.startsWith('http') ? prod.imagen : `${import.meta.env.PUBLIC_API_URL}${prod.imagen}`}
-                                alt={prod.nombre}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy"
-                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            </div>
-                          )}
-                          <div className="p-5">
-                            <p className="font-bold text-base text-gray-900 leading-tight mb-2 uppercase tracking-wide">{prod.nombre}</p>
-                            <p className="text-[13px] text-gray-500 leading-relaxed mb-5 line-clamp-2">{prod.descripcion}</p>
-                            <a href={prod.link_whatsapp} target="_blank" rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#015f86] to-[#0d9488] hover:from-[#0d9488] hover:to-[#015f86] text-white text-[14px] font-bold py-3.5 rounded-2xl transition-all duration-500 shadow-md hover:shadow-xl active:scale-95">
-                              <span>Consultar producto</span>
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                </div>
-              </div>
-            ))}
-
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-white rounded-2xl rounded-bl-none px-6 py-5 shadow-sm border border-gray-100 flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/30 rounded-full animate-bounce"></div>
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2.5 h-2.5 bg-[#015f86]/70 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="bg-white p-4 border-t border-gray-100 shadow-[0_-15px_30px_rgba(0,0,0,0.03)] shrink-0">
-            <form onSubmit={sendMessage} className="flex gap-2">
-              <input
-                type="text"
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={
-                  context?.paso === "esperando_datos_producto_1"
-                    ? "Ej: negocio, Lima"
-                    : context?.paso === "esperando_datos_producto_2"
-                      ? "Ej: Adriano, 987654321"
-                      : context?.paso?.includes("datos_contacto")
-                        ? "Ej: Juan, 987654321"
-                        : "Escribe un mensaje..."
-                }
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-[#015f86]/10 focus:border-[#015f86] transition-all placeholder:text-gray-400"
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                aria-label='Enviar mensaje'
-                disabled={!input.trim() || isLoading}
-                className="bg-gradient-to-br from-[#015f86] to-[#0d9488] hover:shadow-lg hover:scale-105 active:scale-90 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 disabled:opacity-30 disabled:scale-100 disabled:shadow-none shadow-lg shadow-[#015f86]/20"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
-                </svg>
-              </button>
-            </form>
-          </div>
-        </div>
+        <ChatbotScreen {...screenProps} />
       ) : (
-        /* Botón Flotante - CORREGIDO PARA CLS */
+        /* Botón Flotante */
         <div className="relative flex items-end mb-8 pointer-events-auto">
           {showBubble && (
             <div className={`absolute bottom-0 right-[80px] group w-max max-w-[220px] sm:max-w-[280px] origin-bottom-right ${isPopping ? "animate-balloon-pop" : "animate-in slide-in-from-right-10 fade-in duration-500"}`}>
