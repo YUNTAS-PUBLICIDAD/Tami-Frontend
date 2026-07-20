@@ -95,7 +95,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
             <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#015f86] rounded-full shadow-sm" />
           </div>
           <div>
-            <h3 className="font-bold text-base leading-tight tracking-tight">Asistente Tamara</h3>
+            <h3 className="font-bold text-base leading-tight tracking-tight">Tamara</h3>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
               <p className="text-[12px] font-medium opacity-90">En línea</p>
