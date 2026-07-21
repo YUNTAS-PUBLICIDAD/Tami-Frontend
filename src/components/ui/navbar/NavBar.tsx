@@ -150,8 +150,8 @@ function NavBar({ forceSolid = false }: NavBarProps) {
             <a href="/" title="Ir a la sección de inicio">
               <img
                 src={logoTami.src}
-                alt="Logo de Tami"
-                title="Logo de Tami"
+                alt="Logotipo principal de NavBar"
+                title="NavBar"
                 width="64"
                 height="74"
                 className="h-18 md:h-25 w-auto object-contain"

@@ -12,9 +12,9 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                 <a href="/" title="Ir a la página principal">
                     <img
                         src={logo.src}
-                        alt="Logo de Tami"
+                        alt="Logo oficial corporativo"
                         className="w-full h-14"
-                        title = "Logo de Tami"
+                        title = "Marca registrada Tami"
                     />
                 </a>
             </div>
