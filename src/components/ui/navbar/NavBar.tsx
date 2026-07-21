@@ -151,7 +151,7 @@ function NavBar({ forceSolid = false }: NavBarProps) {
               <img
                 src={logoTami.src}
                 alt="Logo de Tami"
-                title="Logo de Tami"
+                title="Tami logo"
                 width="64"
                 height="74"
                 className="h-18 md:h-25 w-auto object-contain"
