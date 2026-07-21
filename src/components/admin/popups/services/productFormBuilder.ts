@@ -200,6 +200,9 @@ export class ProductFormBuilderService {
     if (formData.etiqueta?.popup_mobile_image_count !== undefined) {
       formDataToSend.append("etiqueta[popup_mobile_image_count]", String(formData.etiqueta.popup_mobile_image_count));
     }
+    if (formData.etiqueta?.product_popup_delay_seconds !== undefined) {
+      formDataToSend.append("etiqueta[product_popup_delay_seconds]", String(formData.etiqueta.product_popup_delay_seconds));
+    }
 
     // API flags
     formDataToSend.append("_method", "PUT");
@@ -406,6 +409,7 @@ export class ProductFormBuilderService {
         popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
         popup_text_color: product.etiqueta?.popup_text_color || "#000000",
         popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
+        product_popup_delay_seconds: product.etiqueta?.product_popup_delay_seconds ?? 30,
       }
     };
   }

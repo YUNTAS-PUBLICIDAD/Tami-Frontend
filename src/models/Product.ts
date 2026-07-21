@@ -24,6 +24,7 @@ import type Specs from "./Specs";
 export interface ProductFormularioPOST {
   nombre: string;
   porque_elegirnos: string;
+  producto_id?: number | string;
   titulo: string;
   subtitulo: string;
   link: string;
@@ -73,6 +74,7 @@ export interface ProductFormularioPOST {
 
 // Usado en la base de datos o en el GET
 export interface ImagenBack {
+  titulo: string;
   id: number;
   url_imagen: string;
   texto_alt_SEO: string;

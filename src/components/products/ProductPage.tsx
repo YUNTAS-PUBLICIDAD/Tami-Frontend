@@ -123,41 +123,15 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
         fetchProductData();
     }, [initialProducto?.link, initialProducto?.id]);
-
+    
     useEffect(() => {
         if (producto) {
             setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
             insertJsonLd("product", producto);
             window.__detalleProducto = producto;
 
-            // Actualizar SEO dinámico en el cliente
+            // Solo mantén esto, que no afecta el SEO negativo
             document.title = producto.etiqueta?.meta_titulo || producto.titulo;
-            let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-            if (!metaDescription) {
-                const meta = document.createElement("meta");
-                meta.name = "description";
-                document.head.appendChild(meta);
-                metaDescription = meta;
-            }
-            metaDescription.setAttribute("content", producto.etiqueta?.meta_descripcion || producto.descripcion || "Descripción por defecto");
-
-            let metaKeywords = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null;
-            if (!metaKeywords) {
-                const meta = document.createElement("meta");
-                meta.name = "keywords";
-                document.head.appendChild(meta);
-                metaKeywords = meta;
-            }
-            metaKeywords.setAttribute("content", producto.etiqueta?.keywords || "");
-
-            let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-            if (!canonicalLink) {
-                const link = document.createElement("link");
-                link.rel = "canonical";
-                document.head.appendChild(link);
-                canonicalLink = link;
-            }
-            canonicalLink.setAttribute("href", window.location.href);
         }
     }, [producto]);
 
@@ -245,9 +219,9 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                             )}
                         </h1>
 
-                        <p className="text-lg md:text-2xl opacity-90 mb-10 max-full uppercase tracking-wider font-light break-words">
+                        <h2 className="text-lg md:text-2xl opacity-90 mb-10 max-full uppercase tracking-wider font-light break-words">
                             {producto.subtitulo}
-                        </p>
+                        </h2>
 
                         <button
                             id="btnQuotationHero"
@@ -346,9 +320,9 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         Especificaciones técnicas de {producto.nombre.toLowerCase()}
                                     </h2>
 
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                                    <p className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
                                         {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                    </h3>
+                                    </p>
 
                                     <div className="w-full flex flex-col overflow-hidden">
                                         {producto.especificaciones?.map((spec, index) => {
@@ -375,13 +349,13 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                 </div>
 
                                 <div>
-                                    <h2 className="font-semibold text-base text-gray-800 mb-3">
+                                    <h3 className="font-semibold text-base text-gray-800 mb-3">
                                         Dimensiones de {producto.nombre.toLowerCase()}
-                                    </h2>
-
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                        Alto, largo y ancho
                                     </h3>
+
+                                    <p className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                                        Alto, largo y ancho
+                                    </p>
 
                                     <div className="flex items-center gap-8">
                                         <div className="w-24 md:w-32 flex-shrink-0">

@@ -198,6 +198,40 @@ console.log("POPUPSECTION onFileChange", onFileChange);
                 />
             </div>
 
+            {/* Delay del Pop-up */}
+            <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-3xl border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-4">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                    <span className="w-2 h-8 bg-teal-500 rounded-full"></span>
+                    Tiempo de Aparición
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Tiempo de espera (en segundos) antes de que aparezca el pop-up en la página de este producto.
+                </p>
+                <div className="relative w-full max-w-[200px]">
+                    <select
+                        value={formData.etiqueta?.product_popup_delay_seconds ?? 30}
+                        onChange={(e) => onFieldChange("product_popup_delay_seconds", String(parseInt(e.target.value) || 30), true)}
+                        className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 pr-10 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner appearance-none dark:text-white"
+                    >
+                        <option value="10">10 segundos</option>
+                        <option value="15">15 segundos</option>
+                        <option value="20">20 segundos</option>
+                        <option value="30">30 segundos</option>
+                        <option value="45">45 segundos</option>
+                        <option value="60">1 minuto</option>
+                        <option value="90">1.5 minutos</option>
+                        <option value="120">2 minutos</option>
+                        <option value="180">3 minutos</option>
+                        <option value="300">5 minutos</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 dark:text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
             {/* Colores */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ColorPickerField

@@ -1,22 +1,33 @@
-# Habilitar rewrite para Astro
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  
-  # No redirigir si el archivo existe
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  
-  # Manejar rutas de Astro
-  RewriteRule ^(.*)$ /index.html [L]
-</IfModule>
+# --- NORMALIZACIÓN SEO ---
+RewriteEngine On
 
-# Compresión GZIP para mejorar rendimiento en Hostinger
+# 1. Redirigir www a NO-www (Redirección 301 permanente)
+RewriteCond %{HTTP_HOST} ^www\.tamimaquinarias\.com [NC]
+RewriteRule ^(.*)$ https://tamimaquinarias.com/$1 [L,R=301]
+
+# 2. Forzar slash final (Trailing Slash) en todas las URLs
+# Excluimos archivos reales y directorios reales para no romper nada
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteRule ^(.*)$ https://tamimaquinarias.com/$1/ [L,R=301]
+
+# --- Habilitar rewrite para Astro ---
+RewriteBase /
+
+# No redirigir si el archivo existe
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Manejar rutas de Astro
+RewriteRule ^(.*)$ /index.html [L]
+
+# --- Compresión GZIP para mejorar rendimiento en Hostinger ---
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
 </IfModule>
 
-# Caché del navegador para mejorar rendimiento
+# --- Caché del navegador para mejorar rendimiento ---
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/jpg "access plus 1 year"

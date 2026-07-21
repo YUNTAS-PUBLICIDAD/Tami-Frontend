@@ -1,9 +1,12 @@
 import { config } from "../../../../config.ts";
 import apiClient from "../../../services/apiClient.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validateImage } from "../../../utils/imageValidation.ts";
 import Swal from "sweetalert2";
 import { IoMdCloseCircle } from "react-icons/io";
+import RichTextEditor, { type RichTextEditorHandle } from "../productos/RichTextEditor.tsx";
+
+
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
@@ -125,6 +128,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const [previewMiniatura, setPreviewMiniatura] = useState<string>("");
   const [previewHero, setPreviewHero] = useState<string | null>(null);
 
+  const editorRefs = useRef<(RichTextEditorHandle | null)[]>([]);
 
   const [formData, setFormData] = useState<BlogPOST>({
     titulo: "",
@@ -440,132 +444,103 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
-  const handleInsertLinkClick = (index: number) => {
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`,
-    ) as HTMLTextAreaElement;
+const handleInsertLinkClick = (index: number) => {
+  const selected = editorRefs.current[index]?.getSelectedText() ?? "";
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = textarea.value.substring(start, end);
-
-    if (!selected) {
-      Swal.fire(
-        "Selecciona texto",
-        "Selecciona texto para enlazar.",
-        "warning",
-      );
-      return;
-    }
-
-    setActiveIndex(index);
-    setSelectedText(selected);
-    setIsModalOpen(true);
-  };
-
-  const handleProductLinkClick = (index: number) => {
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${index}`,
-    ) as HTMLTextAreaElement;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = textarea.value.substring(start, end);
-
-    if (!selected) {
-      Swal.fire(
-        "Selecciona texto",
-        "Selecciona texto para enlazar.",
-        "warning",
-      );
-      return;
-    }
-
-    setActiveIndex(index);
-    setSelectedText(selected);
-    setIsProductLinkModalOpen(true);
-  };
-
-  const handleAddProduct = () => {
-    if (activeIndex === null) return;
-    if (!formData.producto_id) {
-      Swal.fire("ID de producto vacío", "Selecciona un producto.", "error");
-      return;
-    }
-    const productoSeleccionado = productos.find(
-      (p) => String(p.id) === String(formData.producto_id),
+  if (!selected) {
+    Swal.fire(
+      "Selecciona texto",
+      "Selecciona texto para enlazar.",
+      "warning",
     );
-    if (!productoSeleccionado?.link) {
-      Swal.fire(
-        "Producto no encontrado",
-        "No se encontró el producto.",
-        "error",
-      );
-      return;
-    }
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`,
-    ) as HTMLTextAreaElement;
+    return;
+  }
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
-    const before = parrafoActual.substring(0, start);
-    const after = parrafoActual.substring(end);
+  setActiveIndex(index);
+  setSelectedText(selected);
+  setIsModalOpen(true);
+};
+const handleProductLinkClick = (index: number) => {
+  const selected = editorRefs.current[index]?.getSelectedText() ?? "";
 
-    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
-    const linkedProductText = `<a href="${productUrl}" style="font-weight: bold;" title="${productoSeleccionado.link}">${selectedText}</a>`;
-    const newValue = before + linkedProductText + after;
+  if (!selected) {
+    Swal.fire(
+      "Selecciona texto",
+      "Selecciona texto para enlazar.",
+      "warning",
+    );
+    return;
+  }
 
-    const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = {
-      ...nuevosParrafos[activeIndex],
-      parrafo: newValue,
-    };
+  setActiveIndex(index);
+  setSelectedText(selected);
+  setIsProductLinkModalOpen(true);
+};
+const handleAddProduct = () => {
+  if (activeIndex === null) return;
 
-    setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
-    setIsProductLinkModalOpen(false);
-    setSelectedText("");
-    setActiveIndex(null);
-  };
+  if (!formData.producto_id) {
+    Swal.fire(
+      "ID de producto vacío",
+      "Selecciona un producto.",
+      "error"
+    );
+    return;
+  }
 
-  const handleAddLink = () => {
-    if (activeIndex === null) return;
-    if (!link.trim() || !isValidUrl(link.trim())) {
-      Swal.fire(
-        "Enlace inválido",
-        "Ingresa una URL válida (https://...).",
-        "error",
-      );
-      return;
-    }
-    const textarea = document.getElementById(
-      `crear_descripcion_antes_${activeIndex}`,
-    ) as HTMLTextAreaElement;
+  const productoSeleccionado = productos.find(
+    (p) => String(p.id) === String(formData.producto_id)
+  );
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
+  if (!productoSeleccionado) {
+    Swal.fire(
+      "Producto no encontrado",
+      "No se encontró el producto.",
+      "error"
+    );
+    return;
+  }
 
-    const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
-    const before = parrafoActual.substring(0, start);
-    const after = parrafoActual.substring(end);
+  if (!productoSeleccionado.link) {
+    Swal.fire(
+      "Producto sin enlace",
+      "El producto seleccionado no tiene un enlace válido.",
+      "error"
+    );
+    return;
+  }
 
-    const linkedText = `<a href="${link.trim()}" style="font-weight: bold;" title="${selectedText}">${selectedText}</a>`;
-    const newValue = before + linkedText + after;
+  const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
 
-    const nuevosParrafos = [...formData.imagenes];
-    nuevosParrafos[activeIndex] = {
-      ...nuevosParrafos[activeIndex],
-      parrafo: newValue,
-    };
+  editorRefs.current[activeIndex]?.insertLink(productUrl);
 
-    setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
-    setIsModalOpen(false);
-    setLink("");
-    setSelectedText("");
-    setActiveIndex(null);
-  };
+  setIsProductLinkModalOpen(false);
+  setSelectedText("");
+  setActiveIndex(null);
+  setFormData((prev) => ({
+    ...prev,
+    producto_id: "",
+  }));
+};
+const handleAddLink = () => {
+  if (activeIndex === null) return;
 
+  if (!link.trim() || !isValidUrl(link.trim())) {
+    Swal.fire(
+      "Enlace inválido",
+      "Ingresa una URL válida.",
+      "error"
+    );
+    return;
+  }
+
+  editorRefs.current[activeIndex]?.insertLink(link.trim());
+
+  setIsModalOpen(false);
+  setLink("");
+  setSelectedText("");
+  setActiveIndex(null);
+};
   const closeModal = () => {
     setIsOpen(false);
     setFormData({
@@ -1284,7 +1259,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                   <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Nombre
+                      Nombre de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1298,7 +1273,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Alt
+                      Alt de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1311,7 +1286,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                   </div>
                   <div className="form-input">
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Tittle
+                      Tittle de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1534,7 +1509,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                     </div>
                     <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Nombre
+                          Nombre de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1543,13 +1518,14 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+
                         />
                       </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Alt
+                          Alt de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1558,11 +1534,12 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+                          placeholder="Ingrese Alt de la Imagen"
                         />
                       </div>
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Tittle
+                          Título de la Imagen
                         </label>
                         <input
                           type="text"
@@ -1571,6 +1548,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                           required
+                          placeholder="Ingrese Título de la Imagen"
                         />
                       </div>
                     </div>
@@ -1729,7 +1707,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         {/* Nombre */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Nombre*
+                            Nombre de la Imagen
                           </label>
                           <input
                             type="text"
@@ -1774,6 +1752,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                         
 
                         {/* COLUMNA DERECHA - PÁRRAFO */}
+                        
                         <div className="flex flex-col space-y-3">
                           <div className="flex justify-between items-start gap-2">
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -1796,17 +1775,31 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
                               </button>
                             </div>
                           </div>
-                          <textarea
-                            id={`crear_descripcion_antes_${index}`}
-                            value={imagen.parrafo}
-                            onChange={(e) => handleParrafoChange(e, index)}
-                            placeholder="Escribe el contenido de esta sección..."
-                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors resize-none"
-                            rows={8}
-                            required
-                          />
+                          <div className="flex flex-col space-y-3">
+
+                            <RichTextEditor
+                              ref={(el: RichTextEditorHandle | null) => {
+                                editorRefs.current[index] = el;
+                              }}                              
+                              value={imagen.parrafo}
+                              onChange={(html) => {
+                                setFormData((prev) => {
+                                  const nuevasImagenes = [...prev.imagenes];
+
+                                  nuevasImagenes[index] = {
+                                    ...nuevasImagenes[index],
+                                    parrafo: html,
+                                  };
+
+                                  return {
+                                    ...prev,
+                                    imagenes: nuevasImagenes,
+                                  };
+                                });
+                              }}
+                            />
+                          </div>                    
                         </div>
-                        
                       </div>
                     </div>
                   ))}
