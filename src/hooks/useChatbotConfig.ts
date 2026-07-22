@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { config } from 'config';
+import { config, getApiUrl } from 'config';
 
 const CACHE_KEY_ICON = 'chatbot_icon_url';
 const CACHE_KEY_COLORS = 'chatbot_colors';
@@ -23,8 +23,8 @@ export const useChatbotConfig = () => {
       const baseUrl = config.apiUrl || "";
 
       const [iconRes, colorRes] = await Promise.allSettled([
-        fetch(`${baseUrl}${config.endpoints.chatbot.getIcon}`).then(r => r.ok ? r.json() : Promise.reject()),
-        fetch(`${baseUrl}${config.endpoints.chatbot.getHeadColor}`).then(r => r.ok ? r.json() : Promise.reject()),
+        fetch(getApiUrl(config.endpoints.chatbot.getIcon)).then(r => r.ok ? r.json() : Promise.reject()),
+        fetch(getApiUrl(config.endpoints.chatbot.getHeadColor)).then(r => r.ok ? r.json() : Promise.reject()),
       ]);
 
       if (iconRes.status === "fulfilled" && iconRes.value?.url_icono) {
