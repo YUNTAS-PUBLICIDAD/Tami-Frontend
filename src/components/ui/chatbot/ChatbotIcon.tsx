@@ -1,5 +1,5 @@
 import React from 'react';
-import { useChatbotIcon } from 'src/hooks/useChatbotConfig';
+import { useChatbotConfig } from 'src/hooks/useChatbotConfig';
 import robotIcon from "../../../assets/icons/Icono-para--oficialpng.png";
 
 
@@ -9,7 +9,7 @@ interface ChatbotIconProps {
 }
 
 const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12" }) => {
-  const { iconUrl, isLoading } = useChatbotIcon();
+  const { iconUrl, isLoading } = useChatbotConfig();
 
   // Ícono por defecto por si falla la API o aún no hay nada configurado
   const defaultIcon = robotIcon.src;

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { RefObject } from 'react';
 import ChatbotIcon from './ChatbotIcon';
-import { useChatbotIcon } from 'src/hooks/useChatbotConfig';
+import { useChatbotConfig } from 'src/hooks/useChatbotConfig';
 
 interface Opcion {
   label: string;
@@ -52,7 +52,7 @@ const defaultMessages: Message[] = [
   {
     role: 'bot',
     tipo: 'texto',
-    respuesta: '¡Hola! 👋 Soy la Tamara, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?',
+    respuesta: '¡Hola! 👋 Soy Tamara, estoy aquí para ayudarte a encontrar la maquinaria o productos ideales para tu negocio. \n¿Qué te gustaría hacer?',
   },
 ];
 
@@ -72,7 +72,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   onSendMessage = noop,
   onOpcionClick = noop,
 }) => {
-  const { colorInicial, colorFinal } = useChatbotIcon();
+  const { colorInicial, colorFinal } = useChatbotConfig();
 
   // Si messagesEndRef está presente, el componente es interactivo (widget real)
   // Si no, es una previsualización estática (ej: panel de administración)
