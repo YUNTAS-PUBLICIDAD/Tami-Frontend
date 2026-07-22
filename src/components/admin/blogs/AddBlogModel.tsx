@@ -669,40 +669,7 @@ const handleAddLink = () => {
       return;
     }
 
-    // Nombre, Alt y Tittle de la miniatura son obligatorios
-    if (
-      !formData.miniatura_nombre ||
-      formData.miniatura_nombre.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El nombre de la miniatura es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (!formData.miniatura_alt || formData.miniatura_alt.trim() === "") {
-      Swal.fire(
-        "Error",
-        "El texto ALT de la miniatura es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (
-      !formData.miniatura_tittle ||
-      formData.miniatura_tittle.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El tittle de la miniatura es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
+
 
     // hero_image obligatoria solo en creación
     if (!blogToEdit && !formData.hero_image) {
@@ -711,40 +678,7 @@ const handleAddLink = () => {
       return;
     }
 
-    // Nombre, Alt y Tittle de la imagen principal son obligatorios
-    if (
-      !formData.hero_image_nombre ||
-      formData.hero_image_nombre.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El nombre de la imagen principal es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (!formData.hero_image_alt || formData.hero_image_alt.trim() === "") {
-      Swal.fire(
-        "Error",
-        "El texto ALT de la imagen principal es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (
-      !formData.hero_image_tittle ||
-      formData.hero_image_tittle.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El tittle de la imagen principal es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
+ 
 
     // Validación imágenes adicionales y párrafos
     if (
@@ -761,32 +695,7 @@ const handleAddLink = () => {
       return;
     }
 
-    // Validación img_alt
-    if (
-      formData.imagenes.some(
-        (img) => !img.img_alt || img.img_alt.trim() === "",
-      )
-    ) {
-      Swal.fire("Error", "Cada imagen debe tener texto ALT.", "error");
-      setIsSaving(false);
-      return;
-    }
 
-    if (
-      formData.imagenes.some((img) => !img.img_nombre || img.img_nombre.trim() === "")
-    ) {
-      Swal.fire("Error", "Cada imagen debe tener un nombre.", "error");
-      setIsSaving(false);
-      return;
-    }
-
-    if (
-      formData.imagenes.some((img) => !img.img_tittle || img.img_tittle.trim() === "")
-    ) {
-      Swal.fire("Error", "Cada imagen debe tener un título.", "error");
-      setIsSaving(false);
-      return;
-    }
 
     try {
       setIsSubmitting(true);
@@ -1267,7 +1176,6 @@ const handleAddLink = () => {
                       value={formData.miniatura_nombre}
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
-                      required
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1281,7 +1189,6 @@ const handleAddLink = () => {
                       value={formData.miniatura_alt}
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
-                      required
                     />
                   </div>
                   <div className="form-input">
@@ -1294,7 +1201,6 @@ const handleAddLink = () => {
                       value={formData.miniatura_tittle}
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
-                      required
                     />
                   </div>
                     
@@ -1517,8 +1423,6 @@ const handleAddLink = () => {
                           value={formData.hero_image_nombre}
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
-                          required
-
                         />
                       </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -1533,7 +1437,6 @@ const handleAddLink = () => {
                           value={formData.hero_image_alt}
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
-                          required
                           placeholder="Ingrese Alt de la Imagen"
                         />
                       </div>
@@ -1547,7 +1450,6 @@ const handleAddLink = () => {
                           value={formData.hero_image_tittle}
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
-                          required
                           placeholder="Ingrese Título de la Imagen"
                         />
                       </div>
@@ -1715,7 +1617,6 @@ const handleAddLink = () => {
                             onChange={(e) => handleImgNombreChange(e, index)}
                             placeholder="Nombre de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
                           />
                         </div>
                         {/* Tittle */}
@@ -1730,7 +1631,6 @@ const handleAddLink = () => {
                             onChange={(e) => handleImgTittleChange(e, index)}
                             placeholder="Título de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
                           />
                         </div>
                         {/* Alt */}
@@ -1744,7 +1644,6 @@ const handleAddLink = () => {
                             onChange={(e) => handleImgAltChange(e, index)}
                             placeholder="Describe brevemente el contenido de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
                           />
                         </div>
 
