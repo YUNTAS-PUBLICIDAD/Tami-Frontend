@@ -773,57 +773,72 @@ const handleAddLink = () => {
           "imagen_tipo[]",
           item.imagen instanceof File ? "file" : "existing",
         );
-
-        // SIEMPRE enviar img_alt
-        formDataToSend.append("img_alt[]", item.img_alt || "");
-
-        formDataToSend.append("img_nombre[]", item.img_nombre || "");
-
-        formDataToSend.append("img_tittle[]", item.img_tittle || "");
-
+      
+        if (item.img_alt) {
+          formDataToSend.append("img_alt[]", item.img_alt);
+        }
+      
+        if (item.img_nombre) {
+          formDataToSend.append("img_nombre[]", item.img_nombre);
+        }
+      
+        if (item.img_tittle) {
+          formDataToSend.append("img_tittle[]", item.img_tittle);
+        }
+      
         if (item.imagen instanceof File) {
           formDataToSend.append("imagenes[]", item.imagen);
         } else if (item.id) {
           formDataToSend.append("imagen_ids[]", item.id.toString());
         }
-
+      
         // SIEMPRE enviar párrafo
         formDataToSend.append("parrafos[]", item.parrafo || "");
       });
+
       if (blogToEdit) {
         formDataToSend.append("_method", "PUT");
       }
-
-      const response = await apiClient.post(url, formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        const data = response.data;
-        await Swal.fire({
-          icon: "success",
-          title: blogToEdit
-            ? "Blog actualizado con éxito"
-            : "Blog creado con éxito",
-          text: `El blog "${data.data.titulo}" ha sido ${
-            blogToEdit ? "actualizado" : "creado"
-          } correctamente.`,
-          confirmButtonColor: "#3085d6",
-        });
-        closeModal();
-        onBlogAdded();
-      } else {
-        const data = response.data;
-        if (data.errors) {
-          const errores = Object.entries(data.errors)
-            .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
-            .join("\n");
-          throw new Error(`Errores de validación:\n${errores}`);
+      try {
+        console.log("FormData a enviar:");
+        for (let [key, value] of formDataToSend.entries()) {
+          console.log(`${key}: ${value}`);
         }
-        throw new Error(data.message || "Error al procesar el blog");
+        const response = await apiClient.post(url, formDataToSend, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        if (response.status === 200 || response.status === 201) {
+          const data = response.data;
+          await Swal.fire({
+            icon: "success",
+            title: blogToEdit
+              ? "Blog actualizado con éxito"
+              : "Blog creado con éxito",
+            text: `El blog "${data.data.titulo}" ha sido ${
+              blogToEdit ? "actualizado" : "creado"
+            } correctamente.`,
+            confirmButtonColor: "#3085d6",
+          });
+          closeModal();
+          onBlogAdded();
+        } else {
+          const data = response.data;
+          if (data.errors) {
+            const errores = Object.entries(data.errors)
+              .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
+              .join("\n");
+            throw new Error(`Errores de validación:\n${errores}`);
+          }
+          throw new Error(data.message || "Error al procesar el blog");
+        }
+      } catch (error: any) {
+        console.log("Errores de validación:", error.response?.data?.errors);
+        throw error;
       }
+
+      
     } catch (error: any) {
       console.error("Error al enviar el blog:", error);
 
@@ -1969,3 +1984,10 @@ const handleAddLink = () => {
 };
 
 export default AddBlogModal;
+
+
+Swal.fire(
+  "Error",
+  "El nombre de la miniatura es obligatorio.",
+  "error",
+);

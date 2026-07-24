@@ -76,7 +76,7 @@ const toDisplayCase = (text: string) =>
     .join(' ');
 
 export const GREETING_REPLY =
-  '¡Hola! 👋 Soy Tami Bot. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.';
+  '¡Hola! 👋 Soy Tamara. ¿Qué estás buscando hoy para tu negocio o en qué te puedo ayudar? 😊\n\nPuedo ayudarte con negocio, maquinaria o decoración.';
 
 interface LocalReplyResult {
   message: MessageMinimal;
