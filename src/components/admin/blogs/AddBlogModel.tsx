@@ -1984,10 +1984,3 @@ const handleAddLink = () => {
 };
 
 export default AddBlogModal;
-
-
-Swal.fire(
-  "Error",
-  "El nombre de la miniatura es obligatorio.",
-  "error",
-);
