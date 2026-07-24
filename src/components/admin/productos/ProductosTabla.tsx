@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import EditProduct from "./EditProduct";
 import { deleteProduct, getProducts } from "src/hooks/admin/productos/productos";
 import type Product from "src/models/Product";
 import { FaTrash, FaSearch, FaSyncAlt, FaPlus, FaTags, FaWhatsapp } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import AddProduct from "./AddProduct";
 import Swal from "sweetalert2";
 import { config } from "config";
 import LoadingComponent from "src/components/admin/ui/LoadingComponent";
@@ -32,6 +30,7 @@ const EmptyState = ({ term }: { term: string }) => (
 );
 import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWithTabs";
 import ExportMenu from "src/components/admin/ui/ExportMenu";
+import ProductForm from "./ProductForm";
 
 const getApiUrl = config.apiUrl;
 
@@ -353,7 +352,7 @@ const ProductosTabla = () => {
 
                             {/* Botón de Agregar */}
                             <div className="flex-shrink-0 w-full sm:w-auto flex flex-col ">
-                                <AddProduct onProductAdded={fetchData} />
+                                <ProductForm mode="create" onSuccess={fetchData} />
                             </div>
 
                         </div>
@@ -463,9 +462,10 @@ const ProductosTabla = () => {
                                     </TableCell>
                                     <TableCell className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex gap-3 items-center">
-                                            <EditProduct
+                                            <ProductForm
+                                                mode="edit"
                                                 product={item}
-                                                onProductUpdated={fetchData}
+                                                onSuccess={fetchData}
                                             />
                                             <button
                                                 className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"

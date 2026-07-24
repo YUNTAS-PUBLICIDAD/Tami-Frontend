@@ -2,12 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { defaultValuesProduct, type ProductFormularioPOST } from "../../../models/Product.ts";
 import type Product from "../../../models/Product.ts";
 import { IoMdCloseCircle } from "react-icons/io";
+import { FaEdit } from "react-icons/fa";
 import { config } from "../../../../config.ts";
-import apiClient from "../../../services/apiClient";
+import apiClient from "../../../services/apiClient.ts";
 import { getProducts } from "../../../hooks/admin/productos/productos.ts";
 import Swal from "sweetalert2";
-import { slugify } from "../../../utils/slugify";
-import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor";
+import { slugify } from "../../../utils/slugify.ts";
+import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor.tsx";
+import type { ImagenForm, ImagenEditada } from "../../../models/Product.ts";
+
 
 // Función de validación de URL
 const isValidUrl = (url: string): boolean => {
@@ -19,9 +22,18 @@ const isValidUrl = (url: string): boolean => {
   }
 };
 
-type Props = {
-  onProductAdded?: () => void;
-};
+// Discriminated union: en modo "edit" el producto y el callback son obligatorios;
+// en modo "create" no existe producto y el callback es opcional.
+type ProductFormProps =
+  | {
+      mode: "create";
+      onSuccess?: () => Promise<void> | void;
+    }
+  | {
+      mode: "edit";
+      product: Product;
+      onSuccess: () => Promise<void> | void;
+    };
 
 const TABS = [
   { id: "general", label: "Datos Generales", icon: "ℹ️" },
@@ -33,7 +45,13 @@ const TABS = [
   { id: "relacionados", label: "Relacionados", icon: "🔗" }
 ];
 
-const AddProduct = ({ onProductAdded }: Props) => {
+const ProductForm: React.FC<ProductFormProps> = (props) => {
+  const { mode, onSuccess } = props;
+  const isEdit = mode === "edit";
+  // Solo existe en modo edición; se discrimina directamente sobre props.mode
+  // para que TypeScript permita acceder a props.product de forma segura.
+  const product = props.mode === "edit" ? props.product : undefined;
+
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
@@ -159,10 +177,13 @@ const AddProduct = ({ onProductAdded }: Props) => {
     setActiveEditorKey(null);
   };
 
-  const getFullImageUrl = (url: string) => {
+  const getFullImageUrl = (url:string) => {
+
     if (!url) return "";
     if (url.startsWith("http")) return url;
-    return `${config.apiUrl}${url}`;
+    const base = config.apiUrl.replace(/\/$/, "");   // quita "/" final si existe
+    const path = url.startsWith("/") ? url : `/${url}`;
+    return `${base}${path}`;
   };
 
   const getImagePreview = (image: File | string | null): string => {
@@ -172,6 +193,87 @@ const AddProduct = ({ onProductAdded }: Props) => {
     }
     return URL.createObjectURL(image);
   };
+
+  useEffect(() => {
+    if (isEdit && showModal && product) {
+      const refreshCache = Date.now();
+      
+      const imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
+        id: img.id,
+        url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
+        texto_alt_SEO: img.texto_alt_SEO || "",
+        imageTitle: img.titulo || "",
+        original_path: img.url_imagen
+      })) || [];
+      
+      while (imagenesTransformadas.length < 5) {
+        imagenesTransformadas.push({
+          url_imagen: "",
+          texto_alt_SEO: "",
+          imageTitle: "",
+        });
+      }
+
+      const relacionadosIds = product.productos_relacionados?.map((rel: any) => rel.id) || [];
+      const keywordsArray = product.etiqueta?.keywords 
+        ? product.etiqueta.keywords.split(",").map(kw => kw.trim()).filter(k => k !== "")
+        : [];
+
+      const imagenPopup2 = product.producto_imagenes?.find((img) => {
+        const tipo = (img.tipo || "").toLowerCase();
+        return tipo === "popup2" || tipo === "popup_2";
+      });
+
+      const detalleTituloProducto = product as Product & {
+        detalle_titulo_tamano?: string;
+        detalle_titulo_color?: string;
+        detalle_titulo_estilo?: string;
+      };
+
+      setIsLinkEdited(!!product.link);
+
+      setFormData({
+        ...defaultValuesProduct,
+        nombre: product.nombre || "",
+        porque_elegirnos: product.porque_elegirnos || "",
+        titulo: product.titulo || "",
+        subtitulo: product.subtitulo || "",
+        link: product.link || "",
+        descripcion: product.descripcion || "",
+        etiqueta: {
+          keywords: keywordsArray.length > 0 ? keywordsArray : [""],
+          meta_titulo: product.etiqueta?.meta_titulo || "",
+          meta_descripcion: product.etiqueta?.meta_descripcion || "",
+          popup_estilo: product.etiqueta?.popup_estilo || "estilo1",
+          titulo_popup_1: product.etiqueta?.titulo_popup_1 || "",
+          titulo_popup_2: product.etiqueta?.titulo_popup_2 || "",
+          titulo_popup_3: product.etiqueta?.titulo_popup_3 || "",
+          titulo_detalle_producto_size: detalleTituloProducto.detalle_titulo_tamano || product.etiqueta?.titulo_detalle_producto_size || "24",
+          titulo_detalle_producto_color: detalleTituloProducto.detalle_titulo_color || product.etiqueta?.titulo_detalle_producto_color || "#015f86",
+          titulo_detalle_producto_style: detalleTituloProducto.detalle_titulo_estilo || product.etiqueta?.titulo_detalle_producto_style || "negrita",
+          popup3_sin_fondo: product.etiqueta?.popup3_sin_fondo || false,
+          popup_button_color: product.etiqueta?.popup_button_color || "#008B8B",
+          popup_text_color: product.etiqueta?.popup_text_color || "#000000",
+          popup_button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
+        },
+        stock: product.stock ?? 100,
+        precio: product.precio ?? 0,
+        seccion: product.seccion || "Negocio",
+        especificaciones: Array.isArray(product.especificaciones)
+          ? product.especificaciones.map((e: any) => e.valor)
+          : [],
+        relacionados: relacionadosIds,
+        imagenes: imagenesTransformadas,
+        dimensiones: {
+          largo: product.dimensiones?.largo || "",
+          alto: product.dimensiones?.alto || "",
+          ancho: product.dimensiones?.ancho || "",
+        },
+        imagen_popup2: imagenPopup2 ? getFullImageUrl(imagenPopup2.url_imagen) : null,
+        texto_alt_popup2: imagenPopup2?.texto_alt_SEO || "",
+      });
+    }
+  }, [isEdit, showModal, product]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -288,6 +390,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
     });
   };
 
+
   const handleImagesTituloChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -304,6 +407,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
 
   const handleImagesTextoSEOChange = (
+
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
@@ -342,6 +446,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
       especificaciones: prev.especificaciones.filter((_, i) => i !== index)
     }));
   };
+
+
+  
 
   const handleEspecificacionChange = (index: number, value: string) => {
     setFormData(prev => {
@@ -517,14 +624,17 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("porque_elegirnos", formData.porque_elegirnos);
       formDataToSend.append("titulo", formData.titulo);
       formDataToSend.append("subtitulo", formData.subtitulo);
+      const linkActual =
+        formData.link.trim() ||
+        product?.link ||
+        slugify(formData.nombre);
+      formDataToSend.append("link", linkActual);
       formDataToSend.append("descripcion", formData.descripcion);
       formDataToSend.append("stock", formData.stock.toString());
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
       
-      const cleanKeywords = formData.etiqueta.keywords.filter(tag => tag.trim() !== '');
-      formDataToSend.append("keywords", JSON.stringify(cleanKeywords));
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
       
@@ -533,58 +643,151 @@ const AddProduct = ({ onProductAdded }: Props) => {
       formDataToSend.append("detalle_titulo_estilo", formData.etiqueta.titulo_detalle_producto_style || "negrita");
       
       formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo || "estilo1");
+      formDataToSend.append("etiqueta[titulo_popup_1]", formData.etiqueta.titulo_popup_1 || "");
+      formDataToSend.append("etiqueta[titulo_popup_2]", formData.etiqueta.titulo_popup_2 || "");
+      formDataToSend.append("etiqueta[titulo_popup_3]", formData.etiqueta.titulo_popup_3 || "");
+      formDataToSend.append("etiqueta[popup3_sin_fondo]", formData.etiqueta.popup3_sin_fondo ? "true" : "false");
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
       formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
       formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "¡COTIZA AHORA!");
       
+      const cleanKeywords = formData.etiqueta.keywords.filter(k => k.trim() !== "");
+      formDataToSend.append("etiqueta[keywords]", JSON.stringify(cleanKeywords));
+      formDataToSend.append("keywords", JSON.stringify(cleanKeywords));
+
       formDataToSend.append("dimensiones[alto]", formData.dimensiones.alto);
       formDataToSend.append("dimensiones[largo]", formData.dimensiones.largo);
       formDataToSend.append("dimensiones[ancho]", formData.dimensiones.ancho);
 
-      const link = formData.link.trim() || slugify(formData.nombre);
-      formDataToSend.append("link", link);
+      // MANEJO DE IMÁGENES DE GALERÍA
+      if (isEdit) {
+        // En edición distinguimos entre imágenes nuevas, editadas (reemplazo de una existente) y existentes sin cambios.
+        const imagenesNuevas: File[] = [];
+        const imagenesNuevasAlt: string[] = [];
+        const imagenesNuevasTitulo: string[] = [];
+        const imagenesEditadas: ImagenEditada[] = [];
+        const imagenesExistentesData: Array<{ url: string; id?: number; alt: string; ttl?: string }> = [];
 
-      let imageIndex = 0;
-      formData.imagenes.forEach((imagen) => {
-        if (imagen.url_imagen) {
-          const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
-          const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
-          formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
-          formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
-          formDataToSend.append(`titulos[${imageIndex}]`, titulo);
-          imageIndex++;
-        }
-      });
+        formData.imagenes.forEach((imagen, index) => {
+          if (!imagen.url_imagen) return;
+          const altText = imagen.texto_alt_SEO?.trim() || `Imagen producto ${index + 1}`;
+          const titulo = imagen.imageTitle?.trim() || `Imagen producto ${index + 1}`;
+
+          if (imagen.url_imagen instanceof File) {
+            if (imagen.id) {
+              imagenesEditadas.push({
+                id: imagen.id,
+                file: imagen.url_imagen,
+                alt: altText,
+                ttl: titulo
+              });
+            } else {
+              imagenesNuevas.push(imagen.url_imagen);
+              imagenesNuevasAlt.push(altText);
+              imagenesNuevasTitulo.push(titulo);
+            }
+          } else if (typeof imagen.url_imagen === "string" && imagen.url_imagen.trim() !== "") {
+            let urlLimpia = "";
+            if (imagen.original_path) {
+              urlLimpia = imagen.original_path;
+            } else {
+              try {
+                const urlObj = new URL(imagen.url_imagen, window.location.origin);
+                urlLimpia = urlObj.pathname;
+              } catch (error) {
+                urlLimpia = imagen.url_imagen.split('?')[0].replace(config.apiUrl, '');
+              }
+            }
+            urlLimpia = decodeURIComponent(urlLimpia.split('?')[0]);
+
+            imagenesExistentesData.push({
+              url: urlLimpia,
+              id: imagen.id,
+              alt: altText,
+              ttl: titulo
+            });
+          }
+        });
+
+        imagenesNuevas.forEach((file, idx) => {
+          formDataToSend.append('imagenes_nuevas[]', file);
+          formDataToSend.append('imagenes_nuevas_alt[]', imagenesNuevasAlt[idx]);
+          formDataToSend.append(`imagenes_nuevas_titulo[]`, imagenesNuevasTitulo[idx])
+        });
+
+        imagenesEditadas.forEach((img, idx) => {
+          formDataToSend.append(`imagenes_editadas[${idx}][id]`, img.id.toString());
+          formDataToSend.append(`imagenes_editadas[${idx}][file]`, img.file);
+          formDataToSend.append(`imagenes_editadas[${idx}][alt]`, img.alt);
+          formDataToSend.append(`imagenes_editadas[${idx}][ttl]`, img.ttl);
+        });
+
+        imagenesExistentesData.forEach((img, idx) => {
+          formDataToSend.append(`imagenes_existentes[${idx}][url]`, img.url);
+          if (img.id) {
+            formDataToSend.append(`imagenes_existentes[${idx}][id]`, img.id.toString());
+          }
+          formDataToSend.append(`imagenes_existentes[${idx}][alt]`, img.alt);
+          formDataToSend.append(`imagenes_existentes[${idx}][ttl]`, img.ttl || `Imagen producto ${idx + 1}`)
+        });
+      } else {
+        // En creación todas las imágenes son nuevas; el endpoint de alta espera índices simples.
+        let imageIndex = 0;
+        formData.imagenes.forEach((imagen) => {
+          if (imagen.url_imagen) {
+            const altText = imagen.texto_alt_SEO.trim() || "Texto SEO para imagen";
+            const titulo = imagen.imageTitle?.trim() || `Imagen producto ${imageIndex + 1}`;
+            formDataToSend.append(`imagenes[${imageIndex}]`, imagen.url_imagen);
+            formDataToSend.append(`textos_alt[${imageIndex}]`, altText);
+            formDataToSend.append(`titulos[${imageIndex}]`, titulo);
+            imageIndex++;
+          }
+        });
+      }
 
       formData.relacionados.forEach((item, index) => {
         formDataToSend.append(`relacionados[${index}]`, item.toString());
       });
 
-      const response = await apiClient.post(
-        config.endpoints.productos.create,
-        formDataToSend
-      );
+      let response;
+      if (isEdit) {
+        formDataToSend.append("_method", "PUT");
+        response = await apiClient.post(
+          config.endpoints.productos.update(product!.id),
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        response = await apiClient.post(
+          config.endpoints.productos.create,
+          formDataToSend
+        );
+      }
 
       if (response.status === 200 || response.status === 201) {
         Swal.fire({
           icon: "success",
-          title: "Producto añadido exitosamente",
+          title: isEdit ? "Producto actualizado exitosamente" : "Producto añadido exitosamente",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
         closeModal();
+        await onSuccess?.();
         setIsLoading(false);
-        onProductAdded?.();
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: response.data.message || "Error al procesar la respuesta del servidor",
+          text: response.data.message || (isEdit ? "Error al actualizar el producto" : "Error al procesar la respuesta del servidor"),
         });
         setIsLoading(false);
       }
     } catch (error: any) {
-      console.error("Error al enviar los datos:", error);
+      console.error("❌ Error al enviar los datos:", error);
       let errorMessage = "Ocurrió un error al procesar la solicitud.";
       if (error.response?.data?.errors) {
         const errs = error.response.data.errors;
@@ -594,11 +797,11 @@ const AddProduct = ({ onProductAdded }: Props) => {
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else {
-        errorMessage = error.message;
+        errorMessage = error.message || String(error);
       }
       Swal.fire({
         icon: "error",
-        title: "Error de Validación",
+        title: isEdit ? "Error de Guardado" : "Error de Validación",
         text: `❌ ${errorMessage}`,
       });
       setIsLoading(false);
@@ -621,12 +824,22 @@ const AddProduct = ({ onProductAdded }: Props) => {
 
   return (
     <>
-      <button onClick={openModal} className="relative flex items-center justify-center w-full bg-teal-600 text-white hover:bg-teal-700 px-12 transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Agregar Producto
-      </button>
+      {isEdit ? (
+        <button
+          className="p-2 text-green-600 hover:text-green-800 transition hover:cursor-pointer"
+          title="Editar"
+          onClick={openModal}
+        >
+          <FaEdit size={18} />
+        </button>
+      ) : (
+        <button onClick={openModal} className="relative flex items-center justify-center w-full bg-teal-600 text-white hover:bg-teal-700 px-12 transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Agregar Producto
+        </button>
+      )}
 
       {showModal && (
         <div className="dialog-overlay">
@@ -634,7 +847,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
             
             {/* Cabecera del Diálogo */}
             <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !m-0 p-4 md:p-6 bg-teal-700 text-white flex-shrink-0">
-              <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">Agregar Producto</h4>
+              <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">{isEdit ? "Editar Producto" : "Agregar Producto"}</h4>
               <button
                 type="button"
                 className="text-white hover:text-red-400 transition-all duration-300 cursor-pointer text-3xl"
@@ -690,7 +903,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         onChange={handleChange}
                         type="text"
                         name="nombre"
-                        placeholder="Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"
+                        placeholder={isEdit ? "Nombre del producto..." : "Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
@@ -725,7 +938,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         onChange={handleChange}
                         type="text"
                         name="subtitulo"
-                        placeholder="Ej: Aumente la vida útil de sus chifles"
+                        placeholder={isEdit ? "Subtitulo del producto..." : "Ej: Aumente la vida útil de sus chifles"}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
@@ -848,7 +1061,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                     </div>
                   </div>
                 )}
-
+                
                 {/* 3. FICHA TÉCNICA Y DIMENSIONES */}
                 {activeTab === "especificaciones" && (
                   <div className="space-y-6">
@@ -939,7 +1152,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                         <button
                           type="button"
                           onClick={addNewSpecification}
-                          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition h-10 w-full sm:w-auto"
+                          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition h-10 w-full sm:w-auto cursor-pointer"
                         >
                           + Añadir
                         </button>
@@ -959,7 +1172,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                               <button
                                 type="button"
                                 onClick={() => eliminarEspecificacion(index)}
-                                className="text-red-500 hover:text-red-700 p-1"
+                                className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1127,7 +1340,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
                           
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
                               type="text"
@@ -1150,7 +1363,7 @@ const AddProduct = ({ onProductAdded }: Props) => {
                                   className="h-28 object-contain rounded"
                                 />
                                 <label className="text-xs text-teal-600 hover:text-teal-800 underline font-bold cursor-pointer transition">
-                                  Cambiar archivo
+                                  Reemplazar archivo
                                   <input
                                     type="file"
                                     accept="image/*"
@@ -1174,9 +1387,9 @@ const AddProduct = ({ onProductAdded }: Props) => {
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto SEO Alternativo:</label>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
                             <input
                               ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
                               type="text"
@@ -1497,4 +1710,4 @@ const AddProduct = ({ onProductAdded }: Props) => {
   );
 };
 
-export default AddProduct;
+export default ProductForm;

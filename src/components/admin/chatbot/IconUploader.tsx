@@ -78,11 +78,20 @@ export default function IconModal() {
       // Evaluación de estados bajo los estándares de tu apiClient
       if (response.status === 200 || response.status === 201) {
         alert('¡Icono actualizado con éxito!');
+        
+        // ✅ Actualiza el window global para que la previsualización se refresque
+        if (typeof window !== 'undefined') {
+          (window as any).__chatbotPreviewSettings = {
+            iconUrl: response.data.url_icono,
+            colorInicial: response.data.color_inicial,
+            colorFinal: response.data.color_final,
+          };
+        }
+        
         setSelectedFile(null);
         setPreviewUrl(null);
-        // Volvemos a consultar para sincronizar la nueva ruta guardada en el servidor
         await fetchCurrentIcon();
-      } else {
+      }else {
         alert('Hubo un error al subir el icono.');
       }
     } catch (error: any) {
@@ -110,27 +119,22 @@ export default function IconModal() {
    * 4. RENDERIZADOR SEGURO DE LA IMAGEN (Basado en ProductosTabla)
    */
   const getFinalSrc = () => {
-    if (previewUrl) return previewUrl; // Si hay vista previa local, la muestra primero
+    if (previewUrl) return previewUrl;
   
-    // 🛡️ CONTROL DE SEGURIDAD: Si por alguna razón iconUrl NO es un texto...
     if (!iconUrl || typeof iconUrl !== 'string') {
-      
-      // Si accidentalmente es el objeto completo de Laravel, intentamos rescatar la URL interna
       if (iconUrl && typeof iconUrl === 'object' && 'url_icono' in iconUrl) {
         const urlRescatada = (iconUrl as any).url_icono;
         if (typeof urlRescatada === 'string') {
+          // ✅ Siempre agregar la URL del backend
           return urlRescatada.startsWith("http") ? urlRescatada : `${config.apiUrl}${urlRescatada}`;
         }
       }
-      
-      // Si no se puede rescatar nada, cae seguro al ícono por defecto en lugar de romper la app
       return placeholderSRC;
     }
   
-    // Si ya es el placeholder de fábrica, lo devuelve tal cual
     if (iconUrl === placeholderSRC) return placeholderSRC;
   
-    // Si es un string normal, opera de forma idéntica a antes
+    // ✅ Agregar config.apiUrl si no tiene http
     return iconUrl.startsWith("http") ? iconUrl : `${config.apiUrl}${iconUrl}`;
   };
 

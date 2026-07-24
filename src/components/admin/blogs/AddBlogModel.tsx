@@ -669,40 +669,7 @@ const handleAddLink = () => {
       return;
     }
 
-    // Nombre, Alt y Tittle de la miniatura son obligatorios
-    if (
-      !formData.miniatura_nombre ||
-      formData.miniatura_nombre.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El nombre de la miniatura es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (!formData.miniatura_alt || formData.miniatura_alt.trim() === "") {
-      Swal.fire(
-        "Error",
-        "El texto ALT de la miniatura es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (
-      !formData.miniatura_tittle ||
-      formData.miniatura_tittle.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El tittle de la miniatura es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
+
 
     // hero_image obligatoria solo en creación
     if (!blogToEdit && !formData.hero_image) {
@@ -711,40 +678,7 @@ const handleAddLink = () => {
       return;
     }
 
-    // Nombre, Alt y Tittle de la imagen principal son obligatorios
-    if (
-      !formData.hero_image_nombre ||
-      formData.hero_image_nombre.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El nombre de la imagen principal es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (!formData.hero_image_alt || formData.hero_image_alt.trim() === "") {
-      Swal.fire(
-        "Error",
-        "El texto ALT de la imagen principal es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
-    if (
-      !formData.hero_image_tittle ||
-      formData.hero_image_tittle.trim() === ""
-    ) {
-      Swal.fire(
-        "Error",
-        "El tittle de la imagen principal es obligatorio.",
-        "error",
-      );
-      setIsSaving(false);
-      return;
-    }
+ 
 
     // Validación imágenes adicionales y párrafos
     if (
@@ -761,32 +695,7 @@ const handleAddLink = () => {
       return;
     }
 
-    // Validación img_alt
-    if (
-      formData.imagenes.some(
-        (img) => !img.img_alt || img.img_alt.trim() === "",
-      )
-    ) {
-      Swal.fire("Error", "Cada imagen debe tener texto ALT.", "error");
-      setIsSaving(false);
-      return;
-    }
 
-    if (
-      formData.imagenes.some((img) => !img.img_nombre || img.img_nombre.trim() === "")
-    ) {
-      Swal.fire("Error", "Cada imagen debe tener un nombre.", "error");
-      setIsSaving(false);
-      return;
-    }
-
-    if (
-      formData.imagenes.some((img) => !img.img_tittle || img.img_tittle.trim() === "")
-    ) {
-      Swal.fire("Error", "Cada imagen debe tener un título.", "error");
-      setIsSaving(false);
-      return;
-    }
 
     try {
       setIsSubmitting(true);
@@ -864,57 +773,72 @@ const handleAddLink = () => {
           "imagen_tipo[]",
           item.imagen instanceof File ? "file" : "existing",
         );
-
-        // SIEMPRE enviar img_alt
-        formDataToSend.append("img_alt[]", item.img_alt || "");
-
-        formDataToSend.append("img_nombre[]", item.img_nombre || "");
-
-        formDataToSend.append("img_tittle[]", item.img_tittle || "");
-
+      
+        if (item.img_alt) {
+          formDataToSend.append("img_alt[]", item.img_alt);
+        }
+      
+        if (item.img_nombre) {
+          formDataToSend.append("img_nombre[]", item.img_nombre);
+        }
+      
+        if (item.img_tittle) {
+          formDataToSend.append("img_tittle[]", item.img_tittle);
+        }
+      
         if (item.imagen instanceof File) {
           formDataToSend.append("imagenes[]", item.imagen);
         } else if (item.id) {
           formDataToSend.append("imagen_ids[]", item.id.toString());
         }
-
+      
         // SIEMPRE enviar párrafo
         formDataToSend.append("parrafos[]", item.parrafo || "");
       });
+
       if (blogToEdit) {
         formDataToSend.append("_method", "PUT");
       }
-
-      const response = await apiClient.post(url, formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        const data = response.data;
-        await Swal.fire({
-          icon: "success",
-          title: blogToEdit
-            ? "Blog actualizado con éxito"
-            : "Blog creado con éxito",
-          text: `El blog "${data.data.titulo}" ha sido ${
-            blogToEdit ? "actualizado" : "creado"
-          } correctamente.`,
-          confirmButtonColor: "#3085d6",
-        });
-        closeModal();
-        onBlogAdded();
-      } else {
-        const data = response.data;
-        if (data.errors) {
-          const errores = Object.entries(data.errors)
-            .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
-            .join("\n");
-          throw new Error(`Errores de validación:\n${errores}`);
+      try {
+        console.log("FormData a enviar:");
+        for (let [key, value] of formDataToSend.entries()) {
+          console.log(`${key}: ${value}`);
         }
-        throw new Error(data.message || "Error al procesar el blog");
+        const response = await apiClient.post(url, formDataToSend, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        if (response.status === 200 || response.status === 201) {
+          const data = response.data;
+          await Swal.fire({
+            icon: "success",
+            title: blogToEdit
+              ? "Blog actualizado con éxito"
+              : "Blog creado con éxito",
+            text: `El blog "${data.data.titulo}" ha sido ${
+              blogToEdit ? "actualizado" : "creado"
+            } correctamente.`,
+            confirmButtonColor: "#3085d6",
+          });
+          closeModal();
+          onBlogAdded();
+        } else {
+          const data = response.data;
+          if (data.errors) {
+            const errores = Object.entries(data.errors)
+              .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
+              .join("\n");
+            throw new Error(`Errores de validación:\n${errores}`);
+          }
+          throw new Error(data.message || "Error al procesar el blog");
+        }
+      } catch (error: any) {
+        console.log("Errores de validación:", error.response?.data?.errors);
+        throw error;
       }
+
+      
     } catch (error: any) {
       console.error("Error al enviar el blog:", error);
 
@@ -1267,7 +1191,6 @@ const handleAddLink = () => {
                       value={formData.miniatura_nombre}
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
-                      required
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1281,7 +1204,6 @@ const handleAddLink = () => {
                       value={formData.miniatura_alt}
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
-                      required
                     />
                   </div>
                   <div className="form-input">
@@ -1294,7 +1216,6 @@ const handleAddLink = () => {
                       value={formData.miniatura_tittle}
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
-                      required
                     />
                   </div>
                     
@@ -1517,8 +1438,6 @@ const handleAddLink = () => {
                           value={formData.hero_image_nombre}
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
-                          required
-
                         />
                       </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -1533,7 +1452,6 @@ const handleAddLink = () => {
                           value={formData.hero_image_alt}
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
-                          required
                           placeholder="Ingrese Alt de la Imagen"
                         />
                       </div>
@@ -1547,7 +1465,6 @@ const handleAddLink = () => {
                           value={formData.hero_image_tittle}
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
-                          required
                           placeholder="Ingrese Título de la Imagen"
                         />
                       </div>
@@ -1715,7 +1632,6 @@ const handleAddLink = () => {
                             onChange={(e) => handleImgNombreChange(e, index)}
                             placeholder="Nombre de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
                           />
                         </div>
                         {/* Tittle */}
@@ -1730,7 +1646,6 @@ const handleAddLink = () => {
                             onChange={(e) => handleImgTittleChange(e, index)}
                             placeholder="Título de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
                           />
                         </div>
                         {/* Alt */}
@@ -1744,7 +1659,6 @@ const handleAddLink = () => {
                             onChange={(e) => handleImgAltChange(e, index)}
                             placeholder="Describe brevemente el contenido de la imagen"
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                            required
                           />
                         </div>
 
