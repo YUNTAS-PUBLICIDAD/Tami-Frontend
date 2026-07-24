@@ -11,6 +11,7 @@ import { slugify } from "../../../utils/slugify.ts";
 import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor.tsx";
 import type { ImagenForm, ImagenEditada } from "../../../models/Product.ts";
 
+
 // Función de validación de URL
 const isValidUrl = (url: string): boolean => {
   try {
@@ -177,6 +178,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   };
 
   const getFullImageUrl = (url:string) => {
+
     if (!url) return "";
     if (url.startsWith("http")) return url;
     const base = config.apiUrl.replace(/\/$/, "");   // quita "/" final si existe
