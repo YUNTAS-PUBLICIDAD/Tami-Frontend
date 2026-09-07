@@ -33,6 +33,10 @@ const ChatbotWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [icono, setIcono] = useState(robotIcon);
+  const [preguntasFrecuentes, setPreguntasFrecuentes] = useState<Opcion[]>([
+    { label: '¿Qué productos ofrecen?', valor: '¿Qué productos ofrecen?' },
+    { label: '¿Cómo hablo con un asesor?', valor: '¿Cómo hablo con un asesor?' },
+  ]);
   const [activeSalute, setActiveSalute] = useState<string>(GREETING_REPLY);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,15 +76,12 @@ const ChatbotWidget: React.FC = () => {
     };
   }, []);
 
-  // If we have only the greeting message shown and default context, move to expecting product
   useEffect(() => {
     try {
       if (messages.length === 1 && messages[0].role === 'bot' && context?.paso === 'menu_principal') {
         setContext((prev) => ({ ...(prev || { paso: 'menu_principal' }), paso: 'esperando_producto' }));
       }
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) { }
   }, [messages, context]);
 
   const bubbleMessages = [
@@ -182,18 +183,27 @@ const ChatbotWidget: React.FC = () => {
   const reiniciarChat = () => {
     if (isLoading || isResetting) return;
     setIsResetting(true);
+
     setTimeout(() => {
       setMessages([{
         role: 'bot',
         tipo: 'texto',
         respuesta: activeSalute,
       }]);
+
       setContext({ paso: 'menu_principal' });
       setInput('');
+      setPreguntasFrecuentes([
+        { label: '¿Qué productos ofrecen?', valor: '¿Qué productos ofrecen?' },
+        { label: '¿Cómo hablo con un asesor?', valor: '¿Cómo hablo con un asesor?' },
+      ]);
+
       try {
         localStorage.removeItem(MESSAGES_KEY);
         localStorage.removeItem(CONTEXT_KEY);
+        localStorage.removeItem('chatSessionId');
       } catch { }
+
       setTimeout(() => { setIsResetting(false); }, 180);
     }, 2000);
   };
@@ -261,8 +271,9 @@ const ChatbotWidget: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1200));
 
       setMessages(prev => [...prev, botMessage]);
-
-    } catch (error) {
+      setPreguntasFrecuentes(botMessage.preguntasFrecuentes || []);
+    }
+    catch (error) {
       console.error("Error en Chatbot Fallback:", error);
       await new Promise(resolve => setTimeout(resolve, 1000));
       setMessages(prev => [...prev, {
@@ -284,6 +295,7 @@ const ChatbotWidget: React.FC = () => {
     context,
     isLoading,
     isResetting,
+    preguntasFrecuentes,
     input,
     messagesEndRef,
     inputRef,
