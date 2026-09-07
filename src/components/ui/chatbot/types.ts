@@ -31,6 +31,7 @@ export interface Message {
   tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
   respuesta: string;
   opciones?: Opcion[];
+  preguntasFrecuentes?: Opcion[];
   productos?: ProductoInfo[];
   producto?: ProductoInfo;
   link_whatsapp?: string;

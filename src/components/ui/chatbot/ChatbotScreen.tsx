@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { RefObject } from 'react';
 import ChatbotIcon from './ChatbotIcon';
 import { useChatbotConfig } from 'src/hooks/useChatbotConfig';
@@ -37,6 +37,7 @@ interface ChatbotScreenProps {
   messages?: Message[];
   context?: ChatContext | null;
   isLoading?: boolean;
+  preguntasFrecuentes?: Opcion[];
   isResetting?: boolean;
   input?: string;
   messagesEndRef?: RefObject<HTMLDivElement | null>;
@@ -56,15 +57,15 @@ const defaultMessages: Message[] = [
   },
 ];
 
-const noop = () => {};
+const noop = () => { };
 
 const getSafeWhatsappUrl = (rawLink?: string): string => {
   if (!rawLink) return '#';
-  
+
   if (rawLink.startsWith('http://') || rawLink.startsWith('https://')) {
     return rawLink;
   }
-  
+
   const isEncoded = /%[0-[#9A-Fa-f]{2}/.test(rawLink);
   const textQuery = isEncoded ? rawLink : encodeURIComponent(rawLink);
   return `https://wa.me/51978883199?text=${textQuery}`;
@@ -75,6 +76,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   messages = defaultMessages,
   context = null,
   isLoading = false,
+  preguntasFrecuentes = [],
   isResetting = false,
   input = '',
   messagesEndRef,
@@ -88,6 +90,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   const { colorInicial, colorFinal } = useChatbotConfig();
 
   const isInteractive = !!messagesEndRef;
+  const [showFaq, setShowFaq] = useState(false);
 
   return (
     <div className="w-[90vw] sm:w-[380px] h-[600px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-10px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-white/20 transition-all transform origin-bottom animate-in slide-in-from-bottom-10 duration-500 pointer-events-auto">
@@ -152,11 +155,10 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
             key={index}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}
           >
-            <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${
-              msg.role === 'user'
-                ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
-                : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
-            }`}>
+            <div className={`max-w-[88%] rounded-[24px] px-5 py-4 shadow-sm transition-all ${msg.role === 'user'
+              ? 'bg-gradient-to-br from-[#015f86] to-[#087ca7] text-white rounded-br-none shadow-[#015f86]/10'
+              : 'bg-white text-gray-800 rounded-bl-none border border-gray-100/50'
+              }`}>
               <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                 {msg.respuesta}
               </p>
@@ -230,10 +232,60 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
                   Click Aqui
                 </a>
               )}
-                
+
             </div>
           </div>
         ))}
+
+        {/* Preguntas frecuentes */}
+        {preguntasFrecuentes.length > 0 && (
+          <div className="mt-2 self-start">
+            <button
+              type="button"
+              onClick={() => setShowFaq(prev => !prev)}
+              disabled={isLoading || isResetting}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-medium rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span>Preguntas frecuentes</span>
+
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-transform duration-200 ${showFaq ? 'rotate-180' : ''}`}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {showFaq && (
+              <div className="mt-2 ml-1 flex flex-col gap-2">
+                {preguntasFrecuentes.map((opcion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    disabled={isLoading || isResetting}
+                    onClick={() => {
+                      onInputChange(opcion.valor);
+                      setShowFaq(false);
+                      setTimeout(() => {
+                        inputRef?.current?.focus();
+                      }, 50);
+                    }}
+                    className="max-w-[280px] px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs text-left rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {opcion.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {isLoading && (
           <div className="flex justify-start">
