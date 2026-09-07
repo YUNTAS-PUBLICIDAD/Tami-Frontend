@@ -265,8 +265,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         <div className="flex items-center justify-center w-full h-full">
             <img
                 src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
-                alt={producto.nombre}
-                title={producto.nombre}
+                alt={producto.imagenes[0].texto_alt_SEO || producto.nombre}
+                title={producto.imagenes[0].titulo || producto.nombre}
                 className="w-full max-w-md md:max-w-lg h-auto object-contain"
                 fetchPriority="high"
             />
@@ -309,9 +309,9 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                         <div className="flex flex-col items-center">
                             <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
                                 <img
-                                    title={producto.nombre}
+                                    title={producto.imagenes[0].titulo || producto.nombre}
                                     src={getFullImageUrl(productViewer)}
-                                    alt={producto.titulo}
+                                    alt={producto.imagenes[0].texto_alt_SEO || producto.nombre}
                                     className="w-full h-full object-contain"
                                     loading="lazy"
                                 />
@@ -324,7 +324,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                                         onClick={() => setProductViewer(image.url_imagen)}
                                     >
                                         <img
-                                            title={image.texto_alt_SEO || producto.nombre}
+                                            title={image.titulo || producto.nombre}
                                             src={getFullImageUrl(image.url_imagen)}
                                             alt={image.texto_alt_SEO || `Vista de ${producto.nombre}`}
                                             className="w-full h-full object-contain"
