@@ -226,8 +226,8 @@ const ProductSlideshow = () => {
                 <div className="relative">
                   <img
                     src={getImageUrl(item)}
-                    alt={String(item.titulo)}
-                    title={String(item.titulo)}
+                    alt={String(item.imagenes?.[0]?.texto_alt_SEO)}
+                    title={String(item.imagenes?.[0]?.titulo)}
                     className="w-full h-80 object-cover"
                     loading="lazy"
                     decoding="async"
@@ -288,8 +288,8 @@ const ProductSlideshow = () => {
               <div className="relative">
                 <img
                   src={getImageUrl(item)}
-                  alt={String(item.titulo)}
-                  title={String(item.titulo)}
+                  alt={String(item.imagenes?.[0]?.texto_alt_SEO)}
+                  title={String(item.imagenes?.[0]?.titulo)}
                   className="w-full h-80 object-cover"
                   loading="lazy"
                   decoding="async"

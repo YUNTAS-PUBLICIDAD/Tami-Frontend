@@ -631,8 +631,8 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
             {hasIntersected && (
               <img
                 src={imageSrc}
-                alt={producto.nombre}
-                title={producto.nombre}
+                alt={producto.imagenes?.[0]?.texto_alt_SEO}
+                title={producto.imagenes?.[0]?.titulo}    
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
@@ -663,8 +663,8 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
             {hasIntersected && (
               <img
                 src={imageSrc}
-                alt={producto.nombre}
-                title={producto.nombre}
+                alt={producto.imagenes?.[0]?.texto_alt_SEO}
+                title={producto.imagenes?.[0]?.titulo}  
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
                 className={`block object-cover w-full h-full transition-all bg-[#f8f8f8] duration-500 ease-out group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
