@@ -140,6 +140,14 @@ const ClientesTable = () => {
 
   return (
     <div className="container mx-auto p-4">
+
+      <div className="mb-6">
+        <p className="text-gray-500 text-sm mb-1 font-medium">
+          Administración <span className="mx-1 font-normal">&gt;</span>{' '}
+          <span className="font-semibold text-gray-800 dark:text-gray-200">Gestión de Clientes</span>
+        </p>
+      </div>
+
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-6 rounded-t-2xl">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -217,82 +225,134 @@ const ClientesTable = () => {
           </div>
         </div>
 
-{/* Vista tabla (desktop / tablet) */}
-<div className="hidden md:block px-8 pb-6">
-  <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700">
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {[
-            "ID",
-            "NOMBRE",
-            "EMAIL",
-            "TELÉFONO",
-            "PRODUCTO",
-            "ORIGEN",
-            ...(monitoringMode ? ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"] : []),
-            "FECHA DE INICIO",
-            "ACCIÓN"
-          ].map((header, index) => {
-            const isMonitoringCol = ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"].includes(header);
-            return (
-              <TableHead
-                key={index}
-                className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300" : ""}`}
-              >
-                {header}
-              </TableHead>
-            );
-          })}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {displayedClientes.length === 0 ? (
-          <EmptyState term={searchTerm} mode={monitoringMode} />
-        ) : (
-          <>
-            {displayedClientes.map((item) => (
-              <TableRow key={item.id} className="hover:bg-teal-50/50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                <TableCell className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
-                  #{item.id}
-                </TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell className="text-blue-500">{item.email}</TableCell>
-                <TableCell >
-                  {item.celular || (
-                    <span className="text-gray-400 italic text-xs">No disponible</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <span className="text-gray-500 dark:text-gray-300 text-sm">{item.producto ?? "-"}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-gray-500 dark:text-gray-300 text-sm">{item.source ?? "-"}</span>
-                </TableCell>
-                {monitoringMode && (
+        {/* Vista tabla (desktop / tablet) */}
+        <div className="hidden md:block px-8 pb-6">
+          <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {[
+                    "ID",
+                    "NOMBRE",
+                    "EMAIL",
+                    "TELÉFONO",
+                    "PRODUCTO",
+                    "ORIGEN",
+                    ...(monitoringMode ? ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"] : []),
+                    "FECHA DE INICIO",
+                    "ACCIÓN"
+                  ].map((header, index) => {
+                    const isMonitoringCol = ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"].includes(header);
+                    return (
+                      <TableHead
+                        key={index}
+                        className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300" : ""}`}
+                      >
+                        {header}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {displayedClientes.length === 0 ? (
+                  <EmptyState term={searchTerm} mode={monitoringMode} />
+                ) : (
                   <>
-                    <WhatsappStatCell
-                      count={item.stats?.whatsapp?.popup?.total_messages}
-                      iconColor="text-green-500 dark:text-green-400"
-                      activeColor="text-green-600 dark:text-green-400"
-                    />
-                    <WhatsappStatCell
-                      count={item.stats?.whatsapp?.campaign?.total_messages}
-                      iconColor="text-blue-500 dark:text-blue-400"
-                      activeColor="text-blue-600 dark:text-blue-400"
-                    />
-                    <TableCell className="bg-purple-50/50 dark:bg-purple-900/20 whitespace-nowrap">
-                      <span className="text-gray-500 dark:text-gray-400 text-xs">
-                        {getLatestDate(item.stats?.whatsapp?.popup?.ult_envio, item.stats?.whatsapp?.campaign?.ult_envio)}
-                      </span>
-                    </TableCell>
+                    {displayedClientes.map((item) => (
+                      <TableRow key={item.id} className="hover:bg-teal-50/50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                        <TableCell className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
+                          #{item.id}
+                        </TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell className="text-blue-500">{item.email}</TableCell>
+                        <TableCell >
+                          {item.celular || (
+                            <span className="text-gray-400 italic text-xs">No disponible</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-gray-500 dark:text-gray-300 text-sm">{item.producto ?? "-"}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-gray-500 dark:text-gray-300 text-sm">{item.source ?? "-"}</span>
+                        </TableCell>
+                        {monitoringMode && (
+                          <>
+                            <WhatsappStatCell
+                              count={item.stats?.whatsapp?.popup?.total_messages}
+                              iconColor="text-green-500 dark:text-green-400"
+                              activeColor="text-green-600 dark:text-green-400"
+                            />
+                            <WhatsappStatCell
+                              count={item.stats?.whatsapp?.campaign?.total_messages}
+                              iconColor="text-blue-500 dark:text-blue-400"
+                              activeColor="text-blue-600 dark:text-blue-400"
+                            />
+                            <TableCell className="bg-purple-50/50 dark:bg-purple-900/20 whitespace-nowrap">
+                              <span className="text-gray-500 dark:text-gray-400 text-xs">
+                                {getLatestDate(item.stats?.whatsapp?.popup?.ult_envio, item.stats?.whatsapp?.campaign?.ult_envio)}
+                              </span>
+                            </TableCell>
+                          </>
+                        )}
+                        <TableCell className="whitespace-nowrap">
+                          <span className="text-gray-500 dark:text-gray-300 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-3 items-center">
+                            <button
+                              className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-colors duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-700"
+                              title="Editar"
+                              onClick={() => openModalForEdit(item)}
+                            >
+                              <FaEdit size={18} />
+                            </button>
+                            <button
+                              className="p-2 rounded-full text-red-500 dark:text-red-400 border border-transparent transition-colors duration-200 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-200 dark:hover:border-red-700"
+                              title="Eliminar"
+                              onClick={() => openDeleteModal(item.id)}
+                            >
+                              <FaTrash size={18} />
+                            </button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </>
                 )}
-                <TableCell className="whitespace-nowrap">
-                  <span className="text-gray-500 dark:text-gray-300 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-3 items-center">
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        {/* Vista mobile */}
+        <div className="md:hidden px-4 sm:px-6 pb-4 space-y-4">
+          {displayedClientes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-8">
+              <div className="bg-teal-50 dark:bg-teal-900/30 p-6 rounded-full">
+                <FaUsers className="h-10 w-10 text-teal-300 dark:text-teal-500" />
+              </div>
+              <p className="text-lg font-medium text-gray-600 dark:text-gray-300 mt-2 text-center">
+                {searchTerm ? "No se encontraron clientes que coincidan con tu búsqueda" : "No hay clientes registrados"}
+              </p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm text-center max-w-xs">
+                {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
+              </p>
+            </div>
+          ) : (
+            displayedClientes.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-teal-200 dark:hover:border-teal-700 min-w-0"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs text-teal-700 font-semibold">#{item.id}</span>
+                    <p className="font-medium text-gray-800 dark:text-gray-100 truncate">{item.name}</p>
+                    <p className="text-blue-500 text-sm truncate">{item.email}</p>
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
                     <button
                       className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-colors duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-700"
                       title="Editar"
@@ -308,109 +368,57 @@ const ClientesTable = () => {
                       <FaTrash size={18} />
                     </button>
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </>
-        )}
-      </TableBody>
-    </Table>
-  </div>
-</div>
+                </div>
 
-{/* Vista mobile */}
-<div className="md:hidden px-4 sm:px-6 pb-4 space-y-4">
-  {displayedClientes.length === 0 ? (
-    <div className="flex flex-col items-center justify-center gap-2 py-8">
-      <div className="bg-teal-50 dark:bg-teal-900/30 p-6 rounded-full">
-        <FaUsers className="h-10 w-10 text-teal-300 dark:text-teal-500" />
-      </div>
-      <p className="text-lg font-medium text-gray-600 dark:text-gray-300 mt-2 text-center">
-        {searchTerm ? "No se encontraron clientes que coincidan con tu búsqueda" : "No hay clientes registrados"}
-      </p>
-      <p className="text-gray-400 dark:text-gray-500 text-sm text-center max-w-xs">
-        {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
-      </p>
-    </div>
-  ) : (
-    displayedClientes.map((item) => (
-      <div
-        key={item.id}
-        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-teal-200 dark:hover:border-teal-700 min-w-0"
-      >
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <span className="text-xs text-teal-700 font-semibold">#{item.id}</span>
-            <p className="font-medium text-gray-800 dark:text-gray-100 truncate">{item.name}</p>
-            <p className="text-blue-500 text-sm truncate">{item.email}</p>
-          </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <button
-              className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-colors duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-700"
-              title="Editar"
-              onClick={() => openModalForEdit(item)}
-            >
-              <FaEdit size={18} />
-            </button>
-            <button
-              className="p-2 rounded-full text-red-500 dark:text-red-400 border border-transparent transition-colors duration-200 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-200 dark:hover:border-red-700"
-              title="Eliminar"
-              onClick={() => openDeleteModal(item.id)}
-            >
-              <FaTrash size={18} />
-            </button>
-          </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-3 text-sm min-w-0">
+                  <div className="min-w-0">
+                    <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Teléfono</span>
+                    <span className="break-words">
+                      {item.celular || <span className="text-gray-400 italic text-xs">No disponible</span>}
+                    </span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Producto</span>
+                    <span className="text-gray-500 dark:text-gray-300 break-words">{item.producto ?? "-"}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Origen</span>
+                    <span className="text-gray-500 dark:text-gray-300 break-words">{item.source ?? "-"}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Fecha inicio</span>
+                    <span className="text-gray-500 dark:text-gray-300">
+                      {item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}
+                    </span>
+                  </div>
+                </div>
+
+                {monitoringMode && (
+                  <div className="mt-3 pt-3 border-t border-purple-100 dark:border-purple-900/40 grid grid-cols-3 gap-2 text-xs">
+                    <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 text-center">
+                      <span className="block text-purple-700 dark:text-purple-300 font-medium">Popup</span>
+                      <span className="text-green-600 dark:text-green-400 font-semibold">
+                        {item.stats?.whatsapp?.popup?.total_messages ?? 0}
+                      </span>
+                    </div>
+                    <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 text-center">
+                      <span className="block text-purple-700 dark:text-purple-300 font-medium">Campaña</span>
+                      <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                        {item.stats?.whatsapp?.campaign?.total_messages ?? 0}
+                      </span>
+                    </div>
+                    <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 text-center">
+                      <span className="block text-purple-700 dark:text-purple-300 font-medium">Últ. envío</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        {getLatestDate(item.stats?.whatsapp?.popup?.ult_envio, item.stats?.whatsapp?.campaign?.ult_envio)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
-
-        <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-3 text-sm min-w-0">
-          <div className="min-w-0">
-            <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Teléfono</span>
-            <span className="break-words">
-              {item.celular || <span className="text-gray-400 italic text-xs">No disponible</span>}
-            </span>
-          </div>
-          <div className="min-w-0">
-            <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Producto</span>
-            <span className="text-gray-500 dark:text-gray-300 break-words">{item.producto ?? "-"}</span>
-          </div>
-          <div className="min-w-0">
-            <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Origen</span>
-            <span className="text-gray-500 dark:text-gray-300 break-words">{item.source ?? "-"}</span>
-          </div>
-          <div className="min-w-0">
-            <span className="block text-[11px] text-gray-400 uppercase tracking-wide">Fecha inicio</span>
-            <span className="text-gray-500 dark:text-gray-300">
-              {item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}
-            </span>
-          </div>
-        </div>
-
-        {monitoringMode && (
-          <div className="mt-3 pt-3 border-t border-purple-100 dark:border-purple-900/40 grid grid-cols-3 gap-2 text-xs">
-            <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 text-center">
-              <span className="block text-purple-700 dark:text-purple-300 font-medium">Popup</span>
-              <span className="text-green-600 dark:text-green-400 font-semibold">
-                {item.stats?.whatsapp?.popup?.total_messages ?? 0}
-              </span>
-            </div>
-            <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 text-center">
-              <span className="block text-purple-700 dark:text-purple-300 font-medium">Campaña</span>
-              <span className="text-blue-600 dark:text-blue-400 font-semibold">
-                {item.stats?.whatsapp?.campaign?.total_messages ?? 0}
-              </span>
-            </div>
-            <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-2 text-center">
-              <span className="block text-purple-700 dark:text-purple-300 font-medium">Últ. envío</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                {getLatestDate(item.stats?.whatsapp?.popup?.ult_envio, item.stats?.whatsapp?.campaign?.ult_envio)}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-    ))
-  )}
-</div>
 
         {/* Paginación */}
         {
