@@ -1,24 +1,47 @@
 import { config, getApiUrl } from "config";
-import { useEffect, useState, useCallback, useMemo, useRef, type JSX } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { Label } from "recharts";
 import type Producto from "src/models/Product";
 
 const CACHE_KEY = "productos_cache";
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const CARD_RADIUS = 16;
 
-//Editar y añadir categorias
+// Editar y añadir categorias
 const CATEGORIAS = [
-  { key: "Negocio", label: "NEGOCIO", color: "#00B6FF" },
-  { key: "Maquinaria", label: "MAQUINARIA", color: "#04B088" },
+  { key: "negocio", label: "NEGOCIO", color: "#00B6FF" },
+  { key: "maquinaria", label: "MAQUINARIA", color: "#04B088" },
   { key: "decoracion", label: "DECORACIÓN", color: "#5D39FB" },
+  { key: "purificacion", label: "PURIFICACIÓN", color: "#0374A2" },
 ] as const;
 
 interface CacheData {
   data: Producto[];
   timestamp: number;
 }
+
+const normalize = (text: string = "") =>
+  text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim();
+
+const getCategoriaColor = (categoria: string) => {
+  switch (normalize(categoria)) {
+    case "negocio":
+      return "#00B6FF";
+    case "decoracion":
+      return "#5D39FB";
+    case "maquinaria":
+      return "#04B088";
+    case "purificacion":
+      return "#0374A2";
+    default:
+      return "#0374A2";
+  }
+};
 
 const getCachedData = (): Producto[] | null => {
   try {
@@ -59,16 +82,13 @@ export default function ListadoDeProductos() {
   const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
   const [orden, setOrden] = useState<"asc" | "desc" | "">("");
 
-  // Droppdown de categoria independiente para desktop y mobile
+  // Dropdown de categoria independiente para desktop y mobile
   const [categoriaOpenDesktop, setCategoriaOpenDesktop] = useState(false);
   const [categoriaOpenMobile, setCategoriaOpenMobile] = useState(false);
 
   useEffect(() => {
     console.log("productos:", productos.length);
-    console.log(
-      "secciones únicas:",
-      [...new Set(productos.map((p) => String(p.seccion)))]
-    );
+    console.log("secciones únicas:", [...new Set(productos.map((p) => String(p.seccion)))]);
   }, [productos]);
 
   useEffect(() => {
@@ -132,10 +152,10 @@ export default function ListadoDeProductos() {
         productos_relacionados: producto.productos_relacionados || [],
         imagenes: Array.isArray(producto.imagenes)
           ? producto.imagenes.map((img: any) => ({
-            url_imagen: img.url_imagen || img.url || "",
-            texto_alt_SEO: img.texto_alt_SEO || img.alt || "",
-            imageTitle: img.imageTitle || "",
-          }))
+              url_imagen: img.url_imagen || img.url || "",
+              texto_alt_SEO: img.texto_alt_SEO || img.alt || "",
+              imageTitle: img.imageTitle || "",
+            }))
           : [],
         stock: producto.stock,
         precio: parseFloat(producto.precio),
@@ -161,27 +181,18 @@ export default function ListadoDeProductos() {
     return () => abortControllerRef.current?.abort();
   }, [obtenerDatos]);
 
-  const procesarSecciones = useCallback(
-    (productos: Producto[]) => {
-      const secciones = ["Maquinaria", "Negocio", "Decoracion", "Purificacion"];
+  const procesarSecciones = useCallback((productos: Producto[]) => {
+    const secciones = ["Maquinaria", "Negocio", "Decoracion", "Purificacion"];
 
-      return secciones.map((nombreSeccion) => ({
-        nombre: nombreSeccion, // Mantenemos el nombre para renderizar el H2 correcto
-        productosDeLaSeccion: productos.filter(
-          (p) => normalize(p.seccion) === normalize(nombreSeccion)
-        ),
-      }));
-    },
-    []
-  );
+    return secciones.map((nombreSeccion) => ({
+      nombre: nombreSeccion,
+      productosDeLaSeccion: productos.filter(
+        (p) => normalize(p.seccion) === normalize(nombreSeccion)
+      ),
+    }));
+  }, []);
 
   /* -------------------- FILTROS Y ORDENAMIENTO -------------------- */
-  const normalize = (text: string) =>
-    text
-      ?.toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .trim();
 
   const handleLimpiarFiltros = useCallback(() => {
     setFiltroNombre("");
@@ -210,20 +221,16 @@ export default function ListadoDeProductos() {
         "productos filtrados:",
         filtrados.map((p) => ({
           nombre: p.nombre,
-          seccion: p.seccion
+          seccion: p.seccion,
         }))
       );
     }
 
     // Ordenamiento
     if (orden === "asc") {
-      filtrados = [...filtrados].sort((a, b) =>
-        a.nombre.localeCompare(b.nombre)
-      );
+      filtrados = [...filtrados].sort((a, b) => a.nombre.localeCompare(b.nombre));
     } else if (orden === "desc") {
-      filtrados = [...filtrados].sort((a, b) =>
-        b.nombre.localeCompare(a.nombre)
-      );
+      filtrados = [...filtrados].sort((a, b) => b.nombre.localeCompare(a.nombre));
     }
 
     return filtrados;
@@ -243,10 +250,7 @@ export default function ListadoDeProductos() {
         <button
           onClick={() => obtenerDatos(false)}
           disabled={refreshing}
-          className={`px-6 py-2 rounded-lg transition-colors ${refreshing
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-teal-600 hover:bg-teal-700 text-white"
-            }`}
+          className={`px-6 py-2 rounded-lg transition-colors ${refreshing ? "bg-gray-400 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700 text-white"}`}
         >
           {refreshing ? "Cargando..." : "Reintentar"}
         </button>
@@ -256,20 +260,18 @@ export default function ListadoDeProductos() {
 
   return (
     <div className="flex flex-col gap-4 p-8 w-full max-w-[1440px] mx-auto">
-
       {/* CORRECCIÓN SEO: Inclusión obligatoria del H1 del Catálogo */}
       <h1 className="text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4 tracking-wide text-center md:text-left border-gray-200">
         Catálogo de Maquinarias Industriales y Comerciales
       </h1>
 
-      <p className="text-1xl md:text-2xl font-regular text-[#015f86] mb-1 pb-4 tracking-wide text-center md:text-left border-b pb-4">
+      <p className="text-1xl md:text-2xl font-regular text-[#015f86] mb-1 pb-4 tracking-wide text-center md:text-left border-b">
         Encuentra el equipo que necesitas para tu negocio
       </p>
 
-      <div className="flex flex-col md:flex-row gap-8 w-full item-start">
-        {/* FILTROS DESKTOP - CORRECCIÓN SEO: Eliminados H2 y H3 de la barra lateral */}
+      <div className="flex flex-col md:flex-row gap-8 w-full items-start">
+        {/* FILTROS DESKTOP */}
         <aside className="md:w-4/12 xl:w-3/12 hidden sm:block md:sticky md:top-[160px] md:self-start">
-
           <FiltrosPanel
             filtroNombre={filtroNombre}
             setFiltroNombre={setFiltroNombre}
@@ -279,12 +281,10 @@ export default function ListadoDeProductos() {
             setCategoriaOpen={setCategoriaOpenDesktop}
             onLimpiar={handleLimpiarFiltros}
           />
-
         </aside>
 
         {/* FILTROS MOBILE */}
         <div className="block w-full m-auto sm:hidden relative">
-
           <FiltrosPanel
             filtroNombre={filtroNombre}
             setFiltroNombre={setFiltroNombre}
@@ -293,12 +293,12 @@ export default function ListadoDeProductos() {
             categoriaOpen={categoriaOpenMobile}
             setCategoriaOpen={setCategoriaOpenMobile}
             onLimpiar={handleLimpiarFiltros}
+            compact
           />
-
         </div>
 
         {/* SECCIÓN PRINCIPAL DE PRODUCTOS */}
-        <section className="w-full xl:w-9/12 flex flex-col gap-6 p-4 rounded-md shadow-[0_0_7px_rgba(0,0,0,0.25)] shadow-[#00786F] sm:shadow-none sm:rounded-none m-auto bg-gray-50/50 sm:bg-transparent">
+        <section className="w-full xl:w-9/12 flex flex-col gap-6 p-4 rounded-md shadow-[#00786F] sm:shadow-none sm:rounded-none m-auto bg-gray-50/50 sm:bg-transparent">
           <div className="flex flex-col sm:flex-row justify-end items-center pb-4">
             {/* Dropdown de Ordenamiento */}
             <div className="relative group">
@@ -342,7 +342,9 @@ export default function ListadoDeProductos() {
           {/* Mensaje si no hay productos */}
           {productosFiltrados.length === 0 && (
             <div className="text-center py-20 text-gray-500">
-              <p className="text-xl">No se encontraron productos. Intenta con otra búsqueda.</p>
+              <p className="text-xl">
+                No se encontraron productos. Intenta con otra búsqueda.
+              </p>
             </div>
           )}
         </section>
@@ -394,7 +396,8 @@ function FiltrosPanel({
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}
         />
       </div>
-      {/* Categoría: dropdown tipo acordeón (empuja el contenido de abajo) */}
+
+      {/* Categoría: dropdown tipo acordeón */}
       <div>
         <button
           type="button"
@@ -402,18 +405,19 @@ function FiltrosPanel({
           aria-expanded={categoriaOpen}
           className="flex items-center justify-between w-full py-1"
         >
-          <span className="font-bold text-[#009688] text-lg uppercase">CATEGORÍA</span>
-          <FaChevronDown
-            className={`text-[#009688] transition-transform duration-300 ease-in-out ${categoriaOpen ? "rotate-180" : "rotate-0"
-              }`}
-          />
+          <span className="font-bold text-[#009688] text-lg uppercase">
+            CATEGORÍA
+          </span>
+
+          {categoriaOpen ? (
+            <FaChevronUp className="text-[#009688]" />
+          ) : (
+            <FaChevronDown className="text-[#009688]" />
+          )}
         </button>
-        {/* Truco de grid-template-rows: permite animar de 0 a "auto" con
-            transición suave, sin medir alturas por JS. */}
-        <div
-          className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${categoriaOpen ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
-            }`}
-        >
+
+        {/* Animación del dropdown */}
+        <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${categoriaOpen ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"}`}>
           <div className="overflow-hidden">
             <div className="flex flex-col gap-3 pb-1">
               {CATEGORIAS.map((cat) => (
@@ -424,7 +428,9 @@ function FiltrosPanel({
                   compact={compact}
                   selected={filtroCategoria === cat.key}
                   onClick={() =>
-                    setFiltroCategoria(filtroCategoria === cat.key ? null : cat.key)
+                    setFiltroCategoria(
+                      filtroCategoria === cat.key ? null : cat.key
+                    )
                   }
                 />
               ))}
@@ -445,10 +451,9 @@ function FiltrosPanel({
     </div>
   );
 }
+
 /* -------------------- BOTÓN DE CATEGORÍA -------------------- */
-// Estado normal: fondo blanco, borde y texto del color de la categoría.
-// Hover o seleccionado: se rellena con el color de la categoría y el texto
-// pasa a blanco. Al deseleccionar, vuelve al estado normal.
+
 function CategoriaButton({
   label,
   color,
@@ -467,32 +472,21 @@ function CategoriaButton({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`${compact ? "py-3 text-base" : "py-3 px-0 text-lg"} rounded-xl font-bold uppercase shadow-md w-full border-2 transition-all duration-300 ease-out active:scale-95 hover:!text-white hover:shadow-lg hover:-translate-y-0.5 ${selected
-        ? "bg-[var(--cat-color)] text-white ring-2 ring-white scale-[1.02]"
-        : "bg-white hover:bg-[var(--cat-color)]"
-        }`}
-      style={
-        {
-          "--cat-color": color,
-          borderColor: color,
-          color: selected ? "#fff" : color,
-          boxShadow: selected
-            ? `0 4px 12px ${color}33`
-            : "0 2px 8px rgba(0,0,0,0.10)",
-        } as React.CSSProperties
-      }
+      className={`${compact ? "py-3 text-base" : "py-3 px-0 text-lg"} rounded-xl font-bold uppercase shadow-md w-full border-2 transition-all duration-300 ease-out active:scale-95 hover:!text-white hover:shadow-lg hover:-translate-y-0.5 ${selected ? "bg-[var(--cat-color)] text-white ring-2 ring-white scale-[1.02]" : "bg-white hover:bg-[var(--cat-color)]"}`}
+      style={{ "--cat-color": color, borderColor: color, color: selected ? "#fff" : color, boxShadow: selected ? `0 4px 12px ${color}33` : "0 2px 8px rgba(0,0,0,0.10)" } as React.CSSProperties}
     >
       {label}
     </button>
   );
 }
 
-
 /* -------------------- SKELETON -------------------- */
+
 function LoadingSkeleton() {
   return (
     <section className="flex justify-between gap-6 p-10">
       <div className="bg-gray-300 animate-pulse h-56 w-3/12 rounded"></div>
+
       <div className="w-9/12 grid grid-rows-auto">
         {[1, 2, 3].map((seccion) => (
           <div key={seccion} className="flex justify-center relative">
@@ -514,6 +508,7 @@ function LoadingSkeleton() {
 }
 
 /* -------------------- SECCIÓN (H2) -------------------- */
+
 const Seccion = React.memo(function Seccion({
   nombre,
   productosDeLaSeccion,
@@ -563,7 +558,7 @@ const Seccion = React.memo(function Seccion({
 const MemoizedSeccion = Seccion;
 
 /* -------------------- INTERSECTION OBSERVER -------------------- */
-function useIntersectionObserver(options = {}) {
+function useIntersectionObserver() {
   const [hasIntersected, setHasIntersected] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
@@ -572,40 +567,45 @@ function useIntersectionObserver(options = {}) {
     if (!target) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setHasIntersected(true);
+        if (entry.isIntersecting) {
+          setHasIntersected(true);
+          observer.unobserve(target);
+        }
       },
-      { threshold: 0.1, rootMargin: "100px", ...options }
+      {
+        threshold: 0.1,
+        rootMargin: "100px",
+      }
     );
     observer.observe(target);
-    return () => observer.unobserve(target);
-  }, [options]);
 
-  return { targetRef, hasIntersected };
+    return () => observer.disconnect();
+  }, []);
+
+  return {
+    targetRef,
+    hasIntersected,
+  };
 }
 
-const getCategoriaColor = (categoria: string) => {
-  switch (categoria) {
-    case 'Negocio': return '#00B6FF';
-    case 'decoracion': return '#5D39FB';
-    case 'Maquinaria': return '#04B088';
-    default: return '#0374A2';
-  }
-};
-
-const CARD_RADIUS = 16;
-
 /* -------------------- PRODUCT CARD (H3) -------------------- */
-const ProductCard = React.memo(function ProductCard({ producto }: { producto: Producto }) {
+
+const ProductCard = React.memo(function ProductCard({
+  producto,
+}: {
+  producto: Producto;
+}) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { targetRef, hasIntersected } = useIntersectionObserver();
 
   const imageSrc = useMemo(() => {
     const img = producto.imagenes?.[0]?.url_imagen;
+
     return img
       ? img.startsWith("http")
         ? img
         : `${ApiUrl.replace(/\/$/, "")}${img}`
-      : `https://placehold.co/300x300/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
+      : `https://placehold.co/600x450/e5e7eb/6b7280?text=${encodeURIComponent(producto.nombre)}`;
   }, [producto.imagenes, producto.nombre]);
 
   const categoriaColor = getCategoriaColor(producto.seccion);
@@ -614,66 +614,91 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
     <a
       href={`/catalogo-maquinarias/detalle?link=${producto.link}`}
       title={`Ver detalles de ${producto.nombre}`}
-      className="w-full"
+      className="block w-full h-full"
     >
-      <div
+      <article
         ref={targetRef}
-        className="group flex flex-row md:flex-col w-full max-w-[380px] min-h-[140px] md:min-h-auto bg-white rounded-xl shadow-md border relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
-        style={{ borderColor: categoriaColor, borderRadius: CARD_RADIUS }}
+        className="group flex flex-row md:flex-col w-full h-full max-w-[380px] min-h-[140px] md:min-h-0 bg-white rounded-2xl border border-gray-200/80 relative overflow-hidden shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
+        style={{ borderRadius: CARD_RADIUS }}
       >
         {/* MOBILE */}
-        <div className="flex-col w-full md:hidden h-auto">
+        <div className="flex flex-col w-full md:hidden">
           <div
-            className="relative flex items-center justify-center w-full h-[180px] bg-[#f8f8f8] overflow-hidden shrink-0"
+            className="relative w-full aspect-[4/3] flex items-center justify-center overflow-hidden bg-white"
             style={{ borderRadius: `${CARD_RADIUS}px ${CARD_RADIUS}px 0 0` }}
           >
-            {!imageLoaded && <div className="absolute inset-0 bg-gray-300 animate-pulse" />}
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+            )}
+
             {hasIntersected && (
               <img
                 src={imageSrc}
-                alt={producto.imagenes?.[0]?.texto_alt_SEO  || producto.nombre }
-                title={producto.imagenes?.[0]?.titulo || producto.titulo }  
+                alt={producto.imagenes?.[0]?.texto_alt_SEO || producto.nombre}
+                title={producto.imagenes?.[0]?.imageTitle || producto.titulo}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                className={`relative z-10 block w-full h-full object-contain transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               />
             )}
+
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-[0.04] transition-opacity duration-300 pointer-events-none z-20"
+              style={{ background: categoriaColor }}
+            />
           </div>
 
+          {/* FRANJA DE CATEGORÍA - DISEÑO ORIGINAL */}
           <div
-            className="flex flex-col items-center justify-between w-full h-auto py-2 px-1 relative overflow-hidden"
-            style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px` }}
+            className="relative flex items-center w-full min-h-[64px] py-2 px-3"
+            style={{
+              background: categoriaColor,
+              borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`,
+            }}
           >
-            <div className="flex-1 flex items-center justify-center px-2 pt-2 pb-2 pr-24 overflow-hidden">
-              {/* ESTRUCTURA SEO CORRECTA: H3 para el producto individual */}
-              <h3 className="text-sm sm:text-base w-full font-bold uppercase text-white text-center break-words leading-tight line-clamp-4">
+            <div className="flex items-center w-full min-h-[48px] pr-[76px]">
+              <h3 className="w-full text-sm sm:text-base font-bold uppercase text-white text-center leading-tight line-clamp-3">
                 {producto.nombre}
               </h3>
             </div>
-            <button className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform">
+
+            <span className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2.5 rounded-tl-xl shadow-sm">
               Comprar
-            </button>
+            </span>
           </div>
         </div>
 
         {/* DESKTOP */}
         <div className="hidden w-full h-full md:flex md:flex-col">
-          <div className="relative w-full h-[280px] flex items-center justify-center overflow-hidden">
-            {!imageLoaded && <div className="absolute inset-0 bg-gray-300 animate-pulse flex items-center justify-center" />}
+          <div className="relative w-full h-[280px] flex items-center justify-center overflow-hidden bg-white">
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+            )}
+
             {hasIntersected && (
               <img
                 src={imageSrc}
-                alt={producto.imagenes?.[0]?.texto_alt_SEO || producto.nombre }
-                title={producto.imagenes?.[0]?.titulo || producto.titulo }  
+                alt={producto.imagenes?.[0]?.texto_alt_SEO || producto.nombre}
+                title={producto.imagenes?.[0]?.imageTitle || producto.titulo}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
-                className={`block object-cover w-full h-full transition-all bg-[#f8f8f8] duration-500 ease-out group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                className={`block w-full h-full object-contain transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
               />
             )}
+
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-[0.04] transition-opacity duration-300 pointer-events-none z-20"
+              style={{ background: categoriaColor }}
+            />
           </div>
+
+          {/* FRANJA DE CATEGORÍA - DISEÑO ORIGINAL */}
           <div
             className="relative w-full h-12 min-h-12 flex items-center m-0 p-0 overflow-hidden"
-            style={{ background: categoriaColor, borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px` }}
+            style={{
+              background: categoriaColor,
+              borderRadius: `0 0 ${CARD_RADIUS}px ${CARD_RADIUS}px`,
+            }}
           >
             <div className="w-full h-full flex items-center pl-4 pr-20 py-1 overflow-hidden">
               {/* ESTRUCTURA SEO CORRECTA: H3 para el producto individual */}
@@ -681,13 +706,15 @@ const ProductCard = React.memo(function ProductCard({ producto }: { producto: Pr
                 {producto.nombre}
               </h3>
             </div>
-            <button className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none active:scale-95 transition-transform">
+
+            <span className="absolute right-0 bottom-0 bg-white font-bold text-xs text-[#0374A2] px-4 py-2 rounded-tl-xl rounded-br-none shadow-sm border-none">
               Comprar
-            </button>
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </a>
   );
 });
+
 const MemoizedProductCard = ProductCard;
