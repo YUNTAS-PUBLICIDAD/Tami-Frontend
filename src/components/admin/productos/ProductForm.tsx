@@ -1309,8 +1309,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                               className="w-full rounded-lg border border-white/20 bg-slate-900 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                             >
                               <option value="20">Pequeño</option>
-                              <option value="80">Mediano</option>
-                              <option value="130">Grande</option>
+                              <option value="39">Mediano</option>
+                              <option value="55">Grande</option>
                             </select>
                           </div>
 
@@ -1334,7 +1334,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                                 { value: "normal", label: "Normal" },
                                 { value: "negrita", label: "Negrita" },
                                 { value: "cursiva", label: "Cursiva" },
-                                { value: "negrita_cursiva", label: "Negrita + Cursiva" },
+                                { value: "negrita_cursiva", label: "Negrita + Cursiva" , fullWidth: true },
                                 { value: "subrayado", label: "Subrayado" }
                               ].map(opt => {
                                 const active = formData.etiqueta.titulo_detalle_producto_style === opt.value;
@@ -1349,7 +1349,9 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                                     className={`rounded px-2.5 py-1.5 text-xs font-semibold transition ${active
                                       ? "bg-teal-500 text-white shadow-md"
                                       : "bg-slate-800 text-gray-300 hover:bg-slate-700"
-                                      }`}
+                                      }
+                                      ${opt.fullWidth ? "col-span-2" : ""} 
+                                      `}
                                   >
                                     {opt.label}
                                   </button>
