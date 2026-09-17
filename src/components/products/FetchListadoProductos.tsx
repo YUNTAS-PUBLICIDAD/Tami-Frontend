@@ -241,6 +241,11 @@ export default function ListadoDeProductos() {
     [productosFiltrados, procesarSecciones]
   );
 
+  const categoriasDisponibles = useMemo(() => {
+    const seccionesConProductos = new Set(productos.map((p) => normalize(p.seccion)));
+    return CATEGORIAS.filter(cat => seccionesConProductos.has(normalize(cat.key)));
+  }, []);
+
   if (loading) return <LoadingSkeleton />;
 
   if (error) {
@@ -277,6 +282,7 @@ export default function ListadoDeProductos() {
             setFiltroNombre={setFiltroNombre}
             filtroCategoria={filtroCategoria}
             setFiltroCategoria={setFiltroCategoria}
+            categoriasDisponibles={categoriasDisponibles}
             categoriaOpen={categoriaOpenDesktop}
             setCategoriaOpen={setCategoriaOpenDesktop}
             onLimpiar={handleLimpiarFiltros}
@@ -290,6 +296,7 @@ export default function ListadoDeProductos() {
             setFiltroNombre={setFiltroNombre}
             filtroCategoria={filtroCategoria}
             setFiltroCategoria={setFiltroCategoria}
+            categoriasDisponibles={categoriasDisponibles}
             categoriaOpen={categoriaOpenMobile}
             setCategoriaOpen={setCategoriaOpenMobile}
             onLimpiar={handleLimpiarFiltros}
@@ -359,6 +366,7 @@ function FiltrosPanel({
   setFiltroNombre,
   filtroCategoria,
   setFiltroCategoria,
+  categoriasDisponibles,
   categoriaOpen,
   setCategoriaOpen,
   onLimpiar,
@@ -368,6 +376,7 @@ function FiltrosPanel({
   setFiltroNombre: (v: string) => void;
   filtroCategoria: string | null;
   setFiltroCategoria: (v: string | null) => void;
+  categoriasDisponibles: typeof CATEGORIAS extends readonly (infer T)[] ? T[] : never;
   categoriaOpen: boolean;
   setCategoriaOpen: (v: boolean) => void;
   onLimpiar: () => void;
@@ -419,8 +428,8 @@ function FiltrosPanel({
         {/* Animación del dropdown */}
         <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${categoriaOpen ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"}`}>
           <div className="overflow-hidden">
-            <div className="flex flex-col gap-3 pb-1">
-              {CATEGORIAS.map((cat) => (
+            <div className="flex flex-col gap-3 pb-1 pt-1">
+              {categoriasDisponibles.map((cat) => (
                 <CategoriaButton
                   key={cat.key}
                   label={cat.label}
@@ -472,7 +481,10 @@ function CategoriaButton({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`${compact ? "py-3 text-base" : "py-3 px-0 text-lg"} rounded-xl font-bold uppercase shadow-md w-full border-2 transition-all duration-300 ease-out active:scale-95 hover:!text-white hover:shadow-lg hover:-translate-y-0.5 ${selected ? "bg-[var(--cat-color)] text-white ring-2 ring-white scale-[1.02]" : "bg-white hover:bg-[var(--cat-color)]"}`}
+      className={`${compact ? "py-3 text-base" : "py-3 px-0 text-lg"} rounded-xl font-bold uppercase shadow-md w-full border-2 transition-all duration-300 ease-out active:scale-95 hover:!text-white hover:shadow-lg hover:-translate-y-0.5 ${selected
+        ? "bg-[var(--cat-color)] text-white ring-2 ring-inset ring-white"
+        : "bg-white hover:bg-[var(--cat-color)]"
+        }`}
       style={{ "--cat-color": color, borderColor: color, color: selected ? "#fff" : color, boxShadow: selected ? `0 4px 12px ${color}33` : "0 2px 8px rgba(0,0,0,0.10)" } as React.CSSProperties}
     >
       {label}
