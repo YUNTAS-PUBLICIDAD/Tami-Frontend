@@ -152,10 +152,10 @@ export default function ListadoDeProductos() {
         productos_relacionados: producto.productos_relacionados || [],
         imagenes: Array.isArray(producto.imagenes)
           ? producto.imagenes.map((img: any) => ({
-            url_imagen: img.url_imagen || img.url || "",
-            texto_alt_SEO: img.texto_alt_SEO || img.alt || "",
-            imageTitle: img.imageTitle || "",
-          }))
+              url_imagen: img.url_imagen || img.url || "",
+              texto_alt_SEO: img.texto_alt_SEO || img.alt || "",
+              imageTitle: img.imageTitle || "",
+            }))
           : [],
         stock: producto.stock,
         precio: parseFloat(producto.precio),
