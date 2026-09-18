@@ -1308,9 +1308,9 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                               }))}
                               className="w-full rounded-lg border border-white/20 bg-slate-900 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                             >
-                              <option value="20">Pequeño</option>
-                              <option value="39">Mediano</option>
-                              <option value="55">Grande</option>
+                              <option value="30">Pequeño</option>
+                              <option value="50">Mediano</option>
+                              <option value="70">Grande</option>
                             </select>
                           </div>
 
