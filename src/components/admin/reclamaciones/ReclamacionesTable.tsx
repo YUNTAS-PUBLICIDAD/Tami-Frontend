@@ -23,14 +23,12 @@ const ReclamacionesTable = () => {
   // --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    
+
     return (reclamaciones || []).filter((r: Reclamacion) => {
-      // 1. Filtro por término de búsqueda
       const matchesSearch = [r.id, r.first_name, r.last_name, r.email, r.document_number].some(
         field => field?.toString().toLowerCase().includes(term)
       );
 
-      // 2. Filtro por estado (claim_status_id)
       const matchesStatus = statusFilter === "" || r.claim_status?.id === Number(statusFilter);
 
       return matchesSearch && matchesStatus;
@@ -168,19 +166,27 @@ const ReclamacionesTable = () => {
       )}
 
       {/* --- VISTA PRINCIPAL (TABLA) --- */}
-     
+      <div className="mb-6">
+        <p className="text-gray-500 text-sm mb-1 font-medium">
+          Administración <span className="mx-1 font-normal">&gt;</span>{' '}
+          <span className="font-semibold text-gray-800 dark:text-gray-200">Gestión de Blogs</span>
+        </p>
+      </div>
+      
       <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-     
+
+
+
         <div className=" p-4 sm:p-8 bg-gradient-to-r from-red-600 to-red-700 flex flex-col md:flex-row justify-between items-center gap-4 text-white">
           <div className="w-full sm:w-auto text-left">
-    
+
             <h2 className="text-xl sm:text-3xl font-black flex items-center gap-3 tracking-tighter uppercase">
               <FaExclamationTriangle size={28} /> Reclamaciones
             </h2>
             <p className="text-red-100 text-sm font-medium opacity-80 mt-1">Panel Administrativo de Atención al Cliente</p>
           </div>
-          <button 
-            onClick={handleRefetch} 
+          <button
+            onClick={handleRefetch}
             className="w-full sm:w-auto justify-center flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-black transition-all backdrop-blur-md"
           >
             <FaSyncAlt className={loading ? "animate-spin" : ""} /> ACTUALIZAR
@@ -197,7 +203,7 @@ const ReclamacionesTable = () => {
                 onChange={setSearchTerm}
               />
             </div>
-            
+
             {/* NUEVO SELECTOR DE ESTADO */}
             <div className="w-full md:w-64 relative">
               <select
@@ -250,10 +256,9 @@ const ReclamacionesTable = () => {
                     </TableCell>
                     <TableCell className="text-center text-xs font-bold text-gray-500">{r.document_number}</TableCell>
                     <TableCell className="text-center">
-                      <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${
-                        r.claim_status?.id === 1 ? 'bg-yellow-50 text-yellow-600' : 
-                        r.claim_status?.id === 2 ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${r.claim_status?.id === 1 ? 'bg-yellow-50 text-yellow-600' :
+                          r.claim_status?.id === 2 ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
+                        }`}>
                         {r.claim_status?.name || 'S/E'}
                       </span>
                     </TableCell>

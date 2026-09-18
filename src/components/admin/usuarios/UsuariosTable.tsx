@@ -67,6 +67,14 @@ const UsuariosTable = () => {
 
   return (
     <div className="container mx-auto p-4">
+
+      <div className="mb-6">
+        <p className="text-gray-500 text-sm mb-1 font-medium">
+          Administración <span className="mx-1 font-normal">&gt;</span>{' '}
+          <span className="font-semibold text-gray-800 dark:text-gray-200">Gestión de Usuarios</span>
+        </p>
+      </div>
+
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden ">
         <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-6 rounded-t-2xl">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">

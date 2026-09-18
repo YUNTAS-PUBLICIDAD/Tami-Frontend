@@ -1,3 +1,5 @@
+import type { Opcion } from "./types";
+
 export interface ApiProduct {
   nombre?: string;
   titulo?: string;
@@ -28,6 +30,7 @@ export interface MessageMinimal {
   role: 'bot' | 'user';
   tipo: 'texto' | 'producto' | 'opciones' | 'fin_flujo';
   respuesta: string;
+  preguntasFrecuentes?: Opcion[]
   link_producto?: string;
   link_whatsapp?: string;
   whatsapp_message?: string;
@@ -175,6 +178,11 @@ export const getLocalReply = async (
       throw new Error(`Error en servidor: ${response.status}`);
     }
 
+    const preguntasFrecuentes: Opcion[] = Array.isArray(data.preguntasFrecuentes)
+      ? data.preguntasFrecuentes.map((pregunta: string) => ({
+        label: pregunta,
+        valor: pregunta,
+      })) : [];
 
     let finalWhatsappLink: string | undefined = undefined;
 
@@ -193,6 +201,7 @@ export const getLocalReply = async (
       tipo: finalWhatsappLink ? 'fin_flujo' : 'texto',
       respuesta: data.response || data.output || data.respuesta,
       link_whatsapp: finalWhatsappLink,
+      preguntasFrecuentes,
     };
   } catch (error) {
     console.error('Error frontend chatbot:', error);

@@ -1,224 +1,263 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import boxSize from "@icons/box-size.svg";
 import ArrowProducts from "../../assets/icons/flecha-product.svg";
-import type Producto from '../../models/Product'
+import type Producto from "../../models/Product";
 import { insertJsonLd } from "../../utils/schema-markup-generator";
-import { config } from '../../../config';
-import RelatedBlogs from './RelatedBlogs';
+import { config } from "../../../config";
+import RelatedBlogs from "./RelatedBlogs";
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
 
-import SimilarProductCard from './SimilarProductCard';
-import SimilarProductsSection from './SimilarProductSection';
+import SimilarProductCard from "./SimilarProductCard";
+import SimilarProductsSection from "./SimilarProductSection";
 
 const setMetaKeywords = (keywords: string) => {
-    let tag = document.querySelector<HTMLMetaElement>('meta[name="keywords"]');
-    if (!tag) {
-        tag = document.createElement("meta");
-        tag.setAttribute("name", "keywords");
-        document.head.appendChild(tag);
-    }
-    tag.setAttribute("content", keywords);
+  let tag = document.querySelector<HTMLMetaElement>('meta[name="keywords"]');
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("name", "keywords");
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute("content", keywords);
 };
 
 declare global {
-    interface Window {
-        __detalleProducto?: any;
-    }
+  interface Window {
+    __detalleProducto?: any;
+  }
 }
 
 interface Props {
-    producto?: Producto
+  producto?: Producto;
 }
 
 const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
-    const [producto, setProducto] = useState<Producto | null>(initialProducto || null);
-    const [loading, setLoading] = useState<boolean>(!initialProducto);
-    const [productViewer, setProductViewer] = useState<string>(initialProducto?.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
+  const [producto, setProducto] = useState<Producto | null>(
+    initialProducto || null,
+  );
+  const [loading, setLoading] = useState<boolean>(!initialProducto);
+  const [productViewer, setProductViewer] = useState<string>(
+    initialProducto?.imagenes?.[0]?.url_imagen ?? "/placeholder.png",
+  );
 
-    const productTitleParts = (producto?.titulo || '').trim().split(/\s+/).filter(Boolean);
-    const productTitleFirstWord = productTitleParts[0] || '';
-    const productTitleRest = productTitleParts.slice(1).join(' ');
+  const productTitleParts = (producto?.titulo || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const productTitleFirstWord = productTitleParts[0] || "";
+  const productTitleRest = productTitleParts.slice(1).join(" ");
 
-    const detailTitleColor = producto?.detalle_titulo_color || producto?.etiqueta?.titulo_detalle_producto_color || '#015f86';
-    const detailTitleSize = Number(producto?.detalle_titulo_tamano || producto?.etiqueta?.titulo_detalle_producto_size || 24);
-    const rawDetailTitleStyle = producto?.detalle_titulo_estilo || producto?.etiqueta?.titulo_detalle_producto_style || 'negrita';
+  const detailTitleColor =
+    producto?.detalle_titulo_color ||
+    producto?.etiqueta?.titulo_detalle_producto_color ||
+    "#015f86";
+  const detailTitleSize = Number(
+    producto?.detalle_titulo_tamano ||
+      producto?.etiqueta?.titulo_detalle_producto_size ||
+      24,
+  );
+  const rawDetailTitleStyle =
+    producto?.detalle_titulo_estilo ||
+    producto?.etiqueta?.titulo_detalle_producto_style ||
+    "negrita";
 
-    const normalizedDetailTitleStyle = (() => {
-        switch (rawDetailTitleStyle) {
-            case 'normal':
-                return 'normal';
-            case 'negrita':
-            case 'bold':
-                return 'bold';
-            case 'cursiva':
-            case 'italic':
-                return 'italic';
-            case 'subrayado':
-            case 'underline':
-                return 'underline';
-            case 'negrita_cursiva':
-            case 'bold-italic':
-                return 'bold-italic';
-            default:
-                return 'normal';
-        }
-    })();
-
-    const detalleProductoTituloStyle: React.CSSProperties = {
-        color: detailTitleColor,
-        fontWeight: normalizedDetailTitleStyle === 'bold-italic' || normalizedDetailTitleStyle === 'bold' ? 800 : 600,
-        fontStyle: normalizedDetailTitleStyle === 'italic' || normalizedDetailTitleStyle === 'bold-italic' ? 'italic' : 'normal',
-        textDecoration: normalizedDetailTitleStyle === 'underline' ? 'underline' : 'none',
-        ...(normalizedDetailTitleStyle === 'underline' && {
-            textDecorationColor: 'white',
-            textDecorationThickness: '2px',
-            textUnderlineOffset: '4px'
-        })
-    };
-
-    // Cargar datos del producto (iniciales o frescos)
-    useEffect(() => {
-        const fetchProductData = async () => {
-            let productLink = initialProducto?.link;
-
-            if (!productLink) {
-                const params = new URLSearchParams(window.location.search);
-                productLink = params.get('link')?.trim();
-            }
-
-            if (!productLink && !initialProducto?.id) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                // Si tenemos el producto inicial con su ID, preferimos buscar por ID.
-                // Esto garantiza que si se modificó el link (slug), obtendremos la información actualizada
-                // y podremos redireccionar al usuario adecuadamente.
-                const url = initialProducto?.id
-                    ? `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/${initialProducto.id}`
-                    : `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`;
-
-                const response = await fetch(url);
-                if (response.ok) {
-                    const freshData = await response.json();
-                    const freshProduct = freshData.data;
-                    setProducto(freshProduct);
-                    setProductViewer(freshProduct.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
-                    window.__detalleProducto = freshProduct;
-
-                    // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
-                    if (initialProducto && freshProduct.link !== initialProducto.link) {
-                        window.location.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(freshProduct.link)}`;
-                    }
-                } else if (initialProducto?.id && productLink) {
-                    // Fallback por si la búsqueda por ID falla, intentamos por link
-                    const fallbackResponse = await fetch(`${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`);
-                    if (fallbackResponse.ok) {
-                        const freshData = await fallbackResponse.json();
-                        const freshProduct = freshData.data;
-                        setProducto(freshProduct);
-                        setProductViewer(freshProduct.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
-                        window.__detalleProducto = freshProduct;
-                    }
-                }
-            } catch (error) {
-                console.error('Error al cargar datos del producto:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProductData();
-    }, [initialProducto?.link, initialProducto?.id]);
-    
-    useEffect(() => {
-        if (producto) {
-            setProductViewer(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png');
-            insertJsonLd("product", producto);
-            window.__detalleProducto = producto;
-
-            // Solo mantén esto, que no afecta el SEO negativo
-            document.title = producto.etiqueta?.meta_titulo || producto.titulo;
-
-            // Keywords SEO por producto
-            if (producto.etiqueta?.keywords) {
-                setMetaKeywords(producto.etiqueta.keywords);
-            }
-        }
-    }, [producto]);
-
-    if (loading) {
-        return (
-            <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#00b6ff]"></div>
-                    <p className="text-white text-lg font-semibold animate-pulse">Cargando detalles del producto...</p>
-                </div>
-            </div>
-        );
+  const normalizedDetailTitleStyle = (() => {
+    switch (rawDetailTitleStyle) {
+      case "normal":
+        return "normal";
+      case "negrita":
+      case "bold":
+        return "bold";
+      case "cursiva":
+      case "italic":
+        return "italic";
+      case "subrayado":
+      case "underline":
+        return "underline";
+      case "negrita_cursiva":
+      case "bold-italic":
+        return "bold-italic";
+      default:
+        return "normal";
     }
+  })();
 
-    if (!producto) {
-        return (
-            <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center text-center px-4">
-                <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl max-w-md border border-red-200">
-                    <h2 className="text-3xl font-bold text-red-600 mb-4">Producto no encontrado</h2>
-                    <p className="text-gray-600 mb-8">No pudimos encontrar el producto solicitado. Por favor verifica la URL.</p>
-                    <a href="/catalogo-maquinarias" className="bg-[#00b6ff] text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:brightness-115 transition">
-                        Volver al catálogo
-                    </a>
-                </div>
-            </div>
-        );
-    }
+  const detalleProductoTituloStyle: React.CSSProperties = {
+    color: detailTitleColor,
+    fontWeight:
+      normalizedDetailTitleStyle === "bold-italic" ||
+      normalizedDetailTitleStyle === "bold"
+        ? 800
+        : 600,
+    fontStyle:
+      normalizedDetailTitleStyle === "italic" ||
+      normalizedDetailTitleStyle === "bold-italic"
+        ? "italic"
+        : "normal",
+    textDecoration:
+      normalizedDetailTitleStyle === "underline" ? "underline" : "none",
+    ...(normalizedDetailTitleStyle === "underline" && {
+      textDecorationColor: "white",
+      textDecorationThickness: "2px",
+      textUnderlineOffset: "4px",
+    }),
+  };
 
-    const getDimensionBgColor = (letter: string) => {
-        return 'bg-[#00b6ff]';
-    };
+  // Cargar datos del producto (iniciales o frescos)
+  useEffect(() => {
+    const fetchProductData = async () => {
+      let productLink = initialProducto?.link;
 
-    const getFullImageUrl = (url:string) => {
-        if (!url || url === '/placeholder.png') return '/placeholder.png';
-        if (url.startsWith("http")) return url;
-        const base = config.apiUrl.replace(/\/$/, "");   // quita "/" final si existe
-        const path = url.startsWith("/") ? url : `/${url}`;
-        return `${base}${path}`;
-      };
+      if (!productLink) {
+        const params = new URLSearchParams(window.location.search);
+        productLink = params.get("link")?.trim();
+      }
 
-    const handleWhatsAppClick = () => {
-        const phoneNumber = "51978883199";
-        const productName = producto.titulo;
-        const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
+      if (!productLink && !initialProducto?.id) {
+        setLoading(false);
+        return;
+      }
 
-        let message = "";
-            message += `Hola,`;
-            message += `\nLLego de la Pagina TAMI MAQUINARIAS. \n`;
-            message += `\nEstoy interesado en el producto: ${productName}.\n`;
-        if (whatsappConfig?.whatsapp_mensaje) {
-                
-                
-            message += whatsappConfig.whatsapp_mensaje;
-        } else {
-                message += `\n\nDescripción: ${producto.descripcion}`;
-                message += `\n\nMe gustaría recibir:`;
-                message += `\n- Ficha técnica completa`;
-                message += `\n- Cotización personalizada`;
-                message += `\n- Tiempos de entrega`;
-                message += `\n- Opciones de pago`;
-                message += `\n\nQuedo atento a su respuesta.`;
+      try {
+        // Si tenemos el producto inicial con su ID, preferimos buscar por ID.
+        // Esto garantiza que si se modificó el link (slug), obtendremos la información actualizada
+        // y podremos redireccionar al usuario adecuadamente.
+        const url = initialProducto?.id
+          ? `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/${initialProducto.id}`
+          : `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`;
+
+        const response = await fetch(url);
+        if (response.ok) {
+          const freshData = await response.json();
+          const freshProduct = freshData.data;
+          setProducto(freshProduct);
+          setProductViewer(
+            freshProduct.imagenes?.[0]?.url_imagen ?? "/placeholder.png",
+          );
+          window.__detalleProducto = freshProduct;
+
+          // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
+          if (initialProducto && freshProduct.link !== initialProducto.link) {
+            window.location.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(freshProduct.link)}`;
+          }
+        } else if (initialProducto?.id && productLink) {
+          // Fallback por si la búsqueda por ID falla, intentamos por link
+          const fallbackResponse = await fetch(
+            `${config.apiUrl.replace(/\/$/, "")}/api/v1/productos/link/${productLink}`,
+          );
+          if (fallbackResponse.ok) {
+            const freshData = await fallbackResponse.json();
+            const freshProduct = freshData.data;
+            setProducto(freshProduct);
+            setProductViewer(
+              freshProduct.imagenes?.[0]?.url_imagen ?? "/placeholder.png",
+            );
+            window.__detalleProducto = freshProduct;
+          }
         }
-
-        const mensajeCodificado = encodeURIComponent(message);
-
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${mensajeCodificado}`;
-        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      } catch (error) {
+        console.error("Error al cargar datos del producto:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
+    fetchProductData();
+  }, [initialProducto?.link, initialProducto?.id]);
+
+  useEffect(() => {
+    if (producto) {
+      setProductViewer(
+        producto.imagenes?.[0]?.url_imagen ?? "/placeholder.png",
+      );
+      insertJsonLd("product", producto);
+      window.__detalleProducto = producto;
+
+      // Solo mantén esto, que no afecta el SEO negativo
+      document.title = producto.etiqueta?.meta_titulo || producto.titulo;
+
+      // Keywords SEO por producto
+      if (producto.etiqueta?.keywords) {
+        setMetaKeywords(producto.etiqueta.keywords);
+      }
+    }
+  }, [producto]);
+
+  if (loading) {
     return (
-        <div className="w-full bg-gray-50">
-            <style>{`
+      <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#00b6ff]"></div>
+          <p className="text-white text-lg font-semibold animate-pulse">
+            Cargando detalles del producto...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!producto) {
+    return (
+      <div className="w-full min-h-screen bg-gradient-to-r from-[#041119] to-[#003d56] flex items-center justify-center text-center px-4">
+        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl max-w-md border border-red-200">
+          <h2 className="text-3xl font-bold text-red-600 mb-4">
+            Producto no encontrado
+          </h2>
+          <p className="text-gray-600 mb-8">
+            No pudimos encontrar el producto solicitado. Por favor verifica la
+            URL.
+          </p>
+          <a
+            href="/catalogo-maquinarias"
+            className="bg-[#00b6ff] text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:brightness-115 transition"
+          >
+            Volver al catálogo
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const getDimensionBgColor = (letter: string) => {
+    return "bg-[#00b6ff]";
+  };
+
+  const getFullImageUrl = (url: string) => {
+    if (!url || url === "/placeholder.png") return "/placeholder.png";
+    if (url.startsWith("http")) return url;
+    const base = config.apiUrl.replace(/\/$/, ""); // quita "/" final si existe
+    const path = url.startsWith("/") ? url : `/${url}`;
+    return `${base}${path}`;
+  };
+
+  const handleWhatsAppClick = () => {
+    const phoneNumber = "51978883199";
+    const productName = producto.titulo;
+
+    // Mensaje con saltos de línea reales (template string)
+    const message = `Hola
+    
+    Vengo de la página web de TAMI MAQUINARIAS y estoy interesado en el producto:
+    ${productName}
+    
+    Me gustaría recibir:
+    • Ficha técnica completa
+    • Cotización personalizada
+    • Tiempos de entrega
+    • Opciones de pago
+    
+    Quedo atento a su respuesta.`;
+
+    const mensajeCodificado = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${mensajeCodificado}`;
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <div className="w-full bg-gray-50">
+      <style>{`
                 .detalle-producto-titulo-desktop {
                     --detalle-titulo-size: ${detailTitleSize}px;
                 }
@@ -229,255 +268,278 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                 }
             `}</style>
 
-            {/* -------------------- HERO Section (H1) -------------------- */}
-    <div className="relative pt-32 md:pt-40  text-slate-800 overflow-hidden bg-white">
-    {/* Barra azul */}
-    <div className="absolute top-0 left-0 right-0  w-full h-25 sm:h-37 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888] z-0 "></div>
+      {/* -------------------- HERO Section (H1) -------------------- */}
+      <div className="relative pt-32 md:pt-40  text-slate-800 overflow-hidden bg-white">
+        {/* Barra azul */}
+        <div className="absolute top-0 left-0 right-0  w-full h-25 sm:h-37 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888] z-0 "></div>
 
-    <div className="w-full max-w-7xl mx-auto px-6 pt-8 md:px-12 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
-        
-        {/* Columna Derecha */}
-        <div className="flex flex-col justify-center text-left">
+        <div className="w-full max-w-7xl mx-auto px-6 pt-8 md:px-12 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+          {/* Columna Derecha */}
+          <div className="flex flex-col justify-center text-left">
             {/* Titulo y detalles*/}
-            <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>
-                <span className="block text-slate-900">{productTitleFirstWord}</span>
-                {productTitleRest && (
-                    <span className="block" style={{ color: detailTitleColor }}>
-                        {productTitleRest}
-                    </span>
-                )}
+            <h1
+              className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop"
+              style={detalleProductoTituloStyle}
+            >
+              <span className="block text-slate-900">
+                {productTitleFirstWord}
+              </span>
+              {productTitleRest && (
+                <span className="block" style={{ color: detailTitleColor }}>
+                  {productTitleRest}
+                </span>
+              )}
             </h1>
-            <h2 className="text-base md:text-xl text-slate-600 mb-10 max-w-full uppercase tracking-wider font-light break-words">
-            {producto.subtitulo}
+
+            <h2 className="text-lg md:text-2xl text-slate-600 mb-10 max-w-full uppercase tracking-wider font-light break-words">
+              {producto.subtitulo}
             </h2>
          
 
             <button
-                id="btnQuotationHero"
-                className="w-fit bg-[#00b6ff] text-white px-10 py-3 rounded-lg font-bold text-lg uppercase shadow-lg border border-transparent transform transition-all duration-150 ease-in-out hover:brightness-110 active:brightness-95"
-                onClick={handleWhatsAppClick}
+              id="btnQuotationHero"
+              className="w-fit bg-[#00b6ff] text-white px-10 py-3 rounded-lg font-bold text-lg uppercase shadow-lg border border-transparent transform transition-all duration-150 ease-in-out hover:brightness-110 active:brightness-95"
+              onClick={handleWhatsAppClick}
             >
-                ¡Cotízalo!
+              ¡Cotízalo!
             </button>
-        </div>
+          </div>
 
-        {/* Columna Izquierda */}
-        <div className="flex items-center justify-center w-full h-full">
+          {/* Columna Izquierda */}
+          <div className="flex items-center justify-center w-full h-full">
             <img
-                src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
-                alt={producto.nombre}
-                title={producto.nombre}
-                className="w-full max-w-md md:max-w-lg h-auto object-contain"
-                fetchPriority="high"
+              src={getFullImageUrl(
+                producto.imagenes?.[0]?.url_imagen ?? "/placeholder.png",
+              )}
+              alt={producto.imagenes[0].texto_alt_SEO || producto.nombre}
+              title={producto.imagenes[0].titulo || producto.nombre}
+              className="w-full max-w-md md:max-w-lg h-auto object-contain"
+              fetchPriority="high"
             />
+          </div>
         </div>
-    </div>
-    {/* Wave */}
-    <div>
-        <svg 
-          className="relative block w-full h-[120px] md:h-[180px] " 
-            xmlns="http://www.w3.org/2000/svg" 
+        {/* Wave */}
+        <div>
+          <svg
+            className="relative block w-full h-[120px] md:h-[180px] "
+            xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1440 320"
             preserveAspectRatio="none"
-        >
+          >
             <defs>
-                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#004b6e" />
-                    <stop offset="50%" stopColor="#005d82" />
-                    <stop offset="100%" stopColor="#006888" />
-                </linearGradient>
+              <linearGradient
+                id="waveGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#004b6e" />
+                <stop offset="50%" stopColor="#005d82" />
+                <stop offset="100%" stopColor="#006888" />
+              </linearGradient>
             </defs>
 
-            <path 
-                fill="url(#waveGradient)" 
-                fillOpacity="1" 
-                d="M0,96L288,96L576,128L864,160L1152,160L1440,96L1440,320L1152,320L864,320L576,320L288,320L0,320Z"
+            <path
+              fill="url(#waveGradient)"
+              fillOpacity="1"
+              d="M0,96L288,96L576,128L864,160L1152,160L1440,96L1440,320L1152,320L864,320L576,320L288,320L0,320Z"
             ></path>
-        </svg>            
-    </div>
-   
+          </svg>
+        </div>
+      </div>
 
-
-</div>
-
-            {/* -------------------- MAIN PRODUCT DETAILS Section -------------------- */}
-            <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888]  z-0">
-                <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-
-                        {/* Visor de imágenes */}
-                        <div className="flex flex-col items-center">
-                            <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
-                                <img
-                                    title={producto.nombre}
-                                    src={getFullImageUrl(productViewer)}
-                                    alt={producto.titulo}
-                                    className="w-full h-full object-contain"
-                                    loading="lazy"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 gap-4 w-full max-w-xl">
-                                {producto.imagenes?.slice(1, 5).map((image) => (
-                                    <div
-                                        key={image.url_imagen}
-                                        className={`aspect-square bg-white rounded-xl overflow-hidden shadow-xl cursor-pointer flex items-center justify-center p-2 border-2 ${image.url_imagen === productViewer ? 'border-blue-500' : 'border-gray-200'} transition-all duration-300`}
-                                        onClick={() => setProductViewer(image.url_imagen)}
-                                    >
-                                        <img
-                                            title={image.texto_alt_SEO || producto.nombre}
-                                            src={getFullImageUrl(image.url_imagen)}
-                                            alt={image.texto_alt_SEO || `Vista de ${producto.nombre}`}
-                                            className="w-full h-full object-contain"
-                                            loading="lazy"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
-                        <div>
-                            {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
-                            <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
-                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-
-                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        Características de {producto.nombre.toLowerCase()}
-                                    </h2>
-                                    <svg
-                                        className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 9l-7 7-7-7"
-                                        />
-                                    </svg>
-
-                                </summary>
-                                {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
-                                <div className='px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2'>
-                                    <div
-                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
-                                        dangerouslySetInnerHTML={{
-                                            __html: producto.descripcion ?? "",
-                                        }}
-                                    />
-                                </div>
-                            </details>
-                            {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
-                                <div>
-                                    <h2 className="font-semibold text-base text-gray-800 mb-3">
-                                        Especificaciones técnicas de {producto.nombre.toLowerCase()}
-                                    </h2>
-
-                                    <p className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                        {(producto as any).especificaciones_subtitulo || "Máximo rendimiento, estabilidad y automatización industrial"}
-                                    </p>
-
-                                    <div className="w-full flex flex-col overflow-hidden">
-                                        {producto.especificaciones?.map((spec, index) => {
-                                            const separatorIndex = spec.valor.indexOf(':');
-                                            let key = spec.valor;
-                                            let val = '';
-
-                                            if (separatorIndex !== -1) {
-                                                key = spec.valor.substring(0, separatorIndex).trim();
-                                                val = spec.valor.substring(separatorIndex + 1).trim();
-                                            }
-
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
-                                                >
-                                                    <span className="font-semibold text-gray-800 text-sm">{key}</span>
-                                                    <span className="text-gray-600 text-sm">{val}</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h3 className="font-semibold text-base text-gray-800 mb-3">
-                                        Dimensiones de {producto.nombre.toLowerCase()}
-                                    </h3>
-
-                                    <p className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
-                                        Alto, largo y ancho
-                                    </p>
-
-                                    <div className="flex items-center gap-8">
-                                        <div className="w-24 md:w-32 flex-shrink-0">
-                                            <img src={boxSize.src} title="Box Size" alt="Box Size" className="w-full h-auto" loading="lazy" />
-                                        </div>
-
-                                        <ul className="space-y-3">
-                                            {producto.dimensiones?.alto && <li>Alto - {producto.dimensiones.alto} cm</li>}
-                                            {producto.dimensiones?.largo && <li>Largo - {producto.dimensiones.largo} cm</li>}
-                                            {producto.dimensiones?.ancho && <li>Ancho - {producto.dimensiones.ancho} cm</li>}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
-                            <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
-
-                                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
-                                    <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
-                                        ¿Por qué elegirnos?
-                                    </h2>
-                                    <svg
-                                        className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 9l-7 7-7-7"
-                                        />
-                                    </svg>
-
-                                </summary>
-                                <div className="px-6 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2">
-                                    <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
-                                        Calidad garantizada, innovación tecnológica y soporte de confianza
-                                    </h3>
-
-                                    <div
-                                        className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
-                                        dangerouslySetInnerHTML={{
-                                            __html: producto.porque_elegirnos ?? "",
-                                        }}
-                                    />
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
-            < div className="max-w-full mx-auto px-4 md:px-8 py-4" >
-                {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
-                < RelatedBlogs productId={producto.id} />
-            </div >
-
-            {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
-            
-            < div className="max-w-full mx-auto px-4 md:px-8 py-8" >
-                <SimilarProductsSection
-                    products={producto.productos_relacionados || []}
+      {/* -------------------- MAIN PRODUCT DETAILS Section -------------------- */}
+      <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888]  z-0">
+        <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+            {/* Visor de imágenes */}
+            <div className="flex flex-col items-center">
+              <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
+                <img
+                  title={producto.imagenes[0].titulo || producto.nombre}
+                  src={getFullImageUrl(productViewer)}
+                  alt={producto.imagenes[0].texto_alt_SEO || producto.nombre}
+                  className="w-full h-full object-contain"
+                  loading="lazy"
                 />
-            </div >
-        </div >
-    );
+              </div>
+              <div className="grid grid-cols-4 gap-4 w-full max-w-xl">
+                {producto.imagenes?.slice(1, 5).map((image) => (
+                  <div
+                    key={image.url_imagen}
+                    className={`aspect-square bg-white rounded-xl overflow-hidden shadow-xl cursor-pointer flex items-center justify-center p-2 border-2 ${image.url_imagen === productViewer ? "border-blue-500" : "border-gray-200"} transition-all duration-300`}
+                    onClick={() => setProductViewer(image.url_imagen)}
+                  >
+                    <img
+                      title={image.titulo || producto.nombre}
+                      src={getFullImageUrl(image.url_imagen)}
+                      alt={image.texto_alt_SEO || `Vista de ${producto.nombre}`}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Contenido Técnico y Descriptivo Estructurado para SEO */}
+            <div>
+              {/* Mantenemos el diseño visual superior idéntico, pero usando un DIV para no duplicar ni interferir en la jerarquía H2 */}
+              <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
+                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                  <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
+                    Características de {producto.nombre.toLowerCase()}
+                  </h2>
+                  <svg
+                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </summary>
+                {/* 1. DESCRIPCIÓN - texto suelto, sin dropdown */}
+                <div className="px-8 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2">
+                  <div
+                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
+                    dangerouslySetInnerHTML={{
+                      __html: producto.descripcion ?? "",
+                    }}
+                  />
+                </div>
+              </details>
+              {/*2. JUNTAMOS LAS ESPECIFICACIONES CON LAS DIMENSIONES */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 bg-[#F0F0F0] p-5">
+                <div>
+                  <h2 className="font-semibold text-base text-gray-800 mb-3">
+                    Especificaciones técnicas de {producto.nombre.toLowerCase()}
+                  </h2>
+
+                  <p className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                    {(producto as any).especificaciones_subtitulo ||
+                      "Máximo rendimiento, estabilidad y automatización industrial"}
+                  </p>
+
+                  <div className="w-full flex flex-col overflow-hidden">
+                    {producto.especificaciones?.map((spec, index) => {
+                      const separatorIndex = spec.valor.indexOf(":");
+                      let key = spec.valor;
+                      let val = "";
+
+                      if (separatorIndex !== -1) {
+                        key = spec.valor.substring(0, separatorIndex).trim();
+                        val = spec.valor.substring(separatorIndex + 1).trim();
+                      }
+
+                      return (
+                        <div
+                          key={index}
+                          className={`flex flex-col py-3 px-4 rounded ${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
+                        >
+                          <span className="font-semibold text-gray-800 text-sm">
+                            {key}
+                          </span>
+                          <span className="text-gray-600 text-sm">{val}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-base text-gray-800 mb-3">
+                    Dimensiones de {producto.nombre.toLowerCase()}
+                  </h3>
+
+                  <p className="text-gray-500 font-medium text-sm md:text-base mb-4 italic">
+                    Alto, largo y ancho
+                  </p>
+
+                  <div className="flex items-center gap-8">
+                    <div className="w-24 md:w-32 flex-shrink-0">
+                      <img
+                        src={boxSize.src}
+                        title="Box Size"
+                        alt="Box Size"
+                        className="w-full h-auto"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    <ul className="space-y-3">
+                      {producto.dimensiones?.alto && (
+                        <li>Alto - {producto.dimensiones.alto} cm</li>
+                      )}
+                      {producto.dimensiones?.largo && (
+                        <li>Largo - {producto.dimensiones.largo} cm</li>
+                      )}
+                      {producto.dimensiones?.ancho && (
+                        <li>Ancho - {producto.dimensiones.ancho} cm</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              {/* 4. SECCIÓN ¿POR QUÉ ELEGIRNOS? */}
+              <details className="border rounded-xl bg-[#FFFFFF] shadow-sm group mt-8">
+                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 list-none [&::-webkit-details-marker]:hidden">
+                  <h2 className="text-[#015f86] font-extrabold text-xl md:text-2xl m-0">
+                    ¿Por qué elegirnos?
+                  </h2>
+                  <svg
+                    className="w-5 h-5 transition-transform duration-300 group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </summary>
+                <div className="px-6 pb-6 pt-2 max-h-[280px] overflow-y-auto pr-2">
+                  <h3 className="text-gray-500 font-medium text-sm md:text-base mb-3 italic">
+                    Calidad garantizada, innovación tecnológica y soporte de
+                    confianza
+                  </h3>
+
+                  <div
+                    className="text-gray-600 text-base leading-relaxed break-words [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 mr-4"
+                    dangerouslySetInnerHTML={{
+                      __html: producto.porque_elegirnos ?? "",
+                    }}
+                  />
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------------- SECCIÓN DE BLOG (H2) ------------------------------- */}
+      <div className="max-w-full mx-auto px-4 md:px-8 py-4">
+        {/* RelatedBlogs gestiona solo su <h2>Blog del producto</h2> */}
+        <RelatedBlogs productId={producto.id} />
+      </div>
+
+      {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
+
+      <div className="max-w-full mx-auto px-4 md:px-8 py-8">
+        <SimilarProductsSection
+          products={producto.productos_relacionados || []}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default ProductPage;
