@@ -244,7 +244,7 @@ export default function ListadoDeProductos() {
   const categoriasDisponibles = useMemo(() => {
     const seccionesConProductos = new Set(productos.map((p) => normalize(p.seccion)));
     return CATEGORIAS.filter(cat => seccionesConProductos.has(normalize(cat.key)));
-  }, []);
+  }, [productos]);
 
   if (loading) return <LoadingSkeleton />;
 
