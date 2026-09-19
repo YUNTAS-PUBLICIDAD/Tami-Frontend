@@ -294,6 +294,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             <h2 className="text-lg md:text-2xl text-slate-600 mb-10 max-w-full uppercase tracking-wider font-light break-words">
               {producto.subtitulo}
             </h2>
+         
 
             <button
               id="btnQuotationHero"
