@@ -17,7 +17,7 @@ const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
 
   return (
     <a
-      href={`/blog/details?link=${blog.link}`}
+      href={`/blog/${blog.link}`}
       title="Ver detalles del blog"
       className="mb-6 block group"
     >
