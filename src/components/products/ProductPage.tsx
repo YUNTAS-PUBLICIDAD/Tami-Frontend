@@ -236,18 +236,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     const productName = producto.titulo;
 
     // Mensaje con saltos de línea reales (template string)
-    const message = `Hola
-    
-    Vengo de la página web de TAMI MAQUINARIAS y estoy interesado en el producto:
-    ${productName}
-    
-    Me gustaría recibir:
-    • Ficha técnica completa
-    • Cotización personalizada
-    • Tiempos de entrega
-    • Opciones de pago
-    
-    Quedo atento a su respuesta.`;
+    const message = `Hola, llego de la web Tami Maquinaria.\nNecesito el producto: ${productName}`;
 
     const mensajeCodificado = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${mensajeCodificado}`;
