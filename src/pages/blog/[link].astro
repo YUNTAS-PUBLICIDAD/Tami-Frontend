@@ -3,19 +3,44 @@ import Layout from "src/layouts/Layout.astro";
 import { config } from "config";
 import { showLoaderString, removeLoaderString } from "src/utils/loader";
 import blogHeroImage from "@images/index/hero/impulso-negocios-tecnologia.webp";
+import type Blog from "src/models/Blog";
 
-const getApiUrl = config.apiUrl
-  ? String(config.apiUrl).replace(/\/+$/, "")
-  : "";
+export async function getStaticPaths() {
+  const apiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
+  const url = `${apiUrl}${config.endpoints.blogs.list}`;
+
+  const response = await fetch(url);
+
+  console.log("URL de blogs:", url);
+  console.log("Status de blogs:", response.status);
+  console.log("Status text:", response.statusText);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.log("Respuesta de la API:", errorText);
+    throw new Error(`Error obteniendo blogs: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const blogs: Blog[] = data.data ?? [];
+
+  return blogs
+    .filter((blog) => blog.link)
+    .map((blog) => ({
+      params: { link: blog.link },
+    }));
+}
+
+const getApiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
 const blogsUrl = config.endpoints.blogs;
-
 const productsUrl = config.endpoints.productos.list;
+const { link } = Astro.params;
 ---
 
 <Layout
   title="Blog Details"
   description="Descripcion por defecto"
-  canonicalUrl="https://tamimaquinarias.com/blog/details/"
+  canonicalUrl={`https://tamimaquinarias.com/blog/${link}`}
 >
   <header
     id="blog-header"
@@ -127,6 +152,7 @@ const productsUrl = config.endpoints.productos.list;
         getApiUrl,
         blogsUrl,
         productsUrl,
+        blogLink: link,
         showLoaderString,
         removeLoaderString,
       }}
@@ -187,8 +213,7 @@ const productsUrl = config.endpoints.productos.list;
         showLoader();
         const safetyTimeout = setTimeout(removeLoaderSafe, 10000);
         try {
-          const params = new URLSearchParams(window.location.search);
-          const linkBlog = params.get("link")?.trim();
+          const linkBlog = blogLink?.trim();
           if (!linkBlog) {
             clearTimeout(safetyTimeout);
             removeLoaderSafe();
@@ -378,7 +403,7 @@ const productsUrl = config.endpoints.productos.list;
             }
 
             if (slugProducto) {
-              btnVerProducto.href = `/catalogo-maquinarias/detalle?link=${slugProducto}`;
+              btnVerProducto.href = `/catalogo-maquinarias/${slugProducto}`;
               btnVerProducto.innerText =
                 blog.etiqueta?.popup_button_text?.trim() || "Ver Producto";
               if (blog.etiqueta?.popup_button_color) {
