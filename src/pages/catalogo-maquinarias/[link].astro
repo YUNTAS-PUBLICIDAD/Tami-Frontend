@@ -1,0 +1,58 @@
+---
+import Layout from "src/layouts/Layout.astro";
+import ProductPage from "src/components/products/ProductPage";
+import type Producto from "src/models/Product";
+import { config } from "../../../config";
+
+export async function getStaticPaths() {
+  const apiUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
+  const url = `${apiUrl}${config.endpoints.productos.list}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+
+    console.log("Respuesta de la API:", errorText);
+
+    throw new Error(`Error obteniendo productos: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const products: Producto[] = Array.isArray(data) ? data : (data.data ?? []);
+
+  return products
+    .filter((product) => product.link)
+    .map((product) => ({
+      params: {
+        link: product.link,
+      },
+      props: {
+        producto: product,
+      },
+    }));
+}
+
+const { producto } = Astro.props;
+---
+
+<Layout
+  title="Detalle de Producto - Tami Maquinarias"
+  description="Cargando detalles de producto..."
+  keywords=""
+  canonicalUrl={`https://tamimaquinarias.com/catalogo-maquinarias/${producto.link}`}
+  >
+  <ProductPage
+    producto={producto}
+    client:load
+  />
+</Layout>
+
+<script is:inline>
+  (function () {
+    var canonicalLink = document.querySelector('link[rel="canonical"]');
+
+    if (canonicalLink) {
+      canonicalLink.href = window.location.href.split("#")[0];
+    }
+  })();
+</script>
