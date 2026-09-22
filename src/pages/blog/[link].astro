@@ -11,13 +11,8 @@ export async function getStaticPaths() {
 
   const response = await fetch(url);
 
-  console.log("URL de blogs:", url);
-  console.log("Status de blogs:", response.status);
-  console.log("Status text:", response.statusText);
-
   if (!response.ok) {
     const errorText = await response.text();
-    console.log("Respuesta de la API:", errorText);
     throw new Error(`Error obteniendo blogs: ${response.status}`);
   }
 

@@ -129,9 +129,7 @@ function NavBar({ forceSolid = false }: NavBarProps) {
     const handleSuggestionClick = (producto: Producto) => {
       setShowSuggestions(false);
       setSearch("");
-      window.location.href = `/catalogo-maquinarias/detalle/?link=${encodeURIComponent(
-        producto.link
-      )}`;
+      window.location.href = `/catalogo-maquinarias/${encodeURIComponent(producto.link)}`;
     };
   // Se usa la versión de 'pre-main' que usa comillas dobles
   // y tiene una ligera corrección de indentación.
