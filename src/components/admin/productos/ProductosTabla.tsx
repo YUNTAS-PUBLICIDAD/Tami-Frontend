@@ -95,6 +95,7 @@ const ProductosTabla = () => {
                         });
                         setLoadingDeleteId(null);
                         fetchData();
+                        localStorage.removeItem("productos_cache");
                     }
                 }).catch(error => {
                     console.error("Error al eliminar producto:", error);

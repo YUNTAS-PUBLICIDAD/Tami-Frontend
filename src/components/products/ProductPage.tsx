@@ -139,7 +139,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
           // Si el link en base de datos es distinto al renderizado por la página estática, redirigimos
           if (initialProducto && freshProduct.link !== initialProducto.link) {
-            window.location.href = `/catalogo-maquinarias/detalle?link=${encodeURIComponent(freshProduct.link)}`;
+            window.location.href = `/catalogo-maquinarias/${encodeURIComponent(freshProduct.link)}`;
           }
         } else if (initialProducto?.id && productLink) {
           // Fallback por si la búsqueda por ID falla, intentamos por link
@@ -236,18 +236,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
     const productName = producto.titulo;
 
     // Mensaje con saltos de línea reales (template string)
-    const message = `Hola
-    
-    Vengo de la página web de TAMI MAQUINARIAS y estoy interesado en el producto:
-    ${productName}
-    
-    Me gustaría recibir:
-    • Ficha técnica completa
-    • Cotización personalizada
-    • Tiempos de entrega
-    • Opciones de pago
-    
-    Quedo atento a su respuesta.`;
+    const message = `Hola, llego de la web Tami Maquinaria.\nNecesito el producto: ${productName}`;
 
     const mensajeCodificado = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${mensajeCodificado}`;
@@ -311,8 +300,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
               src={getFullImageUrl(
                 producto.imagenes?.[0]?.url_imagen ?? "/placeholder.png",
               )}
-              alt={producto.imagenes[0].texto_alt_SEO || producto.nombre}
-              title={producto.imagenes[0].titulo || producto.nombre}
+              alt={producto.imagenes?.[0]?.texto_alt_SEO || producto.nombre}
+              title={producto.imagenes?.[0]?.titulo || producto.nombre}
               className="w-full max-w-md md:max-w-lg h-auto object-contain"
               fetchPriority="high"
             />
@@ -357,9 +346,9 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             <div className="flex flex-col items-center">
               <div className="w-full max-w-[600px] aspect-square shadow-xl bg-white rounded-2xl overflow-hidden flex items-center justify-center border-2 border-gray-200 mb-6 p-4">
                 <img
-                  title={producto.imagenes[0].titulo || producto.nombre}
+                  title={producto.imagenes?.[0]?.titulo || producto.nombre}
                   src={getFullImageUrl(productViewer)}
-                  alt={producto.imagenes[0].texto_alt_SEO || producto.nombre}
+                  alt={producto.imagenes?.[0]?.texto_alt_SEO || producto.nombre}
                   className="w-full h-full object-contain"
                   loading="lazy"
                 />
