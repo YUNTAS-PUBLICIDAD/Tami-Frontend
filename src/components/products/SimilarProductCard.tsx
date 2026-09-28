@@ -14,18 +14,34 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
   React.useEffect(() => {
     setCacheBuster(`?t=${Date.now()}`);
   }, []);
+// --
+  const getFullImageUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  const base = config.apiUrl.replace(/\/$/, ""); 
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${base}${path}`;
+};
 
-  const imgUrl = product.imagenes?.filter((img) => img.tipo === "galeria")[0]?.url_imagen;
+// Usa la de galería; si no hay ninguna con ese tipo, la primera que exista
+const galeria =
+  product.imagenes?.find((img) => img.tipo === "galeria") ??
+  product.imagenes?.[0];
 
-  let finalImageSrc = "/placeholder.png";
+const imgUrl = getFullImageUrl(galeria?.url_imagen);
+const finalImageSrc = imgUrl ? `${imgUrl}${cacheBuster}` : "/placeholder.png";
 
-  if (imgUrl) {
-    if (imgUrl.startsWith("http")) {
-      finalImageSrc = `${imgUrl}${cacheBuster}`;
-    } else {
-      finalImageSrc = `${config.apiUrl}${imgUrl}${cacheBuster}`;
-    }
-  }
+  // const imgUrl = product.imagenes?.filter((img) => img.tipo === "galeria")[0]?.url_imagen;
+
+  // let finalImageSrc = "/placeholder.png";
+
+  // if (imgUrl) {
+  //   if (imgUrl.startsWith("http")) {
+  //     finalImageSrc = `${imgUrl}${cacheBuster}`;
+  //   } else {
+  //     finalImageSrc = `${config.apiUrl}${imgUrl}${cacheBuster}`;
+  //   }
+  // }
 
   return (
 
@@ -58,8 +74,14 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
             "
     loading="lazy"
     onError={(e) => {
-      e.currentTarget.src = '/placeholder.png';
-    }}
+    const img = e.currentTarget;
+    if (!img.src.endsWith("/placeholder.png")) {
+      img.src = "/placeholder.png"; 
+    }
+  }}
+    // onError={(e) => {
+    //   e.currentTarget.src = '/placeholder.png';
+    // }}
   />
 </div>
 
