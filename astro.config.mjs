@@ -5,11 +5,8 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import path from 'path';
 import partytown from '@astrojs/partytown';
-import node from "@astrojs/node";
 
 export default defineConfig({
-    output: "server",
-    adapter: node({ mode: "standalone" }),
     site: 'https://tamimaquinarias.com/',
     vite: {
         // @ts-ignore
@@ -24,7 +21,7 @@ export default defineConfig({
             }
         },
         build: {
-            cssCodeSplit: false,
+            cssCodeSplit: false, 
         },
     },
     integrations: [
@@ -37,7 +34,7 @@ export default defineConfig({
                 !page.includes('/catalogo-maquinarias/ModalDetalles') &&
                 !page.includes('/buscar/')
         }),
-        react(),
+        react(), 
         partytown({
             config: {
                 forward: ['dataLayer.push'],
@@ -46,7 +43,7 @@ export default defineConfig({
     ],
     build: {
         format: 'directory',
-        inlineStylesheets: 'always',
+        inlineStylesheets: 'always', 
     },
     compressHTML: true,
     scopedStyleStrategy: 'where',

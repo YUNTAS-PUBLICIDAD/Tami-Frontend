@@ -52,10 +52,10 @@ const TABS = [
 const LENGTHS = {
   nombre: 80,
   link: 120,
-  subtitulo: 125,
+  subtitulo: 255,
   titulo: 120, // Título visual del hero
   imagenTitulo: 120, // imageTitle galería
-  imagenAlt: 93, // texto_alt_SEO galería
+  imagenAlt: 120, // texto_alt_SEO galería
   metaTitulo: 70,
   metaDescripcion: 200,
 };
@@ -623,8 +623,6 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-
-
     e.preventDefault();
     setIsLoading(true);
 
@@ -789,14 +787,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         );
       }
 
-
-
       if (response.status === 200 || response.status === 201) {
-          try {
-            localStorage.removeItem("productos_cache");
-            window.dispatchEvent(new Event("productos:actualizados"));
-          } catch {}
-
         Swal.fire({
           icon: "success",
           title: isEdit ? "Producto actualizado exitosamente" : "Producto añadido exitosamente",

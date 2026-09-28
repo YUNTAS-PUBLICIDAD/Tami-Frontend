@@ -35,9 +35,7 @@ export const config = {
       // Cambiar a v2 cuando sea necesario
       list: "/api/v1/productos",
       all: "/api/v1/productos/all", // Endpoint específico para productos tipo 'a'
-
-      // detail: (id: number | string) => `/api/v1/productos/${id}`,
-      detail: (link: number | string) => `/api/v1/productos/link/${link}`,
+      detail: (id: number | string) => `/api/v1/productos/${id}`,
       create: "/api/v1/productos",
       update: (id: number | string) => `/api/v1/productos/${id}`,
       delete: (id: number | string) => `/api/v1/productos/${id}`,
@@ -60,19 +58,15 @@ export const config = {
       requestQR: "/api/v1/whatsapp/request-qr",
       resetSession: "/api/v1/whatsapp/reset",
       /** Endpoints para manejar templates de whatsapp */
-      getTemplateByProduct: (productoId: number | string) =>
-        `/api/v1/whatsapp/template/product/${productoId}`,
-      updateTemplateByProduct: (productoId: number | string) =>
-        `/api/v1/whatsapp/template/product/${productoId}`,
-      deleteTemplateByProduct: (productoId: number | string) =>
-        `/api/v1/whatsapp/template/product/${productoId}`,
+      getTemplateByProduct: (productoId: number | string) => `/api/v1/whatsapp/template/product/${productoId}`,
+      updateTemplateByProduct: (productoId: number | string) => `/api/v1/whatsapp/template/product/${productoId}`,
+      deleteTemplateByProduct: (productoId: number | string) => `/api/v1/whatsapp/template/product/${productoId}`,
     },
     reclamaciones: {
       // Endpoints de reclamaciones
       list: "/api/v1/admin/claims",
       detail: (id: number | string) => `/api/v1/admin/claims/${id}`,
-      updateStatus: (id: number | string) =>
-        `/api/v1/admin/claims/${id}/status`,
+      updateStatus: (id: number | string) => `/api/v1/admin/claims/${id}/status`,
       create: "/api/v1/claims",
       // Endpoint para obtener estadísticas de reclamaciones
       all: "api/v1/claim-form-data",
@@ -84,25 +78,21 @@ export const config = {
     chatbot: {
       newIcon: "/api/v1/chatbot/icon",
       getIcon: "/api/v1/chatbot/icon",
-      newHeadColor: "/api/v1/chatbot/head-color",
-      getHeadColor: "/api/v1/chatbot/head-color",
-      newSalute: "/api/v1/chatbot/salute",
-      getSalute: "/api/v1/chatbot/salute",
+      newHeadColor:"/api/v1/chatbot/head-color",
+      getHeadColor:"/api/v1/chatbot/head-color",
+      newSalute:"/api/v1/chatbot/salute",
+      getSalute:"/api/v1/chatbot/salute",
       newPosition: "/api/v1/chatbot/posicion",
       getPosition: "/api/v1/chatbot/posicion",
-    },
+    }
   },
   socket: {
-    whatsapp:
-      import.meta.env.PUBLIC_WHATSAPP_SOCKET_URL ||
-      "https://apitami.tamimaquinarias.com",
-  },
+    whatsapp: import.meta.env.PUBLIC_WHATSAPP_SOCKET_URL || "https://apitami.tamimaquinarias.com",
+  }
 };
 
 export const getApiUrl = (endpoint: string) => {
-  const baseUrl = config.apiUrl
-    ? String(config.apiUrl).replace(/\/+$/, "")
-    : "";
+  const baseUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";  
   const url = baseUrl ? `${baseUrl}${endpoint}` : endpoint;
   if (config.environment !== "production") {
     console.debug(`[${config.environment}] Requesting:`, url);
