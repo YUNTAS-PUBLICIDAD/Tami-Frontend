@@ -52,10 +52,10 @@ const TABS = [
 const LENGTHS = {
   nombre: 80,
   link: 120,
-  subtitulo: 255,
+  subtitulo: 125,
   titulo: 120, // Título visual del hero
   imagenTitulo: 120, // imageTitle galería
-  imagenAlt: 120, // texto_alt_SEO galería
+  imagenAlt: 93, // texto_alt_SEO galería
   metaTitulo: 70,
   metaDescripcion: 200,
 };
