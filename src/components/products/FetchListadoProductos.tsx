@@ -180,6 +180,14 @@ export default function ListadoDeProductos() {
     obtenerDatos();
     return () => abortControllerRef.current?.abort();
   }, [obtenerDatos]);
+// ---
+   useEffect(() => {
+    const recargar = () => obtenerDatos(false);
+    window.addEventListener("productos:actualizados", recargar);
+    return () => window.removeEventListener("productos:actualizados", recargar);
+  }, [obtenerDatos]);
+//---
+
 
   const procesarSecciones = useCallback((productos: Producto[]) => {
     const secciones = ["Maquinaria", "Negocio", "Decoracion", "Purificacion"];
