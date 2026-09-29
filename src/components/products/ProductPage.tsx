@@ -12,6 +12,15 @@ import { Pagination, Autoplay } from "swiper/modules";
 import SimilarProductCard from "./SimilarProductCard";
 import SimilarProductsSection from "./SimilarProductSection";
 
+const getLinkFromPath = (): string | undefined => {
+  if (typeof window === "undefined") return undefined;
+  const match = window.location.pathname.match(
+    /^\/catalogo-maquinarias\/([^/]+)\/?$/,
+  );
+  return match ? decodeURIComponent(match[1]).trim() : undefined;
+};
+
+
 const setMetaKeywords = (keywords: string) => {
   let tag = document.querySelector<HTMLMetaElement>('meta[name="keywords"]');
   if (!tag) {
@@ -107,12 +116,14 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
   // Cargar datos del producto (iniciales o frescos)
   useEffect(() => {
     const fetchProductData = async () => {
-      let productLink = initialProducto?.link;
+      const productLink = initialProducto?.link ?? getLinkFromPath();
+      // let productLink = initialProducto?.link;
 
-      if (!productLink) {
-        const params = new URLSearchParams(window.location.search);
-        productLink = params.get("link")?.trim();
-      }
+      // if (!productLink) {
+      //   const params = new URLSearchParams(window.location.search);
+      //   productLink = params.get("link")?.trim();
+      // }
+      // ---
 
       if (!productLink && !initialProducto?.id) {
         setLoading(false);

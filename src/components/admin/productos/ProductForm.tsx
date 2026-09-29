@@ -788,6 +788,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       }
 
       if (response.status === 200 || response.status === 201) {
+      // ----
+      try {
+          localStorage.removeItem("productos_cache");
+          window.dispatchEvent(new Event("productos:actualizados"));
+        } catch {}
+      // ----
+
         Swal.fire({
           icon: "success",
           title: isEdit ? "Producto actualizado exitosamente" : "Producto añadido exitosamente",
