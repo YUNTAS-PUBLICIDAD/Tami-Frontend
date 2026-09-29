@@ -71,6 +71,12 @@ export const config = {
       // Endpoint para obtener estadísticas de reclamaciones
       all: "api/v1/claim-form-data",
     },
+    configuracion: {
+      // Endpoints de configuración
+      contacto: "/api/v1/configuracion/contacto",
+      redes: "/api/v1/configuracion/redes",
+      horario: "/api/v1/configuracion/horario",
+    },
     popups: {
       getSettings: "/api/v1/popup-settings/public",
       submit: "/api/v1/whatsapp/popup-submission",
@@ -78,10 +84,10 @@ export const config = {
     chatbot: {
       newIcon: "/api/v1/chatbot/icon",
       getIcon: "/api/v1/chatbot/icon",
-      newHeadColor:"/api/v1/chatbot/head-color",
-      getHeadColor:"/api/v1/chatbot/head-color",
-      newSalute:"/api/v1/chatbot/salute",
-      getSalute:"/api/v1/chatbot/salute",
+      newHeadColor: "/api/v1/chatbot/head-color",
+      getHeadColor: "/api/v1/chatbot/head-color",
+      newSalute: "/api/v1/chatbot/salute",
+      getSalute: "/api/v1/chatbot/salute",
       newPosition: "/api/v1/chatbot/posicion",
       getPosition: "/api/v1/chatbot/posicion",
     }
@@ -92,7 +98,7 @@ export const config = {
 };
 
 export const getApiUrl = (endpoint: string) => {
-  const baseUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";  
+  const baseUrl = config.apiUrl ? String(config.apiUrl).replace(/\/+$/, "") : "";
   const url = baseUrl ? `${baseUrl}${endpoint}` : endpoint;
   if (config.environment !== "production") {
     console.debug(`[${config.environment}] Requesting:`, url);
