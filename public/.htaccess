@@ -8,10 +8,12 @@ RewriteRule ^(.*)$ https://tamimaquinarias.com/$1 [L,R=301]
 # 2. Redirecciones 301 — Rutas legacy / productos antiguos
 RewriteRule ^sobre-nosotros/?$ /nosotros/ [L,R=301]
 RewriteRule ^productos/?$ /catalogo-maquinarias/ [L,R=301]
-RewriteRule ^productos/soldadora-spark-mig-250/?$ /catalogo-maquinarias/detalle/?link=soldadora-spark-mig-250 [L,R=301,QSA]
-RewriteRule ^productos/maquina-de-embalaje-de-te/?$ /catalogo-maquinarias/detalle/?link=maquina-de-embalaje-de-te [L,R=301,QSA]
-RewriteRule ^productos/soldadora-lingba/?$ /catalogo-maquinarias/detalle/?link=soldadora-lingba [L,R=301,QSA]
-RewriteRule ^productos/(.+)/?$ /catalogo-maquinarias/detalle/?link=$1 [L,R=301,QSA]
+RewriteRule ^productos/(.+)/?$ /catalogo-maquinarias/$1/ [L,R=301]
+
+# 2b. /catalogo-maquinarias/detalle fue reemplazada por /catalogo-maquinarias/<slug>
+RewriteCond %{QUERY_STRING} (^|&)link=([^&]+)
+RewriteRule ^catalogo-maquinarias/detalle/?$ /catalogo-maquinarias/%2/? [R=301,L]
+RewriteRule ^catalogo-maquinarias/detalle/?$ /catalogo-maquinarias/ [R=301,L]
 
 # 3. Forzar slash final (Trailing Slash) en todas las URLs
 RewriteCond %{REQUEST_FILENAME} !-f

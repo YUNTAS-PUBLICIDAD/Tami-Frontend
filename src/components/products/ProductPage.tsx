@@ -12,6 +12,18 @@ import { Pagination, Autoplay } from "swiper/modules";
 import SimilarProductCard from "./SimilarProductCard";
 import SimilarProductsSection from "./SimilarProductSection";
 
+const getLinkFromPath = (): string | undefined => {
+  if (typeof window === "undefined") return undefined;
+  const match = window.location.pathname.match(
+    /^\/catalogo-maquinarias\/([^/]+)\/?$/,
+  );
+  if (!match) return undefined;
+  const slug = decodeURIComponent(match[1]).trim();
+  // "detalle" is a legacy route segment, never a real product slug
+  return slug && slug !== "detalle" ? slug : undefined;
+};
+
+
 const setMetaKeywords = (keywords: string) => {
   let tag = document.querySelector<HTMLMetaElement>('meta[name="keywords"]');
   if (!tag) {
@@ -107,12 +119,10 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
   // Cargar datos del producto (iniciales o frescos)
   useEffect(() => {
     const fetchProductData = async () => {
-      let productLink = initialProducto?.link;
-
-      if (!productLink) {
-        const params = new URLSearchParams(window.location.search);
-        productLink = params.get("link")?.trim();
-      }
+      const queryLink = new URLSearchParams(window.location.search)
+        .get("link")
+        ?.trim();
+      const productLink = initialProducto?.link ?? queryLink ?? getLinkFromPath();
 
       if (!productLink && !initialProducto?.id) {
         setLoading(false);
@@ -309,8 +319,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         </div>
         {/* Wave */}
         <div>
-          <svg
-            className="relative block w-full h-[120px] md:h-[180px] "
+        <svg
+            className="relative block w-full h-[120px] md:h-[180px]"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1440 320"
             preserveAspectRatio="none"
@@ -332,7 +342,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             <path
               fill="url(#waveGradient)"
               fillOpacity="1"
-              d="M0,96L288,96L576,128L864,160L1152,160L1440,96L1440,320L1152,320L864,320L576,320L288,320L0,320Z"
+              d="M0,128 C360,200 1080,40 1440,128 L1440,320 L0,320 Z"
             ></path>
           </svg>
         </div>

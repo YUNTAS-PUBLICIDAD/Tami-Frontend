@@ -30,8 +30,6 @@ export default defineConfig({
                 !page.includes('/admin') &&
                 !page.includes('/auth/') &&
                 !page.includes('/blog/details') &&
-                !page.includes('/catalogo-maquinarias/detalle') &&
-                !page.includes('/catalogo-maquinarias/ModalDetalles') &&
                 !page.includes('/buscar/')
         }),
         react(), 

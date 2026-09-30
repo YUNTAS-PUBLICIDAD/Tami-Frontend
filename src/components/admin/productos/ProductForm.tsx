@@ -52,10 +52,10 @@ const TABS = [
 const LENGTHS = {
   nombre: 80,
   link: 120,
-  subtitulo: 255,
+  subtitulo: 125,
   titulo: 120, // Título visual del hero
   imagenTitulo: 120, // imageTitle galería
-  imagenAlt: 120, // texto_alt_SEO galería
+  imagenAlt: 93, // texto_alt_SEO galería
   metaTitulo: 70,
   metaDescripcion: 200,
 };
@@ -161,7 +161,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       return;
     }
 
-    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
+    const productUrl = `/catalogo-maquinarias/${productoSeleccionado.link}`;
 
     editorRefs.current[activeEditorKey]?.insertLink(productUrl);
 
@@ -788,6 +788,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       }
 
       if (response.status === 200 || response.status === 201) {
+      // ----
+      try {
+          localStorage.removeItem("productos_cache");
+          window.dispatchEvent(new Event("productos:actualizados"));
+        } catch {}
+      // ----
+
         Swal.fire({
           icon: "success",
           title: isEdit ? "Producto actualizado exitosamente" : "Producto añadido exitosamente",
