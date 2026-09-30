@@ -17,7 +17,10 @@ const getLinkFromPath = (): string | undefined => {
   const match = window.location.pathname.match(
     /^\/catalogo-maquinarias\/([^/]+)\/?$/,
   );
-  return match ? decodeURIComponent(match[1]).trim() : undefined;
+  if (!match) return undefined;
+  const slug = decodeURIComponent(match[1]).trim();
+  // "detalle" is a legacy route segment, never a real product slug
+  return slug && slug !== "detalle" ? slug : undefined;
 };
 
 
@@ -116,14 +119,10 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
   // Cargar datos del producto (iniciales o frescos)
   useEffect(() => {
     const fetchProductData = async () => {
-      const productLink = initialProducto?.link ?? getLinkFromPath();
-      // let productLink = initialProducto?.link;
-
-      // if (!productLink) {
-      //   const params = new URLSearchParams(window.location.search);
-      //   productLink = params.get("link")?.trim();
-      // }
-      // ---
+      const queryLink = new URLSearchParams(window.location.search)
+        .get("link")
+        ?.trim();
+      const productLink = initialProducto?.link ?? queryLink ?? getLinkFromPath();
 
       if (!productLink && !initialProducto?.id) {
         setLoading(false);

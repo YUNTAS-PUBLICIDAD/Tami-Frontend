@@ -161,7 +161,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       return;
     }
 
-    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
+    const productUrl = `/catalogo-maquinarias/${productoSeleccionado.link}`;
 
     editorRefs.current[activeEditorKey]?.insertLink(productUrl);
 
