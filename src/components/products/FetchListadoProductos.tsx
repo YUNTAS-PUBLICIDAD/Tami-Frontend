@@ -632,7 +632,7 @@ const ProductCard = React.memo(function ProductCard({
 
   return (
     <a
-      href={`/catalogo-maquinarias/${producto.link}`}
+      href={`/catalogo-maquinarias/${producto.link}/`}
       title={`Ver detalles de ${producto.nombre}`}
       className="block w-full h-full"
     >
