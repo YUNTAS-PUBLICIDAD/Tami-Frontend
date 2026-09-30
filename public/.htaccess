@@ -19,7 +19,7 @@ RewriteRule ^catalogo-maquinarias/detalle/?$ /catalogo-maquinarias/ [R=301,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !(.*)/$
-RewriteRule ^(.*)$ https://tamimaquinarias.com/$1/ [L,R=301]
+RewriteRule ^(.*)$ /$1/ [L,R=301]
 
 # --- Habilitar rewrite para Astro ---
 RewriteBase /
