@@ -8,129 +8,131 @@ const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
 import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 import ActiveLink from "./ActiveLink";
+import type { SocialLink } from "../../../types/contacto.interface";
 
 interface NavBarProps {
   forceSolid?: boolean;
+  socialMediaLinks: SocialLink[];
 }
 
-function NavBar({ forceSolid = false }: NavBarProps) {
-    const apiUrl = import.meta.env.PUBLIC_API_URL || "";
-    const [isOpen, setIsOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [search, setSearch] = useState("");
-    const [suggestions, setSuggestions] = useState<Producto[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const inputRef = useRef<HTMLFormElement>(null);
+function NavBar({ forceSolid = false, socialMediaLinks }: NavBarProps) {
+  const apiUrl = import.meta.env.PUBLIC_API_URL || "";
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLFormElement>(null);
 
-    // NUEVO: Guardará los productos en la memoria RAM del componente para no re-descargar
-    const productosCacheRef = useRef<Producto[] | null>(null);
-    // NUEVO: Estado intermedio para el Debounce de la búsqueda
-    const [debouncedSearch, setDebouncedSearch] = useState("");
+  // NUEVO: Guardará los productos en la memoria RAM del componente para no re-descargar
+  const productosCacheRef = useRef<Producto[] | null>(null);
+  // NUEVO: Estado intermedio para el Debounce de la búsqueda
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-    // 1. EFECTO DE DEBOUNCE: Espera 300ms antes de procesar lo que el usuario escribe
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setDebouncedSearch(search);
-      }, 300);
-      return () => clearTimeout(timer);
-    }, [search]);
+  // 1. EFECTO DE DEBOUNCE: Espera 300ms antes de procesar lo que el usuario escribe
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-    // 2. FILTRADO Y CARGA OPTIMIZADA (Escucha a debouncedSearch)
-    useEffect(() => {
-      const query = debouncedSearch.trim().toLowerCase();
-      if (query.length < 2) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
-
-      // Función local para reutilizar el filtrado
-      const ejecutarFiltrado = (todos: Producto[]) => {
-        const filtered = todos.filter((producto: Producto) =>
-          [
-            producto.nombre,
-            producto.titulo,
-            producto.subtitulo,
-            producto.descripcion,
-          ].some((campo) => campo && campo.toLowerCase().includes(query))
-        );
-        setSuggestions(filtered.slice(0, 6));
-        setShowSuggestions(true);
-      };
-
-      // Si ya los descargamos una vez, filtramos al instante sin usar Red (0ms)
-      if (productosCacheRef.current) {
-        ejecutarFiltrado(productosCacheRef.current);
-        return;
-      }
-
-      setLoading(true);
-      fetch("/api/productos")
-        .then((res) => res.json())
-        .then((json) => {
-          const todos: Producto[] = json.data ?? [];
-          productosCacheRef.current = todos; // Guardamos en memoria
-          ejecutarFiltrado(todos);
-        })
-        .catch(() => setSuggestions([]))
-        .finally(() => setLoading(false));
-    }, [debouncedSearch]);
-
-    // Cerrar sugerencias al hacer click fuera
-    useEffect(() => {
-      function handleClickOutside(e: MouseEvent) {
-        if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
-          setShowSuggestions(false);
-        }
-      }
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    // 3. SCROLL OPTIMIZADO: Elimina por completo el Forced Reflow
-    useEffect(() => {
-      let ticking = false;
-      let lastScrollY = 0; // Guardará la posición exacta de lectura
-
-      const handleScroll = () => {
-        // Se hace inmediatamente en el hilo principal del evento (Súper rápido)
-        lastScrollY = window.scrollY; 
-
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            // El cambio de estado se ejecuta limpio en el frame visual
-            setIsScrolled(lastScrollY > 50);
-            ticking = false;
-          });
-          ticking = true; 
-        }
-      };
-
-      window.addEventListener("scroll", handleScroll, { passive: true });
-      
-      // Ejecución inicial segura
-      lastScrollY = window.scrollY;
-      setIsScrolled(lastScrollY > 50);
-
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
-    }, []);
-
-    const handleSearchSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (search.trim()) {
-        setShowSuggestions(false);
-        window.location.href = `/buscar?q=${encodeURIComponent(search.trim())}`;
-      }
-    };
-
-    const handleSuggestionClick = (producto: Producto) => {
+  // 2. FILTRADO Y CARGA OPTIMIZADA (Escucha a debouncedSearch)
+  useEffect(() => {
+    const query = debouncedSearch.trim().toLowerCase();
+    if (query.length < 2) {
+      setSuggestions([]);
       setShowSuggestions(false);
-      setSearch("");
-      window.location.href = `/catalogo-maquinarias/${encodeURIComponent(producto.link)}`;
+      return;
+    }
+
+    // Función local para reutilizar el filtrado
+    const ejecutarFiltrado = (todos: Producto[]) => {
+      const filtered = todos.filter((producto: Producto) =>
+        [
+          producto.nombre,
+          producto.titulo,
+          producto.subtitulo,
+          producto.descripcion,
+        ].some((campo) => campo && campo.toLowerCase().includes(query))
+      );
+      setSuggestions(filtered.slice(0, 6));
+      setShowSuggestions(true);
     };
+
+    // Si ya los descargamos una vez, filtramos al instante sin usar Red (0ms)
+    if (productosCacheRef.current) {
+      ejecutarFiltrado(productosCacheRef.current);
+      return;
+    }
+
+    setLoading(true);
+    fetch("/api/productos")
+      .then((res) => res.json())
+      .then((json) => {
+        const todos: Producto[] = json.data ?? [];
+        productosCacheRef.current = todos; // Guardamos en memoria
+        ejecutarFiltrado(todos);
+      })
+      .catch(() => setSuggestions([]))
+      .finally(() => setLoading(false));
+  }, [debouncedSearch]);
+
+  // Cerrar sugerencias al hacer click fuera
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // 3. SCROLL OPTIMIZADO: Elimina por completo el Forced Reflow
+  useEffect(() => {
+    let ticking = false;
+    let lastScrollY = 0; // Guardará la posición exacta de lectura
+
+    const handleScroll = () => {
+      // Se hace inmediatamente en el hilo principal del evento (Súper rápido)
+      lastScrollY = window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // El cambio de estado se ejecuta limpio en el frame visual
+          setIsScrolled(lastScrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Ejecución inicial segura
+    lastScrollY = window.scrollY;
+    setIsScrolled(lastScrollY > 50);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (search.trim()) {
+      setShowSuggestions(false);
+      window.location.href = `/buscar?q=${encodeURIComponent(search.trim())}`;
+    }
+  };
+
+  const handleSuggestionClick = (producto: Producto) => {
+    setShowSuggestions(false);
+    setSearch("");
+    window.location.href = `/catalogo-maquinarias/${encodeURIComponent(producto.link)}`;
+  };
   // Se usa la versión de 'pre-main' que usa comillas dobles
   // y tiene una ligera corrección de indentación.
   return (
@@ -204,6 +206,7 @@ function NavBar({ forceSolid = false }: NavBarProps) {
       {/* Se usa la versión de 'pre-main' que formatea el 
           componente en múltiples líneas para mejor lectura */}
       <SideMenu
+        socialMediaLinks={socialMediaLinks}
         links={navLinks}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
@@ -211,5 +214,5 @@ function NavBar({ forceSolid = false }: NavBarProps) {
     </header>
   );
 }
- 
+
 export default NavBar;
