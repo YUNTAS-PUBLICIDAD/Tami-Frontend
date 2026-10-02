@@ -7,6 +7,8 @@ import ScrollModal from "../components/ui/ScrollModal.tsx";
 import Toast from "../components/ui/Toast.astro";
 import ChatbotWidget from "../components/ui/chatbot/ChatbotWidget.tsx";
 import SocialWidget from "src/components/ui/SocialWidget.astro";
+import { getContactData } from "src/lib/api/contacto";
+import { getSocialLinks } from "src/lib/api/redes";
 
 interface Props {
   title: string;
@@ -24,6 +26,8 @@ const {
 } = Astro.props;
 
 const finalCanonical = canonicalUrl || `${Astro.url.origin}${Astro.url.pathname}`;
+const contact = await getContactData();
+const socialMediaLinks = await getSocialLinks(contact?.whatsapp);
 
 ---
 

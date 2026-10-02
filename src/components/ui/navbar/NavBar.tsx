@@ -3,11 +3,13 @@ import logoTami from "@images/logos/logo-estatico-100x116.webp";
 import navLinks from "@data/navlinks.data";
 import { IoClose, IoMenu } from "react-icons/io5";
 import ActiveLink from "./ActiveLink";
+import type { SocialLink } from "../../../types/contacto.interface";
 
 const SideMenu = lazy(() => import("../sideMenu/SideMenu"));
 
 interface NavBarProps {
   forceSolid?: boolean;
+  socialMediaLinks: SocialLink[];
 }
 
 function NavBar({ forceSolid = false }: NavBarProps) {
@@ -100,6 +102,7 @@ function NavBar({ forceSolid = false }: NavBarProps) {
       </div>
 
       <SideMenu
+        socialMediaLinks={socialMediaLinks}
         links={navLinks}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
