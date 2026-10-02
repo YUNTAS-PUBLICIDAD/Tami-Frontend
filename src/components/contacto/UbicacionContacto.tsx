@@ -2,68 +2,11 @@ import React from "react";
 import MapaEmbed from "./MapaEmbed";
 import TextTitulo from './TextTitulo';
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import type { ContactData } from "../../types/contacto.interface";
 
-interface ContactData {
-  map_url?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  hours?: string;
-}
+const UbicacionContacto: React.FC<{ contact: ContactData }> = ({ contact }) => {
 
-interface UbicacionContactoProps {
-  contact?: ContactData;
-}
-
-const UbicacionContacto: React.FC<UbicacionContactoProps> = ({ contact }) => {
-  // Default values for Tami Maquinarias
-  const defaultMapUrl = "https://maps.google.com/maps?q=Tami%20Maquinarias,%20Jr.%20Paruro%201401,%20Lima&t=&z=17&ie=UTF8&iwloc=&output=embed";
-  const defaultAddress = "Jr. Paruro 1401, Tienda 130 (Sótano), Galería Shopping Center Electronics, Lima, Perú";
-  const defaultPhone = "+51 978 883 199 / +51 936 910 425";
-  const defaultEmail = "informestami01@gmail.com";
-  const defaultHours = "Lunes a Viernes: 9:00 am a 9:00 pm";
-
-  let mapUrl = contact?.map_url || defaultMapUrl;
-
-  // Normalizador de URL para Google Maps
-  if (mapUrl.includes("<iframe") && mapUrl.includes("src=")) {
-    const match = mapUrl.match(/src="([^"]+)"/);
-    if (match && match[1]) {
-      mapUrl = match[1];
-    }
-  } else if (!mapUrl.includes("/embed") && !mapUrl.includes("output=embed")) {
-    if (mapUrl.includes("/place/")) {
-      const match = mapUrl.match(/\/place\/([^\/]+)/);
-      if (match && match[1]) {
-        mapUrl = `https://www.google.com/maps?q=${match[1]}&output=embed`;
-      }
-    } else if (mapUrl.includes("/search/")) {
-      const match = mapUrl.match(/\/search\/([^\/]+)/);
-      if (match && match[1]) {
-        mapUrl = `https://www.google.com/maps?q=${match[1]}&output=embed`;
-      }
-    } else if (mapUrl.includes("q=")) {
-      try {
-        const urlObj = new URL(mapUrl);
-        const q = urlObj.searchParams.get("q");
-        if (q) {
-          mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
-        }
-      } catch (e) {
-        // Ignorar si la URL es inválida
-      }
-    } else if (mapUrl.includes("@")) {
-      const match = mapUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-      if (match && match[1] && match[2]) {
-        mapUrl = `https://www.google.com/maps?q=${match[1]},${match[2]}&output=embed`;
-      }
-    }
-  }
-
-  const addressText = contact?.address || defaultAddress;
-  const phoneText = contact?.phone || defaultPhone;
-  const emailText = contact?.email || defaultEmail;
-  const hoursText = contact?.hours || defaultHours;
+  const { address, phones, whatsapp, email, hours, mapUrl } = contact;
 
   return (
     <section className="bg-white dark:bg-gray-950 py-16 md:py-24">
@@ -90,9 +33,9 @@ const UbicacionContacto: React.FC<UbicacionContactoProps> = ({ contact }) => {
               </div>
               <div>
                 <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-1">Nuestra Tienda</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{addressText}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{address}</p>
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressText)}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-[#0C998A] hover:text-[#046A63] font-bold mt-2 inline-block transition-colors"
@@ -109,10 +52,10 @@ const UbicacionContacto: React.FC<UbicacionContactoProps> = ({ contact }) => {
               </div>
               <div>
                 <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-1">Teléfonos y WhatsApp</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{phoneText}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{phones.join("/")}</p>
                 <div className="flex gap-4 mt-2">
                   <a
-                    href="https://wa.me/51978883199"
+                    href={`https://wa.me/${whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-[#0C998A] hover:text-[#046A63] font-bold transition-colors"
@@ -131,10 +74,10 @@ const UbicacionContacto: React.FC<UbicacionContactoProps> = ({ contact }) => {
               <div>
                 <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-1">Correo Electrónico</h3>
                 <a
-                  href={`mailto:${emailText}`}
+                  href={`mailto:${email}`}
                   className="text-gray-600 dark:text-gray-300 text-sm hover:text-[#0C998A] transition-colors break-all"
                 >
-                  {emailText}
+                  {email}
                 </a>
               </div>
             </div>
@@ -146,7 +89,17 @@ const UbicacionContacto: React.FC<UbicacionContactoProps> = ({ contact }) => {
               </div>
               <div>
                 <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-1">Horario de Atención</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{hoursText}</p>
+                <div className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                  {hours.length > 0 ? (
+                    hours.map((h:any) => (
+                      <p key={h.label}>
+                        <span className="font-medium">{h.label}:</span> {h.text}
+                      </p>
+                    ))
+                  ) : (
+                    <p>Consúltanos por WhatsApp</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
